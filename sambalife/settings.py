@@ -127,7 +127,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/html/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "html"),
+    '/home/fabio/Projects/sambalife/source/sambalife/html/',
+]
 
 CORS_ORIGIN_ALLOW_ALL = True
 

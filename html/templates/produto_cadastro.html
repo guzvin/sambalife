@@ -1,0 +1,53 @@
+{% extends 'includes/layout.html' %}
+
+{% block addproduto %}active{% endblock %}
+
+{% block conteudo %}
+
+  <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3 sidebar">
+
+        </div>
+        <div class="col-md-6 main">
+          <h1 class="page-header"><i class="fa fa-plus-square"></i> Adicionar Produto</h1>
+          <form>
+              <div class="form-group col-md-12">
+                <label for="nome">Nome*</label>
+                <input type="text" class="form-control" id="nome" aria-describedby="nome" placeholder="Digite o nome...">
+              </div><br>
+              <div class="form-group col-md-12">
+                    <label for="Descrição">Descrição</label>
+                    <textarea class="form-control" id="Descricao" placeholder="Descrição do produto..."></textarea>
+              </div><br>
+              <div class="form-group col-md-12">
+                    <label for="Quantidade">Quantidade*</label>
+                    <input type="number" class="form-control menor" id="Quantidade" placeholder="Digite a Quantidade...">
+              </div><br>
+              <div class="form-group col-md-12">
+                    <label for="data">Data Envio*</label>
+                    <input type="text" class="form-control menor" id="datepicker" placeholder="Data de envio...">
+              </div><br>
+              <div class="form-group group-track">
+                    <div class="col-md-5">
+                        <label for="Track">Track Number</label>
+                        <input type="number" class="form-control" id="Track" placeholder="Digite o Track Number..." />
+                    </div>
+                    <div class="col-md-7 content-btn-add">
+                        <a class="add-track btn btn-success" data-toggle="tooltip" title="Caso você tenha mais de um track number no mesmo produto adicione os demais clicando aqui" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i></a>
+                        <a class="rem-track btn btn-danger" data-toggle="tooltip" title="Remover este Track number" href="#"><i class="fa fa-fw fa-times"></i></a>
+                    </div><br>
+              </div>
+              <br><br>
+              <div class="form-group col-md-12"><br><br>
+                  <a href="#" type="submit" class="btn btn-primary alterar-status">Salvar</a><br><br>
+                  <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> Voltar</a><br><br><br>
+              </div>
+            </form>
+        </div>
+        <div class="col-md-3 sidebar">
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

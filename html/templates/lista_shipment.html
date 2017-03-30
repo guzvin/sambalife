@@ -1,0 +1,139 @@
+{% extends 'includes/layout.html' %}
+
+{% block listashipment %}active{% endblock %}
+
+{% block conteudo %}
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1 sidebar">
+
+        </div>
+        <div class="col-md-10 main">
+          <h1 class="page-header"><i class="fa fa-archive"></i> Lista Shipments</h1>
+          <div class="row">
+              <div class="filtros col-md-12">
+                <h3><i class="fa fa-filter"></i> Filtros</h3>  <br>
+                <div class="form-group col-md-2">
+                    <label for="filtro-id">Id</label>
+                    <input type="text" class="form-control" id="filtro-id" placeholder="Id...">
+                </div>
+
+                <!-- somente o admin visualiza esse filtro -->
+
+                    <div class="form-group col-md-2">
+                    <label for="filtro-usuario">Usuário</label>
+                    <input type="text" class="form-control" id="filtro-usuario" placeholder="Usuário...">
+                </div>
+
+                <!-- fim filtro usuario-->
+
+                <div class="form-group col-md-2">
+                    <label for="filtro-Track">Track Number</label>
+                    <input type="text" class="form-control" id="filtro-Track" placeholder="Track Number...">
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="Status">Status</label>
+                    <select class="form-control" id="Status">
+                      <option>Status</option>
+                      <option>Em analise</option>
+                      <option>Enviado</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="datepicker">Data Envio</label>
+                    <input type="text" class="form-control" id="datepicker" placeholder="Data envio...">
+                </div>
+                <div class="form-group col-md-2">
+                    <a class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> Filtrar</a>
+                </div>
+              </div>
+          </div><br><br>
+          <div class="table-responsive">
+            <a class="btn btn-default" href="/shipment/cadastro/"><i class="fa fa-fw fa-plus-square"></i> Criar Shipment</a>
+          <br><br>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+
+                  <!-- somente admin visualiza -->
+
+                  <th class="center">Usuário</th>
+
+                  <!-- fim campo -->
+
+
+                  <th>Data Envio</th>
+                  <th class="center">Quantidade</th>
+                  <th class="center">Track Number</th>
+                  <th class="center">Status</th>
+                  <th class="center">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1024</td>
+
+                  <!-- somente admin visualiza -->
+
+                  <td class="center">Fabionm</td>
+
+                  <!-- fim campo -->
+
+                  <td>23/02/2017</td>
+                  <td class="center">18</td>
+                  <td class="center">9667567</td>
+                  <td class="center"> Em processamento</td>
+                  <td class="center"><a class="download" href="/shipment/detalhe/"><i class="fa fa-pencil"></i> Visualizar</a></td>
+                </tr>
+                <tr>
+                  <td>1025</td>
+
+                  <!-- somente admin visualiza -->
+
+                  <td class="center">Roberto80</td>
+
+                  <!-- fim campo -->
+
+                  <td>10/02/2017</td>
+                  <td class="center">20</td>
+                  <td class="center">2334522</td>
+                  <td class="center">Enviado</td>
+                  <td class="center"><a class="download" href="/shipment/detalhe/"><i class="fa fa-pencil"></i> Visualizar</a></td>
+                </tr>
+                <tr>
+                  <td>1026</td>
+
+                  <!-- somente admin visualiza -->
+
+                  <td class="center">Guly</td>
+
+                  <!-- fim campo -->
+
+                  <td>30/01/2017</td>
+                  <td class="center">18</td>
+                  <td class="center">68786744</td>
+                  <td class="center">Enviado</td>
+                  <td class="center"><a class="download" href="/shipment/detalhe/"><i class="fa fa-pencil"></i> Visualizar</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <nav aria-label="...">
+              <ul class="pagination">
+                <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                <li class=""><a href="#">2</a></li>
+                <li class=""><a href="#">3</a></li>
+                <li class=""><a href="#">4</a></li>
+                <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+              </ul>
+            </nav>
+        </div>
+        <div class="col-md-1 sidebar">
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
