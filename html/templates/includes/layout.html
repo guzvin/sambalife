@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Vendedor Online Internacional - Usuarios</title>
+
+    <!-- Bootstrap -->
+    <link href="/html/static/externo/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fontes -->
+    <link href="/html/static/externo/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+    <!-- Estilo Jquery-ui -->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <!-- Estilo -->
+    <link href="/html/static/css/style.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js" integrity="sha384-0s5Pv64cNZJieYFkXYOTId2HMA2Lfb6q2nAcx2n0RTLUnCAoTTsS0nKEO27XyKcY" crossorigin="anonymous"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js" integrity="sha384-ZoaMbDF+4LeFxg6WdScQ9nnR1QC2MIRxA1O9KWEXQwns1G8UNyIEZIQidzb0T1fo" crossorigin="anonymous"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" class="lista-usuarios">
+    <header class="bs-docs-nav navbar navbar-static-top header-sistema" id="top">
+        <div class="container">
+            <div class="navbar-header">
+                <button aria-controls="bs-navbar" aria-expanded="false" class="collapsed navbar-toggle" data-target="#bs-navbar" data-toggle="collapse" type="button">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="" class="navbar-brand page-scroll"><img src="/html/static/img/logo_sup.png" /><img src="/html/static/img/logo_bottom.png" /></a>
+            </div>
+            <nav class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="nav navbar-nav">
+
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span> Administrativo <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li class="{% block usuarios %}{% endblock %}">
+                                <a href="/usuarios"><i class="fa fa-fw fa-users"></i> Usuários</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="{% block pagamentos %}{% endblock %}">
+                                <a href="/pagamentos"><i class="fa fa-fw fa-paypal"></i> Pagamentos</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> Estoque <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li class="{% block listaprodutos %}{% endblock %}">
+                                <a href="/estoque"><i class="fa fa-fw fa-list-alt"></i> Lista Produtos</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="{% block addproduto %}{% endblock %}">
+                                <a href="/produtos/cadastro/"><i class="fa fa-fw fa-plus-square"></i> Adicionar Produto</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown ">
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> Shipment <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li class="{% block listashipment %}{% endblock %}">
+                                <a href="/shipments"><i class="fa fa-fw fa-list-alt"></i> Lista Shipments</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="{% block criarshipment %}{% endblock %}">
+                                <a href="/shipment/cadastro"><i class="fa fa-fw fa-plus-square"></i> Criar Shipment</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span>  Olá, Usuário <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li class="{% block usuarioedit %}{% endblock %}">
+                                <a href="/editar-usuario"><i class="fa fa-fw fa-user"></i> Editar cadastro</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="">
+                                <a href="/logout"><i class="fa fa-fw fa-power-off"></i> sair</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    {% block conteudo %}Conteudo pagina{% endblock %}
+
+
+    <!-- Modal confirmacao de acao-->
+    <div id="confirmacao" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Sucesso</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Informações enviadas com sucesso</p>
+                    <!--<p class="text-warning"><small>If you don't save, your changes will be lost.</small></p>-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading basta dar display block-->
+    <div class="loading" style="display: none;">Loading...</div>
+
+    <!-- jQuery -->
+    <script src="/html/static/externo/jquery/jquery.min.js"></script>
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/html/static/externo/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js" integrity="sha384-mE6eXfrb8jxl0rzJDBRanYqgBxtJ6Unn4/1F7q4xRRyIw7Vdg9jP4ycT7x1iVsgb" crossorigin="anonymous"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="/html/static/js/jqBootstrapValidation.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="/html/static/js/applications.js"></script>
+
+</body>
+
+</html>

@@ -16,6 +16,20 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from sambalife.views import *
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^login/', login, name='login'),
+    url(r'^usuarios/', usuarios, name='usuarios'),
+    url(r'^usuario/cadastro/', usuarioCadastro, name='usuarioCadastro'),
+    url(r'^usuario/detalhe/', usuarioDetalhe, name='usuarioDetalhe'),
+    url(r'^pagamentos/', pagamentos, name='pagamentos'),
+    url(r'^pagamento/detalhe/', pagamentoDetalhe, name='pagamentoDetalhe'),
+    url(r'^estoque/', estoque, name='estoque'),
+    url(r'^produtos/detalhe/', detalheProduto, name='detalheProduto'),
+    url(r'^produtos/cadastro/', cadastroProduto, name='cadastroProduto'),
+    url(r'^shipments/', shipments, name='shipments'),
+    url(r'^shipment/detalhe/', detalheShipment, name='detalheShipment'),
+    url(r'^shipment/cadastro/', cadastroShipment, name='cadastroShipment'),
 ]

@@ -1,0 +1,226 @@
+{% extends 'includes/layout.html' %}
+
+{% block listashipment %}active{% endblock %}
+
+{% block conteudo %}
+
+<!-- Passo 1 -->
+
+ <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1 sidebar">
+
+        </div>
+        <div class="col-md-10 main">
+          <h1 class="page-header"><i class="fa fa-archive"></i> Shipment 454345</h1>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome</th>
+                  <th>Descrição</th>
+                  <th class="center">Quantidade</th>
+                  <th>Retirar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1043</td>
+                  <td>Camisa Armani</td>
+                  <td>Taturana</td>
+                  <td class="center">6</td>
+                  <td><a class="btn btn-danger" title="excluir produto do Shipment" href="#"><i class="fa fa-fw fa-close"></i></a></td>
+                </tr>
+                <tr>
+                  <td>1054</td>
+                  <td>Camisa osklen</td>
+                  <td>Camisa preta XL</td>
+                  <td class="center">13</td>
+                  <td><a class="btn btn-danger" title="excluir produto do Shipment" href="#"><i class="fa fa-fw fa-close"></i></a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div> <hr />
+          <div class="row">
+            <div class="col-md-4">
+                <label><i class="fa fa-fw fa-bar-chart"></i> Valores:</label><br><br>
+                <p><strong><i class="fa fa-fw fa-list-ol"></i> Total de Produtos: </strong>19 </p>
+                <p><strong><i class="fa fa-fw fa-money"></i> Valor Total: </strong> U$ 47,50</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong><i class="fa fa-fw fa-calendar"></i> Data do Envio: </strong></p>
+                <div class="form-group">
+                    24/02/2017
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label><i class="fa fa-fw fa-file-pdf-o"></i> Download PDFs:</label><br><br>
+                    <label>PDF 1:</label><br>
+                    <a href="#" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
+                    <br>
+                    <br>
+
+                    <!-- Cada linha abaixo aparecera de acordo com o status e o usuario, como explicado no doc -->
+
+                    <label>PDF 2:</label><p>Ainda não cadastrado</p>
+                    <label>PDF 2:</label><br><p>Upload não autorizado</p>
+                    <label>PDF 2:</label><br><input type="file" name="pdf2" id="pdf2" /><br>
+                    <label>PDF 2:</label><br>
+                    <a href="#" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
+
+                    <!-- fim links -->
+
+                </div>
+            </div>
+           </div>
+            <!-- as infos abaixo aparecem apenas para os usu'arios comuns conforme explicado no doc -->
+
+           <hr />
+           <div class="row">
+             <div class="col-md-10">
+                <label><i class="fa fa-fw fa-archive"></i> Informações pacote(s):</label><br><br>
+                <div class="form-group pacote-infos">
+                    <div class="col-md-2">
+                        <label class="">Pacote 1: </label>
+                    </div>
+                    <div class="col-md-8">
+                        <p>Peso: 0,4 Libras / Altura: 100 cm / Largura: 100 cm / Profundidade: 100 cm</p>
+                    </div>
+                </div><br><br>
+                <div class="form-group pacote-infos">
+                    <div class="col-md-2">
+                        <label class="">Pacote 2: </label>
+                    </div>
+                    <div class="col-md-8">
+                        <p>Peso: 0,9 Libras / Altura: 150 cm / Largura: 10 cm / Profundidade: 100 cm</p>
+                    </div>
+                </div>
+             </div>
+
+            <!-- Fim bloco -->
+
+            <!-- apenas admin visualiza conforme doc-->
+
+            <div class="col-md-2">
+                 <div class="form-group">
+                    <label><i class="fa fa-fw fa-file-pdf-o"></i> Comprovante UPS:</label><br><br>
+                    <input type="file" name="ups" class="menor" id="ups" />
+                </div>
+             </div>
+
+            <!-- Fim bloco-->
+
+           </div>
+
+            <hr />
+           <div class="row">
+               <label><i class="fa fa-fw fa-step-forward"></i> Status: </label> Acompanhe abaixo o status do shipment:<br><br><br>
+
+
+               <!-- a barra abaixo corre conforme os status vao mudando. Segue abaixo todos os exemplo
+                    repara que a classe na div interna que vai mudando-->
+
+               <div class="progress">
+                  <div class="progress-bar progress-bar-success emanalise" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                  </div>
+               </div>
+
+               <div class="progress">
+                  <div class="progress-bar progress-bar-success pgtaut" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                  </div>
+               </div>
+
+               <div class="progress">
+                  <div class="progress-bar progress-bar-success uplaut" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                  </div>
+               </div>
+
+               <div class="progress">
+                  <div class="progress-bar progress-bar-success analisef" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                  </div>
+               </div>
+
+               <div class="progress">
+                  <div class="progress-bar progress-bar-success enviado" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                  </div>
+               </div>
+
+               <!-- fim barras -->
+
+
+               <div class="col-md-12 itens-progress">
+                   <div class="col-md-3 center">
+                        <label><i class="fa fa-2x fa-fw fa-plus-square"></i><br>Shipment em Análise</label>
+                   </div>
+                   <div class="col-md-3 center">
+                        <label><i class="fa fa-2x fa-shopping-cart"></i><br>Pagamento autorizado</label>
+                   </div>
+                   <div class="col-md-3 center">
+                        <label><i class="fa fa-2x fa-file-pdf-o"></i><br>Upload PDF 2 autorizado</label>
+                   </div>
+                   <div class="col-md-2 center">
+                        <label><i class="fa fa-2x fa-list-alt"></i><br>Analise final</label>
+                   </div>
+                   <div class="col-md-1 item-progress last">
+                        <label><i class="fa fa-2x fa-thumbs-up"></i><br>Enviado</label>
+                   </div>
+               </div>
+           </div><hr />
+
+            <!-- Area para o admin cadastrar as infos dos pacotes. ver doc-->
+
+           <div class="row">
+               <label><i class="fa fa-fw fa-line-chart"></i> Area Administrativa</label><br><br><br>
+               <div class="col-md-12">
+                   <label>Informações pacote(s):</label>
+                    <div class="form-group pacote-infos">
+                        <div class="col-md-2">
+                            <label class="filtar-btn-m">Pacote 1: </label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" placeholder="Peso..." name="peso" class="form-control" id="peso" /><span class="badge">em Lbs</span>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" placeholder="Altura..." name="Altura" class="form-control" id="Altura" /><span class="badge altura">em centimetros</span>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" placeholder="Largura..." name="Largura" class="form-control" id="Largura" /><span class="badge largura">em centimetros</span>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" placeholder="Profundidade..." name="Profundidade" class="form-control" id="Profundidade" /><span class="badge profun">em centimetros</span><br><br>
+                        </div>
+                        <div class="col-md-2">
+                        <a class="add-track btn btn-success" data-toggle="tooltip" title="Adicionar Pacote" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i></a>
+                        <a class="rem-track btn btn-danger" data-toggle="tooltip" title="Remover pacote" href="#"><i class="fa fa-fw fa-times"></i></a>
+                    </div>
+                    </div>
+              </div>
+           </div><hr />
+
+            <!-- Fim bloco -->
+
+            <!-- possiveis botoes durante o fluxo-->
+
+             <a class="btn btn-default filtar-btn" href="#"><i class="fa fa-fw fa-paypal"></i> Efetuar Pagamento Agora</a><br><br>
+             <div class="row">
+                <a class="btn btn-primary filtar-btn alterar-status" href="#">
+                    <i class="fa fa-fw fa-paper-plane"></i> Enviar e Finalizar Shipment
+                </a>
+                <br><br>
+                <a class="btn btn-primary filtar-btn alterar-status" href="#">
+                    <i class="fa fa-fw fa-paper-plane"></i> Salvar
+                </a>
+                <br><br>
+                <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> Voltar</a>
+                <br><br><br><br>
+             </div>
+
+          </div>
+        </div>
+        <div class="col-md-1 sidebar">
+        </div>
+      </div>
+
+{% endblock %}
