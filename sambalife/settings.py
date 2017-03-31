@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     'corsheaders',
+    'websocket',
 ]
 
 MIDDLEWARE = [
@@ -79,6 +80,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sambalife.wsgi.application'
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "ROUTING": "sambalife.routing.channel_routing",
+        # "CONFIG": {
+        #     "hosts": [("redis-channel-1", 6379), ("redis-channel-2", 6379)],
+        # },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
