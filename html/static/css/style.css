@@ -1076,6 +1076,27 @@ table a{
     padding-top: 20px;
 }
 
+.produto{
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    float: left;
+    width: 100%;
+    margin: 0 0 20px 0;
+}
+
+.group-track{
+    float: left;
+    width: 100%;
+}
+
+.produto .titulo{
+    background: #fff;
+    left: 10px;
+    position: relative;
+    top: -13px;
+    font-size: 18px;
+}
+
 @media (max-width: 767px){
     .navbar-brand img:last-child {
         display: none;
