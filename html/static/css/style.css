@@ -48,7 +48,6 @@ h4,
 h5,
 h6 {
   font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  text-transform: uppercase;
   font-weight: 700;
 }
 .img-centered {
@@ -1042,6 +1041,39 @@ table a{
 
 .itens-progress label{
     color: #5cb85c;
+}
+
+.item{
+    -webkit-box-shadow: -2px 2px 6px -2px rgba(0,0,0,1);
+    -moz-box-shadow: -2px 2px 6px -2px rgba(0,0,0,1);
+    box-shadow: -2px 2px 6px -2px rgba(0,0,0,1);
+    margin-bottom: 40px;
+}
+
+.item .nome{
+    margin-top: 20px;
+    min-height: 80px;
+}
+
+.item .col-md-6, .item .col-md-12{
+    border-bottom: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+.border-top{
+    border-top: 1px solid #ccc;
+}
+
+.border-bottom{
+    border-bottom: 1px solid #ccc;
+}
+
+.titulo-lote{
+    padding: 0 0 20px 0;
+}
+
+.btn-comprar-list{
+    padding-top: 20px;
 }
 
 @media (max-width: 767px){

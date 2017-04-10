@@ -32,4 +32,8 @@ urlpatterns = [
     url(r'^shipments/', shipments, name='shipments'),
     url(r'^shipment/detalhe/', detalheShipment, name='detalheShipment'),
     url(r'^shipment/cadastro/', cadastroShipment, name='cadastroShipment'),
+    url(r'^lotes/', lotes, name='lotes'),
+    url(r'^lote/cadastro/', cadastroLote, name='cadastroLote'),
+    url(r'^lotes-admin/', lotesAdmin, name='lotesAdmin'),
+    url(r'^lote/detalhe', detalheLote, name='detalheLote'),
 ]

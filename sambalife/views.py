@@ -2,6 +2,18 @@
 
 from django.shortcuts import render
 
+def cadastroLote(request):
+    return render(request, 'lote_cadastro.html')
+
+def lotes(request):
+    return render(request, 'lista_lotes.html')
+
+def lotesAdmin(request):
+    return render(request, 'lista_lotes_admin.html')
+
+def detalheLote(request):
+    return render(request, 'detalhe_lote.html')
+
 def login(request):
     return render(request, 'login.html')
 
