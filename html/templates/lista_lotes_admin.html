@@ -1,0 +1,104 @@
+{% extends 'includes/layout.html' %}
+
+{% block lotes %}active{% endblock %}
+
+{% block conteudo %}
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1 sidebar">
+
+        </div>
+        <div class="col-md-10 main">
+          <h1 class="page-header"><i class="fa fa-th"></i> Lotes</h1>
+          <div class="row">
+              <div class="filtros col-md-12">
+                <h3><i class="fa fa-filter"></i> Filtros</h3>  <br>
+                <div class="form-group col-md-2">
+                    <label for="filtro-id">Id</label>
+                    <input type="text" class="form-control" id="filtro-id" placeholder="Id...">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="filtro-nome">Nome</label>
+                    <input type="text" class="form-control" id="filtro-nome" placeholder="Nome...">
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="Status">Situação</label>
+                    <select class="form-control" id="Status">
+                      <option>Situação</option>
+                      <option>Não vendido</option>
+                      <option>Vendido</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <a class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> Filtrar</a>
+                </div>
+              </div>
+          </div><br><br>
+          <div class="table-responsive">
+            <a class="btn btn-default" href="/lote/cadastro/"><i class="fa fa-fw fa-plus-square"></i> Adicionar Lote</a>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome</th>
+                  <th>Data Cadastro</th>
+                  <th class="center">Quantidade produtos</th>
+                  <th class="center">Valor total</th>
+                  <th class="center">Situação</th>
+                  <th class="center">Total a pagar</th>
+                  <th class="center">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1024</td>
+                  <td>Lote 2</td>
+                  <td>09/03/2017</td>
+                  <td class="center">18</td>
+                  <td class="center">R$ 145,00</td>
+                  <td class="center">Nao vendido</td>
+                  <td class="center">R$ 230,00</td>
+                  <td class="center"><a class=" download" href="/lote/detalhe"><i class="fa fa-pencil"></i> Visualizar</a></td>
+                </tr>
+                <tr>
+                  <td>1023</td>
+                  <td>Lote 1</td>
+                  <td>02/02/2017</td>
+                  <td class="center">10</td>
+                  <td class="center">R$ 15,00</td>
+                  <td class="center">Vendido</td>
+                  <td class="center">R$ 130,00</td>
+                  <td class="center"><a class=" download" href="/lote/detalhe"><i class="fa fa-pencil"></i> Visualizar</a></td>
+                </tr>
+                <tr>
+                  <td>1022</td>
+                  <td>Lote 0</td>
+                  <td>09/01/2017</td>
+                  <td class="center">38</td>
+                  <td class="center">R$ 345,00</td>
+                  <td class="center">Vendido</td>
+                  <td class="center">R$ 430,00</td>
+                  <td class="center"><a class=" download" href="/lote/detalhe"><i class="fa fa-pencil"></i> Visualizar</a></td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+          <nav aria-label="...">
+              <ul class="pagination">
+                <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                <li class=""><a href="#">2</a></li>
+                <li class=""><a href="#">3</a></li>
+                <li class=""><a href="#">4</a></li>
+                <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+              </ul>
+            </nav>
+        </div>
+        <div class="col-md-1 sidebar">
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
