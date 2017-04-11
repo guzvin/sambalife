@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from django.utils.translation import ugettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'config')
+LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'logs')
 
 
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -24,16 +26,38 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
         key_value_pair = line.strip().split('=', 1)
         if key_value_pair[0] == 'secret_key':
             SECRET_KEY = key_value_pair[1]
-        elif key_value_pair[0] == 'email_user':
-            EMAIL_USER = key_value_pair[1]
-        elif key_value_pair[0] == 'email_password':
-            EMAIL_PASSWORD = key_value_pair[1]
+        elif key_value_pair[0] == 'admin_name':
+            ADMIN_NAME = key_value_pair[1]
+        elif key_value_pair[0] == 'admin_email':
+            ADMIN_EMAIL = key_value_pair[1]
+        elif key_value_pair[0] == 'email_host':
+            EMAIL_HOST = key_value_pair[1]
+        elif key_value_pair[0] == 'email_port':
+            EMAIL_PORT = key_value_pair[1]
+#        elif key_value_pair[0] == 'email_user':
+#            EMAIL_HOST_USER = key_value_pair[1]
+#        elif key_value_pair[0] == 'email_password':
+#            EMAIL_HOST_PASSWORD = key_value_pair[1]
+        elif key_value_pair[0] == 'db_host':
+            DB_HOST = key_value_pair[1]
+        elif key_value_pair[0] == 'db_port':
+            DB_PORT = key_value_pair[1]
+        elif key_value_pair[0] == 'db_name':
+            DB_NAME = key_value_pair[1]
+        elif key_value_pair[0] == 'db_user':
+            DB_USER = key_value_pair[1]
+        elif key_value_pair[0] == 'db_password':
+            DB_PASSWORD = key_value_pair[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '54.233.149.84']
+ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
+# Email configuration
+# EMAIL_USE_TLS = True
+# EMAIL_PORT = 587
 
 # Application definition
 
@@ -46,13 +70,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     'corsheaders',
+    'statici18n',
     'websocket',
+    'myauth',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -61,6 +88,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'sambalife.urls'
+
+AUTH_USER_MODEL = 'myauth.MyUser'
 
 TEMPLATES = [
     {
@@ -73,6 +102,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
             ],
         },
     },
@@ -95,8 +125,15 @@ CHANNEL_LAYERS = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
+        'OPTIONS': {
+            'client_encoding': 'UTF8',
+        },
     }
 }
 
@@ -119,6 +156,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# https://docs.djangoproject.com/en/1.10/topics/auth/passwords/
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
@@ -133,16 +179,25 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
+LANGUAGES = [
+    ('pt-br', _('Português')),
+    ('en-us', _('Inglês')),
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_URL = '/html/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "html"),
-    '/home/fabio/Projects/sambalife/source/sambalife/html/',
+    os.path.join(BASE_DIR, 'html'),
 ]
+
+STATIC_ROOT = os.path.join(os.path.join(BASE_DIR, 'html'), 'static')
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -150,3 +205,32 @@ CSRF_TRUSTED_ORIGINS = (
     'localhost',
     '54.233.149.84',
 )
+
+PASSWORD_RESET_TIMEOUT_DAYS = 2
+
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'myformat': {
+            'format': '%(asctime)s,%(levelname)s,%(module)s,%(threadName)s,%(processName)s ::: %(message)s',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'debug.log'),
+            'formatter': 'myformat',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

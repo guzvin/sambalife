@@ -31,44 +31,107 @@
     })
     
     $('.mudar-status').click(function(){
-        $(this).parent('td').find('.contem-status').show();                               
+        $(this).parent('td').find('.contem-status').show();
     });
     
     $('.fechar').click(function(){
-        $(this).parent('.status').parent('.contem-status').hide();                               
+        $(this).parent('.status').parent('.contem-status').hide();
     });
     
     $('.alterar-status').click(function(){
 		$('#confirmacao').modal('show');
 	});
-    
-    $.datepicker.regional['pt-BR'] = {
-    closeText: 'Fechar',
-    prevText: '&#x3c;Anterior',
-    nextText: 'Pr&oacute;ximo&#x3e;',
-    currentText: 'Hoje',
-    monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho',
-    'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
-    monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun',
-    'Jul','Ago','Set','Out','Nov','Dez'],
-    dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
-    dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
-    dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
-    weekHeader: 'Sm',
-    dateFormat: 'dd/mm/yy',
-    firstDay: 0,
-    isRTL: false,
-    showMonthAfterYear: false,
-    yearSuffix: ''
-    };
-    
-    $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
-    
-    $( "#datepicker" ).datepicker();
+
+    if($.datepicker){
+        $.datepicker.regional['pt-BR'] = {
+        closeText: 'Fechar',
+        prevText: '&#x3c;Anterior',
+        nextText: 'Pr&oacute;ximo&#x3e;',
+        currentText: 'Hoje',
+        monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho',
+        'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun',
+        'Jul','Ago','Set','Out','Nov','Dez'],
+        dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+        dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 0,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+        };
+
+        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+
+        $( "#datepicker" ).datepicker();
+    }
     
     $("[data-toggle='tooltip']").tooltip({
         placement : 'top'
     });
+
+    if($('form#form-add-user')){
+        $('button#send-btn').on('click', function (e){
+            if($(this).hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $(this).addClass('nosubmit');
+        });
+
+        $.validator.methods.passwordFormat = function( value, element ) {
+            return this.optional( element ) || (/[A-Z]/.test(value)
+                                                && /[a-z]/.test(value)
+                                                && /\d/.test(value)
+                                                && /[^a-zA-Z\d]/.test(value));
+        };
+
+        $.extend(
+            $.validator.messages, {
+                required: gettext('Required field'),
+                minlength: gettext('Please enter at least 6 characters'),
+                equalTo: gettext('Please enter the same value again'),
+                passwordFormat: gettext('See instructions for valid format'),
+                email: gettext('Please enter a valid email address'),
+            }
+        );
+
+        $('form#form-add-user').validate({
+            rules: {
+                first_name: { required: true },
+                last_name: { required: true },
+                email: { required: true },
+                doc_number: { required: true },
+                cell_phone: { required: true },
+                address_1: { required: true },
+                neighborhood: { required: true },
+                city: { required: true },
+                state: { required: true },
+                zipcode: { required: true },
+                password: {
+                    required: true,
+                    minlength: 6,
+                    passwordFormat: true
+                },
+                password_confirmation: {
+                    required: true,
+                    equalTo: '#senha'
+                },
+            },
+            submitHandler: function(form) {
+                form.submit();
+            },
+            invalidHandler: function(event, validator) {
+                $('button#send-btn').removeClass('nosubmit');
+            },
+            onfocusout: false,
+            onkeyup: false,
+            onclick: false
+        });
+    }
 
     $('.add-pro').click(function(){
         var numeroProduto = Number($('.lista-produtos .produto:last-child .num-produto').text()) + 1;

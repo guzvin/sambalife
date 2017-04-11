@@ -1,0 +1,260 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-05 08:28-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: html/templates/usuario_cadastro.html:13
+msgid "Vendedor Online Internacional - cadastro"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:40
+msgid "Menu"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:48
+msgid "Voltar Site Institucional"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:60 myauth/models.py:13
+msgid "Nome"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:61
+msgid "Digite o nome..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:65 myauth/models.py:14
+msgid "Sobrenome"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:66
+msgid "Digite o sobrenome..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:70 myauth/models.py:15
+msgid "E-mail"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:71
+msgid "Digite o e-mail..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:75
+msgid "CPF"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:76
+msgid "Digite o CPF..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:80 myauth/models.py:17
+msgid "Telefone"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:81
+msgid "Digite o telefone..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:85 myauth/models.py:18
+msgid "Celular"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:86
+msgid "Digite o celular..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:90 myauth/admin.py:82
+#: myauth/models.py:58
+msgid "Endereço"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:91
+msgid "Digite o endereço..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:96 myauth/models.py:59
+msgid "Complemento"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:97
+msgid "Digite o complemento..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:101 myauth/models.py:60
+msgid "Bairro"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:102
+msgid "Digite o bairro..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:106 myauth/models.py:63
+msgid "Cidade"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:107
+msgid "Digite o cidade..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:113 myauth/models.py:62
+msgid "Estado"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:114
+msgid "Digite o estado..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:118 myauth/models.py:61
+msgid "CEP"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:119
+msgid "Digite o CEP..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:124 myauth/admin.py:13
+msgid "Senha"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:125
+msgid "Digite sua senha..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:129
+msgid "Confirmar Senha"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:130
+msgid "Confirmar a senha..."
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:133
+msgid "Enviar"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:134
+msgid "Voltar"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:145
+msgid "Sucesso"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:148
+msgid "Informações enviadas com sucesso"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:152
+msgid "Fechar"
+msgstr ""
+
+#: html/templates/usuario_cadastro.html:159
+msgid "Carregando"
+msgstr ""
+
+#: myauth/admin.py:14
+msgid "Confirmação da senha"
+msgstr ""
+
+#: myauth/admin.py:20 myauth/admin.py:59
+msgid "E-mail*"
+msgstr ""
+
+#: myauth/admin.py:21 myauth/admin.py:61
+msgid "Nome*"
+msgstr ""
+
+#: myauth/admin.py:22 myauth/admin.py:62
+msgid "Sobrenome*"
+msgstr ""
+
+#: myauth/admin.py:23 myauth/admin.py:63
+msgid "CPF*"
+msgstr ""
+
+#: myauth/admin.py:24 myauth/admin.py:64
+msgid "Celular*"
+msgstr ""
+
+#: myauth/admin.py:36
+msgid "Confirmação da senha inválida."
+msgstr ""
+
+#: myauth/admin.py:60
+msgid "Senha*"
+msgstr ""
+
+#: myauth/admin.py:83
+msgid "Endereços"
+msgstr ""
+
+#: myauth/admin.py:102
+msgid "Informação pessoal"
+msgstr ""
+
+#: myauth/admin.py:103
+msgid "Permissões"
+msgstr ""
+
+#: myauth/models.py:16
+msgid "CPF / CNPJ"
+msgstr ""
+
+#: myauth/models.py:19
+msgid "Data de criação"
+msgstr ""
+
+#: myauth/models.py:20
+msgid "Ativo"
+msgstr ""
+
+#: myauth/models.py:28
+msgid "Usuário"
+msgstr ""
+
+#: myauth/models.py:29
+msgid "Usuários"
+msgstr ""
+
+#: myauth/models.py:65
+msgid "Entrega"
+msgstr ""
+
+#: myauth/models.py:66
+msgid "Cobrança"
+msgstr ""
+
+#: myauth/models.py:67
+msgid "Entrega e Cobrança"
+msgstr ""
+
+#: myauth/models.py:69
+msgid "Tipo"
+msgstr ""
+
+#: myauth/models.py:70
+msgid "Padrão"
+msgstr ""
+
+#: sambalife/settings.py:174
+msgid "Português"
+msgstr ""
+
+#: sambalife/settings.py:175
+msgid "Inglês"
+msgstr ""

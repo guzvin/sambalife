@@ -15,15 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-
+from django.views.i18n import JavaScriptCatalog
+from django.conf.urls.i18n import i18n_patterns
 from sambalife.views import *
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     url(r'^admin/', admin.site.urls),
-    url(r'^login/', login, name='login'),
-    url(r'^usuarios/', usuarios, name='usuarios'),
-    url(r'^usuario/cadastro/', usuarioCadastro, name='usuarioCadastro'),
-    url(r'^usuario/detalhe/', usuarioDetalhe, name='usuarioDetalhe'),
+    url(r'^login/$', login, name='login'),
+    url(r'^user/registration/$', user_registration, name='user_registration'),
+    url(r'^user/validation/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        user_validation, name='user_validation'),
+    url(r'^user/validation/resend/(?P<uidb64>[0-9A-Za-z_\-]+)/$', user_validation_resend, name='user_validation_resend'),
     url(r'^pagamentos/', pagamentos, name='pagamentos'),
     url(r'^pagamento/detalhe/', pagamentoDetalhe, name='pagamentoDetalhe'),
     url(r'^estoque/', estoque, name='estoque'),
@@ -36,4 +38,6 @@ urlpatterns = [
     url(r'^lote/cadastro/', cadastroLote, name='cadastroLote'),
     url(r'^lotes-admin/', lotesAdmin, name='lotesAdmin'),
     url(r'^lote/detalhe', detalheLote, name='detalheLote'),
-]
+    url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
+    prefix_default_language=False,
+)

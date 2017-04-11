@@ -851,6 +851,11 @@ body {
     margin-bottom: 20px;
 }
 
+label.error {
+    color: #DC3438;
+    text-decoration: underline;
+}
+
 .esqueci{
     text-decoration: underline;
 }
@@ -1123,5 +1128,4 @@ table a{
     header .intro-text .intro-heading, header .intro-text .intro-lead-in { 
         background: rgba(0,0,0,0.5);
     }
-    
 }
