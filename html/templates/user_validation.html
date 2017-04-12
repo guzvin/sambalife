@@ -53,14 +53,14 @@
     </nav>
 
     <div class="container">
-        <div class="row">
+        <div class="box-resposta">
             {% if success %}
-            <p>{% trans "Cadastro validado com sucesso." %}</p>
+            <p class="titulo">{% trans "Cadastro validado com sucesso" %}</p>
             <p>{% trans "Você receberá um e-mail quando o administrador do sistema ativar sua conta." %}</p>
-            <p>{% trans "Obrigado e sucesso!" %}</p>
+            <p><strong>{% trans "Obrigado e sucesso!" %}</strong></p>
             {% elif %}
-            <p>{% trans "Código de validação inválido." %}</p>
-            <p><a href="/user/validation/resend/{{ uidb64 }}/">{% trans "Clique aqui" %}</a> {% trans "para receber novamente o e-mail com o link para validação do cadastro." %}</p>
+            <p class="titulo download">{% trans "Código de validação inválido" %}</p>
+            <p><a class="download" href="/user/validation/resend/{{ uidb64 }}/">{% trans "Clique aqui" %}</a> {% trans "para receber novamente o e-mail com o link para validação do cadastro." %}</p>
             <p>{% blocktrans %}Lembre-se que o código tem validade de {{ expiry }} dias.{% endblocktrans %}</p>
             {% endif %}
         </div>
