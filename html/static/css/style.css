@@ -852,8 +852,14 @@ body {
 }
 
 label.error {
-    color: #DC3438;
-    text-decoration: underline;
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    font-weight: normal;
+    float: left;
+    width: 100%;
+    border-radius: 5px;
+    padding: 4px 10px;
 }
 
 .esqueci{
