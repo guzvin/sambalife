@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>{% trans "Vendedor Online Internacional - cadastro" %}</title>
+    <title>{% trans "Vendedor Online Internacional" %} - {% trans "Cadastro" %}</title>
 
     <!-- Bootstrap CSS -->
     <link href="/static/externo/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -55,13 +55,24 @@
     <div class="container">
         <div class="box-resposta">
             {% if success %}
-            <p class="titulo">{% trans "Cadastro validado com sucesso" %}</p>
+                {% if expiry is None %}
+                    {% if is_active is False %}
+            <p class="titulo">{% trans "Cadastro validado com sucesso." %}</p>
             <p>{% trans "Você receberá um e-mail quando o administrador do sistema ativar sua conta." %}</p>
+                    {% else %}
+            <p>{% trans "Cadastro já se encontra ativo no sistema." %}</p>
+                    {% endif %}
             <p><strong>{% trans "Obrigado e sucesso!" %}</strong></p>
-            {% elif %}
-            <p class="titulo download">{% trans "Código de validação inválido" %}</p>
-            <p><a class="download" href="/user/validation/resend/{{ uidb64 }}/">{% trans "Clique aqui" %}</a> {% trans "para receber novamente o e-mail com o link para validação do cadastro." %}</p>
+                {% else %}
+            <p>{% blocktrans %}Enviamos um e-mail para você validar seu cadastro. Este e-mail é válido por {{ expiry }} dias.{% endblocktrans %}</p>
+                {% endif %}
+            {% else %}
+            <p class="titulo download">{% trans "Código de validação inválido." %}</p>
+                {% if uidb64 is not None %}
+            {% url 'user_validation_resend' uidb64=uidb64 as my_url %}
+            <p><a class="download" href="{{ my_url }}">{% trans "Clique aqui" %}</a> {% trans "para receber novamente o e-mail com o link para validação do cadastro." %}</p>
             <p>{% blocktrans %}Lembre-se que o código tem validade de {{ expiry }} dias.{% endblocktrans %}</p>
+                {% endif %}
             {% endif %}
         </div>
     </div>

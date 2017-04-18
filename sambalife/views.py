@@ -1,38 +1,110 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import render
-from sambalife.forms import UserRegistrationForm
+from sambalife.forms import UserRegistrationForm, UserLoginForm, UserForgotPasswordForm, UserResetPasswordForm
 from myauth.models import UserAddress
+from utils.helper import send_email
+from django.utils.translation import string_concat
 from django.utils.translation import ugettext as _
-from django.core.mail import EmailMessage
 from django.conf import settings
-from string import Template
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
-import os
-import codecs
+from django.template import loader, Context
+from django.contrib.sites.models import Site
+from django.views.decorators.http import require_http_methods, require_POST
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseRedirect
+from django.contrib.auth.models import Group
 import logging
-
 
 logger = logging.getLogger('django')
 
 
-def cadastroLote(request):
-    return render(request, 'lote_cadastro.html')
+@require_http_methods(["GET", "POST"])
+def user_login(request):
+    if request.method == 'GET':
+        page_ctx = {}
+        if 'next' in request.GET:
+            page_ctx = {'next': request.GET['next']}
+        return render(request, 'login.html', page_ctx)
+    if request.method == 'POST':
+        form = UserLoginForm(request.POST)
+        if form.is_valid():
+            username = request.POST['login']
+            password = request.POST['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                if 'next' in request.POST:
+                    return HttpResponseRedirect(request.POST['next'])
+                else:
+                    return HttpResponseRedirect('/product/stock/')
+            else:
+                form.add_error(None, _('Não foi possível realizar seu login. Caso tenha esquecido sua senha, '
+                                       'clique na opção Esqueci Minha Senha. Em caso de dúvida <a href=\'/#contact\'>'
+                                       'fale conosco</a>.'))
+        return render(request, 'login.html', {'form': form, 'success': False, 'status_code': 400},
+                      status=400)
 
-def lotes(request):
-    return render(request, 'lista_lotes.html')
 
-def lotesAdmin(request):
-    return render(request, 'lista_lotes_admin.html')
+@require_http_methods(["GET", "POST"])
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('/')
 
-def detalheLote(request):
-    return render(request, 'detalhe_lote.html')
 
-def login(request):
-    return render(request, 'login.html')
+@require_POST
+def user_forgot_password(request):
+    form = UserForgotPasswordForm(request.POST)
+    if form.is_valid():
+        user_model = get_user_model()
+        email = form.cleaned_data['login']
+        try:
+            user = user_model.objects.get(email=email)
+            if user.is_active:
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                message = loader.get_template('email/forgot-password.html').render(
+                    Context({'user_name': user.first_name, 'uid': uid, 'token': token,
+                             'protocol': 'https', 'domain': Site.objects.get_current().domain}))
+                str1 = _('Esqueci Senha')
+                str2 = _('Vendedor Online Internacional')
+                send_email(string_concat(str1, ' ', str2), message, [user.email])
+                return render(request, 'login.html', {'success': True, 'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS})
+            else:
+                form.add_error(None, _('Conta cadastrada, porém o usuário ainda não foi liberado para acesso '
+                                       'ao sistema. Em caso de dúvida <a href=\'/#contact\'>fale conosco</a>.'))
+        except user_model.DoesNotExist:
+            form.add_error(None, _('Não foi encontrada conta ativa para este login.'))
+    return render(request, 'login.html', {'form': form, 'success': False, 'status_code': 400},
+                  status=400)
+
+
+@require_http_methods(["GET", "POST"])
+def user_reset_password(request, uidb64=None, token=None):
+    if uidb64 is not None:
+        uid = urlsafe_base64_decode(uidb64)
+        try:
+            user_model = get_user_model()
+            user = user_model.objects.get(pk=uid)
+            if token is not None and default_token_generator.check_token(user, token):
+                if request.method == 'GET':
+                    return render(request, 'user_reset_password.html', {'success': True, 'uidb64': uidb64, 'token': token})
+                else:
+                    form = UserResetPasswordForm(request.POST)
+                    if form.is_valid() and user.email == form.cleaned_data['email']:
+                        user.set_password(form.cleaned_data['password'])
+                        user.save()
+                        return render(request, 'user_reset_password.html', {'success': True, 'finish': True})
+                    return render(request, 'user_reset_password.html', {'success': False, 'form': form, 'valid': True,
+                                                                        'uidb64': uidb64, 'token': token,
+                                                                        'status_code': 400}, status=400)
+        except user_model.DoesNotExist:
+            pass
+    return render(request, 'user_reset_password.html', {'success': False, 'valid': False, 'status_code': 400},
+                  status=400)
 
 
 def user_registration(request):
@@ -64,7 +136,11 @@ def user_registration(request):
             user.cell_phone = form.cleaned_data['cell_phone']
             user.set_password(form.cleaned_data['password'])
             user.save()
+            all_users_group = Group.objects.get(name='all_users')
+            all_users_group.user_set.add(user)
+            all_users_group.save()
             user_address = UserAddress()
+            user_address.user = user
             user_address.address_1 = form.cleaned_data['address_1']
             user_address.address_2 = form.cleaned_data['address_2']
             user_address.neighborhood = form.cleaned_data['neighborhood']
@@ -84,60 +160,53 @@ def user_registration(request):
                       status=400)
 
 
-def user_validation(request):
-    uidb64 = request.GET.get('uidb64')
-    token = request.GET.get('token')
-    if uidb64 is not None and token is not None:
-        uid = urlsafe_base64_decode(uidb64)
-        try:
-            user_model = get_user_model()
-            user = user_model.objects.get(pk=uid)
-            if default_token_generator.check_token(user, token) and user.is_active == 0:
-                return render(request, 'user_validation.html', {'success': True})
-        except:
-            pass
-    return render(request, 'user_validation.html', {'success': False, 'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS,
-                                                    'uidb64': uidb64})
-
-
-def user_validation_resend(request):
-    uidb64 = request.GET.get('uidb64')
+def user_validation(request, uidb64=None, token=None):
     if uidb64 is not None:
         uid = urlsafe_base64_decode(uidb64)
         try:
             user_model = get_user_model()
             user = user_model.objects.get(pk=uid)
-            token = default_token_generator.make_token(user)
-            send_validation_email(user, uidb64, token)
-        except:
-            pass
-    return render(request, 'user_validation.html', {'success': False, 'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS,
-                                                    'uidb64': uidb64})
+        except user_model.DoesNotExist:
+            return render(request, 'user_validation.html',
+                          {'success': False, 'expiry': None, 'uidb64': None})
+        if user.is_active is True or user.is_verified is True or \
+                (token is not None and default_token_generator.check_token(user, token)):
+            if user.is_verified is False:
+                user.is_verified = True
+                user.save()
+            return render(request, 'user_validation.html', {'success': True, 'expiry': None,
+                                                            'is_active': user.is_active})
+        else:
+            return render(request, 'user_validation.html',
+                          {'success': False, 'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS,
+                           'uidb64': uidb64})
+    return render(request, 'user_validation.html', {'success': False, 'expiry': None, 'uidb64': None})
+
+
+def user_validation_resend(request, uidb64=None):
+    if uidb64 is not None:
+        uid = urlsafe_base64_decode(uidb64)
+        try:
+            user_model = get_user_model()
+            user = user_model.objects.get(pk=uid)
+            if user.is_verified is False:
+                token = default_token_generator.make_token(user)
+                send_validation_email(user, uidb64, token)
+            return render(request, 'user_validation.html', {'success': True,
+                                                            'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS})
+        except user_model.DoesNotExist:
+            return render(request, 'user_validation.html',
+                          {'success': False, 'expiry': None, 'uidb64': None})
+    return render(request, 'user_validation.html', {'success': False, 'expiry': None, 'uidb64': None})
 
 
 def send_validation_email(user, uid, token):
-    with codecs.open(os.path.join(os.path.join(os.path.join(os.path.join(settings.BASE_DIR,
-                                                                         'html'),
-                                                            'templates'), 'email'), 'registration-email.html'),
-                     encoding='utf-8') as registration_email:
-        body_string = registration_email.read().replace('\n', '')
-        body_template = Template(body_string)
-        body_registration = body_template.substitute(arg1=_('Vendedor Online Internacional'),
-                                                     arg2=_('Prezado(a) ') + user.first_name,
-                                                     arg3=_('Falta apenas esta etapa.'
-                                                            ' Clique no botão abaixo para validar seu '
-                                                            'cadastro'),
-                                                     arg4='https://localhost:9083/user/validation',
-                                                     arg5=uid,
-                                                     arg6=token,
-                                                     arg7=_('VALIDAR CADASTRO'),
-                                                     arg8=_('Caso você não tenha feito esta solicitação nos '
-                                                            'avise através do e-mail contato@aaaa.com'),
-                                                     arg9=_('Este é um e-mail automático disparado pelo '
-                                                            'sistema. Favor não respondê-lo, pois esta conta '
-                                                            'não é monitorada.')
-                                                     )
-    send_email(_('Cadastro Vendedor Online Internacional'), body_registration, [user.email])
+    message = loader.get_template('email/registration-validation.html').render(
+        Context({'user_name': user.first_name, 'user_validation_url': 'user_validation', 'uid': uid, 'token': token,
+                 'protocol': 'https', 'domain': Site.objects.get_current().domain}))
+    str1 = _('Cadastro')
+    str2 = _('Vendedor Online Internacional')
+    send_email(string_concat(str1, ' ', str2), message, [user.email])
 
 
 def pagamentos(request):
@@ -146,18 +215,6 @@ def pagamentos(request):
 
 def pagamentoDetalhe(request):
     return render(request, 'pagamento_detalhe.html')
-
-
-def estoque(request):
-    return render(request, 'estoque.html')
-
-
-def detalheProduto(request):
-    return render(request, 'produto_detalhe.html')
-
-
-def cadastroProduto(request):
-    return render(request, 'produto_cadastro.html')
 
 
 def shipments(request):
@@ -172,12 +229,17 @@ def cadastroShipment(request):
     return render(request, 'shipment_cadastro.html')
 
 
-def send_email(title, body, email_to, email_from=_('Vendedor Online Internacional <contato@xxx.com.br>')):
-    msg = EmailMessage(
-        title,
-        body,
-        email_from,
-        email_to
-    )
-    msg.content_subtype = 'html'
-    msg.send()
+def cadastroLote(request):
+    return render(request, 'lote_cadastro.html')
+
+
+def lotes(request):
+    return render(request, 'lista_lotes.html')
+
+
+def lotesAdmin(request):
+    return render(request, 'lista_lotes_admin.html')
+
+
+def detalheLote(request):
+    return render(request, 'detalhe_lote.html')

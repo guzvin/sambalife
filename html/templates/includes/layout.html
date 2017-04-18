@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+{% load i18n permissions products shipments %}
+<html lang="{{ LANGUAGE_CODE }}">
 
 <head>
 
@@ -9,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Vendedor Online Internacional - Usuarios</title>
+    <title>{% trans "Vendedor Online Internacional" %} - {{ title }}</title>
 
     <!-- Bootstrap -->
     <link href="/static/externo/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -22,7 +23,7 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
 
     <!-- Estilo Jquery-ui -->
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <!-- Estilo -->
     <link href="/static/css/style.css" rel="stylesheet">
@@ -31,6 +32,11 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js" integrity="sha384-0s5Pv64cNZJieYFkXYOTId2HMA2Lfb6q2nAcx2n0RTLUnCAoTTsS0nKEO27XyKcY" crossorigin="anonymous"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js" integrity="sha384-ZoaMbDF+4LeFxg6WdScQ9nnR1QC2MIRxA1O9KWEXQwns1G8UNyIEZIQidzb0T1fo" crossorigin="anonymous"></script>
     <![endif]-->
+
+    <!-- jQuery -->
+    <script src="/static/externo/jquery/jquery.min.js"></script>
+
+    <script src="/static/jsi18n/{{ LANGUAGE_CODE }}/djangojs.js"></script>
 
 </head>
 
@@ -51,59 +57,77 @@
 
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    {% if user|can_view_admin %}
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span> Administrativo <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span> {% trans "Administrativo" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li class="{% block usuarios %}{% endblock %}">
-                                <a href="/usuarios"><i class="fa fa-fw fa-users"></i> Usuários</a>
+                                <a href="/admin/myauth/myuser"><i class="fa fa-fw fa-users"></i> {% trans "Usuários" %}</a>
                             </li>
                             <li class="divider"></li>
                             <li class="{% block pagamentos %}{% endblock %}">
-                                <a href="/pagamentos"><i class="fa fa-fw fa-paypal"></i> Pagamentos</a>
+                                <a href="/pagamentos"><i class="fa fa-fw fa-paypal"></i> {% trans "Pagamentos" %}</a>
                             </li>
 
                             <li class="divider"></li>
                             <li class="{% block lotes %}{% endblock %}">
-                                <a href="/lotes-admin"><i class="fa fa-fw fa-th"></i> Lotes</a>
+                                <a href="/lotes-admin"><i class="fa fa-fw fa-th"></i> {% trans "Lotes" %}</a>
                             </li>
                         </ul>
                     </li>
+                    {% endif %}
                     <li class="{% block lotes-u %}{% endblock %}">
-                        <a href="/lotes" ><i class="fa fa-th"></i> Lotes</a>
+                        <a href="/lotes" ><i class="fa fa-th"></i> {% trans "Lotes" %}</a>
                     </li>
+                    {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> Estoque <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Estoque" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
+                            {% if user|has_product_perm:'view_products' %}
                             <li class="{% block listaprodutos %}{% endblock %}">
-                                <a href="/estoque"><i class="fa fa-fw fa-list-alt"></i> Lista Produtos</a>
+                                <a href="/product/stock"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista Produtos" %}</a>
                             </li>
+                            {% endif %}
+                            {% if user|has_product_perm:'view_products' and user|has_product_perm:'add_product' %}
                             <li class="divider"></li>
+                            {% endif %}
+                            {% if user|has_product_perm:'add_product' %}
                             <li class="{% block addproduto %}{% endblock %}">
-                                <a href="/produtos/cadastro/"><i class="fa fa-fw fa-plus-square"></i> Adicionar Produto</a>
+                                <a href="/product/add"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
                             </li>
+                            {% endif %}
                         </ul>
                     </li>
+                    {% endif %}
+                    {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
                     <li class="dropdown ">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> Shipment <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envio" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
+                            {% if user|has_shipment_perm:'view_shipments' %}
                             <li class="{% block listashipment %}{% endblock %}">
-                                <a href="/shipments"><i class="fa fa-fw fa-list-alt"></i> Lista Shipments</a>
+                                <a href="/shipments"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista Envios" %}</a>
                             </li>
+                            {% endif %}
+                            {% if user|has_shipment_perm:'view_shipments' and user|has_shipment_perm:'add_shipment' %}
                             <li class="divider"></li>
+                            {% endif %}
+                            {% if user|has_shipment_perm:'add_shipment' %}
                             <li class="{% block criarshipment %}{% endblock %}">
-                                <a href="/shipment/cadastro"><i class="fa fa-fw fa-plus-square"></i> Criar Shipment</a>
+                                <a href="/shipment/cadastro"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>
                             </li>
+                            {% endif %}
                         </ul>
                     </li>
+                    {% endif %}
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span>  Olá, Usuário <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span>  {% trans "Olá" %}, {{ user.first_name }} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li class="{% block usuarioedit %}{% endblock %}">
-                                <a href="/editar-usuario"><i class="fa fa-fw fa-user"></i> Editar cadastro</a>
+                                <a href="/editar-usuario"><i class="fa fa-fw fa-user"></i> {% trans "Editar cadastro" %}</a>
                             </li>
                             <li class="divider"></li>
                             <li class="">
-                                <a href="/logout"><i class="fa fa-fw fa-power-off"></i> sair</a>
+                                <a href="/logout"><i class="fa fa-fw fa-power-off"></i> {% trans "sair" %}</a>
                             </li>
                         </ul>
                     </li>
@@ -115,30 +139,52 @@
     {% block conteudo %}Conteudo pagina{% endblock %}
 
 
-    <!-- Modal confirmacao de acao-->
+     <!-- Modal confirmacao de acao-->
+    <script type="text/javascript">
+    $(function(){
+    {% if success %}
+        {% trans "Sucesso" as modal_title %}
+        $('#confirmacao').modal('show');
+    {% elif status_code and status_code == 400 %}
+        {% trans "Erro" as modal_title %}
+        {% if form and form.non_field_errors %}
+            $('#confirmacao').modal('show');
+        {% endif %}
+    {% endif %}
+    });
+    </script>
     <div id="confirmacao" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Sucesso</h4>
+                    <h4 class="modal-title">{{ modal_title }}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Informações enviadas com sucesso</p>
-                    <!--<p class="text-warning"><small>If you don't save, your changes will be lost.</small></p>-->
+                    {% if success %}
+                        <p>{{ success_message }}</p>
+                    {% elif status_code and status_code == 400 %}
+                        {% if form and form.non_field_errors %}
+                            {% for error in form.non_field_errors %}
+                            <p>{{ error | safe }}</p>
+                            {% endfor %}
+                        {% else %}
+                            <p>{% trans "Não foi possível concluir sua ação." %}</p>
+                        {% endif %}
+                    {% endif %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Loading basta dar display block-->
-    <div class="loading" style="display: none;">Loading...</div>
+    <div class="loading" style="display: none;">{% trans "Carregando" %}...</div>
 
-    <!-- jQuery -->
-    <script src="/static/externo/jquery/jquery.min.js"></script>
+    <!-- jQuery validate -->
+    <script type="text/javascript" src="/static/externo/jquery/jquery.validate.min.js"></script>
 
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 

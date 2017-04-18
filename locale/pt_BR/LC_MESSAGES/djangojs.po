@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-06 00:56-0300\n"
+"POT-Creation-Date: 2017-04-16 12:18-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -260,22 +260,50 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
-#: html/static/js/applications.js:94
-msgid "Required field"
-msgstr "Campo obrigatório"
+#: html/static/js/applications.js:111 html/static/js/applications.js:124
+msgid "mm/dd/yy"
+msgstr "dd/mm/yy"
 
-#: html/static/js/applications.js:95
-msgid "Please enter at least 6 characters"
-msgstr "Informe ao menos 6 caracteres"
+#: html/static/js/applications.js:135
+msgid "Required field."
+msgstr "Campo obrigatório."
 
-#: html/static/js/applications.js:96
-msgid "Please enter the same value again"
-msgstr "Informe o mesmo valor"
+#: html/static/js/applications.js:136
+msgid "Please enter at least 6 characters."
+msgstr "Informe ao menos 6 caracteres."
 
-#: html/static/js/applications.js:97
-msgid "See instructions for valid format"
-msgstr "Consulte as instruções de formato válido"
+#: html/static/js/applications.js:137
+msgid "Please enter the same value again."
+msgstr "Informe o mesmo valor."
 
-#: html/static/js/applications.js:98
-msgid "Please enter a valid email address"
-msgstr "Informe um e-mail válido"
+#: html/static/js/applications.js:138
+msgid "See instructions for valid format."
+msgstr "Consulte as instruções de formato válido."
+
+#: html/static/js/applications.js:139
+msgid "Please enter a valid email address."
+msgstr "Informe um e-mail válido."
+
+#: html/static/js/applications.js:140
+msgid "Please enter a valid date."
+msgstr "Informe uma data válida."
+
+#: html/static/js/applications.js:141
+msgid "Please enter a date less than or equal today."
+msgstr "Informe uma data menor ou igual a de hoje."
+
+#: html/static/js/applications.js:142
+msgid "Please enter a number greater than zero."
+msgstr "Informe um número maior que zero."
+
+#: html/static/js/applications.js:383
+msgid "Tracking number"
+msgstr "Rastreamento"
+
+#: html/static/js/applications.js:384
+msgid "Enter your tracking number"
+msgstr "Digite o código"
+
+#: html/static/js/applications.js:387
+msgid "Remove tracking number"
+msgstr "Remover este rastreamento"

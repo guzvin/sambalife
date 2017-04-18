@@ -1,0 +1,73 @@
+{% extends 'includes/layout.html' %}
+{% load i18n %}
+{% block addproduto %}active{% endblock %}
+
+{% block conteudo %}
+
+  <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3 sidebar">
+
+        </div>
+        <div class="col-md-6 main">
+          <h1 class="page-header"><i class="fa fa-plus-square"></i> {% trans "Adicionar Produto" %}</h1>
+            <form action="" method="post" id="form-add-product">
+              {% csrf_token %}
+              <div class="form-group col-md-12">
+                <label for="name">{% trans "Nome" %}*</label>
+                  {% trans "Digite o nome" as name %}
+                <input type="text" class="form-control" id="name" aria-describedby="name" name="name" placeholder="{{ name }}..." value="{% if form %}{{ form.name.value }}{% endif %}">
+                {% for error in form.name.errors %}
+                  <label id="name-error" class="error" for="name">{{ error|escape }}</label>
+                {% endfor %}
+              </div><br>
+              <div class="form-group col-md-12">
+                <label for="description">{% trans "Descrição" %}</label>
+                  {% trans "Descrição do produto" as description %}
+                <textarea class="form-control" id="description" name="description" placeholder="{{ description }}...">{% if form %}{{ form.description.value }}{% endif %}</textarea>
+              </div><br>
+              <div class="form-group col-md-12">
+                <label for="quantity">{% trans "Quantidade" %}*</label>
+                  {% trans "Digite a quantidade" as quantity %}
+                <input type="number" class="form-control menor" id="quantity" name="quantity" placeholder="{{ quantity }}..." value="{% if form %}{{ form.quantity.value }}{% endif %}">
+                {% for error in form.quantity.errors %}
+                  <label id="quantity-error" class="error" for="quantity">{{ error|escape }}</label>
+                {% endfor %}
+              </div><br>
+              <div class="form-group col-md-12">
+                <label for="send_date">{% trans "Data Envio" %}*</label>
+                  {% trans "Data de envio" as send_date %}
+                <input type="text" class="form-control menor datepicker" id="send_date" name="send_date" placeholder="{{ send_date }}..." value="{% if form %}{{ form.send_date.value }}{% endif %}">
+                {% for error in form.send_date.errors %}
+                  <label id="send_date-error" class="error" for="send_date">{{ error|escape }}</label>
+                {% endfor %}
+              </div><br>
+              <div class="lista-tracks">
+                  <div class="form-group group-track">
+                    <div class="col-md-5">
+                        <label for="track_number-1">{% trans "Rastreamento" %} <span class='num-track'>1</span></label>
+                        {% trans "Digite o código" as track_number %}
+                        <input type="text" class="form-control" id="track_number-1" name="track_number" placeholder="{{ track_number }}..." />
+                    </div>
+                    <div class="col-md-7 content-btn-add">
+                        {% trans "Remover este rastreamento" as remove_track_number %}
+                        <a class="rem-track btn btn-danger" data-toggle="tooltip" title="{{ remove_track_number }}" href="#"><i class="fa fa-fw fa-times"></i></a>
+                    </div><br>
+                  </div>
+              </div>
+              <div class="col-md-12"><br>
+                  {% trans "Adicionar" as add_track_number %}
+                <a class="add-track btn btn-success" data-toggle="tooltip" title="{{ add_track_number }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i>{% trans "Adicionar rastreamento" %}</a>
+              </div><br><br>
+              <div class="form-group col-md-12"><br><br>
+                  <button type="submit" id="send-btn" class="btn btn-primary">{% trans "Salvar" %}</button><br><br>
+                  <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
+              </div>
+            </form>
+        </div>
+        <div class="col-md-3 sidebar">
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

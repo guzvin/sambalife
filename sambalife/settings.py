@@ -34,10 +34,10 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             EMAIL_HOST = key_value_pair[1]
         elif key_value_pair[0] == 'email_port':
             EMAIL_PORT = key_value_pair[1]
-#        elif key_value_pair[0] == 'email_user':
-#            EMAIL_HOST_USER = key_value_pair[1]
-#        elif key_value_pair[0] == 'email_password':
-#            EMAIL_HOST_PASSWORD = key_value_pair[1]
+        elif key_value_pair[0] == 'email_user':
+            EMAIL_HOST_USER = key_value_pair[1]
+        elif key_value_pair[0] == 'email_password':
+            EMAIL_HOST_PASSWORD = key_value_pair[1]
         elif key_value_pair[0] == 'db_host':
             DB_HOST = key_value_pair[1]
         elif key_value_pair[0] == 'db_port':
@@ -48,6 +48,8 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             DB_USER = key_value_pair[1]
         elif key_value_pair[0] == 'db_password':
             DB_PASSWORD = key_value_pair[1]
+        elif key_value_pair[0] == 'system_superuser_password':
+            SYS_SU_PASSWORD = key_value_pair[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -68,11 +70,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'channels',
     'corsheaders',
     'statici18n',
     'websocket',
     'myauth',
+    'product',
+    'shipment',
 ]
 
 MIDDLEWARE = [
@@ -86,6 +91,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+SITE_ID = 1
+
+MIGRATION_MODULES = {
+    'sites': 'fixtures.sites_migrations',
+}
 
 ROOT_URLCONF = 'sambalife.urls'
 
@@ -166,6 +177,9 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptPasswordHasher',
 ]
 
+LOGIN_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/'
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
@@ -207,6 +221,10 @@ CSRF_TRUSTED_ORIGINS = (
 )
 
 PASSWORD_RESET_TIMEOUT_DAYS = 2
+
+# SESSION_COOKIE_AGE = 3600
+
+SESSION_COOKIE_SECURE = True
 
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)

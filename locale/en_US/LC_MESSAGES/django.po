@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-05 08:04-0300\n"
+"POT-Creation-Date: 2017-04-16 12:18-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,243 +17,693 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: html/templates/usuario_cadastro.html:13
-msgid "Vendedor Online Internacional - cadastro"
-msgstr "International Online Seller - register"
-
-#: html/templates/usuario_cadastro.html:40
-msgid "Menu"
-msgstr "Menu"
-
-#: html/templates/usuario_cadastro.html:48
-msgid "Voltar Site Institucional"
-msgstr "Return to site"
-
-#: html/templates/usuario_cadastro.html:60 myauth/models.py:13
-msgid "Nome"
-msgstr "Name"
-
-#: html/templates/usuario_cadastro.html:61
-msgid "Digite o nome..."
-msgstr "Type your name..."
-
-#: html/templates/usuario_cadastro.html:65 myauth/models.py:14
-msgid "Sobrenome"
-msgstr "Surname"
-
-#: html/templates/usuario_cadastro.html:66
-msgid "Digite o sobrenome..."
-msgstr "Type your surname..."
-
-#: html/templates/usuario_cadastro.html:70 myauth/models.py:15
-msgid "E-mail"
+#: html/templates/email/account-activation.html:6
+#: html/templates/email/forgot-password.html:6
+#: html/templates/email/registration-validation.html:6
+#: html/templates/includes/layout.html:13 html/templates/login.html:13
+#: html/templates/user_registration.html:13
+#: html/templates/user_reset_password.html:13
+#: html/templates/user_validation.html:13 myauth/models.py:79
+#: sambalife/views.py:73 sambalife/views.py:208 utils/helper.py:28
+msgid "Vendedor Online Internacional"
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:71
-msgid "Digite o e-mail..."
+#: html/templates/email/account-activation.html:12
+#: html/templates/email/forgot-password.html:12
+#: html/templates/email/registration-validation.html:12
+msgid "Prezado(a)"
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:75
-msgid "CPF"
+#: html/templates/email/account-activation.html:13
+msgid "Sua conta foi ativada, clique abaixo para acessá-la."
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:76
-msgid "Digite o CPF..."
+#: html/templates/email/account-activation.html:16
+msgid "LOGIN"
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:80 myauth/models.py:17
-msgid "Telefone"
+#: html/templates/email/account-activation.html:19
+#: html/templates/email/forgot-password.html:19
+#: html/templates/email/registration-validation.html:19
+msgid ""
+"Caso você não tenha feito esta solicitação nos avise através do e-mail "
+"contato@aaaa.com."
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:81
-msgid "Digite o telefone..."
+#: html/templates/email/account-activation.html:20
+#: html/templates/email/forgot-password.html:20
+#: html/templates/email/registration-validation.html:20
+msgid ""
+"Este é um e-mail automático disparado pelo sistema. Favor não respondê-lo, "
+"pois esta conta não é monitorada."
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:85 myauth/models.py:18
-msgid "Celular"
+#: html/templates/email/forgot-password.html:13
+msgid "Clique no botão abaixo para cadastrar sua nova senha."
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:86
-msgid "Digite o celular..."
+#: html/templates/email/forgot-password.html:16
+msgid "TROCAR SENHA"
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:90 myauth/admin.py:82
-#: myauth/models.py:58
-msgid "Endereço"
+#: html/templates/email/registration-validation.html:13
+msgid ""
+"Falta apenas esta etapa. Clique no botão abaixo para validar seu cadastro."
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:91
-msgid "Digite o endereço..."
+#: html/templates/email/registration-validation.html:16
+msgid "VALIDAR CADASTRO"
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:96 myauth/models.py:59
-msgid "Complemento"
+#: html/templates/includes/layout.html:62
+msgid "Administrativo"
 msgstr ""
 
-#: html/templates/usuario_cadastro.html:97
-msgid "Digite o complemento..."
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:101 myauth/models.py:60
-msgid "Bairro"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:102
-msgid "Digite o bairro..."
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:106 myauth/models.py:63
-msgid "Cidade"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:107
-msgid "Digite o cidade..."
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:113 myauth/models.py:62
-msgid "Estado"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:114
-msgid "Digite o estado..."
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:118 myauth/models.py:61
-msgid "CEP"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:119
-msgid "Digite o CEP..."
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:124 myauth/admin.py:13
-msgid "Senha"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:125
-msgid "Digite sua senha..."
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:129
-msgid "Confirmar Senha"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:130
-msgid "Confirmar a senha..."
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:133
-msgid "Enviar"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:134
-msgid "Voltar"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:145
-msgid "Sucesso"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:148
-msgid "Informações enviadas com sucesso"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:152
-msgid "Fechar"
-msgstr ""
-
-#: html/templates/usuario_cadastro.html:159
-msgid "Carregando"
-msgstr ""
-
-#: myauth/admin.py:14
-msgid "Confirmação da senha"
-msgstr ""
-
-#: myauth/admin.py:20 myauth/admin.py:59
-msgid "E-mail*"
-msgstr ""
-
-#: myauth/admin.py:21 myauth/admin.py:61
-msgid "Nome*"
-msgstr ""
-
-#: myauth/admin.py:22 myauth/admin.py:62
-msgid "Sobrenome*"
-msgstr ""
-
-#: myauth/admin.py:23 myauth/admin.py:63
-msgid "CPF*"
-msgstr ""
-
-#: myauth/admin.py:24 myauth/admin.py:64
-msgid "Celular*"
-msgstr ""
-
-#: myauth/admin.py:36
-msgid "Confirmação da senha inválida."
-msgstr ""
-
-#: myauth/admin.py:60
-msgid "Senha*"
-msgstr ""
-
-#: myauth/admin.py:83
-msgid "Endereços"
-msgstr ""
-
-#: myauth/admin.py:102
-msgid "Informação pessoal"
-msgstr ""
-
-#: myauth/admin.py:103
-msgid "Permissões"
-msgstr ""
-
-#: myauth/models.py:16
-msgid "CPF / CNPJ"
-msgstr ""
-
-#: myauth/models.py:19
-msgid "Data de criação"
-msgstr ""
-
-#: myauth/models.py:20
-msgid "Ativo"
-msgstr ""
-
-#: myauth/models.py:28
-msgid "Usuário"
-msgstr ""
-
-#: myauth/models.py:29
+#: html/templates/includes/layout.html:65 myauth/admin.py:247
+#: myauth/admin.py:248 myauth/models.py:34
 msgid "Usuários"
 msgstr ""
 
-#: myauth/models.py:65
+#: html/templates/includes/layout.html:69
+msgid "Pagamentos"
+msgstr ""
+
+#: html/templates/includes/layout.html:74
+#: html/templates/includes/layout.html:80
+msgid "Lotes"
+msgstr ""
+
+#: html/templates/includes/layout.html:84 product/views.py:13
+msgid "Estoque"
+msgstr ""
+
+#: html/templates/includes/layout.html:88
+msgid "Lista Produtos"
+msgstr ""
+
+#: html/templates/includes/layout.html:96 html/templates/product_add.html:13
+msgid "Adicionar Produto"
+msgstr ""
+
+#: html/templates/includes/layout.html:103
+msgid "Envio"
+msgstr ""
+
+#: html/templates/includes/layout.html:106
+msgid "Lista Envios"
+msgstr ""
+
+#: html/templates/includes/layout.html:110
+msgid "Criar Envio"
+msgstr ""
+
+#: html/templates/includes/layout.html:115
+msgid "Olá"
+msgstr ""
+
+#: html/templates/includes/layout.html:118
+msgid "Editar cadastro"
+msgstr ""
+
+#: html/templates/includes/layout.html:122
+msgid "sair"
+msgstr ""
+
+#: html/templates/includes/layout.html:140 html/templates/login.html:57
+#: html/templates/user_registration.html:147
+msgid "Sucesso"
+msgstr ""
+
+#: html/templates/includes/layout.html:143
+msgid "Informações enviadas com sucesso"
+msgstr ""
+
+#: html/templates/includes/layout.html:147 html/templates/login.html:91
+#: html/templates/user_registration.html:181
+#: html/templates/user_reset_password.html:113
+msgid "Fechar"
+msgstr ""
+
+#: html/templates/includes/layout.html:154 html/templates/login.html:98
+#: html/templates/user_registration.html:188
+#: html/templates/user_reset_password.html:120
+msgid "Carregando"
+msgstr ""
+
+#: html/templates/login.html:13 sambalife/forms.py:36 sambalife/forms.py:41
+msgid "Login"
+msgstr ""
+
+#: html/templates/login.html:35
+msgid "Digite abaixo seus dados de acesso"
+msgstr ""
+
+#: html/templates/login.html:42 html/templates/user_registration.html:127
+#: html/templates/user_reset_password.html:73 myauth/admin.py:30
+msgid "Senha"
+msgstr ""
+
+#: html/templates/login.html:44
+msgid "ENTRAR"
+msgstr ""
+
+#: html/templates/login.html:48
+msgid "Esqueci Minha Senha"
+msgstr ""
+
+#: html/templates/login.html:49
+msgid "Quero me Cadastrar"
+msgstr ""
+
+#: html/templates/login.html:60 html/templates/user_registration.html:150
+#: html/templates/user_reset_password.html:95
+msgid "Erro"
+msgstr ""
+
+#: html/templates/login.html:78
+msgid "As instruções para troca de sua senha foram enviadas para o seu e-mail."
+msgstr ""
+
+#: html/templates/login.html:79
+#, python-format
+msgid "Este e-mail é válido por %(expiry)s dias."
+msgstr ""
+
+#: html/templates/login.html:86
+msgid "Não foi possível enviar o e-mail para troca de sua senha."
+msgstr ""
+
+#: html/templates/product_add.html:17 html/templates/user_registration.html:63
+#: myauth/admin.py:288 myauth/models.py:17 product/forms.py:11
+#: product/models.py:9 sambalife/forms.py:8
+msgid "Nome"
+msgstr ""
+
+#: html/templates/product_add.html:18 html/templates/user_registration.html:64
+msgid "Digite o nome"
+msgstr ""
+
+#: html/templates/product_add.html:25 product/forms.py:12 product/models.py:10
+msgid "Descrição"
+msgstr ""
+
+#: html/templates/product_add.html:26
+msgid "Descrição do produto"
+msgstr ""
+
+#: html/templates/product_add.html:30 product/forms.py:13 product/models.py:11
+msgid "Quantidade"
+msgstr ""
+
+#: html/templates/product_add.html:31
+msgid "Digite a quantidade"
+msgstr ""
+
+#: html/templates/product_add.html:38 product/forms.py:14 product/models.py:12
+msgid "Data Envio"
+msgstr ""
+
+#: html/templates/product_add.html:39
+msgid "Data de envio"
+msgstr ""
+
+#: html/templates/product_add.html:48 product/models.py:30
+msgid "Rastreamento"
+msgstr ""
+
+#: html/templates/product_add.html:49
+msgid "Digite o código"
+msgstr ""
+
+#: html/templates/product_add.html:53
+msgid "Remover este rastreamento"
+msgstr ""
+
+#: html/templates/product_add.html:59
+msgid "Adicionar"
+msgstr ""
+
+#: html/templates/product_add.html:60
+msgid "Adicionar rastreamento"
+msgstr ""
+
+#: html/templates/product_add.html:63
+msgid "Salvar"
+msgstr ""
+
+#: html/templates/product_add.html:64 html/templates/user_registration.html:138
+msgid "Voltar"
+msgstr ""
+
+#: html/templates/user_registration.html:13
+#: html/templates/user_validation.html:13 myauth/models.py:78
+#: sambalife/views.py:207
+msgid "Cadastro"
+msgstr ""
+
+#: html/templates/user_registration.html:43
+#: html/templates/user_reset_password.html:43
+#: html/templates/user_validation.html:40
+msgid "Menu"
+msgstr ""
+
+#: html/templates/user_registration.html:51
+#: html/templates/user_reset_password.html:51
+#: html/templates/user_validation.html:48
+msgid "Voltar Site Institucional"
+msgstr ""
+
+#: html/templates/user_registration.html:68 myauth/models.py:18
+#: sambalife/forms.py:9
+msgid "Sobrenome"
+msgstr ""
+
+#: html/templates/user_registration.html:69
+msgid "Digite o sobrenome"
+msgstr ""
+
+#: html/templates/user_registration.html:73 myauth/models.py:19
+#: sambalife/forms.py:10 sambalife/forms.py:46
+msgid "E-mail"
+msgstr ""
+
+#: html/templates/user_registration.html:74
+msgid "Digite o e-mail"
+msgstr ""
+
+#: html/templates/user_registration.html:78 myauth/models.py:20
+#: sambalife/forms.py:11
+msgid "CPF"
+msgstr ""
+
+#: html/templates/user_registration.html:79
+msgid "Digite o CPF"
+msgstr ""
+
+#: html/templates/user_registration.html:83 myauth/models.py:21
+#: sambalife/forms.py:12
+msgid "Telefone"
+msgstr ""
+
+#: html/templates/user_registration.html:84
+msgid "Digite o telefone"
+msgstr ""
+
+#: html/templates/user_registration.html:88 myauth/models.py:22
+#: sambalife/forms.py:13
+msgid "Celular"
+msgstr ""
+
+#: html/templates/user_registration.html:89
+msgid "Digite o celular"
+msgstr ""
+
+#: html/templates/user_registration.html:93 myauth/admin.py:160
+#: myauth/models.py:86 sambalife/forms.py:14
+msgid "Endereço"
+msgstr ""
+
+#: html/templates/user_registration.html:94
+msgid "Digite o endereço"
+msgstr ""
+
+#: html/templates/user_registration.html:99 myauth/models.py:87
+#: sambalife/forms.py:15
+msgid "Complemento"
+msgstr ""
+
+#: html/templates/user_registration.html:100
+msgid "Digite o complemento"
+msgstr ""
+
+#: html/templates/user_registration.html:104 myauth/models.py:88
+#: sambalife/forms.py:16
+msgid "Bairro"
+msgstr ""
+
+#: html/templates/user_registration.html:105
+msgid "Digite o bairro"
+msgstr ""
+
+#: html/templates/user_registration.html:109 myauth/models.py:91
+#: sambalife/forms.py:19
+msgid "Cidade"
+msgstr ""
+
+#: html/templates/user_registration.html:110
+msgid "Digite o cidade"
+msgstr ""
+
+#: html/templates/user_registration.html:116 myauth/models.py:90
+#: sambalife/forms.py:18
+msgid "Estado"
+msgstr ""
+
+#: html/templates/user_registration.html:117
+msgid "Digite o estado"
+msgstr ""
+
+#: html/templates/user_registration.html:121 myauth/models.py:89
+#: sambalife/forms.py:17
+msgid "CEP"
+msgstr ""
+
+#: html/templates/user_registration.html:122
+msgid "Digite o CEP"
+msgstr ""
+
+#: html/templates/user_registration.html:128
+msgid "Digite sua senha"
+msgstr ""
+
+#: html/templates/user_registration.html:130
+#: html/templates/user_reset_password.html:76
+msgid ""
+"Digite ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caractere "
+"especial"
+msgstr ""
+
+#: html/templates/user_registration.html:133
+#: html/templates/user_reset_password.html:79
+msgid "Confirmar Senha"
+msgstr ""
+
+#: html/templates/user_registration.html:134
+#: html/templates/user_reset_password.html:80
+msgid "Confirmar a senha"
+msgstr ""
+
+#: html/templates/user_registration.html:137
+#: html/templates/user_reset_password.html:83
+msgid "Enviar"
+msgstr ""
+
+#: html/templates/user_registration.html:168
+msgid "Informações enviadas com sucesso."
+msgstr ""
+
+#: html/templates/user_registration.html:169
+#: html/templates/user_validation.html:67
+#, python-format
+msgid ""
+"Enviamos um e-mail para você validar seu cadastro. Este e-mail é válido por "
+"%(expiry)s dias."
+msgstr ""
+
+#: html/templates/user_registration.html:176
+msgid "Não foi possível efetuar o seu cadastro."
+msgstr ""
+
+#: html/templates/user_reset_password.html:13
+msgid "Troca Senha"
+msgstr ""
+
+#: html/templates/user_reset_password.html:60
+msgid "Senha alterada com sucesso."
+msgstr ""
+
+#: html/templates/user_reset_password.html:61
+#: html/templates/user_validation.html:73
+msgid "Clique aqui"
+msgstr ""
+
+#: html/templates/user_reset_password.html:61
+msgid "para realizar o seu login no sistema."
+msgstr ""
+
+#: html/templates/user_reset_password.html:68
+msgid "Confirmar e-mail"
+msgstr ""
+
+#: html/templates/user_reset_password.html:69
+msgid "Digite seu e-mail"
+msgstr ""
+
+#: html/templates/user_reset_password.html:74
+msgid "Nova senha"
+msgstr ""
+
+#: html/templates/user_reset_password.html:86
+msgid "Token inválido."
+msgstr ""
+
+#: html/templates/user_reset_password.html:109
+msgid "Um ou mais valores preenchidos não são válidos, tente novamente."
+msgstr ""
+
+#: html/templates/user_validation.html:60
+msgid "Cadastro validado com sucesso."
+msgstr ""
+
+#: html/templates/user_validation.html:61
+msgid ""
+"Você receberá um e-mail quando o administrador do sistema ativar sua conta."
+msgstr ""
+
+#: html/templates/user_validation.html:63
+msgid "Cadastro já se encontra ativo no sistema."
+msgstr ""
+
+#: html/templates/user_validation.html:65
+msgid "Obrigado e sucesso!"
+msgstr ""
+
+#: html/templates/user_validation.html:70
+msgid "Código de validação inválido."
+msgstr ""
+
+#: html/templates/user_validation.html:73
+msgid "para receber novamente o e-mail com o link para validação do cadastro."
+msgstr ""
+
+#: html/templates/user_validation.html:74
+#, python-format
+msgid "Lembre-se que o código tem validade de %(expiry)s dias."
+msgstr ""
+
+#: myauth/admin.py:21 myauth/admin.py:283 myauth/admin.py:313
+msgid "Todos usuários"
+msgstr ""
+
+#: myauth/admin.py:23 myauth/admin.py:285 myauth/admin.py:314
+msgid "Administradores do sistema"
+msgstr ""
+
+#: myauth/admin.py:31 myauth/admin.py:81
+msgid "Confirmação da senha"
+msgstr ""
+
+#: myauth/admin.py:36 myauth/admin.py:37 myauth/admin.py:86 myauth/admin.py:87
+#: myauth/admin.py:194
+msgid "Grupos"
+msgstr ""
+
+#: myauth/admin.py:44 myauth/admin.py:94
+msgid "E-mail*"
+msgstr ""
+
+#: myauth/admin.py:45
+msgid "Nome*"
+msgstr ""
+
+#: myauth/admin.py:46 myauth/admin.py:97
+msgid "Sobrenome*"
+msgstr ""
+
+#: myauth/admin.py:47 myauth/admin.py:98
+msgid "CPF*"
+msgstr ""
+
+#: myauth/admin.py:48 myauth/admin.py:99
+msgid "Celular*"
+msgstr ""
+
+#: myauth/admin.py:60 myauth/admin.py:122
+msgid "Confirmação da senha inválida."
+msgstr ""
+
+#: myauth/admin.py:80
+msgid "Nova Senha"
+msgstr ""
+
+#: myauth/admin.py:95
+msgid "Senha*"
+msgstr ""
+
+#: myauth/admin.py:143
+msgid "Endereço*"
+msgstr ""
+
+#: myauth/admin.py:145
+msgid "Bairro*"
+msgstr ""
+
+#: myauth/admin.py:146
+msgid "CEP*"
+msgstr ""
+
+#: myauth/admin.py:147
+msgid "Estado*"
+msgstr ""
+
+#: myauth/admin.py:148
+msgid "Cidade*"
+msgstr ""
+
+#: myauth/admin.py:149
+msgid "Tipo*"
+msgstr ""
+
+#: myauth/admin.py:161
+msgid "Endereços"
+msgstr ""
+
+#: myauth/admin.py:191
+msgid "Informação pessoal"
+msgstr ""
+
+#: myauth/admin.py:193
+msgid "Permissões"
+msgstr ""
+
+#: myauth/admin.py:213
+msgid "Administrador"
+msgstr ""
+
+#: myauth/apps.py:7
+msgid "Meus usuários"
+msgstr ""
+
+#: myauth/models.py:23
+msgid "Data de criação"
+msgstr ""
+
+#: myauth/models.py:24
+msgid "Ativo"
+msgstr ""
+
+#: myauth/models.py:25
+msgid "Verificado"
+msgstr ""
+
+#: myauth/models.py:33
+msgid "Usuário"
+msgstr ""
+
+#: myauth/models.py:36
+msgid "Pode visualizar Administração"
+msgstr ""
+
+#: myauth/models.py:38
+msgid "Can add"
+msgstr ""
+
+#: myauth/models.py:39
+msgid "Can change"
+msgstr ""
+
+#: myauth/models.py:40
+msgid "Can delete"
+msgstr ""
+
+#: myauth/models.py:93
 msgid "Entrega"
 msgstr ""
 
-#: myauth/models.py:66
+#: myauth/models.py:94
 msgid "Cobrança"
 msgstr ""
 
-#: myauth/models.py:67
+#: myauth/models.py:95
 msgid "Entrega e Cobrança"
 msgstr ""
 
-#: myauth/models.py:69
+#: myauth/models.py:97
 msgid "Tipo"
 msgstr ""
 
-#: myauth/models.py:70
+#: myauth/models.py:98
 msgid "Padrão"
 msgstr ""
 
-#: sambalife/settings.py:173
+#: product/forms.py:19
+msgid "Informe uma data menor ou igual a de hoje."
+msgstr ""
+
+#: product/forms.py:23
+msgid "Informe um número maior que zero."
+msgstr ""
+
+#: product/models.py:14
+msgid "Em Estoque"
+msgstr ""
+
+#: product/models.py:15
+msgid "Enviado"
+msgstr ""
+
+#: product/models.py:17
+msgid "Status"
+msgstr ""
+
+#: product/models.py:21 product/views.py:19 product/views.py:33
+#: product/views.py:38
+msgid "Produto"
+msgstr ""
+
+#: product/models.py:22
+msgid "Produtos"
+msgstr ""
+
+#: product/models.py:24
+msgid "Pode visualizar Produtos"
+msgstr ""
+
+#: sambalife/forms.py:26 sambalife/forms.py:53
+msgid "Informe o mesmo valor"
+msgstr ""
+
+#: sambalife/forms.py:29 sambalife/forms.py:56
+msgid "Consulte as instruções de formato válido"
+msgstr ""
+
+#: sambalife/settings.py:200
 msgid "Português"
 msgstr ""
 
-#: sambalife/settings.py:174
+#: sambalife/settings.py:201
 msgid "Inglês"
+msgstr ""
+
+#: sambalife/views.py:45
+msgid ""
+"Não foi possível realizar seu login. Caso tenha esquecido sua senha, clique "
+"na opção Esqueci Minha Senha. Em caso de dúvida <a href='/#contact'>fale "
+"conosco</a>."
+msgstr ""
+
+#: sambalife/views.py:72
+msgid "Esqueci Senha"
+msgstr ""
+
+#: sambalife/views.py:77
+msgid ""
+"Conta cadastrada, porém o usuário ainda não foi liberado para acesso ao "
+"sistema. Em caso de dúvida <a href='/#contact'>fale conosco</a>."
+msgstr ""
+
+#: sambalife/views.py:80
+msgid "Não foi encontrada conta ativa para este login."
+msgstr ""
+
+#: sambalife/views.py:121
+msgid ""
+"E-mail já cadastrado, porém o usuário ainda não foi liberado para acesso ao "
+"sistema. Em caso de dúvida <a href='/#contact'>fale conosco</a>."
+msgstr ""
+
+#: sambalife/views.py:124
+msgid ""
+"E-mail já cadastrado, faça o <a href='/login'>login</a> ou, caso tenha "
+"esquecido sua senha, <a href='/#'>clique aqui</a>."
 msgstr ""

@@ -18,19 +18,27 @@ from django.contrib import admin
 from django.views.i18n import JavaScriptCatalog
 from django.conf.urls.i18n import i18n_patterns
 from sambalife.views import *
+from product.views import *
 
 urlpatterns = i18n_patterns(
     url(r'^admin/', admin.site.urls),
-    url(r'^login/$', login, name='login'),
+    url(r'^login/$', user_login, name='login'),
+    url(r'^logout/$', user_logout, name='logout'),
+    url(r'^user/password/forgot/$', user_forgot_password, name='user_forgot_password'),
+    url(r'^user/password/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        user_reset_password, name='user_reset_password'),
     url(r'^user/registration/$', user_registration, name='user_registration'),
     url(r'^user/validation/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         user_validation, name='user_validation'),
-    url(r'^user/validation/resend/(?P<uidb64>[0-9A-Za-z_\-]+)/$', user_validation_resend, name='user_validation_resend'),
+    url(r'^user/validation/resend/(?P<uidb64>[0-9A-Za-z_\-]+)/$', user_validation_resend,
+        name='user_validation_resend'),
     url(r'^pagamentos/', pagamentos, name='pagamentos'),
     url(r'^pagamento/detalhe/', pagamentoDetalhe, name='pagamentoDetalhe'),
-    url(r'^estoque/', estoque, name='estoque'),
-    url(r'^produtos/detalhe/', detalheProduto, name='detalheProduto'),
-    url(r'^produtos/cadastro/', cadastroProduto, name='cadastroProduto'),
+    url(r'^product/stock/', product_stock, name='product_stock'),
+    url(r'^product/details/(?P<pid>[0-9]+)', product_details, name='product_details'),
+    url(r'^product/add/', product_add, name='product_add'),
+    url(r'^product/edit/(?P<pid>[0-9]+)(?:\.(?P<output>json|html))?', product_edit, name='product_edit'),
+    url(r'^product/delete/', product_delete, name='product_delete'),
     url(r'^shipments/', shipments, name='shipments'),
     url(r'^shipment/detalhe/', detalheShipment, name='detalheShipment'),
     url(r'^shipment/cadastro/', cadastroShipment, name='cadastroShipment'),

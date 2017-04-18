@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+{% load i18n %}
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Vendedor Online Internacional" %}</title>
+</head>
+<body>
+
+<div id="template-email" style="background: #eee; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
+    <div style="background: #fff; padding: 10px 20px 20px 20px;">
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Prezado(a)" %} {{ user_name }}</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Falta apenas esta etapa. Clique no botão abaixo para validar seu cadastro." %}</p>
+        <p>
+            {% url user_validation_url uidb64=uid token=token as my_url %}
+            <a href="{{ protocol}}://{{ domain }}{{ my_url }}" style="font: 13px/120% 'Helvetica';display: block; background: rgba(75,192,192,1);width: 400px;color: #fff; height: 56px; margin: 0 auto;text-align: center;padding-top: 25px;font-size: 26px;text-decoration: none;font-weight: bold;border-radius: 20px;">{% trans "VALIDAR CADASTRO" %}</a>
+        </p>
+    </div>
+    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Caso você não tenha feito esta solicitação nos avise através do e-mail contato@aaaa.com." %}</small>
+    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Este é um e-mail automático disparado pelo sistema. Favor não respondê-lo, pois esta conta não é monitorada." %}</small>
+</div>
+
+</body>
+</html>

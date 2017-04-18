@@ -3,9 +3,13 @@ from django.db.models.fields import BigAutoField
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
+from django.utils.translation import string_concat
 from django.utils.translation import ugettext_lazy as _
 from myauth.my_user_manager import MyUserManager
 from django.conf import settings
+from django.template import loader, Context
+from django.contrib.sites.models import Site
+from utils.helper import send_email
 
 
 class MyUser(AbstractBaseUser, PermissionsMixin):
@@ -18,6 +22,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     cell_phone = models.CharField(_('Celular'), max_length=25)
     date_joined = models.DateTimeField(_('Data de criação'), auto_now_add=True)
     is_active = models.BooleanField(_('Ativo'), default=False)
+    is_verified = models.BooleanField(_('Verificado'), default=False)
 
     objects = MyUserManager()
 
@@ -27,6 +32,13 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('Usuário')
         verbose_name_plural = _('Usuários')
+        permissions = (
+            ('view_admin', _('Pode visualizar Administração')),
+            ('view_users', _('Pode visualizar Usuários')),
+        )
+        _('Can add')
+        _('Can change')
+        _('Can delete')
 
     def get_full_name(self):
         """
@@ -49,7 +61,24 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_staff(self):
-        return self.is_superuser
+        return self.is_superuser or self.has_perm('myauth.view_admin')
+
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            orig = MyUser.objects.get(pk=self.pk)
+            if orig.is_active is False and self.is_active is True:
+                self._send_email('email/account-activation.html')
+        elif self.is_active is True:
+            self._send_email('email/account-activation.html')
+        super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
+
+    def _send_email(self, template_name):
+        message = loader.get_template(template_name).render(
+            Context({'user_name': self.first_name, 'protocol': 'https',
+                     'domain': Site.objects.get_current().domain}))
+        str1 = _('Cadastro')
+        str2 = _('Vendedor Online Internacional')
+        send_email(string_concat(str1, ' ', str2), message, [self.email])
 
 
 class UserAddress(models.Model):

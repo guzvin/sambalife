@@ -1,0 +1,180 @@
+{% extends 'includes/layout.html' %}
+{% load i18n permissions products users shipments %}
+{% block listaprodutos %}active{% endblock %}
+
+{% block conteudo %}
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1 sidebar">
+
+        </div>
+        {% if user|has_product_perm:'view_products' %}
+        <div class="col-md-10 main">
+          <h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Estoque" %}</h1>
+          <div class="row">
+              <div class="filtros col-md-12">
+                <h3><i class="fa fa-filter"></i> {% trans "Filtros" %}</h3>  <br>
+                <form action="" method="get" id="form-filter-product">
+                    <div class="form-group col-md-2">
+                        {% trans "ID" as id %}
+                        <label for="filtro-id">{{ id }}</label>
+                        <input type="text" class="form-control" id="filtro-id" name="id" placeholder="{{ id }}..." value="{{ filter_values.id }}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        {% trans "Nome" as name %}
+                        <label for="filtro-nome">{{ name }}</label>
+                        <input type="text" class="form-control" id="filtro-nome" name="name" placeholder="{{ name }}..." value="{{ filter_values.name }}">
+                    </div>
+
+                    {% if user|has_user_perm:'view_users' %}
+                    <!-- somente o admin visualiza esse filtro -->
+                    <div class="form-group col-md-2">
+                        {% trans "Usuário" as user_label %}
+                        <label for="filtro-usuario">{{ user_label }}</label>
+                        <input type="text" class="form-control" id="filtro-usuario" name="user" placeholder="{{ user_label }}..." value="{{ filter_values.user }}">
+                    </div>
+                    <!-- fim filtro usuario-->
+                    {% endif %}
+
+                    <div class="form-group col-md-2">
+                        {% trans "Status" as status %}
+                        <label for="filtro-status">{{ status }}</label>
+                        {% select_status filter_values '1' as in_stock_filter_status %}
+                        {% select_status filter_values '2' as sent_filter_status %}
+                        <select class="form-control" id="filtro-status" name="status">
+                          <option value="">{{ status }}</option>
+                          <option value="1" {{ in_stock_filter_status }}>{% trans "Em Estoque" %}</option>
+                          <option value="2" {{ sent_filter_status }}>{% trans "Enviado" %}</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <button type="submit" class="btn btn-primary filtar-btn" id="filter-btn"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
+                    </div>
+                </form>
+              </div>
+          </div><br><br>
+          <div class="table-responsive">
+            {% if user|has_product_perm:'add_product' %}
+            <a class="btn btn-default" href="/product/add"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
+            {% endif %}
+            {% if user|has_shipment_perm:'add_shipment' %}
+            <a class="btn btn-default" href="/shipments/cadastro_shipment.html"><i class="fa fa-paper-plane"></i> {% trans "Criar Envio" %}</a>
+            {% endif %}
+            <br><br>
+            {% if products.paginator.count > 0 %}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>{{ id }}</th>
+                  <th>{{ name }}</th>
+                  <th>{% trans "Data Envio" %}</th>
+                  <th class="center">{% trans "Quantidade" %}</th>
+                  {% if user|has_user_perm:'view_users' %}
+                  <!-- somente admin visualiza -->
+
+                  <th class="center">{{ user_label }}</th>
+
+                  <!-- fim campo -->
+                  {% endif %}
+                  <th>{% trans "Status" %}</th>
+                  {% if user|has_shipment_perm:'add_shipment' %}
+                  <th class="center">{% trans "Envio" %}</th>
+                  {% endif %}
+                  <th class="center">{% trans "Ações" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for product in products %}
+                <tr>
+                  <td>{{ product.id }}</td>
+                  <td>{{ product.name }}</td>
+                  <td>{{ product.send_date }}</td>
+                  <td class="center">{{ product.quantity }}</td>
+                  {% if user|has_user_perm:'view_users' %}
+                  <!-- somente admin visualiza -->
+
+                  <td class="center">{{ product.user.first_name }}</td>
+
+                  <!-- fim campo -->
+                  {% endif %}
+                  <td>
+                      {% if user|has_product_perm:'change_product_status' %}
+                      <!-- somente admin visualiza o botao de editar status-->
+
+                      <a id="mudar-status-{{ product.id }}" class="mudar-status btn btn-default" href="javascript:void(0);">
+                          <i class="fa fa-pencil"></i>
+                      </a>
+
+                      <!-- fim botao -->
+                      {% endif %}
+                      {% if product.status %}
+                      <span id="product-status-display-{{ product.id }}">{{ product.get_status_display  }}</span>
+                      {% endif %}
+                      {% if user|has_product_perm:'change_product_status' %}
+                      <!-- somente admin visualiza -->
+
+                      <div class="contem-status" style="display:none;">
+                       <div class="status">
+                        <p><i class="fa fa-pencil"></i> {% trans "Alterar Status" %}:</p>
+                        <form action="" method="post" class="form-change-status" id="form-change-status-{{ product.id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}" class="product-id">
+                        {% check_status product '1' as in_stock_status %}
+                        {% check_status product '2' as sent_status %}
+                        <label><input type="radio" name="product_status" value="1" data-current-status="{{ product.status }}" {{ in_stock_status }} /> {% trans "Em Estoque" %}</label><br>
+                        <label><input type="radio" name="product_status" value="2" data-current-status="{{ product.status }}" {{ sent_status }} /> {% trans "Enviado" %}</label><br>
+                        <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i></a>
+                        <a class="btn btn-danger fechar" href="javascript:void(0);"><i class="fa fa-times"></i></a>
+                        </form>
+                       </div>
+                      </div>
+
+                      <!-- fim box -->
+                      {% endif %}
+                  </td>
+                  {% if user|has_shipment_perm:'add_shipment' %}
+                  <td class="center"><input type="checkbox" name="shipment" value="{{ product.id }}" id="shipment-{{ product.id }}" /></td>
+                  {% endif %}
+                  <td class="center">
+                      <a class=" download" href="/product/details/{{ product.id }}"><i class="fa fa-pencil"></i> {% trans "Visualizar" %}</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+              <p>{% trans "Nenhum produto encontrado." %}</p>
+            {% endif %}
+          </div>
+          <nav aria-label="...">
+            {% if products.has_other_pages %}
+              <ul class="pagination">
+                {% if products.has_previous %}
+                  <li><a href="?page={{ products.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                  <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in products.paginator.page_range %}
+                  {% if products.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                  {% else %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if products.has_next %}
+                  <li><a href="?page={{ products.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                  <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+              </ul>
+            {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+        <div class="col-md-1 sidebar">
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

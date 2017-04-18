@@ -3,6 +3,35 @@
 (function($) {
     'use strict'; // Start of use strict
 
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        }
+    });
+
     // jQuery for page scrolling feature - requires jQuery Easing plugin
     $('a.page-scroll').bind('click', function(event) {
         var $anchor = $(this);
@@ -12,67 +41,139 @@
         event.preventDefault();
     });
 
-    // Highlight the top nav as scrolling occurs
-    $('body.index').scrollspy({
-        target: '.navbar-fixed-top',
-        offset: 51
-    });
+    if($('body.index').scrollspy) {
+        // Highlight the top nav as scrolling occurs
+        $('body.index').scrollspy({
+            target: '.navbar-fixed-top',
+            offset: 51
+        });
+    }
 
     // Closes the Responsive Menu on Menu Item Click
     $('.navbar-collapse ul li a').click(function(){ 
             $('.navbar-toggle:visible').click();
     });
 
-    // Offset for Main Navigation
-    $('body.index #mainNav').affix({
-        offset: {
-            top: 100
-        }
-    })
-    
+    if($('body.index #mainNav').affix) {
+        // Offset for Main Navigation
+        $('body.index #mainNav').affix({
+            offset: {
+                top: 100
+            }
+        });
+    }
+
     $('.mudar-status').click(function(){
-        $(this).parent('td').find('.contem-status').show();
+        var elem = $(this).parent('td').find('.contem-status');
+        if(elem.is(':visible'))
+            elem.hide();
+        else
+            elem.show();
     });
     
     $('.fechar').click(function(){
-        $(this).parent('.status').parent('.contem-status').hide();
+        $(this).closest('.contem-status').hide();
     });
     
-    $('.alterar-status').click(function(){
-		$('#confirmacao').modal('show');
-	});
-
     if($.datepicker){
         $.datepicker.regional['pt-BR'] = {
-        closeText: 'Fechar',
-        prevText: '&#x3c;Anterior',
-        nextText: 'Pr&oacute;ximo&#x3e;',
-        currentText: 'Hoje',
-        monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho',
-        'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
-        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun',
-        'Jul','Ago','Set','Out','Nov','Dez'],
-        dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
-        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
-        dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
-        weekHeader: 'Sm',
-        dateFormat: 'dd/mm/yy',
-        firstDay: 0,
-        isRTL: false,
-        showMonthAfterYear: false,
-        yearSuffix: ''
+            closeText: 'Fechar',
+            prevText: '&#x3c;Anterior',
+            nextText: 'Pr&oacute;ximo&#x3e;',
+            currentText: 'Hoje',
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho',
+            'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun',
+            'Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''
         };
 
         $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
 
-        $( "#datepicker" ).datepicker();
+        $( ".datepicker" ).datepicker();
     }
-    
-    $("[data-toggle='tooltip']").tooltip({
-        placement : 'top'
-    });
 
-    if($('form#form-add-user')){
+    if($("[data-toggle='tooltip']").tooltip) {
+        $("[data-toggle='tooltip']").tooltip({
+            placement : 'top'
+        });
+    }
+
+    if($.validator)
+    {
+        $.validator.methods.passwordFormat = function( value, element ) {
+            return this.optional( element ) || (/[A-Z]/.test(value)
+                                                && /[a-z]/.test(value)
+                                                && /\d/.test(value)
+                                                && /[^a-zA-Z\d]/.test(value));
+        };
+
+        $.validator.addMethod('positiveNumber', function (value, element) {
+            if (this.optional(element)) {
+                return true;
+            }
+            var valid = true;
+            try {
+                return parseFloat(value) > 0;
+            }
+            catch (err) {
+                valid = false;
+            }
+            return valid;
+        });
+
+        if($.datepicker){
+            $.validator.addMethod('date', function (value, element) {
+                if (this.optional(element)) {
+                    return true;
+                }
+                var valid = true;
+                try {
+                    $.datepicker.parseDate(gettext('mm/dd/yy'), value);
+                }
+                catch (err) {
+                    valid = false;
+                }
+                return valid;
+            });
+            $.validator.addMethod('dateLessThanOrEqualNow', function (value, element) {
+                if (this.optional(element)) {
+                    return true;
+                }
+                var valid = true;
+                try {
+                    return $.datepicker.parseDate(gettext('mm/dd/yy'), value) <= new Date();
+                }
+                catch (err) {
+                    valid = false;
+                }
+                return valid;
+            });
+        }
+
+        $.extend(
+            $.validator.messages, {
+                required: gettext('Required field.'),
+                minlength: gettext('Please enter at least 6 characters.'),
+                equalTo: gettext('Please enter the same value again.'),
+                passwordFormat: gettext('See instructions for valid format.'),
+                email: gettext('Please enter a valid email address.'),
+                date: gettext('Please enter a valid date.'),
+                dateLessThanOrEqualNow: gettext('Please enter a date less than or equal today.'),
+                positiveNumber: gettext('Please enter a number greater than zero.'),
+            }
+        );
+    }
+
+    if($('form#form-add-user')[0]){
         $('button#send-btn').on('click', function (e){
             if($(this).hasClass('nosubmit'))
             {
@@ -81,23 +182,6 @@
             }
             $(this).addClass('nosubmit');
         });
-
-        $.validator.methods.passwordFormat = function( value, element ) {
-            return this.optional( element ) || (/[A-Z]/.test(value)
-                                                && /[a-z]/.test(value)
-                                                && /\d/.test(value)
-                                                && /[^a-zA-Z\d]/.test(value));
-        };
-
-        $.extend(
-            $.validator.messages, {
-                required: gettext('Required field'),
-                minlength: gettext('Please enter at least 6 characters'),
-                equalTo: gettext('Please enter the same value again'),
-                passwordFormat: gettext('See instructions for valid format'),
-                email: gettext('Please enter a valid email address'),
-            }
-        );
 
         $('form#form-add-user').validate({
             rules: {
@@ -122,7 +206,8 @@
                 },
             },
             submitHandler: function(form) {
-                form.submit();
+                $('.loading').show();
+                form.submit()
             },
             invalidHandler: function(event, validator) {
                 $('button#send-btn').removeClass('nosubmit');
@@ -132,6 +217,159 @@
             onclick: false
         });
     }
+
+    if($('form#form-login')[0]){
+        $('input#send-btn').on('click', function (e){
+            if($(this).hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $(this).addClass('nosubmit');
+            $('form#form-login').attr('action', '/login/');
+        });
+
+        $('a#forgot-password-btn').on('click', function (e){
+            if($(this).hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $(this).addClass('nosubmit');
+            $('form#form-login').attr('action', '/user/password/forgot/');
+            $('form#form-login').submit();
+        });
+
+        $('form#form-login').validate({
+            errorPlacement: function(error, element) {
+                var breakLine = $('<br></br>');
+                breakLine.insertAfter(element);
+                error.insertAfter(breakLine);
+                breakLine.clone().insertAfter(error);
+            },
+            rules: {
+                login: { required: true },
+                password: {
+                    required: {
+                        depends: function(element) {
+                          return $('form#form-login').attr('action') === '/login';
+                        }
+                    },
+                },
+            },
+            submitHandler: function(form) {
+                $('.loading').show();
+                form.submit()
+            },
+            invalidHandler: function(event, validator) {
+                $('input#send-btn').removeClass('nosubmit');
+                $('a#forgot-password-btn').removeClass('nosubmit');
+            },
+            onfocusout: false,
+            onkeyup: false,
+            onclick: false
+        });
+    }
+
+    if($('form#form-reset-password')[0]){
+        $('button#send-btn').on('click', function (e){
+            if($(this).hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $(this).addClass('nosubmit');
+        });
+
+        $('form#form-reset-password').validate({
+            rules: {
+                email: { required: true },
+                password: {
+                    required: true,
+                    minlength: 6,
+                    passwordFormat: true
+                },
+                password_confirmation: {
+                    required: true,
+                    equalTo: '#senha'
+                },
+            },
+            submitHandler: function(form) {
+                $('.loading').show();
+                form.submit()
+            },
+            invalidHandler: function(event, validator) {
+                $('button#send-btn').removeClass('nosubmit');
+            },
+            onfocusout: false,
+            onkeyup: false,
+            onclick: false
+        });
+    }
+
+    if($('form#form-add-product')[0]){
+        $('button#send-btn').on('click', function (e){
+            if($(this).hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $(this).addClass('nosubmit');
+        });
+
+        $('form#form-add-product').validate({
+            rules: {
+                name: { required: true },
+                quantity: {
+                    required: true,
+                    positiveNumber: true,
+                },
+                send_date: {
+                    required: true,
+                    date: true,
+                    dateLessThanOrEqualNow: true,
+                },
+            },
+            submitHandler: function(form) {
+                $('.loading').show();
+                form.submit()
+            },
+            invalidHandler: function(event, validator) {
+                $('button#send-btn').removeClass('nosubmit');
+            },
+            onfocusout: false,
+            onkeyup: false,
+            onclick: false
+        });
+    }
+
+    $('.send-btn-async').click(function(){
+        var form = $(this).closest('form.form-change-status');
+        var pid = form.find('input.product-id').val();
+        if(form.attr('id').split('-')[3] === pid){
+            var radioChecked = form.find('input:radio:checked');
+            if(radioChecked[0]){
+                var checkedValue = radioChecked.val();
+                var currentValue = radioChecked.attr('data-current-status');
+                if(checkedValue !== currentValue){
+                    $.ajax({
+                        method: 'PUT',
+                        url: '/product/edit/' + pid + '.json',
+                        data: form.serialize()
+                    })
+                    .done(function( obj ) {
+                        $('span#product-status-display-'+obj.product.id).text(obj.product.status_display);
+                        form.closest('.contem-status').hide();
+                    });
+                }
+            }
+        }
+        return false;
+    });
+
+    $('.send-btn-delete').click(function(){
+        $('#confirmacao-exclusao').modal('show');
+    });
 
     $('.add-pro').click(function(){
         var numeroProduto = Number($('.lista-produtos .produto:last-child .num-produto').text()) + 1;
@@ -196,17 +434,27 @@
 
     $('.add-track').click(function(){
 
-        var numeroTrack = Number($('.lista-tracks .group-track:last-child .num-track').text()) + 1;
-        console.log(numeroTrack);
+        var trackingNumber = Number($('.lista-tracks .group-track:last-child .num-track').text()) + 1;
         $('.lista-tracks').append("<div class='form-group group-track'>" +
                     "<div class='col-md-5'>" +
-                      "  <label for='Track-" + numeroTrack + "'>Track Number <span class='num-track'>" + numeroTrack + "</span></label>" +
-                     "   <input type='number' class='form-control' id='Track-" + numeroTrack + "' placeholder='Digite o Track Number...' />" +
+                      "  <label for='track_number-" + trackingNumber + "'>" + gettext('Tracking number') + " <span class='num-track'>" + trackingNumber + "</span></label>" +
+                     "   <input type='text' class='form-control' id='track_number-" + trackingNumber + "' name='track_number' placeholder='" + gettext('Enter your tracking number') + "...' />" +
                     "</div>" +
                     "<div class='col-md-7 content-btn-add'>" +
-                    "    <a class='rem-track btn btn-danger' data-toggle='tooltip' title='Remover este Track number' href='#'><i class='fa fa-fw fa-times'></i></a>" +
+                    "    <a class='rem-track btn btn-danger' data-toggle='tooltip' title='" + gettext('Remove tracking number') + "' href='#'><i class='fa fa-fw fa-times'></i></a>" +
                    " </div><br>" +
                   "</div>");
+        $('#track_number-' + trackingNumber).closest('.group-track').find('.rem-track').click(function(e){
+            e.preventDefault();
+            $(this).closest('.group-track').remove();
+            return false;
+        });
+    });
+
+    $('.rem-track').click(function(e){
+        e.preventDefault();
+        $(this).closest('.group-track').remove();
+        return false;
     });
 
 })(jQuery); // End of use strict
