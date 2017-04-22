@@ -1,0 +1,98 @@
+{% extends 'includes/layout.html' %}
+{% load i18n l10n products %}
+{% block addproduto %}{% if '/add' in request.path %}active{% endif %}{% endblock %}
+
+{% block specific_styles %}
+<link href="/static/css/inlines.css" rel="stylesheet">
+{% endblock %}
+
+{% block conteudo %}
+
+  <div class="container-fluid">
+      <div class="row">
+        {% if '/add' in request.path and user|has_product_perm:'add_product' or '/edit' in request.path and user|has_product_perm:'change_product' %}
+        <div class="col-md-3 sidebar">
+
+        </div>
+        <div class="col-md-6 main">
+          <h1 class="page-header"><i class="fa fa-plus-square"></i> {{ title }}</h1>
+            <form action="" method="post" id="form-add-product">
+              {% csrf_token %}
+              {{ product_formset.management_form }}
+              {% for form in product_formset %}
+                {{ form.id }}
+                <div class="form-group col-md-12">
+                  <label for="{{ form.name.id_for_label }}">{{ form.name.label }}*</label>
+                    {% blocktrans asvar name with name_label=form.name.label|lower %}Digite o {{ name_label }}{% endblocktrans %}
+                  <input type="text" class="form-control name_validate" id="{{ form.name.id_for_label }}" aria-describedby="name" name="{{ form.name.html_name }}" placeholder="{{ name }}..." value="{% if form.name.value %}{{ form.name.value }}{% endif %}">
+                  {% for error in form.name.errors %}
+                    <label id="name-error" class="error" for="{{ form.name.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                <div class="form-group col-md-12">
+                  <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                    {% trans "Descrição do produto" as description %}
+                  <textarea class="form-control" id="{{ form.description.id_for_label }}" name="{{ form.description.html_name }}" placeholder="{{ description }}...">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+                </div><br>
+                <div class="form-group col-md-12">
+                  <label for="{{ form.quantity.id_for_label }}">{{ form.quantity.label }}*</label>
+                    {% trans "Digite a quantidade" as quantity %}
+                  <input type="number" class="form-control menor quantity_validate" id="{{ form.quantity.id_for_label }}" name="{{ form.quantity.html_name }}" placeholder="{{ quantity }}..." value="{% if form.quantity.value %}{{ form.quantity.value|unlocalize }}{% endif %}">
+                  {% for error in form.quantity.errors %}
+                    <label id="quantity-error" class="error" for="{{ form.quantity.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                <div class="form-group col-md-12">
+                  <label for="{{ form.send_date.id_for_label }}">{{ form.send_date.label }}*</label>
+                    {% trans "Data de envio" as send_date %}
+                  <input type="text" class="form-control menor datepicker send_date_validate" id="{{ form.send_date.id_for_label }}" name="{{ form.send_date.html_name }}" placeholder="{{ send_date }}..." value="{% if form.send_date.value %}{{ form.send_date.value|date:'SHORT_DATE_FORMAT' }}{% endif %}">
+                  {% for error in form.send_date.errors %}
+                    <label id="send_date-error" class="error" for="{{ form.send_date.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+              {% endfor %}
+              <div class="lista-tracks js-inline-admin-formset" id="{{ tracking_formset.prefix }}-group"
+               data-inline-type="stacked"
+               data-inline-formset="{{ tracking_formset.inline_formset_data }}">
+                {{ tracking_formset.management_form }}
+                {% trans "Digite o código" as track_number %}
+                {% for tracking_form in tracking_formset %}
+                  <div class="form-group group-track inline-related {% if forloop.last and not forloop.first %} empty-form{% endif %}"
+                    id="{{ tracking_formset.prefix }}-{% if not forloop.last or forloop.first %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+                    <div class="col-md-5">
+                        <label for="{{ tracking_form.track_number.id_for_label }}" class="inline_label">
+                            {{ tracking_form.track_number.label }} #{{ forloop.counter }}
+                        </label>
+                        <input type="text" class="form-control" id="{{ tracking_form.track_number.id_for_label }}" name="{{ tracking_form.track_number.html_name }}" placeholder="{{ track_number }}..." value="{% if tracking_form.track_number.value %}{{ tracking_form.track_number.value }}{% endif %}"/>
+                    </div>
+                    {{ tracking_form.id }}
+                    {{ tracking_form.product }}
+                    <div class="col-md-7 content-btn-add delete">
+                    {% if tracking_formset.can_delete %}
+                        {% if tracking_form.id.value %}
+                        {{ tracking_form.DELETE }}&nbsp;{{ tracking_form.DELETE.label }}
+                        {% elif forloop.first is False %}
+                        <a class="rem-track btn btn-danger inline-deletelink" title="{{ tracking_formset.deleteText }}" href="#"><i class="fa fa-fw fa-times"></i></a>
+                        {% endif %}
+                    {% endif %}
+                    </div>
+                    <br>
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="col-md-12"><br>
+                <a class="add-track btn btn-success add-row" title="{{ tracking_formset.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i>{{ tracking_formset.addText }}</a>
+              </div><br><br>
+              <div class="form-group col-md-12"><br><br>
+                  <button type="submit" id="send-btn" class="btn btn-primary">{% trans "Salvar" %}</button><br><br>
+                  <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
+              </div>
+            </form>
+        </div>
+        <div class="col-md-3 sidebar">
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+{% endblock %}

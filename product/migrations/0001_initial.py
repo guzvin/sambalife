@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(null=True, verbose_name='Descrição')),
                 ('quantity', models.FloatField(verbose_name='Quantidade')),
                 ('send_date', models.DateField(verbose_name='Data Envio')),
-                ('status', models.SmallIntegerField(choices=[(1, 'Em Estoque'), (2, 'Enviado')], null=True, verbose_name='Status')),
+                ('status', models.SmallIntegerField(choices=[(1, 'Enviado'), (2, 'Em Estoque')], null=True, verbose_name='Status')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={

@@ -4,10 +4,10 @@
 
 <div class="container-fluid">
       <div class="row">
+        {% if user|has_product_perm:'view_products' and product %}
         <div class="col-md-3 sidebar">
 
         </div>
-        {% if user|has_product_perm:'view_products' and product %}
         <div class="col-md-6 main">
           <h1 class="page-header"><i class="fa fa-archive"></i> {{ product.name }}</h1>
           <div class="form-horizontal">
@@ -46,7 +46,7 @@
                 <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Status" %}:</label>
                     <div class="col-xs-9">
-                        <p>{{ product.get_status_display }}</p>
+                        <p>{% if product.status %}{{ product.get_status_display }}{% endif %}</p>
                     </div>
                 </div>
               <div class="form-group">
@@ -58,7 +58,7 @@
                     </div>
                 </div>
               {% if user|has_product_perm:'change_product' %}
-              <a href="cadastro_produto.html" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
+              <a href="{% url 'product_edit' product.id %}" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
               {% endif %}
               {% if user|has_product_perm:'delete_product' %}
               <a href="#" class="btn btn-danger send-btn-delete"><i class="fa fa-fw fa-trash"></i> {% trans "Excluir" %}</a>
@@ -67,11 +67,12 @@
               <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> Voltar</a><br><br><br>
             </div>
         </div>
-        {% endif %}
         <div class="col-md-3 sidebar">
         </div>
+        {% endif %}
       </div>
     </div>
+    {% if user|has_product_perm:'delete_product' %}
     <form action="{% url 'product_delete' %}" method="post" class="form-delete-product" id="form-delete-product">
     {% csrf_token %}
         <input type="hidden" name="pid" value="{{ product.id }}">
@@ -93,4 +94,5 @@
         </div>
     </div>
     </form>
+    {% endif %}
 {% endblock %}

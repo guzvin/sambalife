@@ -2,13 +2,14 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.db import transaction
-from product.forms import ProductForm
 from product.models import Product, Tracking
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect
 from django.utils import formats
+from django.forms import modelformset_factory, inlineformset_factory
+from utils.helper import MyBaseInlineFormSet
 from product.templatetags.products import has_product_perm
 from myauth.templatetags.users import has_user_perm
 import json
@@ -54,6 +55,8 @@ def product_stock(request):
             filter_values['status'] = filter_status
         logger.debug(str(queries))
         logger.debug(str(len(queries)))
+        if is_user_perm is False:
+            queries.append(Q(user=request.user))
         is_filtered = len(queries) > 0
         if is_filtered:
             query = queries.pop()
@@ -63,13 +66,12 @@ def product_stock(request):
         if is_user_perm:
             if is_filtered:
                 logger.debug('FILTERED')
-                products_list = Product.objects.filter(query).select_related('user')
+                products_list = Product.objects.filter(query).select_related('user').order_by('id')
             else:
                 logger.debug('ALL')
-                products_list = Product.objects.all().select_related('user')
+                products_list = Product.objects.all().select_related('user').order_by('id')
         else:
-            query &= Q(user=request.user)
-            products_list = Product.objects.filter(query)
+            products_list = Product.objects.filter(query).order_by('id')
     else:
         products_list = []
     page = request.GET.get('page', 1)
@@ -85,34 +87,70 @@ def product_stock(request):
 
 
 @login_required
-def product_add(request):
-    if request.method != 'POST':
-        return render(request, 'product_add.html', {'title': _('Produto')})
+@require_http_methods(["GET", "POST"])
+def product_add_edit(request, pid=None):
+    if pid is None and has_product_perm(request.user, 'add_product') is False:
+        pass
+    elif pid is not None and has_product_perm(request.user, 'change_product') is False:
+        pass
+    ProductFormSet = modelformset_factory(Product, fields=('name', 'description', 'quantity', 'send_date'),
+                                          localized_fields=('send_date',), min_num=1, max_num=1)
+    TrackingFormSet = inlineformset_factory(Product, Tracking, formset=MyBaseInlineFormSet, fields=('track_number',),
+                                            extra=1)
+    if pid is None:
+        page_title = _('Adicionar Produto')
+        product_qs = Product.objects.none()
+        product_instance = None
     else:
-        form = ProductForm(request.POST)
-        if form.is_valid():
+        product_qs = Product.objects.filter(pk=pid)
+        try:
+            product_instance = product_qs[:1].get()
+        except Product.DoesNotExist:
+            return HttpResponseRedirect('/product/add/')
+        page_title = _('Editar Produto')
+    kwargs = {'addText': _('Adicionar rastreamento'), 'deleteText': _('Remover rastreamento')}
+    if request.method != 'POST':
+        product_formset = ProductFormSet(queryset=product_qs)
+        tracking_formset = TrackingFormSet(instance=product_instance, prefix='tracking_set', **kwargs)
+        return render(request, 'product_add_edit.html', {'title': page_title, 'product_formset': product_formset,
+                      'tracking_formset': tracking_formset})
+    else:
+        product_formset = ProductFormSet(request.POST, queryset=product_qs)
+        if product_formset.is_valid():
             with transaction.atomic():
-                product = Product()
-                product.name = form.cleaned_data.get('name')
-                product.description = form.cleaned_data.get('description')
-                product.quantity = form.cleaned_data.get('quantity')
-                product.send_date = form.cleaned_data.get('send_date')
-                product.user = request.user
-                product.save()
-                tracking_numbers_list = request.POST.getlist('track_number')
-                for tracking_number in tracking_numbers_list:
-                    tracking = Tracking()
-                    tracking.track_number = tracking_number
-                    tracking.product = product
-                    tracking.save()
-            return render(request, 'product_add.html', {'title': _('Produto'), 'success': True,
-                                                        'success_message': _('Produto inserido com sucesso.')})
-        return render(request, 'product_add.html', {'title': _('Produto'), 'success': False, 'form': form})
+                if pid is None:
+                    for product_form in product_formset:
+                        product = product_form.save(commit=False)
+                        product.status = 1
+                        product.user = request.user
+                        product.save()
+                        tracking_formset = TrackingFormSet(request.POST, instance=product,
+                                                           prefix='tracking_set', **kwargs)
+                else:
+                    product_formset.save()
+                    tracking_formset = TrackingFormSet(request.POST, instance=product_instance, prefix='tracking_set',
+                                                       **kwargs)
+                tracking_formset.save()
+            if pid is None:
+                success_message = _('Produto inserido com sucesso.')
+            else:
+                success_message = _('Produto atualizado com sucesso.')
+            return render(request, 'product_add_edit.html', {'title': page_title, 'success': True,
+                                                             'success_message': success_message,
+                                                             'product_formset':
+                                                                 ProductFormSet(queryset=product_qs),
+                                                             'tracking_formset':
+                                                                 TrackingFormSet(instance=product_instance,
+                                                                                 prefix='tracking_set', **kwargs)})
+        tracking_formset = TrackingFormSet(request.POST, instance=product_instance, prefix='tracking_set', **kwargs)
+        return render(request, 'product_add_edit.html', {'title': page_title, 'success': False,
+                                                         'product_formset': product_formset,
+                                                         'tracking_formset': tracking_formset})
 
 
 @login_required
 @require_http_methods(["PUT"])
-def product_edit(request, pid=None, output=None):
+def product_edit_status(request, pid=None, output=None):
     if has_product_perm(request.user, 'change_product_status'):
         request.PUT = QueryDict(request.body)
         try:

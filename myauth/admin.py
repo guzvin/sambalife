@@ -170,14 +170,13 @@ class UserAdmin(BaseUserAdmin):
         AddressInline,
     ]
 
-    readonly_fields = ('is_verified',)
-
     def get_readonly_fields(self, request, obj=None):
         page_readonly_fields = self.readonly_fields
-        if obj and (obj.is_verified is False or obj.is_superuser is True):
-            page_readonly_fields = page_readonly_fields + ('is_active',)
-        if obj and obj.first_name == 'Administrador':
-            page_readonly_fields = page_readonly_fields + ('first_name', 'is_superuser',)
+        if obj:
+            if obj.first_name == 'Administrador':
+                page_readonly_fields += ('first_name', 'is_superuser', 'is_active', 'is_verified',)
+            if request.user.is_superuser is False and 'is_superuser' not in page_readonly_fields:
+                page_readonly_fields += ('is_superuser',)
         return page_readonly_fields
 
     # The fields to be used in displaying the User model.
@@ -198,10 +197,26 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'first_name', 'last_name', 'doc_number', 'phone', 'cell_phone', 'is_active',
-                       'is_superuser', 'password1', 'password2', 'groups')}
+            'fields': ('email', 'first_name', 'last_name', 'doc_number', 'phone', 'cell_phone', 'is_verified',
+                       'is_active', 'is_superuser', 'password1', 'password2', 'groups')}
          ),
     )
+
+    def get_form(self, request, obj=None, **kwargs):
+        # Proper kwargs are form, fields, exclude, formfield_callback
+        if obj is None:
+            if request.user.is_superuser is False:
+                self.add_fieldsets = (
+                    (None, {
+                        'classes': ('wide',),
+                        'fields': ('email', 'first_name', 'last_name', 'doc_number', 'phone', 'cell_phone',
+                                   'is_verified', 'is_active', 'password1', 'password2', 'groups')}
+                     ),
+                )
+                kwargs['fields'] = ('email', 'first_name', 'last_name', 'doc_number', 'phone', 'cell_phone',
+                                    'is_verified', 'is_active', 'password1', 'password2', 'groups')
+        return super(UserAdmin, self).get_form(request, obj, **kwargs)
+
     search_fields = ('id', 'email',)
     ordering = ('email',)
     filter_horizontal = ()

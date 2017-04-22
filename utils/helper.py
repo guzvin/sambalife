@@ -3,7 +3,12 @@ from django.utils.translation import string_concat
 from django.utils.translation import ugettext as _
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.forms.models import BaseInlineFormSet
+from django.forms.widgets import CheckboxInput
+from django.forms import BooleanField
+from django.forms.formsets import DELETION_FIELD_NAME
 import re
+import json
 
 
 def rreplace(s, old, new, occurrence):
@@ -35,3 +40,43 @@ def send_email(title, body, email_to, email_from=string_concat(_('Vendedor Onlin
     )
     msg.content_subtype = 'html'
     msg.send(fail_silently=False)
+
+
+class MyBaseInlineFormSet(BaseInlineFormSet):
+    def __init__(self, data=None, files=None, instance=None,
+                 save_as_new=False, prefix=None, queryset=None, **kwargs):
+        self.addText = kwargs.pop('addText', _('Adicionar'))
+        self.deleteText = kwargs.pop('deleteText', _('Remover'))
+        self.inline_formset_data = json.dumps({
+            'name': '#%s' % prefix,
+            'options': {
+                'prefix': prefix,
+                'addText': self.addText,
+                'deleteText': self.deleteText,
+            }
+        })
+        super(MyBaseInlineFormSet, self).__init__(data, files, instance, save_as_new, prefix, queryset, **kwargs)
+
+    def __iter__(self):
+        """Yields the forms in the order they should be rendered"""
+        for form in self.forms:
+            yield form
+        yield self.empty_form
+
+    def __getitem__(self, index):
+        """Returns the form at the given index, based on the rendering order"""
+        if len(self.forms) == index:
+            return self.empty_form
+        return self.forms[index]
+
+    def __len__(self):
+        return len(self.forms) + 1
+
+    def add_fields(self, form, index):
+        super(MyBaseInlineFormSet, self).add_fields(form, index)
+        if self.can_delete:
+            form.fields[DELETION_FIELD_NAME] = BooleanField(label=_('Apagar'), required=False, widget=CheckboxInput)
+
+    def _should_delete_form(self, form):
+        form.is_valid()
+        return form.cleaned_data.get(DELETION_FIELD_NAME, False)

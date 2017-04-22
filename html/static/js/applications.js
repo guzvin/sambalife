@@ -318,18 +318,6 @@
         });
 
         $('form#form-add-product').validate({
-            rules: {
-                name: { required: true },
-                quantity: {
-                    required: true,
-                    positiveNumber: true,
-                },
-                send_date: {
-                    required: true,
-                    date: true,
-                    dateLessThanOrEqualNow: true,
-                },
-            },
             submitHandler: function(form) {
                 $('.loading').show();
                 form.submit()
@@ -340,6 +328,24 @@
             onfocusout: false,
             onkeyup: false,
             onclick: false
+        });
+        $('.name_validate').each(function () {
+            $(this).rules('add', {
+                required: true
+            });
+        });
+        $('.quantity_validate').each(function () {
+            $(this).rules('add', {
+                required: true,
+                positiveNumber: true,
+            });
+        });
+        $('.send_date_validate').each(function () {
+            $(this).rules('add', {
+                required: true,
+                date: true,
+                dateLessThanOrEqualNow: true,
+            });
         });
     }
 
@@ -354,11 +360,12 @@
                 if(checkedValue !== currentValue){
                     $.ajax({
                         method: 'PUT',
-                        url: '/product/edit/' + pid + '.json',
+                        url: '/product/edit/status/' + pid + '.json',
                         data: form.serialize()
                     })
                     .done(function( obj ) {
                         $('span#product-status-display-'+obj.product.id).text(obj.product.status_display);
+                        form.find('input:radio').attr('data-current-status', obj.product.status)
                         form.closest('.contem-status').hide();
                     });
                 }
@@ -430,31 +437,6 @@
                   "</div>" +
                   "<a class='rem-track btn btn-danger' data-toggle='tooltip' title='Remover produto' href='#'><i class='fa fa-fw fa-times'></i> Remover este produto do lote</a>" +
                 "</div>");
-    });
-
-    $('.add-track').click(function(){
-
-        var trackingNumber = Number($('.lista-tracks .group-track:last-child .num-track').text()) + 1;
-        $('.lista-tracks').append("<div class='form-group group-track'>" +
-                    "<div class='col-md-5'>" +
-                      "  <label for='track_number-" + trackingNumber + "'>" + gettext('Tracking number') + " <span class='num-track'>" + trackingNumber + "</span></label>" +
-                     "   <input type='text' class='form-control' id='track_number-" + trackingNumber + "' name='track_number' placeholder='" + gettext('Enter your tracking number') + "...' />" +
-                    "</div>" +
-                    "<div class='col-md-7 content-btn-add'>" +
-                    "    <a class='rem-track btn btn-danger' data-toggle='tooltip' title='" + gettext('Remove tracking number') + "' href='#'><i class='fa fa-fw fa-times'></i></a>" +
-                   " </div><br>" +
-                  "</div>");
-        $('#track_number-' + trackingNumber).closest('.group-track').find('.rem-track').click(function(e){
-            e.preventDefault();
-            $(this).closest('.group-track').remove();
-            return false;
-        });
-    });
-
-    $('.rem-track').click(function(e){
-        e.preventDefault();
-        $(this).closest('.group-track').remove();
-        return false;
     });
 
 })(jQuery); // End of use strict

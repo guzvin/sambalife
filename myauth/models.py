@@ -10,6 +10,10 @@ from django.conf import settings
 from django.template import loader, Context
 from django.contrib.sites.models import Site
 from utils.helper import send_email
+from smtplib import SMTPException
+import logging
+
+logger = logging.getLogger('django')
 
 
 class MyUser(AbstractBaseUser, PermissionsMixin):
@@ -64,12 +68,16 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         return self.is_superuser or self.has_perm('myauth.view_admin')
 
     def save(self, *args, **kwargs):
-        if self.pk is not None:
-            orig = MyUser.objects.get(pk=self.pk)
-            if orig.is_active is False and self.is_active is True:
+        try:
+            if self.pk is not None:
+                orig = MyUser.objects.get(pk=self.pk)
+                if orig.is_active is False and self.is_active is True:
+                    self._send_email('email/account-activation.html')
+            elif self.is_active is True:
                 self._send_email('email/account-activation.html')
-        elif self.is_active is True:
-            self._send_email('email/account-activation.html')
+        except SMTPException as e:
+            for recipient in e.recipients:
+                logger.warn('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
         super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
 
     def _send_email(self, template_name):
