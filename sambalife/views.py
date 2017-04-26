@@ -217,18 +217,6 @@ def pagamentoDetalhe(request):
     return render(request, 'pagamento_detalhe.html')
 
 
-def shipments(request):
-    return render(request, 'lista_shipment.html')
-
-
-def detalheShipment(request):
-    return render(request, 'shipment_detalhe.html')
-
-
-def cadastroShipment(request):
-    return render(request, 'shipment_cadastro.html')
-
-
 def cadastroLote(request):
     return render(request, 'lote_cadastro.html')
 

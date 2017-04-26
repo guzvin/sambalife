@@ -28,7 +28,7 @@
     <!-- Estilo -->
     <link href="/static/css/style.css" rel="stylesheet">
 
-    {% block specific_styles %}Specific Styles{% endblock %}
+    {% block specific_styles %}{% endblock %}
 
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js" integrity="sha384-0s5Pv64cNZJieYFkXYOTId2HMA2Lfb6q2nAcx2n0RTLUnCAoTTsS0nKEO27XyKcY" crossorigin="anonymous"></script>
@@ -89,7 +89,7 @@
                         <ul class="dropdown-menu">
                             {% if user|has_product_perm:'view_products' %}
                             <li class="{% block listaprodutos %}{% endblock %}">
-                                <a href="/product/stock"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista Produtos" %}</a>
+                                <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista de Produtos" %}</a>
                             </li>
                             {% endif %}
                             {% if user|has_product_perm:'view_products' and user|has_product_perm:'add_product' %}
@@ -97,7 +97,7 @@
                             {% endif %}
                             {% if user|has_product_perm:'add_product' %}
                             <li class="{% block addproduto %}{% endblock %}">
-                                <a href="/product/add"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
+                                <a href="{% url 'product_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
                             </li>
                             {% endif %}
                         </ul>
@@ -109,7 +109,7 @@
                         <ul class="dropdown-menu">
                             {% if user|has_shipment_perm:'view_shipments' %}
                             <li class="{% block listashipment %}{% endblock %}">
-                                <a href="/shipments"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista Envios" %}</a>
+                                <a href="{% url 'shipment' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista de Envios" %}</a>
                             </li>
                             {% endif %}
                             {% if user|has_shipment_perm:'view_shipments' and user|has_shipment_perm:'add_shipment' %}
@@ -117,7 +117,7 @@
                             {% endif %}
                             {% if user|has_shipment_perm:'add_shipment' %}
                             <li class="{% block criarshipment %}{% endblock %}">
-                                <a href="/shipment/cadastro"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>
+                                <a href="{% url 'shipment_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>
                             </li>
                             {% endif %}
                         </ul>

@@ -1,16 +1,21 @@
 // Agency Theme JavaScript
 
-(function($) {
+(function($)
+{
     'use strict'; // Start of use strict
 
-    function getCookie(name) {
+    function getCookie(name)
+    {
         var cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
+        if (document.cookie && document.cookie !== '')
+        {
             var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
+            for (var i = 0; i < cookies.length; i++)
+            {
                 var cookie = jQuery.trim(cookies[i]);
                 // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                if (cookie.substring(0, name.length + 1) === (name + '='))
+                {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;
                 }
@@ -19,51 +24,64 @@
         return cookieValue;
     }
 
-    function csrfSafeMethod(method) {
+    function csrfSafeMethod(method)
+    {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
 
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+    $.ajaxSetup(
+    {
+        beforeSend: function(xhr, settings)
+        {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain)
+            {
                 xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
             }
         }
     });
 
     // jQuery for page scrolling feature - requires jQuery Easing plugin
-    $('a.page-scroll').bind('click', function(event) {
+    $('a.page-scroll').bind('click', function(event)
+    {
         var $anchor = $(this);
-        $('html, body').stop().animate({
+        $('html, body').stop().animate(
+        {
             scrollTop: ($($anchor.attr('href')).offset().top - 50)
         }, 1250, 'easeInOutExpo');
         event.preventDefault();
     });
 
-    if($('body.index').scrollspy) {
+    if($('body.index').scrollspy)
+    {
         // Highlight the top nav as scrolling occurs
-        $('body.index').scrollspy({
+        $('body.index').scrollspy(
+        {
             target: '.navbar-fixed-top',
             offset: 51
         });
     }
 
     // Closes the Responsive Menu on Menu Item Click
-    $('.navbar-collapse ul li a').click(function(){ 
+    $('.navbar-collapse ul li a').click(function()
+    {
             $('.navbar-toggle:visible').click();
     });
 
-    if($('body.index #mainNav').affix) {
+    if($('body.index #mainNav').affix)
+    {
         // Offset for Main Navigation
-        $('body.index #mainNav').affix({
-            offset: {
+        $('body.index #mainNav').affix(
+        {
+            offset:
+            {
                 top: 100
             }
         });
     }
 
-    $('.mudar-status').click(function(){
+    $('.mudar-status').click(function()
+    {
         var elem = $(this).parent('td').find('.contem-status');
         if(elem.is(':visible'))
             elem.hide();
@@ -71,12 +89,14 @@
             elem.show();
     });
     
-    $('.fechar').click(function(){
+    $('.fechar').click(function()
+    {
         $(this).closest('.contem-status').hide();
     });
     
     if($.datepicker){
-        $.datepicker.regional['pt-BR'] = {
+        $.datepicker.regional['pt-BR'] =
+        {
             closeText: 'Fechar',
             prevText: '&#x3c;Anterior',
             nextText: 'Pr&oacute;ximo&#x3e;',
@@ -101,58 +121,74 @@
         $( ".datepicker" ).datepicker();
     }
 
-    if($("[data-toggle='tooltip']").tooltip) {
-        $("[data-toggle='tooltip']").tooltip({
+    if($("[data-toggle='tooltip']").tooltip)
+    {
+        $("[data-toggle='tooltip']").tooltip(
+        {
             placement : 'top'
         });
     }
 
     if($.validator)
     {
-        $.validator.methods.passwordFormat = function( value, element ) {
+        $.validator.methods.passwordFormat = function( value, element )
+        {
             return this.optional( element ) || (/[A-Z]/.test(value)
                                                 && /[a-z]/.test(value)
                                                 && /\d/.test(value)
                                                 && /[^a-zA-Z\d]/.test(value));
         };
 
-        $.validator.addMethod('positiveNumber', function (value, element) {
-            if (this.optional(element)) {
+        $.validator.addMethod('positiveNumber', function (value, element)
+        {
+            if (this.optional(element))
+            {
                 return true;
             }
             var valid = true;
-            try {
+            try
+            {
                 return parseFloat(value) > 0;
             }
-            catch (err) {
+            catch (err)
+            {
                 valid = false;
             }
             return valid;
         });
 
-        if($.datepicker){
-            $.validator.addMethod('date', function (value, element) {
-                if (this.optional(element)) {
+        if($.datepicker)
+        {
+            $.validator.addMethod('date', function (value, element)
+            {
+                if (this.optional(element))
+                {
                     return true;
                 }
                 var valid = true;
-                try {
+                try
+                {
                     $.datepicker.parseDate(gettext('mm/dd/yy'), value);
                 }
-                catch (err) {
+                catch (err)
+                {
                     valid = false;
                 }
                 return valid;
             });
-            $.validator.addMethod('dateLessThanOrEqualNow', function (value, element) {
-                if (this.optional(element)) {
+            $.validator.addMethod('dateLessThanOrEqualNow', function (value, element)
+            {
+                if (this.optional(element))
+                {
                     return true;
                 }
                 var valid = true;
-                try {
+                try
+                {
                     return $.datepicker.parseDate(gettext('mm/dd/yy'), value) <= new Date();
                 }
-                catch (err) {
+                catch (err)
+                {
                     valid = false;
                 }
                 return valid;
@@ -160,7 +196,8 @@
         }
 
         $.extend(
-            $.validator.messages, {
+            $.validator.messages,
+            {
                 required: gettext('Required field.'),
                 minlength: gettext('Please enter at least 6 characters.'),
                 equalTo: gettext('Please enter the same value again.'),
@@ -173,8 +210,10 @@
         );
     }
 
-    if($('form#form-add-user')[0]){
-        $('button#send-btn').on('click', function (e){
+    if($('form#form-add-user')[0])
+    {
+        $('button#send-btn').on('click', function (e)
+        {
             if($(this).hasClass('nosubmit'))
             {
                 e.preventDefault();
@@ -183,8 +222,10 @@
             $(this).addClass('nosubmit');
         });
 
-        $('form#form-add-user').validate({
-            rules: {
+        $('form#form-add-user').validate(
+        {
+            rules:
+            {
                 first_name: { required: true },
                 last_name: { required: true },
                 email: { required: true },
@@ -195,21 +236,25 @@
                 city: { required: true },
                 state: { required: true },
                 zipcode: { required: true },
-                password: {
+                password:
+                {
                     required: true,
                     minlength: 6,
                     passwordFormat: true
                 },
-                password_confirmation: {
+                password_confirmation:
+                {
                     required: true,
                     equalTo: '#senha'
                 },
             },
-            submitHandler: function(form) {
+            submitHandler: function(form)
+            {
                 $('.loading').show();
                 form.submit()
             },
-            invalidHandler: function(event, validator) {
+            invalidHandler: function(event, validator)
+            {
                 $('button#send-btn').removeClass('nosubmit');
             },
             onfocusout: false,
@@ -218,8 +263,10 @@
         });
     }
 
-    if($('form#form-login')[0]){
-        $('input#send-btn').on('click', function (e){
+    if($('form#form-login')[0])
+    {
+        $('input#send-btn').on('click', function (e)
+        {
             if($(this).hasClass('nosubmit'))
             {
                 e.preventDefault();
@@ -229,7 +276,8 @@
             $('form#form-login').attr('action', '/login/');
         });
 
-        $('a#forgot-password-btn').on('click', function (e){
+        $('a#forgot-password-btn').on('click', function (e)
+        {
             if($(this).hasClass('nosubmit'))
             {
                 e.preventDefault();
@@ -240,28 +288,36 @@
             $('form#form-login').submit();
         });
 
-        $('form#form-login').validate({
-            errorPlacement: function(error, element) {
+        $('form#form-login').validate(
+        {
+            errorPlacement: function(error, element)
+            {
                 var breakLine = $('<br></br>');
                 breakLine.insertAfter(element);
                 error.insertAfter(breakLine);
                 breakLine.clone().insertAfter(error);
             },
-            rules: {
+            rules:
+            {
                 login: { required: true },
-                password: {
-                    required: {
-                        depends: function(element) {
+                password:
+                {
+                    required:
+                    {
+                        depends: function(element)
+                        {
                           return $('form#form-login').attr('action') === '/login';
                         }
                     },
                 },
             },
-            submitHandler: function(form) {
+            submitHandler: function(form)
+            {
                 $('.loading').show();
                 form.submit()
             },
-            invalidHandler: function(event, validator) {
+            invalidHandler: function(event, validator)
+            {
                 $('input#send-btn').removeClass('nosubmit');
                 $('a#forgot-password-btn').removeClass('nosubmit');
             },
@@ -271,8 +327,10 @@
         });
     }
 
-    if($('form#form-reset-password')[0]){
-        $('button#send-btn').on('click', function (e){
+    if($('form#form-reset-password')[0])
+    {
+        $('button#send-btn').on('click', function (e)
+        {
             if($(this).hasClass('nosubmit'))
             {
                 e.preventDefault();
@@ -281,24 +339,30 @@
             $(this).addClass('nosubmit');
         });
 
-        $('form#form-reset-password').validate({
-            rules: {
+        $('form#form-reset-password').validate(
+        {
+            rules:
+            {
                 email: { required: true },
-                password: {
+                password:
+                {
                     required: true,
                     minlength: 6,
                     passwordFormat: true
                 },
-                password_confirmation: {
+                password_confirmation:
+                {
                     required: true,
                     equalTo: '#senha'
                 },
             },
-            submitHandler: function(form) {
+            submitHandler: function(form)
+            {
                 $('.loading').show();
                 form.submit()
             },
-            invalidHandler: function(event, validator) {
+            invalidHandler: function(event, validator)
+            {
                 $('button#send-btn').removeClass('nosubmit');
             },
             onfocusout: false,
@@ -307,8 +371,10 @@
         });
     }
 
-    if($('form#form-add-product')[0]){
-        $('button#send-btn').on('click', function (e){
+    if($('form#form-add-product')[0])
+    {
+        $('button#send-btn').on('click', function (e)
+        {
             if($(this).hasClass('nosubmit'))
             {
                 e.preventDefault();
@@ -317,31 +383,40 @@
             $(this).addClass('nosubmit');
         });
 
-        $('form#form-add-product').validate({
-            submitHandler: function(form) {
+        $('form#form-add-product').validate(
+        {
+            submitHandler: function(form)
+            {
                 $('.loading').show();
                 form.submit()
             },
-            invalidHandler: function(event, validator) {
+            invalidHandler: function(event, validator)
+            {
                 $('button#send-btn').removeClass('nosubmit');
             },
             onfocusout: false,
             onkeyup: false,
             onclick: false
         });
-        $('.name_validate').each(function () {
-            $(this).rules('add', {
+        $('.name_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
                 required: true
             });
         });
-        $('.quantity_validate').each(function () {
-            $(this).rules('add', {
+        $('.quantity_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
                 required: true,
                 positiveNumber: true,
             });
         });
-        $('.send_date_validate').each(function () {
-            $(this).rules('add', {
+        $('.send_date_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
                 required: true,
                 date: true,
                 dateLessThanOrEqualNow: true,
@@ -349,21 +424,27 @@
         });
     }
 
-    $('.send-btn-async').click(function(){
+    $('.send-btn-async').click(function()
+    {
         var form = $(this).closest('form.form-change-status');
         var pid = form.find('input.product-id').val();
-        if(form.attr('id').split('-')[3] === pid){
+        if(form.attr('id').split('-')[3] === pid)
+        {
             var radioChecked = form.find('input:radio:checked');
-            if(radioChecked[0]){
+            if(radioChecked[0])
+            {
                 var checkedValue = radioChecked.val();
                 var currentValue = radioChecked.attr('data-current-status');
-                if(checkedValue !== currentValue){
-                    $.ajax({
+                if(checkedValue !== currentValue)
+                {
+                    $.ajax(
+                    {
                         method: 'PUT',
                         url: '/product/edit/status/' + pid + '.json',
                         data: form.serialize()
                     })
-                    .done(function( obj ) {
+                    .done(function( obj )
+                    {
                         $('span#product-status-display-'+obj.product.id).text(obj.product.status_display);
                         form.find('input:radio').attr('data-current-status', obj.product.status)
                         form.closest('.contem-status').hide();
@@ -374,11 +455,28 @@
         return false;
     });
 
-    $('.send-btn-delete').click(function(){
+    $('.send-btn-delete').click(function()
+    {
         $('#confirmacao-exclusao').modal('show');
     });
 
-    $('.add-pro').click(function(){
+    if($('#form-add-shipment')[0])
+    {
+        var shipmentForm = $('#form-add-shipment');
+        $('#btn-add-shipment').click(function()
+        {
+            $('.shipment-product:checked').each(function()
+            {
+                var checkedProduct = $('<input type="hidden" name="shipment_product"></input>');
+                checkedProduct.val($(this).val());
+                checkedProduct.appendTo(shipmentForm);
+                shipmentForm.submit();
+            });
+        });
+    }
+
+    $('.add-pro').click(function()
+    {
         var numeroProduto = Number($('.lista-produtos .produto:last-child .num-produto').text()) + 1;
 
         $('.lista-produtos').append("<div class='produto'>" +

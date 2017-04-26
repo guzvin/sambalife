@@ -17,6 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'config')
 LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'logs')
+MEDIA_ROOT = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'media')
 
 
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/

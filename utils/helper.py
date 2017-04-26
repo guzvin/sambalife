@@ -9,6 +9,9 @@ from django.forms import BooleanField
 from django.forms.formsets import DELETION_FIELD_NAME
 import re
 import json
+import logging
+
+logger = logging.getLogger('django')
 
 
 def rreplace(s, old, new, occurrence):

@@ -56,10 +56,13 @@
           </div><br><br>
           <div class="table-responsive">
             {% if user|has_product_perm:'add_product' %}
-            <a class="btn btn-default" href="/product/add"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
+            <a class="btn btn-default" href="{% url 'product_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
             {% endif %}
             {% if user|has_shipment_perm:'add_shipment' %}
-            <a class="btn btn-default" href="/shipments/cadastro_shipment.html"><i class="fa fa-paper-plane"></i> {% trans "Criar Envio" %}</a>
+            <a class="btn btn-default" id="btn-add-shipment"><i class="fa fa-paper-plane"></i> {% trans "Criar Envio" %}</a>
+            <form action="{% url 'shipment_add' %}" method="post" class="form-add-shipment" id="form-add-shipment">
+                {% csrf_token %}
+            </form>
             {% endif %}
             <br><br>
             {% if products.paginator.count > 0 %}
@@ -68,7 +71,7 @@
                 <tr>
                   <th>{{ id }}</th>
                   <th>{{ name }}</th>
-                  <th>{% trans "Data Envio" %}</th>
+                  <th>{% trans "Data de Envio" %}</th>
                   <th class="center">{% trans "Quantidade" %}</th>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
@@ -132,10 +135,14 @@
                       {% endif %}
                   </td>
                   {% if user|has_shipment_perm:'add_shipment' %}
-                  <td class="center"><input type="checkbox" name="shipment" value="{{ product.id }}" id="shipment-{{ product.id }}" /></td>
+                  <td class="center">
+                      {% if product.status == 2 and product.quantity > 0 %}
+                      <input type="checkbox" name="shipment_product" value="{{ product.id }}" id="shipment-{{ product.id }}" class="shipment-product" />
+                      {% endif %}
+                  </td>
                   {% endif %}
                   <td class="center">
-                      <a class=" download" href="/product/details/{{ product.id }}"><i class="fa fa-pencil"></i> {% trans "Visualizar" %}</a>
+                      <a class=" download" href="{% url 'product_details' product.id %}"><i class="fa fa-pencil"></i> {% trans "Visualizar" %}</a>
                   </td>
                 </tr>
                 {% endfor %}

@@ -40,6 +40,47 @@
         // only show the add button if we are allowed to add more items,
         // note that max_num = None translates to a blank string.
         var showAddButton = maxForms.val() === '' || (maxForms.val() - totalForms.val()) > 0;
+        if(options.autocomplete)
+        {
+            $( '#' + options.prefix + '-autocomplete' ).autocomplete({
+                width: 300,
+                max: 10,
+                delay: 100,
+                minLength: 3,
+                autoFocus: true,
+                cacheLength: 1,
+                scroll: true,
+                highlight: false,
+                source: options.autocomplete,
+                focus: function( event, ui ) {
+                    return false;
+                },
+                change: function( event, ui ) {
+                    try {
+                        var selectedValue = JSON.parse($( '#' + options.prefix + '-autocomplete-selected' ).val());
+                        if(selectedValue && selectedValue.label)
+                        {
+                            var fieldValue = $( '#' + options.prefix + '-autocomplete' ).val();
+                            if(fieldValue !== selectedValue.label)
+                                $( '#' + options.prefix + '-autocomplete-selected' ).val('');
+                        }
+                    } catch (ex) {
+//                        console.error(ex);
+                    }
+                    return false;
+                },
+                select: function( event, ui ) {
+                    $( '#' + options.prefix + '-autocomplete' ).val(ui.item.label);
+                    $( '#' + options.prefix + '-autocomplete-selected' ).val(JSON.stringify(ui.item));
+                    return false;
+                }
+            })
+            .autocomplete( 'instance' )._renderItem = function( ul, item ) {
+              return $( '<li>' )
+                .append( '<div>' + item.label + '</div>' )
+                .appendTo( ul );
+            };
+        }
         $this.each(function(i) {
             var row = $(this).not("." + options.emptyCssClass);
             row.addClass(options.formCssClass);
@@ -202,6 +243,7 @@
             deleteText: options.deleteText,
             emptyCssClass: "empty-form",
             removed: updateInlineLabel,
+            autocomplete: options.autocomplete,
             added: function(row) {
                 initPrepopulatedFields(row);
                 reinitDateTimeShortCuts();
@@ -219,7 +261,8 @@
                 inlineOptions = data.inlineFormset;
             switch(data.inlineType) {
             case "stacked":
-                $(inlineOptions.name + "-group .inline-related").stackedFormset(inlineOptions.options);
+                var extendedOpts = $.extend({}, inlineOptions.options, {'autocomplete': data.inlineAutocomplete})
+                $(inlineOptions.name + "-group .inline-related").stackedFormset(extendedOpts);
                 break;
             }
         });

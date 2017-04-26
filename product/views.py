@@ -6,7 +6,7 @@ from product.models import Product, Tracking
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse, QueryDict, HttpResponseRedirect
+from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden
 from django.utils import formats
 from django.forms import modelformset_factory, inlineformset_factory
 from utils.helper import MyBaseInlineFormSet
@@ -90,9 +90,9 @@ def product_stock(request):
 @require_http_methods(["GET", "POST"])
 def product_add_edit(request, pid=None):
     if pid is None and has_product_perm(request.user, 'add_product') is False:
-        pass
+        return HttpResponseForbidden()
     elif pid is not None and has_product_perm(request.user, 'change_product') is False:
-        pass
+        return HttpResponseForbidden()
     ProductFormSet = modelformset_factory(Product, fields=('name', 'description', 'quantity', 'send_date'),
                                           localized_fields=('send_date',), min_num=1, max_num=1)
     TrackingFormSet = inlineformset_factory(Product, Tracking, formset=MyBaseInlineFormSet, fields=('track_number',),
@@ -151,78 +151,98 @@ def product_add_edit(request, pid=None):
 @login_required
 @require_http_methods(["PUT"])
 def product_edit_status(request, pid=None, output=None):
-    if has_product_perm(request.user, 'change_product_status'):
-        request.PUT = QueryDict(request.body)
-        try:
-            product = Product.objects.select_related('user').get(pk=pid)
-            if product.user == request.user or has_user_perm(request.user, 'view_users'):
-                fields_to_update = []
-                product_status = request.PUT.get('product_status')
-                product_status_display = None
-                if product_status:
-                    for choice in Product.STATUS_CHOICES:
-                        if str(choice[0]) == product_status:
-                            product.status = product_status
-                            product_status_display = str(choice[1])
-                            break
-                    if product_status_display is not None:
-                        fields_to_update.append('status')
-                if len(fields_to_update) == 0:
-                    raise Product.DoesNotExist
-                product.save(update_fields=fields_to_update)
-                if output and output == 'json':
-                    product_json = {
-                        'id': product.id,
-                        'name': product.name,
-                        'description': product.description,
-                        'quantity': product.quantity,
-                        'send_date': formats.date_format(product.send_date, "DATE_FORMAT"),
-                        'status': product.status,
-                        'status_display': product_status_display,
-                    }
-                    return HttpResponse(json.dumps({'success': True, 'product': product_json}),
-                                        content_type='application/json')
-                else:
-                    pass  # TODO retorno de sucesso da edição HTML
-        except Product.DoesNotExist:
+    if has_product_perm(request.user, 'change_product_status') is False:
+        if output and output == 'json':
+            return HttpResponse(json.dumps({'success': False}),
+                                content_type='application/json', status=403)
+        else:
+            return HttpResponseForbidden()
+    request.PUT = QueryDict(request.body)
+    try:
+        product = Product.objects.select_related('user').get(pk=pid)
+        if product.user == request.user or has_user_perm(request.user, 'view_users'):
+            fields_to_update = []
+            product_status = request.PUT.get('product_status')
+            product_status_display = None
+            if product_status:
+                for choice in Product.STATUS_CHOICES:
+                    if str(choice[0]) == product_status:
+                        product.status = product_status
+                        product_status_display = str(choice[1])
+                        break
+                if product_status_display is not None:
+                    fields_to_update.append('status')
+            if len(fields_to_update) == 0:
+                raise Product.DoesNotExist
+            product.save(update_fields=fields_to_update)
             if output and output == 'json':
-                return HttpResponse(json.dumps({'success': False}),
-                                    content_type='application/json', status=400)
+                product_json = {
+                    'id': product.id,
+                    'name': product.name,
+                    'description': product.description,
+                    'quantity': product.quantity,
+                    'send_date': formats.date_format(product.send_date, "DATE_FORMAT"),
+                    'status': product.status,
+                    'status_display': product_status_display,
+                }
+                return HttpResponse(json.dumps({'success': True, 'product': product_json}),
+                                    content_type='application/json')
             else:
-                pass  # TODO retorno de erro da edição HTML
-    if output and output == 'json':
-        return HttpResponse(json.dumps({'success': False}),
-                            content_type='application/json', status=403)
-    else:
-        pass  # TODO retorno de erro da edição HTML
+                pass  # TODO retorno de sucesso da edição HTML
+    except Product.DoesNotExist:
+        if output and output == 'json':
+            return HttpResponse(json.dumps({'success': False}),
+                                content_type='application/json', status=400)
+        else:
+            pass  # TODO retorno de erro da edição HTML
 
 
 @login_required
 @require_http_methods(["GET"])
 def product_details(request, pid=None):
-    if has_product_perm(request.user, 'view_products'):
-        query = Q(pk=pid)
-        try:
-            if has_user_perm(request.user, 'view_users') is False:
-                query &= Q(user=request.user)
-                product = Product.objects.get(query)
-            else:
-                product = Product.objects.select_related('user').get(query)
-            product_tracking = Tracking.objects.filter(product=product)
-            return render(request, 'product_details.html', {'title': _('Produto'), 'product': product,
-                                                            'product_tracking': product_tracking})
-        except Product.DoesNotExist:
-            pass
+    if has_product_perm(request.user, 'view_products') is False:
+        return HttpResponseForbidden()
+    query = Q(pk=pid)
+    try:
+        if has_user_perm(request.user, 'view_users') is False:
+            query &= Q(user=request.user)
+            product = Product.objects.get(query)
+        else:
+            product = Product.objects.select_related('user').get(query)
+        product_tracking = Tracking.objects.filter(product=product)
+        return render(request, 'product_details.html', {'title': _('Produto'), 'product': product,
+                                                        'product_tracking': product_tracking})
+    except Product.DoesNotExist:
+        pass
     return render(request, 'product_details.html', {'title': _('Produto')})
 
 
 @login_required
 @require_http_methods(["POST"])
 def product_delete(request):
-    if has_product_perm(request.user, 'delete_product'):
-        request.DELETE = QueryDict(request.body)
-        query = Q(pk=request.DELETE.get('pid'))
-        if has_user_perm(request.user, 'view_users') is False:
-            query &= Q(user=request.user)
-        Product.objects.filter(query).delete()
+    if has_product_perm(request.user, 'delete_product') is False:
+        return HttpResponseForbidden()
+    request.DELETE = QueryDict(request.body)
+    query = Q(pk=request.DELETE.get('pid'))
+    if has_user_perm(request.user, 'view_users') is False:
+        query &= Q(user=request.user)
+    Product.objects.filter(query).delete()
     return HttpResponseRedirect('/product/stock/')
+
+
+@login_required
+@require_http_methods(["GET"])
+def product_autocomplete(request):
+    if has_product_perm(request.user, 'view_products') is False:
+        return HttpResponse(json.dumps([]),
+                            content_type='application/json', status=403)
+    products_autocomplete = []
+    term = request.GET.get('term')
+    if term is not None and len(term) >= 3:
+        products = Product.objects.filter(name__icontains=term, status=2, user=request.user,
+                                          quantity__gt=0).order_by('id')
+        for product in products:
+            products_autocomplete.append({'value': product.id, 'label': product.name,
+                                          'desc': product.description})
+    return HttpResponse(json.dumps(products_autocomplete),
+                        content_type='application/json')

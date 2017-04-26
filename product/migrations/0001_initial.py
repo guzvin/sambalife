@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=150, verbose_name='Nome')),
                 ('description', models.TextField(null=True, verbose_name='Descrição')),
                 ('quantity', models.FloatField(verbose_name='Quantidade')),
-                ('send_date', models.DateField(verbose_name='Data Envio')),
+                ('send_date', models.DateField(verbose_name='Data de Envio')),
                 ('status', models.SmallIntegerField(choices=[(1, 'Enviado'), (2, 'Em Estoque')], null=True, verbose_name='Status')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],

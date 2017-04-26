@@ -14,7 +14,7 @@ class Product(models.Model):
     name = models.CharField(_('Nome'), max_length=150)
     description = models.TextField(_('Descrição'), null=True, blank=True)
     quantity = models.FloatField(_('Quantidade'))
-    send_date = models.DateField(_('Data Envio'))
+    send_date = models.DateField(_('Data de Envio'))
     STATUS_CHOICES = (
         (1, _('Enviado')),
         (2, _('Em Estoque')),
