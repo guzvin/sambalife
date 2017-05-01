@@ -462,6 +462,11 @@
         return false;
     });
 
+    $('.send-btn-delete').click(function()
+    {
+        $('#confirmacao-exclusao').modal('show');
+    });
+
     $('.privatebtn').click(function()
     {
         $('#portfolioModal1').modal('show');
