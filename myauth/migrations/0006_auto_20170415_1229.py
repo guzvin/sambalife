@@ -3,14 +3,12 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
 
 
 def add_system_groups(apps, schema_editor):
     Group.objects.get_or_create(name='all_users')
-    admin_group, created = Group.objects.get_or_create(name='admins')
-    admin_group.permissions = Permission.objects.all()
-    admin_group.save()
+    Group.objects.get_or_create(name='admins')
 
 
 class Migration(migrations.Migration):

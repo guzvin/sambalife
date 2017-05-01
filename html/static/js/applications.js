@@ -446,7 +446,16 @@
                     .done(function( obj )
                     {
                         $('span#product-status-display-'+obj.product.id).text(obj.product.status_display);
-                        form.find('input:radio').attr('data-current-status', obj.product.status)
+                        form.find('input:radio').attr('data-current-status', obj.product.status);
+                        if(obj.product.status === SHIPMENT_STATUS_IN_STOCK && obj.product.quantity >= 0)
+                        {
+                            var checkbox = $('<input type="checkbox" name="shipment_product" value="' + obj.product.id + '" id="shipment-' + obj.product.id + '" class="shipment-product" />');
+                            $('span#product-status-display-'+obj.product.id).closest('td').next().append(checkbox);
+                        }
+                        else
+                        {
+                            $('span#product-status-display-'+obj.product.id).closest('td').next()[0].innerHTML = '';
+                        }
                         form.closest('.contem-status').hide();
                     });
                 }
@@ -465,12 +474,84 @@
         var shipmentForm = $('#form-add-shipment');
         $('#btn-add-shipment').click(function()
         {
+            var get = true;
             $('.shipment-product:checked').each(function()
             {
                 var checkedProduct = $('<input type="hidden" name="shipment_product"></input>');
                 checkedProduct.val($(this).val());
                 checkedProduct.appendTo(shipmentForm);
+                get = false;
+            });
+            if(get)
+            {
+                window.location.href = shipmentForm.attr('action');
+            }
+            else
+            {
                 shipmentForm.submit();
+            }
+        });
+    }
+
+    if($('form#form-save-shipment')[0])
+    {
+        $('button#send-btn').on('click', function (e)
+        {
+            if($(this).hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $(this).addClass('nosubmit');
+        });
+
+        $('form#form-save-shipment').validate(
+        {
+            submitHandler: function(form)
+            {
+                $('.loading').show();
+                form.submit()
+            },
+            invalidHandler: function(event, validator)
+            {
+                $('button#send-btn').removeClass('nosubmit');
+            },
+            onfocusout: false,
+            onkeyup: false,
+            onclick: false
+        });
+
+        window.addRule = function(element)
+        {
+            element.rules('add',
+            {
+                required: true,
+                positiveNumber: true,
+            });
+        }
+
+        $('.quantity_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+                positiveNumber: true,
+            });
+        });
+        $('.send_date_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+                date: true,
+                dateLessThanOrEqualNow: true,
+            });
+        });
+        $('.pdf_1-validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
             });
         });
     }

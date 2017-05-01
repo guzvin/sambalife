@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-16 12:18-0300\n"
+"POT-Creation-Date: 2017-04-30 21:29-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -260,50 +260,38 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
-#: html/static/js/applications.js:111 html/static/js/applications.js:124
+#: html/static/js/applications.js:171 html/static/js/applications.js:188
 msgid "mm/dd/yy"
 msgstr ""
 
-#: html/static/js/applications.js:135
+#: html/static/js/applications.js:201
 msgid "Required field."
 msgstr ""
 
-#: html/static/js/applications.js:136
+#: html/static/js/applications.js:202
 msgid "Please enter at least 6 characters."
 msgstr ""
 
-#: html/static/js/applications.js:137
+#: html/static/js/applications.js:203
 msgid "Please enter the same value again."
 msgstr ""
 
-#: html/static/js/applications.js:138
+#: html/static/js/applications.js:204
 msgid "See instructions for valid format."
 msgstr ""
 
-#: html/static/js/applications.js:139
+#: html/static/js/applications.js:205
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: html/static/js/applications.js:140
+#: html/static/js/applications.js:206
 msgid "Please enter a valid date."
 msgstr ""
 
-#: html/static/js/applications.js:141
+#: html/static/js/applications.js:207
 msgid "Please enter a date less than or equal today."
 msgstr ""
 
-#: html/static/js/applications.js:142
+#: html/static/js/applications.js:208
 msgid "Please enter a number greater than zero."
-msgstr ""
-
-#: html/static/js/applications.js:383
-msgid "Tracking number"
-msgstr ""
-
-#: html/static/js/applications.js:384
-msgid "Enter your tracking number"
-msgstr ""
-
-#: html/static/js/applications.js:387
-msgid "Remove tracking number"
 msgstr ""

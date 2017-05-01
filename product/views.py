@@ -243,6 +243,6 @@ def product_autocomplete(request):
                                           quantity__gt=0).order_by('id')
         for product in products:
             products_autocomplete.append({'value': product.id, 'label': product.name,
-                                          'desc': product.description})
+                                          'desc': product.description, 'qty': product.quantity})
     return HttpResponse(json.dumps(products_autocomplete),
                         content_type='application/json')

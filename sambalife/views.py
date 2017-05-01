@@ -4,8 +4,7 @@ from django.shortcuts import render
 from sambalife.forms import UserRegistrationForm, UserLoginForm, UserForgotPasswordForm, UserResetPasswordForm
 from myauth.models import UserAddress
 from utils.helper import send_email
-from django.utils.translation import string_concat
-from django.utils.translation import ugettext as _
+from django.utils.translation import string_concat, ugettext as _
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode

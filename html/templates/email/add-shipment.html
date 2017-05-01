@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{% load i18n l10n %}
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Vendedor Online Internacional" %}</title>
+</head>
+<body>
+
+<div id="template-email" style="background: #eee; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
+    <div style="background: #fff; padding: 10px 20px 20px 20px;">
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Prezado(a)" %} {{ user_name }}</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Seu envio foi cadastrado com sucesso. Seguem abaixo os dados do envio:" %}</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Envio" %}: {{ shipment.id }}</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Data de envio" %}: {{ shipment.send_date|localize }}</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Quantidade de produtos" %}: {{ shipment.total_products }}</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Valor total" %}: {{ shipment.cost|localize }}</p>
+        <br>
+        {% for product in products %}
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Produto" %}: {{ product.product.name }}</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Quantidade" %}: {{ product.quantity }}</p>
+        {% endfor %}
+        <p>
+            <a href="{{ protocol}}://{{ domain }}{% url 'shipment' %}">{% trans "Clique aqui" %}</a> {% trans "para acessar sua lista de envios" %}.
+        </p>
+    </div>
+    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Caso você não tenha feito esta solicitação nos avise através do e-mail contato@aaaa.com." %}</small>
+    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Este é um e-mail automático disparado pelo sistema. Favor não respondê-lo, pois esta conta não é monitorada." %}</small>
+</div>
+
+</body>
+</html>

@@ -45,7 +45,9 @@
                 <div class="form-group col-md-12">
                   <label for="{{ form.send_date.id_for_label }}">{{ form.send_date.label }}*</label>
                     {% trans "Data de envio" as send_date %}
-                  <input type="text" class="form-control menor datepicker send_date_validate" id="{{ form.send_date.id_for_label }}" name="{{ form.send_date.html_name }}" placeholder="{{ send_date }}..." value="{% if form.send_date.value %}{{ form.send_date.value|date:'SHORT_DATE_FORMAT' }}{% endif %}">
+                  {% with formatted_date=form.send_date.value|date:'SHORT_DATE_FORMAT' %}
+                  <input type="text" class="form-control menor datepicker send_date_validate" id="{{ form.send_date.id_for_label }}" name="{{ form.send_date.html_name }}" placeholder="{{ send_date }}..." value="{% if formatted_date %}{{ formatted_date }}{% elif form.send_date.value %}{{ form.send_date.value }}{% endif %}">
+                  {% endwith %}
                   {% for error in form.send_date.errors %}
                     <label id="send_date-error" class="error" for="{{ form.send_date.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}

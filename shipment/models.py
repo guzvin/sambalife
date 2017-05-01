@@ -3,8 +3,11 @@ from django.db.models.fields import BigAutoField
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.core.validators import ValidationError
+from shipment.validators import validate_file_extension
 from datetime import datetime
 from product.models import Product as OriginalProduct
+from utils.helper import Calculate
+from pyparsing import ParseException
 import logging
 
 logger = logging.getLogger('django')
@@ -18,7 +21,7 @@ def user_directory_path(instance, filename):
 class Shipment(models.Model):
     id = BigAutoField(primary_key=True)
     total_products = models.FloatField(_('Total de Produtos'))
-    cost = models.FloatField(_('Valor Total'))
+    cost = models.DecimalField(_('Valor Total'), max_digits=12, decimal_places=2)
     send_date = models.DateField(_('Data de Envio'))
     STATUS_CHOICES = (
         (1, _('Preparando para Envio')),  # Preparing for Shipment
@@ -28,8 +31,9 @@ class Shipment(models.Model):
         (5, _('Enviado')),  # Shipped
     )
     status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES)
-    pdf_1 = models.FileField(_('PDF 1'), upload_to=user_directory_path)
-    pdf_2 = models.FileField(_('PDF 2'), upload_to=user_directory_path, null=True)
+    pdf_1 = models.FileField(_('PDF 1'), upload_to=user_directory_path, validators=[validate_file_extension])
+    pdf_2 = models.FileField(_('PDF 2'), upload_to=user_directory_path, null=True, blank=True,
+                             validators=[validate_file_extension])
     shipment = models.FileField(_('Comprovante de Envio'), upload_to=user_directory_path, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
@@ -42,6 +46,8 @@ class Shipment(models.Model):
 
     def clean(self):
         errors = {}
+        logger.debug('&@&@&@*@*@*@*@*#*#*$*$*$*%*%*%*%*%*%*%*%*')
+        logger.debug(self.send_date)
         if self.send_date and self.send_date > datetime.now().date():
             errors['send_date'] = ValidationError(_('Informe uma data menor ou igual a de hoje.'), code='invalid_date')
         if bool(errors):
@@ -63,9 +69,22 @@ class Product(models.Model):
         if self.quantity:
             if self.quantity <= 0:
                 errors['quantity'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_quantity')
-            elif self.quantity > self.product.quantity:
-                errors['quantity'] = ValidationError(_('Informe um número menor que a quantidade em estoque.'),
-                                                     code='invalid_stock_quantity')
+            elif self.product:
+                if self.quantity > self.product.quantity:
+                    errors['quantity'] = ValidationError(_('Informe um número menor que a quantidade em estoque '
+                                                           '(%(quantity)s).') % {'quantity': self.product.quantity},
+                                                         code='invalid_stock_quantity')
+                else:
+                    try:
+                        original_product = OriginalProduct.objects.get(pk=self.product.id)
+                        if self.quantity > original_product.quantity:
+                            errors['quantity'] = ValidationError(_('Informe um número menor que a quantidade em '
+                                                                   'estoque (%(quantity)s).') %
+                                                                 {'quantity': original_product.quantity},
+                                                                 code='invalid_stock_quantity')
+                    except OriginalProduct.DoesNotExist:
+                        errors['quantity'] = ValidationError(_('Problema para validar o produto selecionado.'),
+                                                             code='invalid_stock_product')
         if bool(errors):
             raise ValidationError(errors)
 
@@ -107,3 +126,22 @@ class Package(models.Model):
             errors['depth'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_depth')
         if bool(errors):
             raise ValidationError(errors)
+
+
+class CostFormula(models.Model):
+    id = models.AutoField(primary_key=True)
+    formula = models.CharField(_('Fórmula'), max_length=100)
+
+    class Meta:
+        verbose_name = _('Cálculo de Envio')
+        verbose_name_plural = _('Cálculo de Envio')
+
+    def clean(self):
+        try:
+            Calculate().parse(self.formula)
+        except ParseException as err:
+            logger.error(str(err))
+            raise ValidationError(_('Fórmula inválida.'), code='invalid_formula')
+
+    def __str__(self):
+        return str(_('Fórmula de Envio'))

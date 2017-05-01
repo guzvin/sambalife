@@ -7,7 +7,10 @@ from django.forms.models import BaseInlineFormSet
 from django.forms.widgets import CheckboxInput
 from django.forms import BooleanField
 from django.forms.formsets import DELETION_FIELD_NAME
+from pyparsing import Word, alphas, Literal, CaselessLiteral, Combine, Optional, nums, Or, Forward, \
+    ZeroOrMore, StringEnd, alphanums
 import re
+import math
 import json
 import logging
 
@@ -33,13 +36,15 @@ def digitos(valor):
     return re.sub(r'\D', '', valor)
 
 
-def send_email(title, body, email_to, email_from=string_concat(_('Vendedor Online Internacional'), ' ',
-                                                               string_concat('<', settings.EMAIL_HOST_USER, '>'))):
+def send_email(title, body, email_to=None,
+               email_from=string_concat(_('Vendedor Online Internacional'), ' ',
+                                        string_concat('<', settings.EMAIL_HOST_USER, '>')), bcc=None):
     msg = EmailMessage(
         title,
         body,
-        email_from,
-        email_to,
+        from_email=email_from,
+        to=email_to,
+        bcc=bcc
     )
     msg.content_subtype = 'html'
     msg.send(fail_silently=False)
@@ -83,3 +88,103 @@ class MyBaseInlineFormSet(BaseInlineFormSet):
     def _should_delete_form(self, form):
         form.is_valid()
         return form.cleaned_data.get(DELETION_FIELD_NAME, False)
+
+
+class Calculate:
+    def push_first(self, str, loc, toks):
+        self.expr_stack.append(toks[0])
+
+    # def assign_var(self, str, loc, toks):
+    #     self.var_stack.append(toks[0])
+
+    def __init__(self):
+        self.expr_stack = []
+        # self.var_stack = []
+        self.variables = {}
+
+        # define grammar
+        point = Literal('.')
+        e = CaselessLiteral('E')
+        plusorminus = Literal('+') | Literal('-')
+        number = Word(nums)
+        integer = Combine(Optional(plusorminus) + number)
+        floatnumber = Combine(integer +
+                              Optional(point + Optional(number)) +
+                              Optional(e + integer)
+                              )
+    
+        ident = Word(alphas, alphanums + '_')
+    
+        plus = Literal("+")
+        minus = Literal("-")
+        mult = Literal("*")
+        div = Literal("/")
+        lpar = Literal("(").suppress()
+        rpar = Literal(")").suppress()
+        addop = plus | minus
+        multop = mult | div
+        expop = Literal("^")
+        # assign = Literal("=")
+    
+        expr = Forward()
+        atom = ((e | floatnumber | integer | ident).setParseAction(self.push_first) |
+                (lpar + expr.suppress() + rpar)
+                )
+    
+        factor = Forward()
+        factor << atom + ZeroOrMore((expop + factor).setParseAction(self.push_first))
+    
+        term = factor + ZeroOrMore((multop + factor).setParseAction(self.push_first))
+        expr << term + ZeroOrMore((addop + term).setParseAction(self.push_first))
+        # bnf = Optional((ident + assign).setParseAction(self.assign_var)) + expr
+
+        # self.pattern = bnf + StringEnd()
+        self.pattern = expr + StringEnd()
+
+        # map operator symbols to corresponding arithmetic operations
+        self.opn = {
+            "+": (lambda a, b: a + b),
+            "-": (lambda a, b: a - b),
+            "*": (lambda a, b: a * b),
+            "/": (lambda a, b: a / b),
+            "^": (lambda a, b: a ** b)
+        }
+
+    # Recursive function that evaluates the stack
+    def evaluate_stack(self, s):
+        op = s.pop()
+        if op in "+-*/^":
+            op2 = self.evaluate_stack(s)
+            op1 = self.evaluate_stack(s)
+            return self.opn[op](op1, op2)
+        elif op == "PI":
+            return math.pi
+        elif op == "E":
+            return math.e
+        elif re.search('^[a-zA-Z][a-zA-Z0-9_]*$', op):
+            if op in self.variables:
+                op = self.variables[op]
+            elif 'x' in self.variables:
+                op = self.variables['x']
+            else:
+                return 0
+        if re.search('^[-+]?[0-9]+$', str(op)):
+            return int(op)
+        else:
+            return float(op)
+
+    def parse(self, input_string):
+        return self.pattern.parseString(input_string)
+
+    def evaluate(self, input_string, variables=None):
+        if input_string != '':
+            # try parsing the input string
+            result_parse = self.parse(input_string)
+            # show result of parsing the input string
+            logger.debug(' '.join([input_string, '->', str(result_parse)]))
+            logger.debug(''.join(['expr_stack=', str(self.expr_stack)]))
+            # calculate result , store a copy in ans , display the result to user
+            if variables is not None:
+                self.variables = variables
+            return self.evaluate_stack(self.expr_stack)
+        return 0

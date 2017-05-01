@@ -38,9 +38,13 @@
     <!-- jQuery -->
     <script src="/static/externo/jquery/jquery.min.js"></script>
 
+    <script src="/static/js/constants.js"></script>
+
     <script src="/static/js/inlines.js"></script>
 
     <script src="/static/jsi18n/{{ LANGUAGE_CODE }}/djangojs.js"></script>
+
+    {% block specific_scripts %}{% endblock %}
 
 </head>
 

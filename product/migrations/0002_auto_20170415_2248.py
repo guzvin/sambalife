@@ -3,23 +3,10 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
-from product.models import Product, Tracking
-from django.db.models import Q
 
 
 def add_system_groups_permissions(apps, schema_editor):
-    admin_group = Group.objects.get(name='admins')
-    all_users_group = Group.objects.get(name='all_users')
-    product_content_type = ContentType.objects.get_for_model(Product)
-    tracking_content_type = ContentType.objects.get_for_model(Tracking)
-    perms = Permission.objects.filter(Q(content_type=product_content_type) | Q(content_type=tracking_content_type))
-    for p in perms:
-        admin_group.permissions.add(p)
-        all_users_group.permissions.add(p)
-    admin_group.save()
-    all_users_group.save()
+    pass
 
 
 class Migration(migrations.Migration):

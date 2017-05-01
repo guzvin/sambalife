@@ -11,6 +11,7 @@ from django.template import loader, Context
 from django.contrib.sites.models import Site
 from utils.helper import send_email
 from smtplib import SMTPException
+import socket
 import logging
 
 logger = logging.getLogger('django')
@@ -77,7 +78,9 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
                 self._send_email('email/account-activation.html')
         except SMTPException as e:
             for recipient in e.recipients:
-                logger.warn('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
+                logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
+        except socket.error as err:
+            logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
         super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
 
     def _send_email(self, template_name):

@@ -136,7 +136,7 @@
                   </td>
                   {% if user|has_shipment_perm:'add_shipment' %}
                   <td class="center">
-                      {% if product.status == 2 and product.quantity > 0 %}
+                      {% if product.status == 2 and product.quantity > 0 and product.user == request.user %}
                       <input type="checkbox" name="shipment_product" value="{{ product.id }}" id="shipment-{{ product.id }}" class="shipment-product" />
                       {% endif %}
                   </td>

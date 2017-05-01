@@ -2,17 +2,28 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from shipment.templatetags.shipments import has_shipment_perm
-from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden
-from django.utils.translation import ugettext as _
+from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
+from django.utils.translation import string_concat,  ugettext as _
 from product.models import Product as OriginalProduct
-from shipment.models import Shipment, Product, Package
+from shipment.models import Shipment, Product, Package, CostFormula
+from django.contrib.sites.models import Site
 from django.forms import modelformset_factory, inlineformset_factory, Field
-from django.forms.widgets import Widget
-from django.utils.html import conditional_escape, format_html, html_safe
+from django.forms.widgets import Widget, FileInput
+from django.utils.html import format_html
 from django.forms.utils import flatatt
-from utils.helper import MyBaseInlineFormSet
+from django.db import transaction
+from django.utils import formats
+from django.utils.encoding import force_text
+from django.template import loader, Context
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from utils.helper import MyBaseInlineFormSet, send_email
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from utils.helper import Calculate
+import magic
+import json
+import os
 import logging
 
 logger = logging.getLogger('django')
@@ -40,13 +51,20 @@ class InlineProductWidget(Widget):
         if hidden_value != '':
             # Only add the 'value' attribute if a value is non-empty.
             final_attrs['value'] = hidden_value
-        hidden_tag = format_html('<input{} />', flatatt(final_attrs))
+        hidden_tag = format_html('<input{} class="inline-row-key"/>', flatatt(final_attrs))
         html_fragment = format_html('<td>{}{}</td><td>{}</td><td>{}</td>',
                                     hidden_tag,
                                     value.id if value else '',
                                     value.name if value else '',
                                     value.description if value else '')
         return html_fragment
+
+    def value_from_datadict(self, data, files, name):
+        logger.debug('+++++++++++++++ '+data.get(name))
+        try:
+            return OriginalProduct.objects.get(pk=data.get(name))
+        except OriginalProduct.DoesNotExist:
+            return data.get(name)
 
 
 def my_formfield_callback(f, **kwargs):
@@ -62,13 +80,17 @@ def shipment_add_edit(request, pid=None):
     if has_shipment_perm(request.user, 'add_shipment') is False:
         return HttpResponseForbidden()
     if request.method == 'POST':
-        preselected_products = request.POST.getlist('shipment_product')
-        original_products = OriginalProduct.objects.filter(user=request.user, status=2, quantity__gt=0,
-                                                           pk__in=preselected_products).order_by('id')
+        if request.POST.get('save_shipment') is None:
+            preselected_products = request.POST.getlist('shipment_product')
+            original_products = OriginalProduct.objects.filter(user=request.user, status=2, quantity__gt=0,
+                                                               pk__in=preselected_products).order_by('id')
+        else:
+            original_products = OriginalProduct.objects.none()
     else:
         original_products = OriginalProduct.objects.none()
     ShipmentFormSet = modelformset_factory(Shipment, fields=('send_date', 'pdf_1', 'pdf_2',),
-                                           localized_fields=('send_date',), min_num=1, max_num=1)
+                                           localized_fields=('send_date',), min_num=1, max_num=1,
+                                           widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=MyBaseInlineFormSet, fields=('quantity',
                                                                                                    'product'),
                                            field_classes={'product': Field},
@@ -76,12 +98,114 @@ def shipment_add_edit(request, pid=None):
                                            formfield_callback=my_formfield_callback,
                                            extra=original_products.count())
     kwargs = {'addText': _('Adicionar produto'), 'deleteText': _('Remover produto')}
-    shipment_formset = ShipmentFormSet(queryset=Shipment.objects.none())
-    product_formset = ProductFormSet(prefix='product_set', **kwargs)
-    for subform, data in zip(product_formset.forms, original_products):
-        subform.initial = {
-            'quantity': None,
-            'product': data
-        }
+    logger.debug('@@@@@@@@@@@@ REQUEST METHOD @@@@@@@@@@@@@@')
+    logger.debug(request.method)
+    logger.debug(str(request.method == 'POST' and request.POST.get('save_shipment')))
+    if request.method == 'POST' and request.POST.get('save_shipment'):
+        shipment_formset = ShipmentFormSet(request.POST, request.FILES, queryset=Shipment.objects.none())
+        product_formset = ProductFormSet(request.POST, prefix='product_set', **kwargs)
+        shipment_formset_is_valid = shipment_formset.is_valid()
+        product_formset_is_valid = product_formset.is_valid()
+        if shipment_formset_is_valid and product_formset_is_valid:
+            with transaction.atomic():
+                for shipment_form in shipment_formset:
+                    logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE PROCESS @@@@@@@@@@@@@@')
+                    shipment = shipment_form.save(commit=False)
+                    shipment.user = request.user
+                    shipment.status = 1  # Preparing for Shipment
+                    shipment.total_products = 0
+                    products = product_formset.save(commit=False)
+                    for product in products:
+                        original_product = OriginalProduct.objects.get(pk=product.product.id)
+                        original_product.quantity -= product.quantity
+                        original_product.save()
+                        shipment.total_products += product.quantity
+                    cost_formula = CostFormula.objects.all()
+                    if len(cost_formula) > 0:
+                        cost = Calculate().evaluate(cost_formula[0].formula, variables={'x': shipment.total_products})
+                    else:
+                        cost = shipment.total_products * 1.25
+                    if cost > 0:
+                        shipment.cost = cost
+                    logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
+                    shipment.save()
+                    product_formset.instance = shipment
+                    logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
+                    product_formset.save()
+                    logger.debug('@@@@@@@@@@@@ SEND PDF 1 EMAIL @@@@@@@@@@@@@@')
+                    send_add_shipment_email(request, shipment, products)
+            if pid is None:
+                success_message = _('Envio inserido com sucesso.')
+            else:
+                success_message = _('Envio atualizado com sucesso.')
+            return render(request, 'shipment_add_edit.html', {'title': _('Envio'), 'success': True,
+                                                              'success_message': success_message,
+                                                              'shipment_formset':
+                                                                  ShipmentFormSet(queryset=Shipment.objects.none()),
+                                                              'product_formset':
+                                                                  ProductFormSet(prefix='product_set', **kwargs)})
+        else:
+            logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
+            logger.warning(shipment_formset.errors)
+            logger.warning(product_formset.errors)
+    else:
+        shipment_formset = ShipmentFormSet(queryset=Shipment.objects.none())
+        product_formset = ProductFormSet(prefix='product_set', **kwargs)
+        for subform, data in zip(product_formset.forms, original_products):
+            subform.initial = {
+                'quantity': data.quantity,
+                'product': data
+            }
     return render(request, 'shipment_add_edit.html', {'title': _('Envio'), 'shipment_formset': shipment_formset,
                                                       'product_formset': product_formset})
+
+
+@login_required
+@require_http_methods(["GET"])
+def shipment_calculate(request):
+    if has_shipment_perm(request.user, 'add_shipment') is False:
+        return HttpResponseForbidden()
+    items = request.GET.get('items')
+    cost_formula = CostFormula.objects.all()
+    if len(cost_formula) > 0:
+        cost = Calculate().evaluate(cost_formula[0].formula, variables={'x': items})
+    else:
+        cost = items * 1.25
+    return HttpResponse(json.dumps({'cost': force_text(formats.number_format(cost, use_l10n=True,
+                                                                             decimal_pos=2))}),
+                        content_type='application/json')
+
+
+@login_required
+@require_http_methods(["GET"])
+def shipment_pdf_1(request, pid=None):
+    try:
+        shipment = Shipment.objects.get(pk=pid)
+    except Shipment.DoesNotExist:
+        return HttpResponseBadRequest()
+    if shipment.user == request.user or request.user.groups.filter(name='admins').exists():
+        content_type = magic.from_file(os.path.sep.join([settings.MEDIA_ROOT, shipment.pdf_1.name]), mime=True)
+        filename = shipment.pdf_1.name.split('/')[-1]
+        logger.debug('@@@@@@@@@@@@ FILE CONTENT TYPE @@@@@@@@@@@@@@')
+        logger.debug(filename)
+        logger.debug(content_type)
+        response = HttpResponse(shipment.pdf_1, content_type=content_type)
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+        return response
+    else:
+        return HttpResponseForbidden()
+
+
+def send_add_shipment_email(request, shipment, products):
+    message = loader.get_template('email/add-shipment.html').render(
+        Context({'user_name': request.user.first_name, 'protocol': 'https',
+                 'domain': Site.objects.get_current().domain, 'shipment': shipment, 'products': products}))
+    str1 = _('Cadastro de Envio %(number)s') % {'number': shipment.id}
+    str2 = _('Vendedor Online Internacional')
+    user_model = get_user_model()
+    admins = user_model.objects.filter(groups__name='admins')
+    admins_email = [user.email for user in admins]
+    logger.debug('@@@@@@@@@@@@ ADMINS EMAIL @@@@@@@@@@@@@@')
+    logger.debug(admins_email)
+    send_email(string_concat(str1, ' ', str2), message, [request.user.email], bcc=admins_email)

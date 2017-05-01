@@ -6,16 +6,21 @@
 <link href="/static/css/inlines.css" rel="stylesheet">
 {% endblock %}
 
+{% block specific_scripts %}
+<script src="/static/js/specifics/shipment.js"></script>
+{% endblock %}
+
 {% block conteudo %}
 
     <div class="container-fluid">
       <div class="row">
-        {% if user|has_shipment_perm:'add_product' %}
+        {% if user|has_shipment_perm:'add_shipment' %}
         <div class="col-md-1 sidebar">
 
         </div>
         <div class="col-md-10 main">
           <h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Criar" %} {{ title }}</h1>
+           {% if user|has_shipment_perm:'add_product' %}
            <div class="row">
             <div class="form-group">
                 <div class="col-md-5">
@@ -28,9 +33,14 @@
                     <a class="btn btn-primary filtar-btn add-row" title="{{ product_formset.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus-square"></i> {{ product_formset.addText }}</a>
                 </div>
             </div>
-          </div><br><br>
-        <form action="" method="post" id="form-add-shipment">
+          </div>
+          <br>
+          {% endif %}
+          <br>
+        <form action="" method="post" id="form-save-shipment" enctype="multipart/form-data">
           {% csrf_token %}
+            <input type="hidden" name="save_shipment" value="1">
+            {{ shipment_formset.management_form }}
             {{ product_formset.management_form }}
           <div class="table-responsive">
             <table class="table table-striped js-inline-admin-formset" id="{{ product_formset.prefix }}-group"
@@ -43,7 +53,9 @@
                   <th>{% trans "Nome" %}</th>
                   <th>{% trans "Descrição" %}</th>
                   <th class="center">{% trans "Quantidade" %}</th>
+                  {% if user|has_shipment_perm:'delete_product' %}
                   <th>{% trans "Retirar" %}</th>
+                  {% endif %}
                 </tr>
               </thead>
               <tbody>
@@ -52,43 +64,61 @@
                   id="{{ product_formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
                   {{ product_form.product|safe }}
                   <td class="center">
-                      <input type="number" class="form-control menor-m" id="{{ product_form.quantity.id_for_label }}" name="{{ product_form.quantity.html_name }}" value="{% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}" />
+                      <input type="number" class="form-control menor-m quantity_validate add-validate-rule" id="{{ product_form.quantity.id_for_label }}" name="{{ product_form.quantity.html_name }}" value="{% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}" />
+                      {% for error in product_form.quantity.errors %}
+                        <label id="{{ product_form.quantity.id_for_label }}-error" class="error" for="{{ product_form.quantity.id_for_label }}">{{ error|escape }}</label>
+                      {% endfor %}
                       {{ product_form.id }}
                       {{ product_form.shipment }}
                   </td>
+                  {% if user|has_shipment_perm:'delete_product' %}
                   <td>
                       {% if product_formset.can_delete %}
                       <a class="btn btn-danger inline-deletelink" title="{{ product_formset.deleteText }}" href="#"><i class="fa fa-fw fa-close"></i></a>
                       {% endif %}
                   </td>
+                  {% endif %}
                 </tr>
               {% endfor %}
               </tbody>
             </table>
           </div> <hr />
+          {% for shipment_form in shipment_formset %}
+            {{ shipment_form.id }}
           <div class="row">
             <div class="col-md-4">
-                <label><i class="fa fa-fw fa-bar-chart"></i> Valores:</label><br><br>
-                <a class="btn btn-default" href="#"><i class="fa fa-fw fa-calculator"></i> Recalcular valor do Shipment</a><br><br>
-                <p><strong><i class="fa fa-fw fa-list-ol"></i> Total de Produtos: </strong>38 </p>
-                <p><strong><i class="fa fa-fw fa-money"></i> Valor Total: </strong> U$ 47,50</p>
+                <label><i class="fa fa-fw fa-bar-chart"></i> {% trans "Valores" %}:</label><br><br>
+                <a class="btn btn-default" href="#" id="btn-calculate-shipment"><i class="fa fa-fw fa-calculator"></i> {% trans "Calcular valor do Envio" %}</a><br><br>
+                <p><strong><i class="fa fa-fw fa-list-ol"></i> {% trans "Total de Produtos" %}: </strong><span id="totalProducts">-</span> </p>
+                <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">-</span></p>
             </div>
             <div class="col-md-4">
-                <p><strong><i class="fa fa-fw fa-calendar"></i> Data do Envio: </strong></p>
+                <p><strong><i class="fa fa-fw fa-calendar"></i> {{ shipment_form.send_date.label }}: </strong></p>
                 <div class="form-group">
-                    <input type="text" placeholder="Data de Envio..." name="data-envio" class="form-control menor" id="datepicker" />
+                    {% with formatted_date=shipment_form.send_date.value|date:'SHORT_DATE_FORMAT' %}
+                    <input type="text" placeholder="{{ shipment_form.send_date.label }}..." name="{{ shipment_form.send_date.html_name }}" class="form-control menor datepicker send_date_validate" id="{{ shipment_form.send_date.id_for_label }}" value="{% if formatted_date %}{{ formatted_date }}{% elif shipment_form.send_date.value %}{{ shipment_form.send_date.value }}{% endif %}">
+                    {% endwith %}
+                      {% for error in shipment_form.send_date.errors %}
+                        <label id="{{ shipment_form.send_date.id_for_label }}-error" class="error" for="{{ shipment_form.send_date.id_for_label }}">{{ error|escape }}</label>
+                      {% endfor %}
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label><i class="fa fa-fw fa-file-pdf-o"></i> Download PDFs:</label><br><br>
-                    <label>PDF 1:</label><input type="file" name="pdf1" class="form-control" id="pdf1" /><br>
-                    <label>PDF 2:</label><br><p>Upload não autorizado</p>
+                    <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Download PDFs" %}:</label><br><br>
+                    <label>{{ shipment_form.pdf_1.label }}:</label>{{ shipment_form.pdf_1 }}
+                      {% for error in shipment_form.pdf_1.errors %}
+                        <label id="{{ shipment_form.pdf_1.id_for_label }}-error" class="error" for="{{ shipment_form.pdf_1.id_for_label }}">{{ error|escape }}</label>
+                      {% endfor %}
+                    <br>
+                    <label>{{ shipment_form.pdf_2.label }}:</label><br><p>{% trans "Upload não autorizado" %}</p>
                 </div>
             </div>
-           </div><hr />
+          </div>
+          {% endfor %}
+            <hr />
            <div class="row">
-            <a class="btn btn-primary filtar-btn alterar-status" href="#"><i class="fa fa-fw fa-paper-plane"></i> Salvar</a><br><br><!--
+            <button class="btn btn-primary filtar-btn alterar-status" id="send-btn" type="submit"><i class="fa fa-fw fa-paper-plane"></i> Salvar</button><br><br><!--
             <a class="btn btn-primary filtar-btn" href="#"><i class="fa fa-fw fa-paypal"></i> Salvar e efetuar Pagamento Agora</a><br>--><a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> Voltar</a><br><br><br><br>
            </div>
         </form>

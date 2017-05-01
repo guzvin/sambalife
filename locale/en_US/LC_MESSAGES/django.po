@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-22 22:11-0300\n"
+"POT-Creation-Date: 2017-04-30 21:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,8 +23,8 @@ msgstr ""
 #: html/templates/includes/layout.html:13 html/templates/login.html:13
 #: html/templates/user_registration.html:13
 #: html/templates/user_reset_password.html:13
-#: html/templates/user_validation.html:13 myauth/models.py:88
-#: sambalife/views.py:73 sambalife/views.py:208 utils/helper.py:33
+#: html/templates/user_validation.html:13 myauth/models.py:91
+#: sambalife/views.py:73 sambalife/views.py:208 utils/helper.py:39
 msgid "Vendedor Online Internacional"
 msgstr ""
 
@@ -75,85 +75,87 @@ msgstr ""
 msgid "VALIDAR CADASTRO"
 msgstr ""
 
-#: html/templates/includes/layout.html:66
+#: html/templates/includes/layout.html:70
 msgid "Administrativo"
 msgstr ""
 
-#: html/templates/includes/layout.html:69 myauth/admin.py:262
-#: myauth/admin.py:263 myauth/models.py:38
+#: html/templates/includes/layout.html:73 myauth/admin.py:262
+#: myauth/admin.py:263 myauth/models.py:39
 msgid "Usuários"
 msgstr ""
 
-#: html/templates/includes/layout.html:73
+#: html/templates/includes/layout.html:77
 msgid "Pagamentos"
 msgstr ""
 
-#: html/templates/includes/layout.html:78
-#: html/templates/includes/layout.html:84
+#: html/templates/includes/layout.html:82
+#: html/templates/includes/layout.html:88
 msgid "Lotes"
 msgstr ""
 
-#: html/templates/includes/layout.html:88 html/templates/product_stock.html:14
+#: html/templates/includes/layout.html:92 html/templates/product_stock.html:14
 #: product/views.py:85
 msgid "Estoque"
 msgstr ""
 
-#: html/templates/includes/layout.html:92
+#: html/templates/includes/layout.html:96
 msgid "Lista de Produtos"
 msgstr ""
 
-#: html/templates/includes/layout.html:100 html/templates/product_stock.html:59
+#: html/templates/includes/layout.html:104 html/templates/product_stock.html:59
 #: product/views.py:101
 msgid "Adicionar Produto"
 msgstr ""
 
-#: html/templates/includes/layout.html:108 html/templates/product_stock.html:84
+#: html/templates/includes/layout.html:112 html/templates/product_stock.html:85
+#: shipment/apps.py:7 shipment/models.py:39 shipment/views.py:127
+#: shipment/views.py:143
 msgid "Envio"
 msgstr ""
 
-#: html/templates/includes/layout.html:112
+#: html/templates/includes/layout.html:116
 msgid "Lista de Envios"
 msgstr ""
 
-#: html/templates/includes/layout.html:120 html/templates/product_stock.html:62
+#: html/templates/includes/layout.html:124 html/templates/product_stock.html:62
 msgid "Criar Envio"
 msgstr ""
 
-#: html/templates/includes/layout.html:127
+#: html/templates/includes/layout.html:131
 msgid "Olá"
 msgstr ""
 
-#: html/templates/includes/layout.html:130
+#: html/templates/includes/layout.html:134
 msgid "Editar cadastro"
 msgstr ""
 
-#: html/templates/includes/layout.html:134
+#: html/templates/includes/layout.html:138
 msgid "sair"
 msgstr ""
 
-#: html/templates/includes/layout.html:150 html/templates/login.html:69
+#: html/templates/includes/layout.html:154 html/templates/login.html:69
 #: html/templates/user_registration.html:189
 msgid "Sucesso"
 msgstr ""
 
-#: html/templates/includes/layout.html:153 html/templates/login.html:72
+#: html/templates/includes/layout.html:157 html/templates/login.html:72
 #: html/templates/user_registration.html:192
 #: html/templates/user_reset_password.html:101
 msgid "Erro"
 msgstr ""
 
-#: html/templates/includes/layout.html:176
+#: html/templates/includes/layout.html:180
 msgid "Não foi possível concluir sua ação."
 msgstr ""
 
-#: html/templates/includes/layout.html:181 html/templates/login.html:101
+#: html/templates/includes/layout.html:185 html/templates/login.html:101
 #: html/templates/product_details.html:91
 #: html/templates/user_registration.html:221
 #: html/templates/user_reset_password.html:119
 msgid "Fechar"
 msgstr ""
 
-#: html/templates/includes/layout.html:188 html/templates/login.html:108
+#: html/templates/includes/layout.html:192 html/templates/login.html:108
 #: html/templates/user_registration.html:228
 #: html/templates/user_reset_password.html:126
 msgid "Carregando"
@@ -214,46 +216,50 @@ msgstr ""
 msgid "Data de envio"
 msgstr ""
 
-#: html/templates/product_add_edit.html:58
+#: html/templates/product_add_edit.html:60
 msgid "Digite o código"
 msgstr ""
 
-#: html/templates/product_add_edit.html:87
+#: html/templates/product_add_edit.html:89
 msgid "Salvar"
 msgstr ""
 
-#: html/templates/product_add_edit.html:88
+#: html/templates/product_add_edit.html:90
 #: html/templates/user_registration.html:180
 msgid "Voltar"
 msgstr ""
 
 #: html/templates/product_details.html:15 html/templates/product_stock.html:20
+#: html/templates/shipment_add_edit.html:52
 msgid "ID"
 msgstr ""
 
 #: html/templates/product_details.html:21 html/templates/product_stock.html:25
+#: html/templates/shipment_add_edit.html:53
 #: html/templates/user_registration.html:63 myauth/admin.py:303
-#: myauth/models.py:21 product/models.py:14 sambalife/forms.py:8
+#: myauth/models.py:22 product/models.py:14 sambalife/forms.py:8
 msgid "Nome"
 msgstr ""
 
-#: html/templates/product_details.html:27 product/models.py:15
+#: html/templates/product_details.html:27
+#: html/templates/shipment_add_edit.html:54 product/models.py:15
 msgid "Descrição"
 msgstr ""
 
-#: html/templates/product_details.html:33 html/templates/product_stock.html:74
-#: product/models.py:16 shipment/models.py:14
+#: html/templates/product_details.html:33 html/templates/product_stock.html:75
+#: html/templates/shipment_add_edit.html:55 product/models.py:16
+#: shipment/models.py:57
 msgid "Quantidade"
 msgstr ""
 
 #: html/templates/product_details.html:40 html/templates/product_stock.html:33
-#: myauth/models.py:37
+#: myauth/models.py:38
 msgid "Usuário"
 msgstr ""
 
 #: html/templates/product_details.html:47 html/templates/product_stock.html:41
-#: html/templates/product_stock.html:82 product/models.py:22
-#: shipment/models.py:20
+#: html/templates/product_stock.html:83 product/models.py:22
+#: shipment/models.py:32
 msgid "Status"
 msgstr ""
 
@@ -282,13 +288,13 @@ msgstr ""
 msgid "Filtros"
 msgstr ""
 
-#: html/templates/product_stock.html:47 html/templates/product_stock.html:125
-#: product/models.py:19 shipment/models.py:17
+#: html/templates/product_stock.html:47 html/templates/product_stock.html:126
+#: product/models.py:19 shipment/models.py:30
 msgid "Enviado"
 msgstr ""
 
-#: html/templates/product_stock.html:48 html/templates/product_stock.html:126
-#: product/models.py:20 shipment/models.py:18
+#: html/templates/product_stock.html:48 html/templates/product_stock.html:127
+#: product/models.py:20
 msgid "Em Estoque"
 msgstr ""
 
@@ -296,29 +302,69 @@ msgstr ""
 msgid "Filtrar"
 msgstr ""
 
-#: html/templates/product_stock.html:73 product/models.py:17
-#: shipment/models.py:15
-msgid "Data Envio"
+#: html/templates/product_stock.html:74 product/models.py:17
+#: shipment/models.py:24
+msgid "Data de Envio"
 msgstr ""
 
-#: html/templates/product_stock.html:86
+#: html/templates/product_stock.html:87
 msgid "Ações"
 msgstr ""
 
-#: html/templates/product_stock.html:119
+#: html/templates/product_stock.html:120
 msgid "Alterar Status"
 msgstr ""
 
-#: html/templates/product_stock.html:140
+#: html/templates/product_stock.html:145
 msgid "Visualizar"
 msgstr ""
 
-#: html/templates/product_stock.html:147
+#: html/templates/product_stock.html:152
 msgid "Nenhum produto encontrado."
 msgstr ""
 
+#: html/templates/shipment_add_edit.html:22
+msgid "Criar"
+msgstr ""
+
+#: html/templates/shipment_add_edit.html:27
+msgid "Adicionar mais produtos a este shipment"
+msgstr ""
+
+#: html/templates/shipment_add_edit.html:28
+msgid "Digite o nome do Produto"
+msgstr ""
+
+#: html/templates/shipment_add_edit.html:57
+msgid "Retirar"
+msgstr ""
+
+#: html/templates/shipment_add_edit.html:90
+msgid "Valores"
+msgstr ""
+
+#: html/templates/shipment_add_edit.html:91
+msgid "Calcular valor do Envio"
+msgstr ""
+
+#: html/templates/shipment_add_edit.html:92 shipment/models.py:22
+msgid "Total de Produtos"
+msgstr ""
+
+#: html/templates/shipment_add_edit.html:93 shipment/models.py:23
+msgid "Valor Total"
+msgstr ""
+
+#: html/templates/shipment_add_edit.html:108
+msgid "Download PDFs"
+msgstr ""
+
+#: html/templates/shipment_add_edit.html:114
+msgid "Upload não autorizado"
+msgstr ""
+
 #: html/templates/user_registration.html:13
-#: html/templates/user_validation.html:13 myauth/models.py:87
+#: html/templates/user_validation.html:13 myauth/models.py:90
 #: sambalife/views.py:207
 msgid "Cadastro"
 msgstr ""
@@ -339,7 +385,7 @@ msgstr ""
 msgid "Digite o nome"
 msgstr ""
 
-#: html/templates/user_registration.html:71 myauth/models.py:22
+#: html/templates/user_registration.html:71 myauth/models.py:23
 #: sambalife/forms.py:9
 msgid "Sobrenome"
 msgstr ""
@@ -348,7 +394,7 @@ msgstr ""
 msgid "Digite o sobrenome"
 msgstr ""
 
-#: html/templates/user_registration.html:79 myauth/models.py:23
+#: html/templates/user_registration.html:79 myauth/models.py:24
 #: sambalife/forms.py:10 sambalife/forms.py:46
 msgid "E-mail"
 msgstr ""
@@ -357,7 +403,7 @@ msgstr ""
 msgid "Digite o e-mail"
 msgstr ""
 
-#: html/templates/user_registration.html:87 myauth/models.py:24
+#: html/templates/user_registration.html:87 myauth/models.py:25
 #: sambalife/forms.py:11
 msgid "CPF"
 msgstr ""
@@ -366,7 +412,7 @@ msgstr ""
 msgid "Digite o CPF"
 msgstr ""
 
-#: html/templates/user_registration.html:95 myauth/models.py:25
+#: html/templates/user_registration.html:95 myauth/models.py:26
 #: sambalife/forms.py:12
 msgid "Telefone"
 msgstr ""
@@ -375,7 +421,7 @@ msgstr ""
 msgid "Digite o telefone"
 msgstr ""
 
-#: html/templates/user_registration.html:103 myauth/models.py:26
+#: html/templates/user_registration.html:103 myauth/models.py:27
 #: sambalife/forms.py:13
 msgid "Celular"
 msgstr ""
@@ -385,7 +431,7 @@ msgid "Digite o celular"
 msgstr ""
 
 #: html/templates/user_registration.html:111 myauth/admin.py:160
-#: myauth/models.py:95 sambalife/forms.py:14
+#: myauth/models.py:98 sambalife/forms.py:14
 msgid "Endereço"
 msgstr ""
 
@@ -393,7 +439,7 @@ msgstr ""
 msgid "Digite o endereço"
 msgstr ""
 
-#: html/templates/user_registration.html:120 myauth/models.py:96
+#: html/templates/user_registration.html:120 myauth/models.py:99
 #: sambalife/forms.py:15
 msgid "Complemento"
 msgstr ""
@@ -402,7 +448,7 @@ msgstr ""
 msgid "Digite o complemento"
 msgstr ""
 
-#: html/templates/user_registration.html:128 myauth/models.py:97
+#: html/templates/user_registration.html:128 myauth/models.py:100
 #: sambalife/forms.py:16
 msgid "Bairro"
 msgstr ""
@@ -411,7 +457,7 @@ msgstr ""
 msgid "Digite o bairro"
 msgstr ""
 
-#: html/templates/user_registration.html:136 myauth/models.py:100
+#: html/templates/user_registration.html:136 myauth/models.py:103
 #: sambalife/forms.py:19
 msgid "Cidade"
 msgstr ""
@@ -420,7 +466,7 @@ msgstr ""
 msgid "Digite o cidade"
 msgstr ""
 
-#: html/templates/user_registration.html:146 myauth/models.py:99
+#: html/templates/user_registration.html:146 myauth/models.py:102
 #: sambalife/forms.py:18
 msgid "Estado"
 msgstr ""
@@ -429,7 +475,7 @@ msgstr ""
 msgid "Digite o estado"
 msgstr ""
 
-#: html/templates/user_registration.html:154 myauth/models.py:98
+#: html/templates/user_registration.html:154 myauth/models.py:101
 #: sambalife/forms.py:17
 msgid "CEP"
 msgstr ""
@@ -640,63 +686,64 @@ msgstr ""
 msgid "Meus usuários"
 msgstr ""
 
-#: myauth/models.py:27
+#: myauth/models.py:28
 msgid "Data de criação"
 msgstr ""
 
-#: myauth/models.py:28
+#: myauth/models.py:29
 msgid "Ativo"
 msgstr ""
 
-#: myauth/models.py:29
+#: myauth/models.py:30
 msgid "Verificado"
 msgstr ""
 
-#: myauth/models.py:40
+#: myauth/models.py:41
 msgid "Pode visualizar Administração"
 msgstr ""
 
-#: myauth/models.py:41
+#: myauth/models.py:42
 msgid "Pode visualizar Usuários"
 msgstr ""
 
-#: myauth/models.py:43
+#: myauth/models.py:44
 msgid "Can add"
 msgstr ""
 
-#: myauth/models.py:44
+#: myauth/models.py:45
 msgid "Can change"
 msgstr ""
 
-#: myauth/models.py:45
+#: myauth/models.py:46
 msgid "Can delete"
 msgstr ""
 
-#: myauth/models.py:102
+#: myauth/models.py:105
 msgid "Entrega"
 msgstr ""
 
-#: myauth/models.py:103
+#: myauth/models.py:106
 msgid "Cobrança"
 msgstr ""
 
-#: myauth/models.py:104
+#: myauth/models.py:107
 msgid "Entrega e Cobrança"
 msgstr ""
 
-#: myauth/models.py:106
+#: myauth/models.py:109
 msgid "Tipo"
 msgstr ""
 
-#: myauth/models.py:107
+#: myauth/models.py:110
 msgid "Padrão"
 msgstr ""
 
-#: product/models.py:26 product/views.py:212 product/views.py:216
+#: product/models.py:26 product/views.py:213 product/views.py:217
+#: shipment/models.py:62
 msgid "Produto"
 msgstr ""
 
-#: product/models.py:27
+#: product/models.py:27 shipment/models.py:63
 msgid "Produtos"
 msgstr ""
 
@@ -708,11 +755,12 @@ msgstr ""
 msgid "Pode editar status do Produto"
 msgstr ""
 
-#: product/models.py:36
+#: product/models.py:36 shipment/models.py:50
 msgid "Informe uma data menor ou igual a de hoje."
 msgstr ""
 
-#: product/models.py:38
+#: product/models.py:38 shipment/models.py:69 shipment/models.py:118
+#: shipment/models.py:120 shipment/models.py:122 shipment/models.py:124
 msgid "Informe um número maior que zero."
 msgstr ""
 
@@ -744,11 +792,11 @@ msgstr ""
 msgid "Consulte as instruções de formato válido"
 msgstr ""
 
-#: sambalife/settings.py:201
+#: sambalife/settings.py:202
 msgid "Português"
 msgstr ""
 
-#: sambalife/settings.py:202
+#: sambalife/settings.py:203
 msgid "Inglês"
 msgstr ""
 
@@ -785,14 +833,151 @@ msgid ""
 "esquecido sua senha, <a href='/#'>clique aqui</a>."
 msgstr ""
 
-#: utils/helper.py:48
+#: shipment/admin.py:14
+msgid "Fórmula*"
+msgstr ""
+
+#: shipment/admin.py:27 shipment/models.py:131
+msgid "Fórmula"
+msgstr ""
+
+#: shipment/admin.py:29 shipment/models.py:134 shipment/models.py:135
+msgid "Cálculo de Envio"
+msgstr ""
+
+#: shipment/models.py:26
+msgid "Preparando para Envio"
+msgstr ""
+
+#: shipment/models.py:27
+msgid "Pagamento Autorizado"
+msgstr ""
+
+#: shipment/models.py:28
+msgid "Upload PDF 2 autorizado"
+msgstr ""
+
+#: shipment/models.py:29
+msgid "Checagens Finais"
+msgstr ""
+
+#: shipment/models.py:33
+msgid "PDF 1"
+msgstr ""
+
+#: shipment/models.py:34
+msgid "PDF 2"
+msgstr ""
+
+#: shipment/models.py:35
+msgid "Comprovante de Envio"
+msgstr ""
+
+#: shipment/models.py:40
+msgid "Envios"
+msgstr ""
+
+#: shipment/models.py:42
+msgid "Pode visualizar Envios"
+msgstr ""
+
+#: shipment/models.py:72 shipment/models.py:79
+#, python-format
+msgid "Informe um número menor que a quantidade em estoque (%(quantity)s)."
+msgstr ""
+
+#: shipment/models.py:84
+msgid "Problema para validar o produto selecionado."
+msgstr ""
+
+#: shipment/models.py:92
+msgid "Peso"
+msgstr ""
+
+#: shipment/models.py:93
+msgid "Altura"
+msgstr ""
+
+#: shipment/models.py:94
+msgid "Largura"
+msgstr ""
+
+#: shipment/models.py:95
+msgid "Profundidade"
+msgstr ""
+
+#: shipment/models.py:97
+msgid "Pound"
+msgstr ""
+
+#: shipment/models.py:98
+msgid "Ounce"
+msgstr ""
+
+#: shipment/models.py:99
+msgid "Quilograma"
+msgstr ""
+
+#: shipment/models.py:100
+msgid "Grama"
+msgstr ""
+
+#: shipment/models.py:102
+msgid "Unidade de medida de peso"
+msgstr ""
+
+#: shipment/models.py:104
+msgid "Centímetro"
+msgstr ""
+
+#: shipment/models.py:105
+msgid "Milímetro"
+msgstr ""
+
+#: shipment/models.py:106
+msgid "Inch"
+msgstr ""
+
+#: shipment/models.py:108
+msgid "Unidade de medida de tamanho"
+msgstr ""
+
+#: shipment/models.py:112
+msgid "Pacote"
+msgstr ""
+
+#: shipment/models.py:113
+msgid "Pacotes"
+msgstr ""
+
+#: shipment/models.py:142
+msgid "Fórmula inválida."
+msgstr ""
+
+#: shipment/views.py:94
+msgid "Adicionar produto"
+msgstr ""
+
+#: shipment/views.py:94
+msgid "Remover produto"
+msgstr ""
+
+#: shipment/views.py:124
+msgid "Envio inserido com sucesso."
+msgstr ""
+
+#: shipment/views.py:126
+msgid "Envio atualizado com sucesso."
+msgstr ""
+
+#: utils/helper.py:54
 msgid "Adicionar"
 msgstr ""
 
-#: utils/helper.py:49
+#: utils/helper.py:55
 msgid "Remover"
 msgstr ""
 
-#: utils/helper.py:78
+#: utils/helper.py:84
 msgid "Apagar"
 msgstr ""
