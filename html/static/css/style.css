@@ -646,8 +646,8 @@ ul.social-buttons li a {
   display: block;
   background-color: #3C3E77;
   height: 40px;
-  width: 40px;
-  border-radius: 100%;
+  width: 125px;
+  border-radius: 7px;
   font-size: 20px;
   line-height: 40px;
   color: white;
@@ -821,7 +821,7 @@ body {
     margin: auto;
     padding: 10px 30px 0px;
     box-shadow: 3px 3px 20px 0px #000;
-    height: 492px;
+    height: 500px;
 }
 
 #login-box img{
@@ -1140,6 +1140,11 @@ form small{
 .box-resposta p{
     text-align: center;
     margin-top: 30px;
+}
+
+#form-login .error{
+    width: 200px;
+    margin-top: -14px;
 }
 
 @media (max-width: 767px){

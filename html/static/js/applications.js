@@ -2,8 +2,6 @@
 
 (function($)
 {
-    'use strict'; // Start of use strict
-
     function getCookie(name)
     {
         var cookieValue = null;
@@ -464,9 +462,14 @@
         return false;
     });
 
-    $('.send-btn-delete').click(function()
+    $('.privatebtn').click(function()
     {
-        $('#confirmacao-exclusao').modal('show');
+        $('#portfolioModal1').modal('show');
+    });
+
+    $('#privatebtn').click(function()
+    {
+        $('#portfolioModal1').modal('show');
     });
 
     if($('#form-add-shipment')[0])
