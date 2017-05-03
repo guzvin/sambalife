@@ -9,6 +9,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden
 from django.utils import formats
 from django.forms import modelformset_factory, inlineformset_factory
+from django.urls import reverse
 from utils.helper import MyBaseInlineFormSet
 from product.templatetags.products import has_product_perm
 from myauth.templatetags.users import has_user_perm
@@ -106,14 +107,21 @@ def product_add_edit(request, pid=None):
         try:
             product_instance = product_qs[:1].get()
         except Product.DoesNotExist:
-            return HttpResponseRedirect('/product/add/')
+            return HttpResponseRedirect(reverse('product_add'))
         page_title = _('Editar Produto')
     kwargs = {'addText': _('Adicionar rastreamento'), 'deleteText': _('Remover rastreamento')}
     if request.method != 'POST':
         product_formset = ProductFormSet(queryset=product_qs)
         tracking_formset = TrackingFormSet(instance=product_instance, prefix='tracking_set', **kwargs)
-        return render(request, 'product_add_edit.html', {'title': page_title, 'product_formset': product_formset,
-                      'tracking_formset': tracking_formset})
+        context_data = {'title': page_title, 'product_formset': product_formset, 'tracking_formset': tracking_formset}
+        if request.GET.get('s') == '1':
+            if pid is None:
+                success_message = _('Produto inserido com sucesso.')
+            else:
+                success_message = _('Produto atualizado com sucesso.')
+            context_data['success'] = True
+            context_data['success_message'] = success_message
+        return render(request, 'product_add_edit.html', context_data)
     else:
         product_formset = ProductFormSet(request.POST, queryset=product_qs)
         if product_formset.is_valid():
@@ -132,16 +140,9 @@ def product_add_edit(request, pid=None):
                                                        **kwargs)
                 tracking_formset.save()
             if pid is None:
-                success_message = _('Produto inserido com sucesso.')
+                return HttpResponseRedirect('%s?s=1' % reverse('product_add'))
             else:
-                success_message = _('Produto atualizado com sucesso.')
-            return render(request, 'product_add_edit.html', {'title': page_title, 'success': True,
-                                                             'success_message': success_message,
-                                                             'product_formset':
-                                                                 ProductFormSet(queryset=product_qs),
-                                                             'tracking_formset':
-                                                                 TrackingFormSet(instance=product_instance,
-                                                                                 prefix='tracking_set', **kwargs)})
+                return HttpResponseRedirect('%s?s=1' % reverse('product_edit', args=[pid]))
         tracking_formset = TrackingFormSet(request.POST, instance=product_instance, prefix='tracking_set', **kwargs)
         return render(request, 'product_add_edit.html', {'title': page_title, 'success': False,
                                                          'product_formset': product_formset,
@@ -184,6 +185,7 @@ def product_edit_status(request, pid=None, output=None):
                     'send_date': formats.date_format(product.send_date, "DATE_FORMAT"),
                     'status': product.status,
                     'status_display': product_status_display,
+                    'show_check': product.user == request.user,
                 }
                 return HttpResponse(json.dumps({'success': True, 'product': product_json}),
                                     content_type='application/json')
@@ -227,7 +229,7 @@ def product_delete(request):
     if has_user_perm(request.user, 'view_users') is False:
         query &= Q(user=request.user)
     Product.objects.filter(query).delete()
-    return HttpResponseRedirect('/product/stock/')
+    return HttpResponseRedirect(reverse('product_stock'))
 
 
 @login_required

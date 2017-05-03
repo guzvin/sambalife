@@ -16,6 +16,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import Group
+from django.urls import reverse
 import logging
 
 logger = logging.getLogger('django')
@@ -108,7 +109,10 @@ def user_reset_password(request, uidb64=None, token=None):
 
 def user_registration(request):
     if request.method != 'POST':
-        return render(request, 'user_registration.html')
+        context_data = None
+        if request.GET.get('s') == 1:
+            context_data = {'success': True, 'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS}
+        return render(request, 'user_registration.html', context_data)
     else:
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
@@ -153,8 +157,7 @@ def user_registration(request):
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
             send_validation_email(user, uidb64, token)
-            return render(request, 'user_registration.html', {'success': True,
-                                                              'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS})
+            return HttpResponseRedirect('%s?s=1' % reverse('user_registration'))
         return render(request, 'user_registration.html', {'form': form, 'success': False, 'status_code': 400},
                       status=400)
 

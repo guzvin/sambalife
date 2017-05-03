@@ -17,6 +17,7 @@ from django.utils.encoding import force_text
 from django.template import loader, Context
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from utils.helper import MyBaseInlineFormSet, send_email
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -76,7 +77,7 @@ def my_formfield_callback(f, **kwargs):
 
 @login_required
 @require_http_methods(["GET", "POST"])
-def shipment_add_edit(request, pid=None):
+def shipment_add(request):
     if has_shipment_perm(request.user, 'add_shipment') is False:
         return HttpResponseForbidden()
     if request.method == 'POST':
@@ -98,6 +99,13 @@ def shipment_add_edit(request, pid=None):
                                            formfield_callback=my_formfield_callback,
                                            extra=original_products.count())
     kwargs = {'addText': _('Adicionar produto'), 'deleteText': _('Remover produto')}
+    if request.method == 'GET' and request.GET.get('s') == 1:
+        return render(request, 'shipment_add.html', {'title': _('Envio'), 'success': True,
+                                                     'success_message': _('Envio inserido com sucesso.'),
+                                                     'shipment_formset':
+                                                         ShipmentFormSet(queryset=Shipment.objects.none()),
+                                                     'product_formset':
+                                                         ProductFormSet(prefix='product_set', **kwargs)})
     logger.debug('@@@@@@@@@@@@ REQUEST METHOD @@@@@@@@@@@@@@')
     logger.debug(request.method)
     logger.debug(str(request.method == 'POST' and request.POST.get('save_shipment')))
@@ -134,16 +142,7 @@ def shipment_add_edit(request, pid=None):
                     product_formset.save()
                     logger.debug('@@@@@@@@@@@@ SEND PDF 1 EMAIL @@@@@@@@@@@@@@')
                     send_add_shipment_email(request, shipment, products)
-            if pid is None:
-                success_message = _('Envio inserido com sucesso.')
-            else:
-                success_message = _('Envio atualizado com sucesso.')
-            return render(request, 'shipment_add_edit.html', {'title': _('Envio'), 'success': True,
-                                                              'success_message': success_message,
-                                                              'shipment_formset':
-                                                                  ShipmentFormSet(queryset=Shipment.objects.none()),
-                                                              'product_formset':
-                                                                  ProductFormSet(prefix='product_set', **kwargs)})
+            return HttpResponseRedirect('%s?s=1' % reverse('shipment_add'))
         else:
             logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
             logger.warning(shipment_formset.errors)
@@ -156,8 +155,8 @@ def shipment_add_edit(request, pid=None):
                 'quantity': data.quantity,
                 'product': data
             }
-    return render(request, 'shipment_add_edit.html', {'title': _('Envio'), 'shipment_formset': shipment_formset,
-                                                      'product_formset': product_formset})
+    return render(request, 'shipment_add.html', {'title': _('Envio'), 'shipment_formset': shipment_formset,
+                                                 'product_formset': product_formset})
 
 
 @login_required

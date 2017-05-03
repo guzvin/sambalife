@@ -445,7 +445,7 @@
                     {
                         $('span#product-status-display-'+obj.product.id).text(obj.product.status_display);
                         form.find('input:radio').attr('data-current-status', obj.product.status);
-                        if(obj.product.status === SHIPMENT_STATUS_IN_STOCK && obj.product.quantity >= 0)
+                        if(obj.product.show_check && obj.product.status === SHIPMENT_STATUS_IN_STOCK && obj.product.quantity >= 0)
                         {
                             var checkbox = $('<input type="checkbox" name="shipment_product" value="' + obj.product.id + '" id="shipment-' + obj.product.id + '" class="shipment-product" />');
                             $('span#product-status-display-'+obj.product.id).closest('td').next().append(checkbox);
