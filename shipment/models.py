@@ -26,7 +26,7 @@ class Shipment(models.Model):
     STATUS_CHOICES = (
         (1, _('Preparando para Envio')),  # Preparing for Shipment
         (2, _('Pagamento Autorizado')),  # Payment Authorized
-        (3, _('Upload PDF 2 autorizado')),  # Upload PDF 2 Authorized
+        (3, _('Upload PDF 2 Autorizado')),  # Upload PDF 2 Authorized
         (4, _('Checagens Finais')),  # Final Checkings
         (5, _('Enviado')),  # Shipped
     )
@@ -46,7 +46,7 @@ class Shipment(models.Model):
 
     def clean(self):
         errors = {}
-        logger.debug('&@&@&@*@*@*@*@*#*#*$*$*$*%*%*%*%*%*%*%*%*')
+        logger.debug('@@@@@@@@@@@@ SHIPMENT CLEAN DATE @@@@@@@@@@@@@@')
         logger.debug(self.send_date)
         if self.send_date and self.send_date > datetime.now().date():
             errors['send_date'] = ValidationError(_('Informe uma data menor ou igual a de hoje.'), code='invalid_date')

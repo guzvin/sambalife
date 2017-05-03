@@ -1,138 +1,132 @@
 {% extends 'includes/layout.html' %}
-
+{% load i18n permissions users shipments commons %}
 {% block listashipment %}active{% endblock %}
 
 {% block conteudo %}
 
     <div class="container-fluid">
       <div class="row">
+        {% if user|has_shipment_perm:'view_shipments' %}
         <div class="col-md-1 sidebar">
 
         </div>
         <div class="col-md-10 main">
-          <h1 class="page-header"><i class="fa fa-archive"></i> Lista Shipments</h1>
+          <h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Lista de Envios" %}</h1>
           <div class="row">
               <div class="filtros col-md-12">
-                <h3><i class="fa fa-filter"></i> Filtros</h3>  <br>
+                <h3><i class="fa fa-filter"></i> {% trans "Filtros" %}</h3>  <br>
+                <form action="" method="get" id="form-filter-shipment" class="form-filter">
                 <div class="form-group col-md-2">
-                    <label for="filtro-id">Id</label>
-                    <input type="text" class="form-control" id="filtro-id" placeholder="Id...">
+                    {% trans "ID" as id %}
+                    <label for="filtro-id">{{ id }}</label>
+                    <input type="text" class="form-control" id="filtro-id" placeholder="{{ id }}..." name="id" value="{{ filter_values.id }}">
                 </div>
-
+                {% if user|has_user_perm:'view_users' %}
                 <!-- somente o admin visualiza esse filtro -->
-
-                    <div class="form-group col-md-2">
-                    <label for="filtro-usuario">Usuário</label>
-                    <input type="text" class="form-control" id="filtro-usuario" placeholder="Usuário...">
+                <div class="form-group col-md-2">
+                    {% trans "Usuário" as user_label %}
+                    <label for="filtro-usuario">{{ user_label }}</label>
+                    <input type="text" class="form-control" id="filtro-usuario" placeholder="{{ user_label }}..." name="user" value="{{ filter_values.user }}">
                 </div>
-
                 <!-- fim filtro usuario-->
-
+                {% endif %}
                 <div class="form-group col-md-2">
-                    <label for="filtro-Track">Track Number</label>
-                    <input type="text" class="form-control" id="filtro-Track" placeholder="Track Number...">
-                </div>
-                <div class="form-group col-md-2">
-                    <label for="Status">Status</label>
-                    <select class="form-control" id="Status">
-                      <option>Status</option>
-                      <option>Em analise</option>
-                      <option>Enviado</option>
+                    {% trans "Status" as status %}
+                    <label for="filtro-status">{{ status }}</label>
+                    {% select_status filter_values '1' as preparing_filter_status %}
+                    {% select_status filter_values '2' as payed_filter_status %}
+                    {% select_status filter_values '3' as upload_filter_status %}
+                    {% select_status filter_values '4' as checkings_filter_status %}
+                    {% select_status filter_values '5' as sent_filter_status %}
+                    <select class="form-control" id="filtro-status" name="status">
+                      <option value="">{{ status }}</option>
+                      <option value="1" {{ preparing_filter_status }}>{% trans "Preparando para Envio" %}</option>
+                      <option value="2" {{ payed_filter_status }}>{% trans "Pagamento Autorizado" %}</option>
+                      <option value="3" {{ upload_filter_status }}>{% trans "Upload PDF 2 Autorizado" %}</option>
+                      <option value="4" {{ checkings_filter_status }}>{% trans "Checagens Finais" %}</option>
+                      <option value="5" {{ sent_filter_status }}>{% trans "Enviado" %}</option>
                     </select>
                 </div>
                 <div class="form-group col-md-2">
-                    <label for="datepicker">Data de Envio</label>
-                    <input type="text" class="form-control" id="datepicker" placeholder="Data de envio...">
+                  {% trans "Data de Envio" as send_date %}
+                    <label for="datepicker">{{ send_date }}</label>
+                    <input type="text" class="form-control datepicker" id="datepicker" placeholder="{{ send_date }}..." name="date" value="{{ filter_values.date }}">
                 </div>
                 <div class="form-group col-md-2">
-                    <a class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> Filtrar</a>
+                    <button type="submit" class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
                 </div>
+                </form>
               </div>
           </div><br><br>
           <div class="table-responsive">
-            <a class="btn btn-default" href="/shipment/cadastro/"><i class="fa fa-fw fa-plus-square"></i> Criar Shipment</a>
+            {% if user|has_shipment_perm:'add_shipment' %}
+            <a class="btn btn-default" href="{% url 'shipment_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>
+            {% endif %}
           <br><br>
+            {% if shipments.paginator.count > 0 %}
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th>ID</th>
-
+                  <th>{{ id }}</th>
+                  {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
-
-                  <th class="center">Usuário</th>
-
+                  <th class="center">{{ user_label }}</th>
                   <!-- fim campo -->
-
-
-                  <th>Data de Envio</th>
-                  <th class="center">Quantidade</th>
-                  <th class="center">Track Number</th>
-                  <th class="center">Status</th>
-                  <th class="center">Ações</th>
+                  {% endif %}
+                  <th>{{ send_date }}</th>
+                  <th class="center">{% trans "Quantidade" %}</th>
+                  <th class="center">{{ status }}</th>
+                  <th class="center">{% trans "Ações" %}</th>
                 </tr>
               </thead>
               <tbody>
+              {% for shipment in shipments %}
                 <tr>
-                  <td>1024</td>
-
+                  <td>{{ shipment.id }}</td>
+                  {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
-
-                  <td class="center">Fabionm</td>
-
+                  <td class="center">{{ shipment.user.first_name }}</td>
                   <!-- fim campo -->
-
-                  <td>23/02/2017</td>
-                  <td class="center">18</td>
-                  <td class="center">9667567</td>
-                  <td class="center"> Em processamento</td>
-                  <td class="center"><a class="download" href="/shipment/detalhe/"><i class="fa fa-pencil"></i> Visualizar</a></td>
+                  {% endif %}
+                  <td>{{ shipment.send_date }}</td>
+                  <td class="center">{{ shipment.total_products }}</td>
+                  <td class="center"> {{ shipment.get_status_display  }}</td>
+                  <td class="center"><a class="download" href="{% url 'shipment_details' shipment.id %}"><i class="fa fa-pencil"></i> {% trans "Visualizar" %}</a></td>
                 </tr>
-                <tr>
-                  <td>1025</td>
-
-                  <!-- somente admin visualiza -->
-
-                  <td class="center">Roberto80</td>
-
-                  <!-- fim campo -->
-
-                  <td>10/02/2017</td>
-                  <td class="center">20</td>
-                  <td class="center">2334522</td>
-                  <td class="center">Enviado</td>
-                  <td class="center"><a class="download" href="/shipment/detalhe/"><i class="fa fa-pencil"></i> Visualizar</a></td>
-                </tr>
-                <tr>
-                  <td>1026</td>
-
-                  <!-- somente admin visualiza -->
-
-                  <td class="center">Guly</td>
-
-                  <!-- fim campo -->
-
-                  <td>30/01/2017</td>
-                  <td class="center">18</td>
-                  <td class="center">68786744</td>
-                  <td class="center">Enviado</td>
-                  <td class="center"><a class="download" href="/shipment/detalhe/"><i class="fa fa-pencil"></i> Visualizar</a></td>
-                </tr>
+              {% endfor %}
               </tbody>
             </table>
+            {% else %}
+              <p>{% trans "Nenhum envio encontrado." %}</p>
+            {% endif %}
           </div>
           <nav aria-label="...">
+            {% if shipments.has_other_pages %}
               <ul class="pagination">
-                <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-                <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-                <li class=""><a href="#">2</a></li>
-                <li class=""><a href="#">3</a></li>
-                <li class=""><a href="#">4</a></li>
-                <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                {% if shipments.has_previous %}
+                  <li><a href="#" class="pagination-page" data-page="{{ shipments.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                  <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in shipments.paginator.page_range %}
+                  {% if shipments.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                  {% else %}
+                    <li><a href="#" class="pagination-page" data-page="{{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if shipments.has_next %}
+                  <li><a href="#" class="pagination-page" data-page="{{ shipments.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                  <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
               </ul>
-            </nav>
+            {% endif %}
+          </nav>
         </div>
         <div class="col-md-1 sidebar">
         </div>
+        {% endif %}
       </div>
     </div>
 

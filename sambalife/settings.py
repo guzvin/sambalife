@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'channels',
     'corsheaders',
     'statici18n',
+    'utils',
     'websocket',
     'myauth',
     'product',

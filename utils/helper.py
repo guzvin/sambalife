@@ -36,6 +36,11 @@ def digitos(valor):
     return re.sub(r'\D', '', valor)
 
 
+class ObjectView(object):
+    def __init__(self, d):
+        self.__dict__ = d
+
+
 def send_email(title, body, email_to=None,
                email_from=string_concat(_('Vendedor Online Internacional'), ' ',
                                         string_concat('<', settings.EMAIL_HOST_USER, '>')), bcc=None):

@@ -10,7 +10,7 @@ from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpRespo
 from django.utils import formats
 from django.forms import modelformset_factory, inlineformset_factory
 from django.urls import reverse
-from utils.helper import MyBaseInlineFormSet
+from utils.helper import MyBaseInlineFormSet, ObjectView
 from product.templatetags.products import has_product_perm
 from myauth.templatetags.users import has_user_perm
 import json
@@ -19,18 +19,13 @@ import logging
 logger = logging.getLogger('django')
 
 
-class ObjectView(object):
-    def __init__(self, d):
-        self.__dict__ = d
-
-
 @login_required
 @require_http_methods(["GET"])
 def product_stock(request):
     if has_product_perm(request.user, 'view_products'):
         is_user_perm = has_user_perm(request.user, 'view_users')
         queries = []
-        logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        logger.debug('@@@@@@@@@@@@ PRODUCT STOCK FILTERS @@@@@@@@@@@@@@')
         filter_id = request.GET.get('id')
         logger.debug(str(filter_id))
         filter_name = request.GET.get('name')
@@ -54,6 +49,7 @@ def product_stock(request):
         if filter_status:
             queries.append(Q(status=filter_status))
             filter_values['status'] = filter_status
+        logger.debug('@@@@@@@@@@@@ QUERIES @@@@@@@@@@@@@@')
         logger.debug(str(queries))
         logger.debug(str(len(queries)))
         if is_user_perm is False:
@@ -66,10 +62,10 @@ def product_stock(request):
             logger.debug(str(query))
         if is_user_perm:
             if is_filtered:
-                logger.debug('FILTERED')
+                logger.debug('@@@@@@@@@@@@ FILTERED @@@@@@@@@@@@@@')
                 products_list = Product.objects.filter(query).select_related('user').order_by('id')
             else:
-                logger.debug('ALL')
+                logger.debug('@@@@@@@@@@@@ ALL @@@@@@@@@@@@@@')
                 products_list = Product.objects.all().select_related('user').order_by('id')
         else:
             products_list = Product.objects.filter(query).order_by('id')

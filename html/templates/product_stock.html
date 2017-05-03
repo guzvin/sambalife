@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n permissions products users shipments %}
+{% load i18n permissions products users shipments commons %}
 {% block listaprodutos %}active{% endblock %}
 
 {% block conteudo %}
@@ -15,7 +15,7 @@
           <div class="row">
               <div class="filtros col-md-12">
                 <h3><i class="fa fa-filter"></i> {% trans "Filtros" %}</h3>  <br>
-                <form action="" method="get" id="form-filter-product">
+                <form action="" method="get" id="form-filter-product" class="form-filter">
                     <div class="form-group col-md-2">
                         {% trans "ID" as id %}
                         <label for="filtro-id">{{ id }}</label>
@@ -75,9 +75,7 @@
                   <th class="center">{% trans "Quantidade" %}</th>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
-
                   <th class="center">{{ user_label }}</th>
-
                   <!-- fim campo -->
                   {% endif %}
                   <th>{% trans "Status" %}</th>
@@ -96,9 +94,7 @@
                   <td class="center">{{ product.quantity }}</td>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
-
                   <td class="center">{{ product.user.first_name }}</td>
-
                   <!-- fim campo -->
                   {% endif %}
                   <td>
@@ -156,7 +152,7 @@
             {% if products.has_other_pages %}
               <ul class="pagination">
                 {% if products.has_previous %}
-                  <li><a href="?page={{ products.previous_page_number }}">&laquo;</a></li>
+                  <li><a href="#" class="pagination-page" data-page="{{ products.previous_page_number }}">&laquo;</a></li>
                 {% else %}
                   <li class="disabled"><span>&laquo;</span></li>
                 {% endif %}
@@ -164,11 +160,11 @@
                   {% if products.number == i %}
                     <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
                   {% else %}
-                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    <li><a href="#" class="pagination-page" data-page="{{ i }}">{{ i }}</a></li>
                   {% endif %}
                 {% endfor %}
                 {% if products.has_next %}
-                  <li><a href="?page={{ products.next_page_number }}">&raquo;</a></li>
+                  <li><a href="#" class="pagination-page" data-page="{{ products.next_page_number }}">&raquo;</a></li>
                 {% else %}
                   <li class="disabled"><span>&raquo;</span></li>
                 {% endif %}

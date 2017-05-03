@@ -2,12 +2,13 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from shipment.templatetags.shipments import has_shipment_perm
+from myauth.templatetags.users import has_user_perm
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from django.utils.translation import string_concat,  ugettext as _
 from product.models import Product as OriginalProduct
 from shipment.models import Shipment, Product, Package, CostFormula
 from django.contrib.sites.models import Site
-from django.forms import modelformset_factory, inlineformset_factory, Field
+from django.forms import modelformset_factory, inlineformset_factory, Field, DateField
 from django.forms.widgets import Widget, FileInput
 from django.utils.html import format_html
 from django.forms.utils import flatatt
@@ -18,7 +19,7 @@ from django.template import loader, Context
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from utils.helper import MyBaseInlineFormSet, send_email
+from utils.helper import MyBaseInlineFormSet, send_email, ObjectView
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from utils.helper import Calculate
@@ -33,7 +34,64 @@ logger = logging.getLogger('django')
 @login_required
 @require_http_methods(["GET"])
 def shipment_list(request):
-    return render(request, 'shipment_list.html')
+    if has_shipment_perm(request.user, 'view_shipments'):
+        is_user_perm = has_user_perm(request.user, 'view_users')
+        queries = []
+        logger.debug('@@@@@@@@@@@@ SHIPMENT FILTERS @@@@@@@@@@@@@@')
+        filter_id = request.GET.get('id')
+        logger.debug(str(filter_id))
+        filter_user = request.GET.get('user')
+        logger.debug(str(filter_user))
+        filter_status = request.GET.get('status')
+        logger.debug(str(filter_status))
+        filter_values = {
+            'status': '',
+        }
+        filter_send_date = request.GET.get('date')
+        logger.debug(str(filter_send_date))
+        if filter_id:
+            queries.append(Q(pk__startswith=filter_id))
+            filter_values['id'] = filter_id
+        if is_user_perm and filter_user:
+            queries.append(Q(user__first_name__icontains=filter_user) | Q(user__last_name__icontains=filter_user))
+            filter_values['user'] = filter_user
+        if filter_status:
+            queries.append(Q(status=filter_status))
+            filter_values['status'] = filter_status
+        if filter_send_date:
+            queries.append(Q(send_date=DateField().to_python(filter_send_date)))
+            filter_values['date'] = filter_send_date
+        logger.debug(str(queries))
+        logger.debug(str(len(queries)))
+        if is_user_perm is False:
+            queries.append(Q(user=request.user))
+        is_filtered = len(queries) > 0
+        if is_filtered:
+            query = queries.pop()
+            for item in queries:
+                query &= item
+            logger.debug(str(query))
+        if is_user_perm:
+            if is_filtered:
+                logger.debug('FILTERED')
+                _shipment_list = Shipment.objects.filter(query).select_related('user').order_by('id')
+            else:
+                logger.debug('ALL')
+                _shipment_list = Shipment.objects.all().select_related('user').order_by('id')
+        else:
+            _shipment_list = Shipment.objects.filter(query).order_by('id')
+    else:
+        _shipment_list = []
+    page = request.GET.get('page', 1)
+    paginator = Paginator(_shipment_list, 3)
+    try:
+        shipments = paginator.page(page)
+    except PageNotAnInteger:
+        shipments = paginator.page(1)
+    except EmptyPage:
+        shipments = paginator.page(paginator.num_pages)
+    return render(request, 'shipment_list.html', {'title': _('Estoque'), 'shipments': shipments,
+                                                  'filter_values': ObjectView(filter_values)})
 
 
 @login_required
@@ -61,7 +119,8 @@ class InlineProductWidget(Widget):
         return html_fragment
 
     def value_from_datadict(self, data, files, name):
-        logger.debug('+++++++++++++++ '+data.get(name))
+        logger.debug('@@@@@@@@@@@@ VALUE FROM DICT @@@@@@@@@@@@@@')
+        logger.debug(data.get(name))
         try:
             return OriginalProduct.objects.get(pk=data.get(name))
         except OriginalProduct.DoesNotExist:
@@ -99,6 +158,8 @@ def shipment_add(request):
                                            formfield_callback=my_formfield_callback,
                                            extra=original_products.count())
     kwargs = {'addText': _('Adicionar produto'), 'deleteText': _('Remover produto')}
+    logger.debug('@@@@@@@@@@@@ REQUEST METHOD @@@@@@@@@@@@@@')
+    logger.debug(request.method)
     if request.method == 'GET' and request.GET.get('s') == 1:
         return render(request, 'shipment_add.html', {'title': _('Envio'), 'success': True,
                                                      'success_message': _('Envio inserido com sucesso.'),
@@ -106,8 +167,6 @@ def shipment_add(request):
                                                          ShipmentFormSet(queryset=Shipment.objects.none()),
                                                      'product_formset':
                                                          ProductFormSet(prefix='product_set', **kwargs)})
-    logger.debug('@@@@@@@@@@@@ REQUEST METHOD @@@@@@@@@@@@@@')
-    logger.debug(request.method)
     logger.debug(str(request.method == 'POST' and request.POST.get('save_shipment')))
     if request.method == 'POST' and request.POST.get('save_shipment'):
         shipment_formset = ShipmentFormSet(request.POST, request.FILES, queryset=Shipment.objects.none())

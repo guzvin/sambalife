@@ -564,6 +564,46 @@
         });
     }
 
+    if($('form.form-filter')[0] && $('ul.pagination')[0])
+    {
+        $('a.pagination-page').click(function(e)
+        {
+            if($(this).hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $(this).addClass('nosubmit');
+            var data = $(this).data();
+            var selectedPage = $('input#selected-page');
+            if(selectedPage[0])
+            {
+                selectedPage.val(data.page);
+            }
+            else
+            {
+                var hidden = $('<input type="hidden" name="page" value="' + data.page + '" id="selected-page" />');
+                $('form.form-filter').append(hidden);
+            }
+            $('form.form-filter').submit();
+        });
+        $('form.form-filter').find('button[type="submit"]').click(function(e)
+        {
+            e.preventDefault();
+            if($(this).hasClass('nosubmit'))
+            {
+                return false;
+            }
+            $(this).addClass('nosubmit');
+            var selectedPage = $('input#selected-page');
+            if(selectedPage[0])
+            {
+                selectedPage.remove();
+            }
+            $('form.form-filter').submit();
+        });
+    }
+
     $('.add-pro').click(function()
     {
         var numeroProduto = Number($('.lista-produtos .produto:last-child .num-produto').text()) + 1;
