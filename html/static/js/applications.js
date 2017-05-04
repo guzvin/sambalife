@@ -2,6 +2,7 @@
 
 (function($)
 {
+    'use strict';
     function getCookie(name)
     {
         var cookieValue = null;
@@ -664,6 +665,37 @@
                   "</div>" +
                   "<a class='rem-track btn btn-danger' data-toggle='tooltip' title='Remover produto' href='#'><i class='fa fa-fw fa-times'></i> Remover este produto do lote</a>" +
                 "</div>");
+    });
+
+     $('.add-pacote-shipment').click(function()
+    {
+        var numeroPacote = Number($('.lista-pacotes-cadastro .pacote-infos:last-child .num-pacote').text()) + 1;
+
+        $('.lista-pacotes-cadastro').append("<div class='form-group pacote-infos pacote-infos-item'>" +
+            "<div class='col-md-2'>" +
+                "<label class='filtar-btn-m'>Pacote <span class='num-pacote'>" + numeroPacote + "</span>: </label>" +
+            "</div>" +
+            "<div class='col-md-2'>" +
+                "<input type='text' placeholder='Peso...' name='peso" + numeroPacote + "' class='form-control' id='peso" + numeroPacote + "' /><span class='badge'>em Lbs</span>" +
+            "</div>" +
+            "<div class='col-md-2'>" +
+                "<input type='text' placeholder='Altura...' name='Altura" + numeroPacote + "' class='form-control' id='Altura" + numeroPacote + "' /><span class='badge altura'>em centimetros</span>" +
+            "</div>" +
+            "<div class='col-md-2'>" +
+                "<input type='text' placeholder='Largura...' name='Largura" + numeroPacote + "' class='form-control' id='Largura" + numeroPacote + "' /><span class='badge largura'>em centimetros</span>" +
+            "</div>" +
+            "<div class='col-md-2'>" +
+                "<input type='text' placeholder='Profundidade...' name='Profundidade" + numeroPacote + "' class='form-control' id='Profundidade" + numeroPacote + "' /><span class='badge profun'>em centimetros</span><br><br>" +
+            "</div>" +
+            "<div class='col-md-2'>" +
+                "<a class='rem-track btn btn-danger rem-pacote-shipment' data-toggle='tooltip' title='Remover pacote' href='javascript:void(0);'><i class='fa fa-fw fa-times'></i></a>" +
+            "</div>" +
+        "</div>");
+    });
+
+    $(document).on('click','.rem-pacote-shipment',function()
+    {
+        $(this).parents(':eq(1)').remove();
     });
 
 })(jQuery); // End of use strict

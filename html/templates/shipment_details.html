@@ -175,26 +175,27 @@
                <label><i class="fa fa-fw fa-line-chart"></i> Area Administrativa</label><br><br><br>
                <div class="col-md-12">
                    <label>Informações pacote(s):</label>
-                    <div class="form-group pacote-infos">
-                        <div class="col-md-2">
-                            <label class="filtar-btn-m">Pacote 1: </label>
+                   <div class="lista-pacotes-cadastro">
+                        <div class="form-group pacote-infos pacote-infos-item">
+                            <div class="col-md-2">
+                                <label class="filtar-btn-m">Pacote <span class="num-pacote">1</span>: </label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" placeholder="Peso..." name="peso1" class="form-control" id="peso1" /><span class="badge">em Lbs</span>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" placeholder="Altura..." name="Altura1" class="form-control" id="Altura1" /><span class="badge altura">em centimetros</span>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" placeholder="Largura..." name="Largura1" class="form-control" id="Largura1" /><span class="badge largura">em centimetros</span>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" placeholder="Profundidade..." name="Profundidade1" class="form-control" id="Profundidade1" /><span class="badge profun">em centimetros</span><br><br>
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <input type="text" placeholder="Peso..." name="peso" class="form-control" id="peso" /><span class="badge">em Lbs</span>
-                        </div>
-                        <div class="col-md-2">
-                            <input type="text" placeholder="Altura..." name="Altura" class="form-control" id="Altura" /><span class="badge altura">em centimetros</span>
-                        </div>
-                        <div class="col-md-2">
-                            <input type="text" placeholder="Largura..." name="Largura" class="form-control" id="Largura" /><span class="badge largura">em centimetros</span>
-                        </div>
-                        <div class="col-md-2">
-                            <input type="text" placeholder="Profundidade..." name="Profundidade" class="form-control" id="Profundidade" /><span class="badge profun">em centimetros</span><br><br>
-                        </div>
-                        <div class="col-md-2">
-                        <a class="add-track btn btn-success" data-toggle="tooltip" title="Adicionar Pacote" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i></a>
-                        <a class="rem-track btn btn-danger" data-toggle="tooltip" title="Remover pacote" href="#"><i class="fa fa-fw fa-times"></i></a>
-                    </div>
+                   </div>
+                    <div class="col-md-12"><br>
+                       <a class="add-track btn btn-success add-pacote-shipment" data-toggle="tooltip" title="Adicionar Pacote" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i> Adicionar Pacote ao Shipment</a>
                     </div>
               </div>
            </div><hr />
