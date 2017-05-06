@@ -22,6 +22,7 @@ from django.urls import reverse
 from utils.helper import MyBaseInlineFormSet, send_email, ObjectView
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core import serializers
 from utils.helper import Calculate
 import magic
 import json
@@ -29,6 +30,40 @@ import os
 import logging
 
 logger = logging.getLogger('django')
+
+
+class InlineProductWidget(Widget):
+    def render(self, name, value, attrs=None):
+        if value is None:
+            hidden_value = ''
+        else:
+            hidden_value = value.id
+        final_attrs = self.build_attrs(attrs, type='hidden', name=name)
+        if hidden_value != '':
+            # Only add the 'value' attribute if a value is non-empty.
+            final_attrs['value'] = hidden_value
+        hidden_tag = format_html('<input{} class="inline-row-key"/>', flatatt(final_attrs))
+        html_fragment = format_html('<td>{}{}</td><td>{}</td><td>{}</td>',
+                                    hidden_tag,
+                                    value.id if value else '',
+                                    value.name if value else '',
+                                    value.description if value else '')
+        return html_fragment
+
+    def value_from_datadict(self, data, files, name):
+        logger.debug('@@@@@@@@@@@@ VALUE FROM DICT @@@@@@@@@@@@@@')
+        logger.debug(data.get(name))
+        try:
+            return OriginalProduct.objects.get(pk=data.get(name))
+        except OriginalProduct.DoesNotExist:
+            return data.get(name)
+
+
+def my_formfield_callback(f, **kwargs):
+    form_class = kwargs.pop('form_class', None)
+    if form_class is None:
+        return f.formfield(**kwargs)
+    return form_class(**kwargs)
 
 
 @login_required
@@ -83,7 +118,7 @@ def shipment_list(request):
     else:
         _shipment_list = []
     page = request.GET.get('page', 1)
-    paginator = Paginator(_shipment_list, 3)
+    paginator = Paginator(_shipment_list, 10)
     try:
         shipments = paginator.page(page)
     except PageNotAnInteger:
@@ -95,43 +130,130 @@ def shipment_list(request):
 
 
 @login_required
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def shipment_details(request, pid=None):
-    return render(request, 'shipment_details.html')
-
-
-class InlineProductWidget(Widget):
-    def render(self, name, value, attrs=None):
-        if value is None:
-            hidden_value = ''
-        else:
-            hidden_value = value.id
-        final_attrs = self.build_attrs(attrs, type='hidden', name=name)
-        if hidden_value != '':
-            # Only add the 'value' attribute if a value is non-empty.
-            final_attrs['value'] = hidden_value
-        hidden_tag = format_html('<input{} class="inline-row-key"/>', flatatt(final_attrs))
-        html_fragment = format_html('<td>{}{}</td><td>{}</td><td>{}</td>',
-                                    hidden_tag,
-                                    value.id if value else '',
-                                    value.name if value else '',
-                                    value.description if value else '')
-        return html_fragment
-
-    def value_from_datadict(self, data, files, name):
-        logger.debug('@@@@@@@@@@@@ VALUE FROM DICT @@@@@@@@@@@@@@')
-        logger.debug(data.get(name))
+    if has_shipment_perm(request.user, 'view_shipments'):
+        is_user_perm = has_user_perm(request.user, 'view_users')
+        query = Q(pk=pid)
         try:
-            return OriginalProduct.objects.get(pk=data.get(name))
-        except OriginalProduct.DoesNotExist:
-            return data.get(name)
+            if is_user_perm is False:
+                query &= Q(user=request.user)
+                _shipment_details = Shipment.objects.get(query)
+            else:
+                _shipment_details = Shipment.objects.select_related('user').get(query)
+        except Shipment.DoesNotExist:
+            return HttpResponseBadRequest()
+        _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
+        title = ' '.join([str(_('Envio')), str(_shipment_details.id)])
+        context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products}
+        if request.method == 'POST':
+            if request.POST.get('add_shipment_package'):
+                if has_shipment_perm(request.user, 'add_package'):
+                    add_package_response = shipment_add_package(request, pid)
+                    if isinstance(add_package_response, HttpResponse):
+                        return add_package_response
+                    context_data['packages'] = add_package_response
+                else:
+                    return HttpResponseForbidden()
+            else:
+                return HttpResponseBadRequest()
+        elif request.GET.get('s') == '1' and has_shipment_perm(request.user, 'add_package'):
+            context_data['success'] = True
+            context_data['success_message'] = _('Pacote(s) inserido(s) com sucesso.')
+        if _shipment_details.status == 1:  # Preparando para Envio
+            if has_shipment_perm(request.user, 'add_package'):
+                serialized_products = serializers.serialize('json', _shipment_products, fields=('id', 'quantity',
+                                                                                                'product',))
+                logger.debug('@@@@@@@@@@@@@@@ SERIALIZED PRODUCTS @@@@@@@@@@@@@@@@@')
+                logger.debug(serialized_products)
+                request.session['shipment_products'] = serialized_products
+                if 'packages' not in context_data:
+                    PackageFormSet = inlineformset_factory(Shipment, Package, formset=MyBaseInlineFormSet,
+                                                           fields=('weight', 'height', 'width', 'depth',),
+                                                           extra=1)
+                    kwargs = {'addText': _('Adicionar pacote'), 'deleteText': _('Remover pacote')}
+                    package_formset = PackageFormSet(instance=_shipment_details, prefix='package_set', **kwargs)
+                    context_data['packages'] = package_formset
+        else:
+            _shipment_packages = Package.objects.filter(shipment=_shipment_details).order_by('id')
+            context_data['packages'] = _shipment_packages
+        logger.debug(context_data)
+        return render(request, 'shipment_details.html', context_data)
+    return HttpResponseForbidden()
 
 
-def my_formfield_callback(f, **kwargs):
-    form_class = kwargs.pop('form_class', None)
-    if form_class is None:
-        return f.formfield(**kwargs)
-    return form_class(**kwargs)
+def shipment_add_package(request, pid=None):
+    if has_shipment_perm(request.user, 'view_shipments') is False or \
+                    has_shipment_perm(request.user, 'add_package') is False:
+        return HttpResponseForbidden()
+    logger.debug('@@@@@@@@@@@@ ADD PACKAGE @@@@@@@@@@@@@@')
+    custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
+    PackageFormSet = inlineformset_factory(Shipment, Package, formset=MyBaseInlineFormSet,
+                                           fields=('weight', 'height', 'width', 'depth',),
+                                           extra=1,
+                                           error_messages={'weight': custom_error_messages,
+                                                           'height': custom_error_messages,
+                                                           'width': custom_error_messages,
+                                                           'depth': custom_error_messages})
+    kwargs = {'addText': _('Adicionar pacote'), 'deleteText': _('Remover pacote'), 'allowEmptyForm': False}
+    try:
+        with transaction.atomic():
+            shipment = Shipment.objects.select_for_update().get(pk=pid, status=1)
+            package_formset = PackageFormSet(request.POST, instance=shipment, prefix='package_set', **kwargs)
+            if package_formset.is_valid():
+                for package_form in package_formset:
+                    package = package_form.save(commit=False)
+                    logger.debug(package.shipment.id)
+                    logger.debug(pid)
+                    if force_text(package.shipment.id) != force_text(pid):
+                        raise Shipment.DoesNotExist('Inconsistent data.')
+                    shipment.status = 2
+                    shipment_products = Product.objects.filter(shipment=shipment)
+                    session_products = request.session.pop('shipment_products', '[]')
+                    session_products = json.loads(session_products)
+                    logger.debug(str(len(shipment_products)))
+                    logger.debug(str(len(session_products)))
+                    if len(shipment_products) != len(session_products):
+                        raise Product.DoesNotExist('Inconsistent data.')
+                    shipment.save(update_fields=['status'])
+                    break
+                package_formset.save()
+                return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
+        return package_formset
+    except (Product.DoesNotExist, Shipment.DoesNotExist) as err:
+        logger.error(err)
+        return HttpResponseBadRequest()
+
+
+@login_required
+@require_http_methods(["DELETE"])
+def shipment_delete_product(request):
+    if has_shipment_perm(request.user, 'change_shipment') is False:
+        return HttpResponseForbidden()
+    request.DELETE = QueryDict(request.body)
+    logger.debug('@@@@@@@@@@@@ DELETE PRODUCT @@@@@@@@@@@@@@')
+    try:
+        with transaction.atomic():
+            shipment = Shipment.objects.select_for_update().get(pk=request.DELETE.get('delete_product_shipment_id'),
+                                                                status=1)
+            product = Product.objects.get(pk=request.DELETE.get('delete_product_product_id'),
+                                          shipment=shipment)
+            original_product = product.product
+            logger.debug(product.quantity)
+            logger.debug(original_product.quantity)
+            shipment.total_products -= product.quantity
+            http_response, cost = _shipment_calculate(shipment.total_products)
+            shipment.cost = cost
+            original_product.quantity += product.quantity
+            deleted = product.delete()
+            if deleted[0] == 0:
+                raise Product.DoesNotExist('Delete did not affect any row.')
+            shipment.save(update_fields=['total_products', 'cost'])
+            original_product.save(update_fields=['quantity'])
+    except (Product.DoesNotExist, Shipment.DoesNotExist) as err:
+        logger.error(err)
+        return HttpResponseBadRequest()
+    return http_response
 
 
 @login_required
@@ -160,7 +282,7 @@ def shipment_add(request):
     kwargs = {'addText': _('Adicionar produto'), 'deleteText': _('Remover produto')}
     logger.debug('@@@@@@@@@@@@ REQUEST METHOD @@@@@@@@@@@@@@')
     logger.debug(request.method)
-    if request.method == 'GET' and request.GET.get('s') == 1:
+    if request.method == 'GET' and request.GET.get('s') == '1':
         return render(request, 'shipment_add.html', {'title': _('Envio'), 'success': True,
                                                      'success_message': _('Envio inserido com sucesso.'),
                                                      'shipment_formset':
@@ -223,15 +345,20 @@ def shipment_add(request):
 def shipment_calculate(request):
     if has_shipment_perm(request.user, 'add_shipment') is False:
         return HttpResponseForbidden()
-    items = request.GET.get('items')
+    http_response, cost = _shipment_calculate(request.GET.get('items'))
+    return http_response
+
+
+def _shipment_calculate(items):
     cost_formula = CostFormula.objects.all()
     if len(cost_formula) > 0:
         cost = Calculate().evaluate(cost_formula[0].formula, variables={'x': items})
     else:
         cost = items * 1.25
     return HttpResponse(json.dumps({'cost': force_text(formats.number_format(cost, use_l10n=True,
-                                                                             decimal_pos=2))}),
-                        content_type='application/json')
+                                                                             decimal_pos=2)),
+                                    'items': items}),
+                        content_type='application/json'), cost
 
 
 @login_required

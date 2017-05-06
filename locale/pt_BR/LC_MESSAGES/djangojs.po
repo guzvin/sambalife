@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-30 21:29-0300\n"
+"POT-Creation-Date: 2017-05-05 18:01-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -260,41 +260,62 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
-#: html/static/js/applications.js:171 html/static/js/applications.js:188
+#: html/static/js/applications.js:170 html/static/js/applications.js:187
 msgid "mm/dd/yy"
 msgstr "dd/mm/yy"
 
-#: html/static/js/applications.js:201
+#: html/static/js/applications.js:200
 msgid "Required field."
 msgstr "Campo obrigatório."
 
-#: html/static/js/applications.js:202
+#: html/static/js/applications.js:201
 msgid "Please enter at least 6 characters."
 msgstr "Informe ao menos 6 caracteres."
 
-#: html/static/js/applications.js:203
+#: html/static/js/applications.js:202
 msgid "Please enter the same value again."
 msgstr "Informe o mesmo valor."
 
-#: html/static/js/applications.js:204
+#: html/static/js/applications.js:203
 msgid "See instructions for valid format."
 msgstr "Consulte as instruções de formato válido."
 
-#: html/static/js/applications.js:205
+#: html/static/js/applications.js:204
 msgid "Please enter a valid email address."
 msgstr "Informe um e-mail válido."
 
-#: html/static/js/applications.js:206
+#: html/static/js/applications.js:205
 msgid "Please enter a valid date."
 msgstr "Informe uma data válida."
 
-#: html/static/js/applications.js:207
+#: html/static/js/applications.js:206
 msgid "Please enter a date less than or equal today."
 msgstr "Informe uma data menor ou igual a de hoje."
 
-#: html/static/js/applications.js:208
+#: html/static/js/applications.js:207
 msgid "Please enter a number greater than zero."
 msgstr "Informe um número maior que zero."
+
+#: html/static/js/applications.js:672
+msgid ""
+"Sorry, but there seems to be some inconsistencies. Please reload the page "
+"and try again."
+msgstr "Desculpe, foi encontrada alguma inconsistência nos dados. Por favor, recarregue a página e tente novamente."
+
+#: html/static/js/applications.js:673 html/static/js/applications.js:678
+#: html/static/js/applications.js:683
+msgid "Error"
+msgstr "Erro"
+
+#: html/static/js/applications.js:677
+msgid "Access denied"
+msgstr "Acesso negado"
+
+#: html/static/js/applications.js:682
+msgid ""
+"Sorry, we are unable to process your operation. Please reload the page and "
+"try again."
+msgstr "Desculpe, não foi possível realizar sua operação. Por favor, recarregue a página e tente novamente."
 
 #~ msgid "Tracking number"
 #~ msgstr "Rastreamento"

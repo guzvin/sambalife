@@ -49,6 +49,7 @@ urlpatterns = i18n_patterns(
     # url(r'^shipment/edit/(?P<pid>[0-9]+)[/]$', shipment_add_edit, name='shipment_edit'),
     url(r'^shipment/calculate[/]$', shipment_calculate, name='shipment_calculate'),
     url(r'^shipment/pdf_1/(?P<pid>[0-9]+)[/]$', shipment_pdf_1, name='shipment_pdf_1'),
+    url(r'^shipment/delete/product[/]$', shipment_delete_product, name='shipment_delete_product'),
     url(r'^lotes/', lotes, name='lotes'),
     url(r'^lote/cadastro/', cadastroLote, name='cadastroLote'),
     url(r'^lotes-admin/', lotesAdmin, name='lotesAdmin'),

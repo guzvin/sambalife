@@ -34,8 +34,9 @@ class Product(models.Model):
         errors = {}
         if self.send_date and self.send_date > datetime.now().date():
             errors['send_date'] = ValidationError(_('Informe uma data menor ou igual a de hoje.'), code='invalid_date')
-        if self.quantity and self.quantity <= 0:
-            errors['quantity'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_quantity')
+        if self.quantity:
+            if self.quantity <= 0:
+                errors['quantity'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_quantity')
         if bool(errors):
             raise ValidationError(errors)
 

@@ -110,7 +110,7 @@ def user_reset_password(request, uidb64=None, token=None):
 def user_registration(request):
     if request.method != 'POST':
         context_data = None
-        if request.GET.get('s') == 1:
+        if request.GET.get('s') == '1':
             context_data = {'success': True, 'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS}
         return render(request, 'user_registration.html', context_data)
     else:

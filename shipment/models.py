@@ -96,16 +96,16 @@ class Package(models.Model):
     width = models.FloatField(_('Largura'))
     depth = models.FloatField(_('Profundidade'))
     UNITS_WEIGHT_CHOICES = (
-        (1, _('Pound')),  # lbs
-        (2, _('Ounce')),  # oz
-        (3, _('Quilograma')),  # kg
-        (4, _('Grama')),  # g
+        (1, _('Libras'), 'lbs'),  # lbs
+        (2, _('Onças'), 'oz'),  # oz
+        (3, _('Quilogramas'), 'kg'),  # kg
+        (4, _('Gramas'), 'g'),  # g
     )
     weight_units = models.SmallIntegerField(_('Unidade de medida de peso'), choices=UNITS_WEIGHT_CHOICES, default=1)
     UNITS_LENGTH_CHOICES = (
-        (1, _('Centímetro')),  # cm
-        (2, _('Milímetro')),  # mm
-        (3, _('Inch')),  # '
+        (1, _('Centímetros'), 'cm'),  # cm
+        (2, _('Milímetros'), 'mm'),  # mm
+        (3, _('Polegadas'), '\''),  # '
     )
     length_units = models.SmallIntegerField(_('Unidade de medida de tamanho'), choices=UNITS_LENGTH_CHOICES, default=1)
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)

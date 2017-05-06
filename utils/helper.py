@@ -58,6 +58,7 @@ def send_email(title, body, email_to=None,
 class MyBaseInlineFormSet(BaseInlineFormSet):
     def __init__(self, data=None, files=None, instance=None,
                  save_as_new=False, prefix=None, queryset=None, **kwargs):
+        self.allow_empty_form = kwargs.pop('allowEmptyForm', True)
         self.addText = kwargs.pop('addText', _('Adicionar'))
         self.deleteText = kwargs.pop('deleteText', _('Remover'))
         self.inline_formset_data = json.dumps({
@@ -84,6 +85,12 @@ class MyBaseInlineFormSet(BaseInlineFormSet):
 
     def __len__(self):
         return len(self.forms) + 1
+
+    def _construct_form(self, i, **kwargs):
+        form = super(MyBaseInlineFormSet, self)._construct_form(i, **kwargs)
+        if self.allow_empty_form is False:
+            form.empty_permitted = False
+        return form
 
     def add_fields(self, form, index):
         super(MyBaseInlineFormSet, self).add_fields(form, index)

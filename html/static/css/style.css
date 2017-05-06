@@ -1003,10 +1003,7 @@ table a{
 }
 
 .badge{
-    position: absolute;
-    left: 15px;
-    top: 34px;
-    font-size: 8px;
+    font-size: 9.5px;
 }
 
 .altura, .largura, .profun{

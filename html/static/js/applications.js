@@ -144,16 +144,16 @@
             {
                 return true;
             }
-            var valid = true;
             try
             {
-                return parseFloat(value) > 0;
+                if(parseFloat(value) > 0)
+                {
+                    return !isNaN(value);
+                }
             }
             catch (err)
-            {
-                valid = false;
-            }
-            return valid;
+            {}
+            return false;
         });
 
         if($.datepicker)
@@ -605,6 +605,103 @@
         });
     }
 
+    if($('form#form-add-package')[0])
+    {
+        $('a#send-btn-1').on('click', function (e)
+        {
+            e.preventDefault();
+            if($(this).hasClass('nosubmit'))
+            {
+                return false;
+            }
+            $(this).addClass('nosubmit');
+            $('form#form-add-package').submit();
+        });
+
+        $('form#form-add-package').validate(
+        {
+            submitHandler: function(form)
+            {
+                $('.loading').show();
+                form.submit()
+            },
+            invalidHandler: function(event, validator)
+            {
+                $('a#send-btn-1').removeClass('nosubmit');
+            },
+            onfocusout: false,
+            onkeyup: false,
+            onclick: false
+        });
+
+        window.addRule = function(element)
+        {
+            element.rules('add',
+            {
+                required: true,
+                positiveNumber: true,
+            });
+        }
+
+        $('input.add-validate-rule').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+                positiveNumber: true,
+            });
+        });
+    }
+
+    $('a.delete-product-shipment').each(function()
+    {
+        $(this).click(function(e)
+        {
+            e.preventDefault();
+            var tr = $(this).closest('tr');
+            var form = $(this).closest('form');
+            $.ajax(
+            {
+                method: 'DELETE',
+                url: '/shipment/delete/product',
+                data: form.serialize(),
+                statusCode:
+                {
+                    400: function()
+                    {
+                        var body = gettext('Sorry, but there seems to be some inconsistencies. Please reload the page and try again.');
+                        assembleModal(gettext('Error'), body);
+                    },
+                    403: function()
+                    {
+                        var body = gettext('Access denied');
+                        assembleModal(gettext('Error'), body);
+                    },
+                    500: function()
+                    {
+                        var body = gettext('Sorry, we are unable to process your operation. Please reload the page and try again.');
+                        assembleModal(gettext('Error'), body);
+                    }
+                }
+            })
+            .done(function( obj )
+            {
+                tr.remove();
+                $('#totalProducts')[0].innerHTML = obj.items;
+                $('#totalCost')[0].innerHTML = obj.cost;
+            });
+        });
+    });
+
+    function assembleModal(title, body)
+    {
+        $('div.modal-content h4.modal-title')[0].innerHTML = title;
+        var modalBody = $('div.modal-content div.modal-body');
+        modalBody[0].innerHTML = '';
+        modalBody.append($('<p>' + body + '</p>'));
+        $('#confirmacao').modal('show');
+    }
+
     $('.add-pro').click(function()
     {
         var numeroProduto = Number($('.lista-produtos .produto:last-child .num-produto').text()) + 1;
@@ -666,36 +763,4 @@
                   "<a class='rem-track btn btn-danger' data-toggle='tooltip' title='Remover produto' href='#'><i class='fa fa-fw fa-times'></i> Remover este produto do lote</a>" +
                 "</div>");
     });
-
-     $('.add-pacote-shipment').click(function()
-    {
-        var numeroPacote = Number($('.lista-pacotes-cadastro .pacote-infos:last-child .num-pacote').text()) + 1;
-
-        $('.lista-pacotes-cadastro').append("<div class='form-group pacote-infos pacote-infos-item'>" +
-            "<div class='col-md-2'>" +
-                "<label class='filtar-btn-m'>Pacote <span class='num-pacote'>" + numeroPacote + "</span>: </label>" +
-            "</div>" +
-            "<div class='col-md-2'>" +
-                "<input type='text' placeholder='Peso...' name='peso" + numeroPacote + "' class='form-control' id='peso" + numeroPacote + "' /><span class='badge'>em Lbs</span>" +
-            "</div>" +
-            "<div class='col-md-2'>" +
-                "<input type='text' placeholder='Altura...' name='Altura" + numeroPacote + "' class='form-control' id='Altura" + numeroPacote + "' /><span class='badge altura'>em centimetros</span>" +
-            "</div>" +
-            "<div class='col-md-2'>" +
-                "<input type='text' placeholder='Largura...' name='Largura" + numeroPacote + "' class='form-control' id='Largura" + numeroPacote + "' /><span class='badge largura'>em centimetros</span>" +
-            "</div>" +
-            "<div class='col-md-2'>" +
-                "<input type='text' placeholder='Profundidade...' name='Profundidade" + numeroPacote + "' class='form-control' id='Profundidade" + numeroPacote + "' /><span class='badge profun'>em centimetros</span><br><br>" +
-            "</div>" +
-            "<div class='col-md-2'>" +
-                "<a class='rem-track btn btn-danger rem-pacote-shipment' data-toggle='tooltip' title='Remover pacote' href='javascript:void(0);'><i class='fa fa-fw fa-times'></i></a>" +
-            "</div>" +
-        "</div>");
-    });
-
-    $(document).on('click','.rem-pacote-shipment',function()
-    {
-        $(this).parents(':eq(1)').remove();
-    });
-
 })(jQuery); // End of use strict
