@@ -15,7 +15,7 @@
         <p style="color:#858585;font:13px/120% 'Helvetica'"><strong>{% trans "Envio" %}:</strong> {{ shipment.id }}</p>
         <p style="color:#858585;font:13px/120% 'Helvetica'"><strong>{% trans "Data de envio" %}:</strong> {{ shipment.send_date|localize }}</p>
         <p style="color:#858585;font:13px/120% 'Helvetica'"><strong>{% trans "Quantidade de produtos" %}:</strong> {{ shipment.total_products }}</p>
-        <p style="color:#858585;font:13px/120% 'Helvetica'"><strong>{% trans "Valor total" %}:</strong> {{ shipment.cost|localize }}</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'"><strong>{% trans "Valor total" %}:</strong> U$ {{ shipment.cost|localize }}</p>
         <br>
         {% for product in products %}
         <p style="color:#858585;font:13px/120% 'Helvetica'"><strong>{% trans "Produto" %}:</strong> {{ product.product.name }}</p>

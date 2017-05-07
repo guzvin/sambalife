@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% load i18n l10n %}
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Vendedor Online Internacional" %}</title>
+</head>
+<body>
+
+<div id="template-email" style="background: #fff; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
+     <a href="http://vendedorinternacional.net/"><img width="75" src="{{ protocol}}://{{ domain }}/static/img/logo_sup.png"><img width="200" src="{{ protocol}}://{{ domain }}/static/img/logo_bottom.png"></a>
+    <div style="background: #eee; padding: 10px 20px 20px 20px;">
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Prezado(a)" %} {{ user_name }}</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Realize o pagamento para dar continuidade com o seu envio" %} {{ shipment.id }}.</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'"><strong>{% trans "Valor total" %}:</strong> U$ {{ shipment.cost|localize }}</p>
+        <br>
+        <p>
+            <a href="{{ protocol}}://{{ domain }}{% url 'shipment_details' shipment.id %}">{% trans "Clique aqui" %}</a> {% trans "para acessar seu envio e efetuar o pagamento." %}.
+        </p>
+    </div>
+    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Caso você não tenha feito esta solicitação nos avise através do e-mail <a href="mailto:contato@vendedorinternacional.online">contato@vendedorinternacional.online</a>." %}</small>
+    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Este é um e-mail automático disparado pelo sistema. Favor não respondê-lo, pois esta conta não é monitorada." %}</small>
+</div>
+
+</body>
+</html>

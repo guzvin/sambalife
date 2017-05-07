@@ -132,6 +132,8 @@ def shipment_list(request):
 @login_required
 @require_http_methods(["GET", "POST"])
 def shipment_details(request, pid=None):
+    logger.debug('@@@@@@@@@@@@@@@ REMOTE ADDRESS @@@@@@@@@@@@@@@@@')
+    logger.debug(request.META)
     if has_shipment_perm(request.user, 'view_shipments'):
         is_user_perm = has_user_perm(request.user, 'view_users')
         query = Q(pk=pid)
@@ -218,6 +220,7 @@ def shipment_add_package(request, pid=None):
                     shipment.save(update_fields=['status'])
                     break
                 package_formset.save()
+                send_email_shipment_add_package(request, shipment)
                 return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
         return package_formset
     except (Product.DoesNotExist, Shipment.DoesNotExist) as err:
@@ -322,7 +325,7 @@ def shipment_add(request):
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
                     product_formset.save()
                     logger.debug('@@@@@@@@@@@@ SEND PDF 1 EMAIL @@@@@@@@@@@@@@')
-                    send_add_shipment_email(request, shipment, products)
+                    send_email_shipment_add(request, shipment, products)
             return HttpResponseRedirect('%s?s=1' % reverse('shipment_add'))
         else:
             logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
@@ -382,15 +385,28 @@ def shipment_pdf_1(request, pid=None):
         return HttpResponseForbidden()
 
 
-def send_add_shipment_email(request, shipment, products):
-    message = loader.get_template('email/add-shipment.html').render(
+def send_email_shipment_add(request, shipment, products):
+    message = loader.get_template('email/shipment-add.html').render(
         Context({'user_name': request.user.first_name, 'protocol': 'https',
                  'domain': Site.objects.get_current().domain, 'shipment': shipment, 'products': products}))
     str1 = _('Cadastro de Envio %(number)s') % {'number': shipment.id}
     str2 = _('Vendedor Online Internacional')
+    send_email_shipment(request, message, string_concat(str1, ' ', str2))
+
+
+def send_email_shipment_add_package(request, shipment):
+    message = loader.get_template('email/shipment-add-package.html').render(
+        Context({'user_name': request.user.first_name, 'protocol': 'https',
+                 'domain': Site.objects.get_current().domain, 'shipment': shipment}))
+    str1 = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
+    str2 = _('Vendedor Online Internacional')
+    send_email_shipment(request, message, string_concat(str1, ' ', str2))
+
+
+def send_email_shipment(request, message, title):
     user_model = get_user_model()
     admins = user_model.objects.filter(groups__name='admins')
     admins_email = [user.email for user in admins]
     logger.debug('@@@@@@@@@@@@ ADMINS EMAIL @@@@@@@@@@@@@@')
     logger.debug(admins_email)
-    send_email(string_concat(str1, ' ', str2), message, [request.user.email], bcc=admins_email)
+    send_email(title, message, [request.user.email], bcc=admins_email)
