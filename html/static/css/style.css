@@ -1154,6 +1154,10 @@ form small{
     margin-right: 5px;
 }
 
+.limit-field{
+    width: 240px;
+}
+
 @media (max-width: 767px){
     .navbar-brand img:last-child {
         display: none;

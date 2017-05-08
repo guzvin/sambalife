@@ -48,6 +48,10 @@
                           <option value="2" {{ in_stock_filter_status }}>{% trans "Em Estoque" %}</option>
                         </select>
                     </div>
+                    <div class="form-group col-md-2">
+                        <label for="filtro-Rastreamento">Rastreamento</label>
+                        <input type="text" class="form-control" id="filtro-Rastreamento" name="user" placeholder="Rastreamento..." value="">
+                    </div>
                     <div class="form-group col-md-3">
                         <button type="submit" class="btn btn-primary filtar-btn" id="filter-btn"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
                     </div>
@@ -78,7 +82,7 @@
                   <th class="center">{{ user_label }}</th>
                   <!-- fim campo -->
                   {% endif %}
-                  <th>{% trans "Status" %}</th>
+                  <th class="center">{% trans "Status" %}</th>
                   {% if user|has_shipment_perm:'add_shipment' %}
                   <th class="center">{% trans "Envio" %}</th>
                   {% endif %}
@@ -89,7 +93,7 @@
                 {% for product in products %}
                 <tr>
                   <td>{{ product.id }}</td>
-                  <td>{{ product.name }}</td>
+                  <td class="limit-field">{{ product.name }}</td>
                   <td>{{ product.send_date }}</td>
                   <td class="center">{{ product.quantity }}</td>
                   {% if user|has_user_perm:'view_users' %}
@@ -97,7 +101,7 @@
                   <td class="center">{{ product.user.first_name }}</td>
                   <!-- fim campo -->
                   {% endif %}
-                  <td>
+                  <td class="center">
                       {% if user|has_product_perm:'change_product_status' %}
                       <!-- somente admin visualiza o botao de editar status-->
 
