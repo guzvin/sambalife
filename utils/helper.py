@@ -9,10 +9,11 @@ from django.forms import BooleanField
 from django.forms.formsets import DELETION_FIELD_NAME
 from pyparsing import Word, alphas, Literal, CaselessLiteral, Combine, Optional, nums, Or, Forward, \
     ZeroOrMore, StringEnd, alphanums
-from paypal.standard.forms import PayPalSharedSecretEncryptedPaymentsForm
+from paypal.standard.forms import PayPalEncryptedPaymentsForm
+from paypal.standard.ipn.models import PayPalIPN
+from paypal.standard.forms import PayPalStandardBaseForm
 from django.utils.encoding import smart_str
 from django.contrib.auth import get_user_model
-from paypal.standard.helpers import make_secret
 import hashlib
 import re
 import math
@@ -218,6 +219,7 @@ class Calculate:
         return 0
 
 
+# Code to override incompatible code from django-paypal module with Python 3
 def my_make_secret(form_instance, secret_fields=None):
     secret_fields = ['business', 'item_name']
 
@@ -236,12 +238,17 @@ def my_make_secret(form_instance, secret_fields=None):
     secret = get_sha1_hexdigest(settings.SECRET_KEY, data)
     return secret
 
-make_secret = my_make_secret
 
-
-class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalSharedSecretEncryptedPaymentsForm):
+class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
     def __init__(self, *args, **kwargs):
         super(MyPayPalSharedSecretEncryptedPaymentsForm, self).__init__(*args, **kwargs)
+        # @@@ Attach the secret parameter in a way that is safe for other query params.
+        secret_param = "?secret=%s" % my_make_secret(self)
+        # Initial data used in form construction overrides defaults
+        if 'notify_url' in self.initial:
+            self.initial['notify_url'] += secret_param
+        else:
+            self.fields['notify_url'].initial += secret_param
 
     def _encrypt(self):
         import ewp
@@ -275,3 +282,26 @@ def get_sha1_hexdigest(salt, raw_password):
     value = smart_str(salt) + smart_str(raw_password)
     hash_sha = hashlib.sha1(value.encode())
     return hash_sha.hexdigest()
+
+
+class MyPayPalIPN(PayPalIPN):
+    def verify_secret(self, form_instance, secret):
+        check_secret = my_make_secret(form_instance) == secret
+        logger.debug('@@@@@@@@@@@@ CHECK SECRET @@@@@@@@@@@@@@')
+        logger.debug(check_secret)
+        if not check_secret:
+            self.set_flag("Invalid secret. (%s)") % secret
+        self.save()
+
+
+class MyPayPalIPNForm(PayPalStandardBaseForm):
+    """
+    Form used to receive and record PayPal IPN notifications.
+
+    PayPal IPN test tool:
+    https://developer.paypal.com/us/cgi-bin/devscr?cmd=_tools-session
+    """
+
+    class Meta:
+        model = MyPayPalIPN
+        exclude = []
