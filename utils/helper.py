@@ -295,7 +295,19 @@ class MyPayPalIPN(PayPalIPN):
         logger.debug(check_secret)
         if not check_secret:
             self.set_flag("Invalid secret. (%s)") % secret
+        logger.debug('@@@@@@@@@@@@ PRE SAVE @@@@@@@@@@@@@@')
+        logger.debug('@@@@@@@@@@@@ CONCRETE FIELDS @@@@@@@@@@@@@@')
+        logger.debug(self._meta.concrete_fields)
+        logger.debug('@@@@@@@@@@@@ FIELDS @@@@@@@@@@@@@@')
+        logger.debug(self._meta.fields)
+        for field in self._meta.fields:
+            if not field.primary_key:
+                logger.debug(field.name)
+
+                if field.name != field.attname:
+                    logger.debug(field.attname)
         self.save()
+        logger.debug('@@@@@@@@@@@@ AFTER SAVE @@@@@@@@@@@@@@')
 
 
 class MyPayPalIPNForm(PayPalStandardBaseForm):
