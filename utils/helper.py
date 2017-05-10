@@ -285,6 +285,10 @@ def get_sha1_hexdigest(salt, raw_password):
 
 
 class MyPayPalIPN(PayPalIPN):
+    class Meta:
+        db_table = 'paypal_ipn'
+        verbose_name = 'PayPal IPN'
+
     def verify_secret(self, form_instance, secret):
         check_secret = my_make_secret(form_instance) == secret
         logger.debug('@@@@@@@@@@@@ CHECK SECRET @@@@@@@@@@@@@@')
