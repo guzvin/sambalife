@@ -216,7 +216,7 @@
               </form>
            </div><hr />
            {% endif %}
-           {% if shipment.status == 2 %}
+           {% if shipment.status == 2 and user == shipment.user %}
              <!--<a class="btn btn-default filtar-btn" href="{% url 'payment_details' %}"><i class="fa fa-fw fa-paypal"></i> {% trans "Efetuar Pagamento Agora" %}</a>-->
              {{ paypal_form.render }}
              <br><br>
