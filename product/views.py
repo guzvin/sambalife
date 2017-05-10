@@ -34,6 +34,8 @@ def product_stock(request):
         logger.debug(str(filter_user))
         filter_status = request.GET.get('status')
         logger.debug(str(filter_status))
+        filter_tracking = request.GET.get('tracking')
+        logger.debug(str(filter_tracking))
         filter_values = {
             'status': '',
         }
@@ -49,6 +51,9 @@ def product_stock(request):
         if filter_status:
             queries.append(Q(status=filter_status))
             filter_values['status'] = filter_status
+        if filter_tracking:
+            queries.append(Q(tracking__track_number=filter_tracking))
+            filter_values['tracking'] = filter_tracking
         logger.debug('@@@@@@@@@@@@ QUERIES @@@@@@@@@@@@@@')
         logger.debug(str(queries))
         logger.debug(str(len(queries)))

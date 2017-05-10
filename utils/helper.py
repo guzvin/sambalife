@@ -9,6 +9,9 @@ from django.forms import BooleanField
 from django.forms.formsets import DELETION_FIELD_NAME
 from pyparsing import Word, alphas, Literal, CaselessLiteral, Combine, Optional, nums, Or, Forward, \
     ZeroOrMore, StringEnd, alphanums
+from paypal.standard.forms import PayPalEncryptedPaymentsForm
+from django.utils.encoding import smart_str
+import hashlib
 import re
 import math
 import json
@@ -200,3 +203,67 @@ class Calculate:
                 self.variables = variables
             return self.evaluate_stack(self.expr_stack)
         return 0
+
+
+class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
+    def __init__(self, *args, **kwargs):
+        super(MyPayPalSharedSecretEncryptedPaymentsForm, self).__init__(*args, **kwargs)
+
+        # @@@ Attach the secret parameter in a way that is safe for other query params.
+        secret_param = "?secret=%s" % self.make_secret()
+        # Initial data used in form construction overrides defaults
+        if 'notify_url' in self.initial:
+            self.initial['notify_url'] += secret_param
+        else:
+            self.fields['notify_url'].initial += secret_param
+
+    def make_secret(self):
+        secret_fields = ['business', 'item_name']
+
+        data = ""
+        for name in secret_fields:
+            if hasattr(self, 'cleaned_data'):
+                if name in self.cleaned_data:
+                    data += str(self.cleaned_data[name])
+            else:
+                # Initial data passed into the constructor overrides defaults.
+                if name in self.initial:
+                    data += str(self.initial[name])
+                elif name in self.fields and self.fields[name].initial is not None:
+                    data += str(self.fields[name].initial)
+
+        secret = get_sha1_hexdigest(settings.SECRET_KEY, data)
+        return secret
+
+    def _encrypt(self):
+        import ewp
+        # Iterate through the fields and pull out the ones that have a value.
+        plaintext = 'cert_id=%s\n' % self.cert_id
+        for name, field in self.fields.items():
+            value = None
+            if name in self.initial:
+                value = self.initial[name]
+            elif field.initial is not None:
+                value = field.initial
+            if value is not None:
+                # @@@ Make this less hackish and put it in the widget.
+                if name == 'return_url':
+                    name = 'return'
+                plaintext += '%s=%s\n' % (name, value)
+        plaintext = plaintext.encode()
+
+        signature = ewp.sign(self.private_cert, self.public_cert, plaintext)
+        ciphertext = ewp.encrypt(self.paypal_cert, signature)
+        logger.debug('@@@@@@@@@@@@ PLAINTEXT @@@@@@@@@@@@@@')
+        logger.debug(plaintext)
+        logger.debug('@@@@@@@@@@@@ SIGNATURE @@@@@@@@@@@@@@')
+        logger.debug(signature)
+        logger.debug('@@@@@@@@@@@@ CIPHERTEXT @@@@@@@@@@@@@@')
+        logger.debug(ciphertext)
+        return ciphertext
+
+
+def get_sha1_hexdigest(salt, raw_password):
+    value = smart_str(salt) + smart_str(raw_password)
+    hash_sha = hashlib.sha1(value.encode())
+    return hash_sha.hexdigest()

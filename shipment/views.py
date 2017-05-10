@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from shipment.templatetags.shipments import has_shipment_perm
 from myauth.templatetags.users import has_user_perm
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
@@ -23,7 +24,9 @@ from utils.helper import MyBaseInlineFormSet, send_email, ObjectView
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
-from utils.helper import Calculate
+from utils.helper import Calculate, MyPayPalSharedSecretEncryptedPaymentsForm
+from paypal.standard.models import ST_PP_COMPLETED
+from paypal.standard.ipn.signals import valid_ipn_received
 import magic
 import json
 import os
@@ -179,9 +182,45 @@ def shipment_details(request, pid=None):
         else:
             _shipment_packages = Package.objects.filter(shipment=_shipment_details).order_by('id')
             context_data['packages'] = _shipment_packages
+            if _shipment_details.status == 2:  # Pagamento Autorizado
+                if settings.PAYPAL_TEST:
+                    import time
+                    current_milli_time = lambda: int(round(time.time() * 1000))
+                    invoice_id = '_'.join([str(request.user.id), str(pid), 'debug', str(current_milli_time())])
+                else:
+                    invoice_id = '_'.join([str(request.user.id), str(pid)])
+                paypal_dict = {
+                    'business': settings.PAYPAL_BUSINESS,
+                    'amount': _shipment_details.cost,
+                    'item_name': _('Envio %(number)s') % {'number': pid},
+                    'invoice': invoice_id,
+                    'notify_url': 'https://' + Site.objects.get_current().domain + reverse('paypal-ipn'),
+                    'return_url': 'https://' + Site.objects.get_current().domain +
+                                  '%s?p=1' % reverse('shipment_details', args=[pid]),
+                    'cancel_return': 'https://' + Site.objects.get_current().domain + reverse('shipment_details',
+                                                                                              args=[pid]),
+                    # 'custom': 'Upgrade all users!',  # Custom command to correlate to some function later (optional)
+                }
+                context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(initial=paypal_dict)
+                # context_data['paypal_form'] = PayPalPaymentsForm(initial=paypal_dict)
         logger.debug(context_data)
         return render(request, 'shipment_details.html', context_data)
     return HttpResponseForbidden()
+
+
+def paypal_notification(sender, **kwargs):
+    ipn_obj = sender
+    logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')
+    logger.debug(ipn_obj)
+    if ipn_obj.payment_status == ST_PP_COMPLETED:
+        if ipn_obj.receiver_email != settings.PAYPAL_BUSINESS:
+            # Not a valid payment
+            return
+        logger.debug('SUCCESS')
+    else:
+        logger.debug('FAILURE')
+
+valid_ipn_received.connect(paypal_notification)
 
 
 def shipment_add_package(request, pid=None):

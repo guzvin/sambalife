@@ -217,7 +217,9 @@
            </div><hr />
            {% endif %}
            {% if shipment.status == 2 %}
-             <a class="btn btn-default filtar-btn" href="{% url 'payment_details' %}"><i class="fa fa-fw fa-paypal"></i> {% trans "Efetuar Pagamento Agora" %}</a><br><br>
+             <!--<a class="btn btn-default filtar-btn" href="{% url 'payment_details' %}"><i class="fa fa-fw fa-paypal"></i> {% trans "Efetuar Pagamento Agora" %}</a>-->
+             {{ paypal_form.render }}
+             <br><br>
            {% endif %}
              <div class="row">
                 {% if shipment.status == 4 %}

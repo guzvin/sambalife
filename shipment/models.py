@@ -101,13 +101,17 @@ class Package(models.Model):
         (3, _('Quilogramas'), 'kg'),  # kg
         (4, _('Gramas'), 'g'),  # g
     )
-    weight_units = models.SmallIntegerField(_('Unidade de medida de peso'), choices=UNITS_WEIGHT_CHOICES, default=1)
+    weight_units = models.SmallIntegerField(_('Unidade de medida de peso'),
+                                            choices=tuple((choice[0], choice[1]) for choice in UNITS_WEIGHT_CHOICES),
+                                            default=1)
     UNITS_LENGTH_CHOICES = (
         (1, _('Centímetros'), 'cm'),  # cm
         (2, _('Milímetros'), 'mm'),  # mm
         (3, _('Polegadas'), '\''),  # '
     )
-    length_units = models.SmallIntegerField(_('Unidade de medida de tamanho'), choices=UNITS_LENGTH_CHOICES, default=1)
+    length_units = models.SmallIntegerField(_('Unidade de medida de tamanho'),
+                                            choices=tuple((choice[0], choice[1]) for choice in UNITS_LENGTH_CHOICES),
+                                            default=1)
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)
 
     class Meta:

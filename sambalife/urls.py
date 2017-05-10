@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.i18n import JavaScriptCatalog
 from django.conf.urls.i18n import i18n_patterns
@@ -46,10 +46,10 @@ urlpatterns = i18n_patterns(
     url(r'^shipment/list[/]$', shipment_list, name='shipment'),
     url(r'^shipment/details/(?P<pid>[0-9]+)[/]$', shipment_details, name='shipment_details'),
     url(r'^shipment/add[/]$', shipment_add, name='shipment_add'),
-    # url(r'^shipment/edit/(?P<pid>[0-9]+)[/]$', shipment_add_edit, name='shipment_edit'),
     url(r'^shipment/calculate[/]$', shipment_calculate, name='shipment_calculate'),
     url(r'^shipment/pdf_1/(?P<pid>[0-9]+)[/]$', shipment_pdf_1, name='shipment_pdf_1'),
     url(r'^shipment/delete/product[/]$', shipment_delete_product, name='shipment_delete_product'),
+    url(r'^paypal/', include('paypal.standard.ipn.urls')),
     url(r'^lotes/', lotes, name='lotes'),
     url(r'^lote/cadastro/', cadastroLote, name='cadastroLote'),
     url(r'^lotes-admin/', lotesAdmin, name='lotesAdmin'),

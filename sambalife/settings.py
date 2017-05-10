@@ -18,6 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'config')
 LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'logs')
 MEDIA_ROOT = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'media')
+PAYPAL_ROOT = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'paypal')
 
 
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -51,11 +52,15 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             DB_PASSWORD = key_value_pair[1]
         elif key_value_pair[0] == 'system_superuser_password':
             SYS_SU_PASSWORD = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_cert_id':
+            PAYPAL_CERT_ID = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_business':
+            PAYPAL_BUSINESS = key_value_pair[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '54.233.149.84', 'vendedorinternacional.online']
+ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -72,6 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'paypal.standard.ipn',
     'channels',
     'corsheaders',
     'statici18n',
@@ -219,7 +225,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 CSRF_TRUSTED_ORIGINS = (
     'localhost',
-    '54.233.149.84',
+    'vendedorinternacional.net',
 )
 
 PASSWORD_RESET_TIMEOUT_DAYS = 2
@@ -254,3 +260,9 @@ LOGGING = {
         },
     },
 }
+
+PAYPAL_TEST = True
+
+PAYPAL_PRIVATE_CERT = os.path.join(PAYPAL_ROOT, 'paypal_private.pem')
+PAYPAL_PUBLIC_CERT = os.path.join(PAYPAL_ROOT, 'paypal_public.pem')
+PAYPAL_CERT = os.path.join(PAYPAL_ROOT, 'paypal_cert.pem')
