@@ -218,6 +218,27 @@ class Calculate:
         return 0
 
 
+def my_make_secret(form_instance, secret_fields=None):
+    secret_fields = ['business', 'item_name']
+
+    data = ""
+    for name in secret_fields:
+        if hasattr(form_instance, 'cleaned_data'):
+            if name in form_instance.cleaned_data:
+                data += str(form_instance.cleaned_data[name])
+        else:
+            # Initial data passed into the constructor overrides defaults.
+            if name in form_instance.initial:
+                data += str(form_instance.initial[name])
+            elif name in form_instance.fields and form_instance.fields[name].initial is not None:
+                data += str(form_instance.fields[name].initial)
+
+    secret = get_sha1_hexdigest(settings.SECRET_KEY, data)
+    return secret
+
+make_secret = my_make_secret
+
+
 class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalSharedSecretEncryptedPaymentsForm):
     def __init__(self, *args, **kwargs):
         super(MyPayPalSharedSecretEncryptedPaymentsForm, self).__init__(*args, **kwargs)
@@ -250,28 +271,7 @@ class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalSharedSecretEncryptedPayme
         return ciphertext
 
 
-def my_make_secret(form_instance, secret_fields=None):
-    secret_fields = ['business', 'item_name']
-
-    data = ""
-    for name in secret_fields:
-        if hasattr(form_instance, 'cleaned_data'):
-            if name in form_instance.cleaned_data:
-                data += str(form_instance.cleaned_data[name])
-        else:
-            # Initial data passed into the constructor overrides defaults.
-            if name in form_instance.initial:
-                data += str(form_instance.initial[name])
-            elif name in form_instance.fields and form_instance.fields[name].initial is not None:
-                data += str(form_instance.fields[name].initial)
-
-    secret = get_sha1_hexdigest(settings.SECRET_KEY, data)
-    return secret
-
-
 def get_sha1_hexdigest(salt, raw_password):
     value = smart_str(salt) + smart_str(raw_password)
     hash_sha = hashlib.sha1(value.encode())
     return hash_sha.hexdigest()
-
-make_secret = my_make_secret
