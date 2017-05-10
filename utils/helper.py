@@ -9,9 +9,10 @@ from django.forms import BooleanField
 from django.forms.formsets import DELETION_FIELD_NAME
 from pyparsing import Word, alphas, Literal, CaselessLiteral, Combine, Optional, nums, Or, Forward, \
     ZeroOrMore, StringEnd, alphanums
-from paypal.standard.forms import PayPalEncryptedPaymentsForm
+from paypal.standard.forms import PayPalSharedSecretEncryptedPaymentsForm
 from django.utils.encoding import smart_str
 from django.contrib.auth import get_user_model
+from paypal.standard.helpers import make_secret
 import hashlib
 import re
 import math
@@ -217,35 +218,9 @@ class Calculate:
         return 0
 
 
-class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
+class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalSharedSecretEncryptedPaymentsForm):
     def __init__(self, *args, **kwargs):
         super(MyPayPalSharedSecretEncryptedPaymentsForm, self).__init__(*args, **kwargs)
-
-        # @@@ Attach the secret parameter in a way that is safe for other query params.
-        secret_param = "?secret=%s" % self.make_secret()
-        # Initial data used in form construction overrides defaults
-        if 'notify_url' in self.initial:
-            self.initial['notify_url'] += secret_param
-        else:
-            self.fields['notify_url'].initial += secret_param
-
-    def make_secret(self):
-        secret_fields = ['business', 'item_name']
-
-        data = ""
-        for name in secret_fields:
-            if hasattr(self, 'cleaned_data'):
-                if name in self.cleaned_data:
-                    data += str(self.cleaned_data[name])
-            else:
-                # Initial data passed into the constructor overrides defaults.
-                if name in self.initial:
-                    data += str(self.initial[name])
-                elif name in self.fields and self.fields[name].initial is not None:
-                    data += str(self.fields[name].initial)
-
-        secret = get_sha1_hexdigest(settings.SECRET_KEY, data)
-        return secret
 
     def _encrypt(self):
         import ewp
@@ -275,7 +250,28 @@ class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
         return ciphertext
 
 
+def my_make_secret(form_instance, secret_fields=None):
+    secret_fields = ['business', 'item_name']
+
+    data = ""
+    for name in secret_fields:
+        if hasattr(form_instance, 'cleaned_data'):
+            if name in form_instance.cleaned_data:
+                data += str(form_instance.cleaned_data[name])
+        else:
+            # Initial data passed into the constructor overrides defaults.
+            if name in form_instance.initial:
+                data += str(form_instance.initial[name])
+            elif name in form_instance.fields and form_instance.fields[name].initial is not None:
+                data += str(form_instance.fields[name].initial)
+
+    secret = get_sha1_hexdigest(settings.SECRET_KEY, data)
+    return secret
+
+
 def get_sha1_hexdigest(salt, raw_password):
     value = smart_str(salt) + smart_str(raw_password)
     hash_sha = hashlib.sha1(value.encode())
     return hash_sha.hexdigest()
+
+make_secret = my_make_secret
