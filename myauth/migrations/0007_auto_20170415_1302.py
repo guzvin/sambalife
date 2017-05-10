@@ -10,7 +10,7 @@ from myauth.models import MyUser
 
 
 def add_system_superuser(apps, schema_editor):
-    system_superuser = MyUser.objects.create_superuser('system@user.admin', 'Administrador', 'Master', '0', '0',
+    system_superuser = MyUser.objects.create_superuser(settings.SYS_SU_USER, 'Administrador', 'Master', '0', '0',
                                                        settings.SYS_SU_PASSWORD)
     system_superuser.is_active = True
     system_superuser.is_verified = True

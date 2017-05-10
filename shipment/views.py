@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
 from shipment.templatetags.shipments import has_shipment_perm
 from myauth.templatetags.users import has_user_perm
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
@@ -18,7 +17,6 @@ from django.utils import formats
 from django.utils.encoding import force_text
 from django.template import loader, Context
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from utils.helper import MyBaseInlineFormSet, send_email, ObjectView
 from django.db.models import Q
@@ -443,9 +441,4 @@ def send_email_shipment_add_package(request, shipment):
 
 
 def send_email_shipment(request, message, title):
-    user_model = get_user_model()
-    admins = user_model.objects.filter(groups__name='admins')
-    admins_email = [user.email for user in admins]
-    logger.debug('@@@@@@@@@@@@ ADMINS EMAIL @@@@@@@@@@@@@@')
-    logger.debug(admins_email)
-    send_email(title, message, [request.user.email], bcc=admins_email)
+    send_email(title, message, [request.user.email], bcc_admins=True)

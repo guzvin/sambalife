@@ -50,6 +50,8 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             DB_USER = key_value_pair[1]
         elif key_value_pair[0] == 'db_password':
             DB_PASSWORD = key_value_pair[1]
+        elif key_value_pair[0] == 'system_superuser':
+            SYS_SU_USER = key_value_pair[1]
         elif key_value_pair[0] == 'system_superuser_password':
             SYS_SU_PASSWORD = key_value_pair[1]
         elif key_value_pair[0] == 'paypal_cert_id':

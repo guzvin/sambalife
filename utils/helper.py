@@ -11,6 +11,7 @@ from pyparsing import Word, alphas, Literal, CaselessLiteral, Combine, Optional,
     ZeroOrMore, StringEnd, alphanums
 from paypal.standard.forms import PayPalEncryptedPaymentsForm
 from django.utils.encoding import smart_str
+from django.contrib.auth import get_user_model
 import hashlib
 import re
 import math
@@ -46,7 +47,18 @@ class ObjectView(object):
 
 def send_email(title, body, email_to=None,
                email_from=string_concat(_('Vendedor Online Internacional'), ' ',
-                                        string_concat('<', settings.EMAIL_HOST_USER, '>')), bcc=None):
+                                        string_concat('<', settings.EMAIL_HOST_USER, '>')), bcc_admins=False):
+    bcc = None
+    if bcc_admins:
+        user_model = get_user_model()
+        admins = user_model.objects.filter(groups__name='admins')
+        admins_email = [user.email for user in admins]
+        if settings.SYS_SU_USER in admins_email:
+            admins_email[admins_email.index(settings.SYS_SU_USER)] = settings.ADMIN_EMAIL
+        bcc = admins_email
+        logger.debug('@@@@@@@@@@@@ ADMINS EMAIL @@@@@@@@@@@@@@')
+        logger.debug(admins_email)
+
     msg = EmailMessage(
         title,
         body,
