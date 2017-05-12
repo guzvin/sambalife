@@ -416,48 +416,63 @@ def paypal_notification(sender, **kwargs):
     if ipn_obj.payment_status == ST_PP_COMPLETED:
         if ipn_obj.receiver_email != settings.PAYPAL_BUSINESS:
             # Not a valid payment
-            invalid_data.append('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'
+            invalid_data.append('<p style="color:#858585;font:13px/120%% \'Helvetica\'">E-mail da conta paypal '
+                                'recebedora não confere com o e-mail configurado no sistema.'
                                 '<br>E-mail recebido pelo paypal: %s'
-                                '<br>E-mail configurado no sistema: %s' % (ipn_obj.receiver_email,
-                                                                           settings.PAYPAL_BUSINESS))
+                                '<br>E-mail configurado no sistema: %s</p>' % (ipn_obj.receiver_email,
+                                                                               settings.PAYPAL_BUSINESS))
         if ipn_obj.invoice is None or (len(ipn_obj.invoice.split('_')) != 2 and len(ipn_obj.invoice.split('_')) != 4):
-            invalid_data.append('Valor do campo \'recibo\' (invoice) não está no formato esperado.'
-                                '<br>Recibo: %s' % ipn_obj.invoice if ipn_obj.invoice is not None else '<em branco>')
+            invalid_data.append('<p style="color:#858585;font:13px/120%% \'Helvetica\'">Valor do campo \'recibo\' '
+                                '(invoice) não está no formato esperado.'
+                                '<br>Recibo: %s</p>' % ipn_obj.invoice if ipn_obj.invoice is not None
+                                else '<em branco>')
         invoice = ipn_obj.invoice.split('_')
         user_id = invoice[0]
         shipment_id = invoice[1]
         try:
-            _shipment_details = Shipment.objects.get(pk=shipment_id, user_id=user_id)
+            _shipment_details = Shipment.objects.select_related('user').get(pk=shipment_id, user_id=user_id)
             if str(_shipment_details.cost) != ipn_obj.payment_gross:
-                invalid_data.append('Valor do pagamento não confere com o valor cobrado.'
+                invalid_data.append('<p style="color:#858585;font:13px/120%% \'Helvetica\'">Valor do pagamento não '
+                                    'confere com o valor cobrado.'
                                     '<br>Recibo: %s'
                                     '<br>Valor pago: %s'
-                                    '<br>Valor cobrado: %s' % (ipn_obj.invoice, ipn_obj.payment_gross,
-                                                               str(_shipment_details.cost)))
+                                    '<br>Valor cobrado: %s</p>' % (ipn_obj.invoice, ipn_obj.payment_gross,
+                                                                   str(_shipment_details.cost)))
         except Shipment.DoesNotExist:
-            invalid_data.append('Dados do recibo são inválidos.'
-                                '<br>Recibo: %s' % ipn_obj.invoice)
+            invalid_data.append('<p style="color:#858585;font:13px/120%% \'Helvetica\'">Dados do recibo são inválidos.'
+                                '<br>Recibo: %s</p>' % ipn_obj.invoice)
     else:
         logger.info('@@@@@@@@@@@@ PAYMENT STATUS @@@@@@@@@@@@@@')
-        invalid_data.append('Notificação recebida do paypal.'
-                            '<br>Status: %s'
-                            '<br>Recibo: %s'
-                            '<br>Item: %s'
-                            '<br>Nome cliente: %s'
-                            '<br>Sobrenome cliente: %s'
-                            '<br>Data do pagamento: %s' % (ipn_obj.payment_status, ipn_obj.invoice, ipn_obj.item_name,
-                                                           ipn_obj.first_name, ipn_obj.last_name, ipn_obj.payment_date))
-    admin_url = 'Para mais informações consulte a área <a href="%s">administrativa</a> de pagamentos.'\
-                % reverse('admin:payment_mypaypalipn_changelist')
+        invalid_data.append(paypal_status_message(ipn_obj))
+    admin_url = '<p>Para mais informações consulte a área <a href="%s">administrativa</a> de pagamentos.</p>'\
+                % ''.join(['https://', Site.objects.get_current().domain,
+                           reverse('admin:payment_mypaypalipn_changelist')])
     if invalid_data:
         invalid_data.append(admin_url)
         logger.error(invalid_data)
-        email_message = '<br><br>'.join(invalid_data)
-        # TODO SEND EMAIL ADMIN
+        email_title = 'Informações sobre o pagamento do %s' % ipn_obj.item_name
+        email_message = ''.join(invalid_data)
+        send_email_shipment_payment(_('Administrador'), None, email_title, email_message)
         pass
     else:
         logger.debug('SUCCESS')
-        #  TODO SEND EMAIL ALL
+        _shipment_details.status = 3
+        _shipment_details.save(update_fields=['status'])
+        email_title = _('Pagamento confirmado pelo PayPal para o %(item)s') % {'item': ipn_obj.item_name}
+        email_message = ''.join([str(_(paypal_status_message(ipn_obj))), str(_(admin_url))])
+        send_email_shipment_payment(_shipment_details.user.first_name, [_shipment_details.user.email], email_title,
+                                    email_message)
+
+
+def paypal_status_message(ipn_obj):
+    return '<p style="color:#858585;font:13px/120%% \'Helvetica\'">Notificação recebida do paypal.' \
+           '<br>Status: %s' \
+           '<br>Recibo: %s' \
+           '<br>Item: %s' \
+           '<br>Nome cliente: %s' \
+           '<br>Sobrenome cliente: %s' \
+           '<br>Data do pagamento: %s</p>' % (ipn_obj.payment_status, ipn_obj.invoice, ipn_obj.item_name,
+                                              ipn_obj.first_name, ipn_obj.last_name, ipn_obj.payment_date)
 
 
 valid_ipn_received.connect(paypal_notification)
@@ -479,6 +494,14 @@ def send_email_shipment_add_package(shipment):
     str1 = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
     str2 = _('Vendedor Online Internacional')
     send_email_shipment(message, string_concat(str1, ' ', str2), [shipment.user.email])
+
+
+def send_email_shipment_payment(user_name, user_email, email_title, email_body):
+    message = loader.get_template('email/shipment-payment.html').render(
+        Context({'user_name': user_name, 'protocol': 'https',
+                 'domain': Site.objects.get_current().domain, 'email_body': email_body}))
+    str2 = _('Vendedor Online Internacional')
+    send_email_shipment(message, string_concat(email_title, ' ', str2), user_email)
 
 
 def send_email_shipment(message, title, email_to):
