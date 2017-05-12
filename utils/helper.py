@@ -9,9 +9,6 @@ from django.forms import BooleanField
 from django.forms.formsets import DELETION_FIELD_NAME
 from pyparsing import Word, alphas, Literal, CaselessLiteral, Combine, Optional, nums, Or, Forward, \
     ZeroOrMore, StringEnd, alphanums
-from paypal.standard.forms import PayPalEncryptedPaymentsForm
-from paypal.standard.ipn.models import PayPalIPN
-from paypal.standard.forms import PayPalStandardBaseForm
 from django.utils.encoding import smart_str
 from django.contrib.auth import get_user_model
 import hashlib
@@ -239,84 +236,7 @@ def my_make_secret(form_instance, secret_fields=None):
     return secret
 
 
-class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
-    def __init__(self, *args, **kwargs):
-        super(MyPayPalSharedSecretEncryptedPaymentsForm, self).__init__(*args, **kwargs)
-        # @@@ Attach the secret parameter in a way that is safe for other query params.
-        secret_param = "?secret=%s" % my_make_secret(self)
-        # Initial data used in form construction overrides defaults
-        if 'notify_url' in self.initial:
-            self.initial['notify_url'] += secret_param
-        else:
-            self.fields['notify_url'].initial += secret_param
-
-    def _encrypt(self):
-        import ewp
-        # Iterate through the fields and pull out the ones that have a value.
-        plaintext = 'cert_id=%s\n' % self.cert_id
-        for name, field in self.fields.items():
-            value = None
-            if name in self.initial:
-                value = self.initial[name]
-            elif field.initial is not None:
-                value = field.initial
-            if value is not None:
-                # @@@ Make this less hackish and put it in the widget.
-                if name == 'return_url':
-                    name = 'return'
-                plaintext += '%s=%s\n' % (name, value)
-        plaintext = plaintext.encode()
-
-        signature = ewp.sign(self.private_cert, self.public_cert, plaintext)
-        ciphertext = ewp.encrypt(self.paypal_cert, signature)
-        logger.debug('@@@@@@@@@@@@ PLAINTEXT @@@@@@@@@@@@@@')
-        logger.debug(plaintext)
-        logger.debug('@@@@@@@@@@@@ SIGNATURE @@@@@@@@@@@@@@')
-        logger.debug(signature)
-        logger.debug('@@@@@@@@@@@@ CIPHERTEXT @@@@@@@@@@@@@@')
-        logger.debug(ciphertext)
-        return ciphertext
-
-
 def get_sha1_hexdigest(salt, raw_password):
     value = smart_str(salt) + smart_str(raw_password)
     hash_sha = hashlib.sha1(value.encode())
     return hash_sha.hexdigest()
-
-
-class MyPayPalIPN(PayPalIPN):
-    class Meta:
-        proxy = True
-
-    def verify_secret(self, form_instance, secret):
-        check_secret = my_make_secret(form_instance) == secret
-        logger.debug('@@@@@@@@@@@@ CHECK SECRET @@@@@@@@@@@@@@')
-        logger.debug(check_secret)
-        if not check_secret:
-            self.set_flag("Invalid secret. (%s)") % secret
-        logger.debug('@@@@@@@@@@@@ PRE SAVE @@@@@@@@@@@@@@')
-        logger.debug('@@@@@@@@@@@@ CONCRETE FIELDS @@@@@@@@@@@@@@')
-        logger.debug(self._meta.concrete_fields)
-        logger.debug('@@@@@@@@@@@@ FIELDS @@@@@@@@@@@@@@')
-        logger.debug(self._meta.fields)
-        for field in self._meta.fields:
-            if not field.primary_key:
-                logger.debug(field.name)
-
-                if field.name != field.attname:
-                    logger.debug(field.attname)
-        self.save()
-        logger.debug('@@@@@@@@@@@@ AFTER SAVE @@@@@@@@@@@@@@')
-
-
-class MyPayPalIPNForm(PayPalStandardBaseForm):
-    """
-    Form used to receive and record PayPal IPN notifications.
-
-    PayPal IPN test tool:
-    https://developer.paypal.com/us/cgi-bin/devscr?cmd=_tools-session
-    """
-
-    class Meta:
-        model = MyPayPalIPN
-        exclude = []

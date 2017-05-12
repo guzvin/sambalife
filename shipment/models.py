@@ -92,11 +92,11 @@ class Product(models.Model):
 class Package(models.Model):
     id = BigAutoField(primary_key=True)
     weight = models.FloatField(_('Peso'))
-    height = models.FloatField(_('Altura'))
-    width = models.FloatField(_('Largura'))
-    depth = models.FloatField(_('Profundidade'))
+    height = models.FloatField(_('H'))
+    width = models.FloatField(_('W'))
+    length = models.FloatField(_('L'))
     UNITS_WEIGHT_CHOICES = (
-        (1, _('Libras'), 'lbs'),  # lbs
+        (1, _('Libras'), 'lb.'),  # lbs
         (2, _('Onças'), 'oz'),  # oz
         (3, _('Quilogramas'), 'kg'),  # kg
         (4, _('Gramas'), 'g'),  # g
@@ -107,11 +107,11 @@ class Package(models.Model):
     UNITS_LENGTH_CHOICES = (
         (1, _('Centímetros'), 'cm'),  # cm
         (2, _('Milímetros'), 'mm'),  # mm
-        (3, _('Polegadas'), '\''),  # '
+        (3, _('Inches'), '"'),  # '
     )
     length_units = models.SmallIntegerField(_('Unidade de medida de tamanho'),
                                             choices=tuple((choice[0], choice[1]) for choice in UNITS_LENGTH_CHOICES),
-                                            default=1)
+                                            default=3)
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)
 
     class Meta:
@@ -126,8 +126,8 @@ class Package(models.Model):
             errors['height'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_height')
         if self.width and self.width <= 0:
             errors['width'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_width')
-        if self.depth and self.depth <= 0:
-            errors['depth'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_depth')
+        if self.length and self.length <= 0:
+            errors['length'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_length')
         if bool(errors):
             raise ValidationError(errors)
 

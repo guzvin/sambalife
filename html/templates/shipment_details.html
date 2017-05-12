@@ -95,9 +95,9 @@
            </div>
            <hr />
            {% trans "Peso" as weight %}
-           {% trans "Altura" as height %}
-           {% trans "Largura" as width %}
-           {% trans "Profundidade" as depth %}
+           {% trans "L" as length %}
+           {% trans "W" as width %}
+           {% trans "H" as height %}
            {% if shipment.status != 1 %}
            <div class="row">
              <div class="col-md-10">
@@ -108,7 +108,7 @@
                         <label class="">{% trans "Pacote" %} {{ forloop.counter }}: </label>
                     </div>
                     <div class="col-md-8">
-                        <p>{{ weight }}: {{ package.weight|localize }} {% unit_weight_display 1 abbreviate=True %} / {{ height }}: {{ package.height|localize }} {% unit_length_display 1 abbreviate=True %} / {{ width }}: {{ package.width|localize }} {% unit_length_display 1 abbreviate=True %} / {{ depth }}: {{ package.depth|localize }} {% unit_length_display 1 abbreviate=True %}</p>
+                        <p>{{ weight }}: {{ package.weight|unlocalize }} {% unit_weight_display 1 abbreviate=True %} / {{ length }}: {{ package.length|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ width }}: {{ package.width|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ height }}: {{ package.height|unlocalize }}{% unit_length_display 3 abbreviate=True %}</p>
                     </div>
                 </div>
                 {% if not forloop.last %}
@@ -181,25 +181,25 @@
                             <span class="badge">{% trans "em" %} {% unit_weight_display 1 %}</span>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" placeholder="{{ package_form.height.label }}..." name="{{ package_form.height.html_name }}" class="form-control add-validate-rule" id="{{ package_form.height.id_for_label }}" value="{% if package_form.height.value %}{{ package_form.height.value|unlocalize }}{% endif %}" />
-                            {% for error in package_form.height.errors %}
-                              <label id="{{ package_form.height.id_for_label }}-error" class="error" for="{{ package_form.height.id_for_label }}">{{ error|escape }}</label>
+                            <input type="text" placeholder="{{ package_form.length.label }}..." name="{{ package_form.length.html_name }}" class="form-control add-validate-rule" id="{{ package_form.length.id_for_label }}" value="{% if package_form.length.value %}{{ package_form.length.value|unlocalize }}{% endif %}" />
+                            {% for error in package_form.length.errors %}
+                              <label id="{{ package_form.length.id_for_label }}-error" class="error" for="{{ package_form.length.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
-                            <span class="badge altura">{% trans "em" %} {% unit_length_display 1 %}</span>
+                            <span class="badge profun">{% trans "em" %} {% unit_length_display 3 %}</span><br><br>
                         </div>
                         <div class="col-md-2">
                             <input type="text" placeholder="{{ package_form.width.label }}..." name="{{ package_form.width.html_name }}" class="form-control add-validate-rule" id="{{ package_form.width.id_for_label }}" value="{% if package_form.width.value %}{{ package_form.width.value|unlocalize }}{% endif %}" />
                             {% for error in package_form.width.errors %}
                               <label id="{{ package_form.width.id_for_label }}-error" class="error" for="{{ package_form.width.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
-                            <span class="badge largura">{% trans "em" %} {% unit_length_display 1 %}</span>
+                            <span class="badge largura">{% trans "em" %} {% unit_length_display 3 %}</span>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" placeholder="{{ package_form.depth.label }}..." name="{{ package_form.depth.html_name }}" class="form-control add-validate-rule" id="{{ package_form.depth.id_for_label }}" value="{% if package_form.depth.value %}{{ package_form.depth.value|unlocalize }}{% endif %}" />
-                            {% for error in package_form.depth.errors %}
-                              <label id="{{ package_form.depth.id_for_label }}-error" class="error" for="{{ package_form.depth.id_for_label }}">{{ error|escape }}</label>
+                            <input type="text" placeholder="{{ package_form.height.label }}..." name="{{ package_form.height.html_name }}" class="form-control add-validate-rule" id="{{ package_form.height.id_for_label }}" value="{% if package_form.height.value %}{{ package_form.height.value|unlocalize }}{% endif %}" />
+                            {% for error in package_form.height.errors %}
+                              <label id="{{ package_form.height.id_for_label }}-error" class="error" for="{{ package_form.height.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
-                            <span class="badge profun">{% trans "em" %} {% unit_length_display 1 %}</span><br><br>
+                            <span class="badge altura">{% trans "em" %} {% unit_length_display 3 %}</span>
                         </div>
                         {% if forloop.first is False %}
                         <div class="col-md-2">

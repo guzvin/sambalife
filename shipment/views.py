@@ -22,13 +22,10 @@ from utils.helper import MyBaseInlineFormSet, send_email, ObjectView
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
-from utils.helper import Calculate, MyPayPalSharedSecretEncryptedPaymentsForm, MyPayPalIPN, MyPayPalIPNForm
+from utils.helper import Calculate
+from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from paypal.standard.models import ST_PP_COMPLETED
 from paypal.standard.ipn.signals import valid_ipn_received
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
-from paypal.standard.models import DEFAULT_ENCODING
-from paypal.utils import warn_untested
 import magic
 import json
 import os
@@ -176,7 +173,7 @@ def shipment_details(request, pid=None):
                 request.session['shipment_products'] = serialized_products
                 if 'packages' not in context_data:
                     PackageFormSet = inlineformset_factory(Shipment, Package, formset=MyBaseInlineFormSet,
-                                                           fields=('weight', 'height', 'width', 'depth',),
+                                                           fields=('weight', 'height', 'width', 'length',),
                                                            extra=1)
                     kwargs = {'addText': _('Adicionar pacote'), 'deleteText': _('Remover pacote')}
                     package_formset = PackageFormSet(instance=_shipment_details, prefix='package_set', **kwargs)
@@ -210,21 +207,6 @@ def shipment_details(request, pid=None):
     return HttpResponseForbidden()
 
 
-def paypal_notification(sender, **kwargs):
-    ipn_obj = sender
-    logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')
-    logger.debug(ipn_obj)
-    if ipn_obj.payment_status == ST_PP_COMPLETED:
-        if ipn_obj.receiver_email != settings.PAYPAL_BUSINESS:
-            # Not a valid payment
-            return
-        logger.debug('SUCCESS')
-    else:
-        logger.debug('FAILURE')
-
-valid_ipn_received.connect(paypal_notification)
-
-
 def shipment_add_package(request, pid=None):
     if has_shipment_perm(request.user, 'view_shipments') is False or \
                     has_shipment_perm(request.user, 'add_package') is False:
@@ -232,16 +214,16 @@ def shipment_add_package(request, pid=None):
     logger.debug('@@@@@@@@@@@@ ADD PACKAGE @@@@@@@@@@@@@@')
     custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
     PackageFormSet = inlineformset_factory(Shipment, Package, formset=MyBaseInlineFormSet,
-                                           fields=('weight', 'height', 'width', 'depth',),
+                                           fields=('weight', 'height', 'width', 'length',),
                                            extra=1,
                                            error_messages={'weight': custom_error_messages,
                                                            'height': custom_error_messages,
                                                            'width': custom_error_messages,
-                                                           'depth': custom_error_messages})
+                                                           'length': custom_error_messages})
     kwargs = {'addText': _('Adicionar pacote'), 'deleteText': _('Remover pacote'), 'allowEmptyForm': False}
     try:
         with transaction.atomic():
-            shipment = Shipment.objects.select_for_update().get(pk=pid, status=1)
+            shipment = Shipment.objects.select_for_update().select_related('user').get(pk=pid, status=1)
             package_formset = PackageFormSet(request.POST, instance=shipment, prefix='package_set', **kwargs)
             if package_formset.is_valid():
                 for package_form in package_formset:
@@ -261,7 +243,7 @@ def shipment_add_package(request, pid=None):
                     shipment.save(update_fields=['status'])
                     break
                 package_formset.save()
-                send_email_shipment_add_package(request, shipment)
+                send_email_shipment_add_package(shipment)
                 return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
         return package_formset
     except (Product.DoesNotExist, Shipment.DoesNotExist) as err:
@@ -366,7 +348,7 @@ def shipment_add(request):
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
                     product_formset.save()
                     logger.debug('@@@@@@@@@@@@ SEND PDF 1 EMAIL @@@@@@@@@@@@@@')
-                    send_email_shipment_add(request, shipment, products)
+                    send_email_shipment_add(shipment, products)
             return HttpResponseRedirect('%s?s=1' % reverse('shipment_add'))
         else:
             logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
@@ -426,107 +408,78 @@ def shipment_pdf_1(request, pid=None):
         return HttpResponseForbidden()
 
 
-def send_email_shipment_add(request, shipment, products):
+def paypal_notification(sender, **kwargs):
+    ipn_obj = sender
+    logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')
+    logger.debug(ipn_obj)
+    invalid_data = []
+    if ipn_obj.payment_status == ST_PP_COMPLETED:
+        if ipn_obj.receiver_email != settings.PAYPAL_BUSINESS:
+            # Not a valid payment
+            invalid_data.append('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'
+                                '<br>E-mail recebido pelo paypal: %s'
+                                '<br>E-mail configurado no sistema: %s' % (ipn_obj.receiver_email,
+                                                                           settings.PAYPAL_BUSINESS))
+        if ipn_obj.invoice is None or (len(ipn_obj.invoice.split('_')) != 2 and len(ipn_obj.invoice.split('_')) != 4):
+            invalid_data.append('Valor do campo \'recibo\' (invoice) não está no formato esperado.'
+                                '<br>Recibo: %s' % ipn_obj.invoice if ipn_obj.invoice is not None else '<em branco>')
+        invoice = ipn_obj.invoice.split('_')
+        user_id = invoice[0]
+        shipment_id = invoice[1]
+        try:
+            _shipment_details = Shipment.objects.get(pk=shipment_id, user_id=user_id)
+            if str(_shipment_details.cost) != ipn_obj.payment_gross:
+                invalid_data.append('Valor do pagamento não confere com o valor cobrado.'
+                                    '<br>Recibo: %s'
+                                    '<br>Valor pago: %s'
+                                    '<br>Valor cobrado: %s' % (ipn_obj.invoice, ipn_obj.payment_gross,
+                                                               str(_shipment_details.cost)))
+        except Shipment.DoesNotExist:
+            invalid_data.append('Dados do recibo são inválidos.'
+                                '<br>Recibo: %s' % ipn_obj.invoice)
+    else:
+        logger.info('@@@@@@@@@@@@ PAYMENT STATUS @@@@@@@@@@@@@@')
+        invalid_data.append('Notificação recebida do paypal.'
+                            '<br>Status: %s'
+                            '<br>Recibo: %s'
+                            '<br>Item: %s'
+                            '<br>Nome cliente: %s'
+                            '<br>Sobrenome cliente: %s'
+                            '<br>Data do pagamento: %s' % (ipn_obj.payment_status, ipn_obj.invoice, ipn_obj.item_name,
+                                                           ipn_obj.first_name, ipn_obj.last_name, ipn_obj.payment_date))
+    admin_url = 'Para mais informações consulte a área <a href="%s">administrativa</a> de pagamentos.'\
+                % reverse('admin:payment_mypaypalipn_changelist')
+    if invalid_data:
+        invalid_data.append(admin_url)
+        logger.error(invalid_data)
+        email_message = '<br><br>'.join(invalid_data)
+        # TODO SEND EMAIL ADMIN
+        pass
+    else:
+        logger.debug('SUCCESS')
+        #  TODO SEND EMAIL ALL
+
+
+valid_ipn_received.connect(paypal_notification)
+
+
+def send_email_shipment_add(shipment, products):
     message = loader.get_template('email/shipment-add.html').render(
-        Context({'user_name': request.user.first_name, 'protocol': 'https',
+        Context({'user_name': shipment.user.first_name, 'protocol': 'https',
                  'domain': Site.objects.get_current().domain, 'shipment': shipment, 'products': products}))
     str1 = _('Cadastro de Envio %(number)s') % {'number': shipment.id}
     str2 = _('Vendedor Online Internacional')
-    send_email_shipment(request, message, string_concat(str1, ' ', str2))
+    send_email_shipment(message, string_concat(str1, ' ', str2), [shipment.user.email])
 
 
-def send_email_shipment_add_package(request, shipment):
+def send_email_shipment_add_package(shipment):
     message = loader.get_template('email/shipment-add-package.html').render(
-        Context({'user_name': request.user.first_name, 'protocol': 'https',
+        Context({'user_name': shipment.user.first_name, 'protocol': 'https',
                  'domain': Site.objects.get_current().domain, 'shipment': shipment}))
     str1 = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
     str2 = _('Vendedor Online Internacional')
-    send_email_shipment(request, message, string_concat(str1, ' ', str2))
+    send_email_shipment(message, string_concat(str1, ' ', str2), [shipment.user.email])
 
 
-def send_email_shipment(request, message, title):
-    send_email(title, message, [request.user.email], bcc_admins=True)
-
-CONTENT_TYPE_ERROR = ("Invalid Content-Type - PayPal is only expected to use "
-                      "application/x-www-form-urlencoded. If using django's "
-                      "test Client, set `content_type` explicitly")
-
-
-@require_POST
-@csrf_exempt
-def shipment_ipn(request):
-    flag = None
-    ipn_obj = None
-
-    # Avoid the RawPostDataException. See original issue for details:
-    # https://github.com/spookylukey/django-paypal/issues/79
-    if not request.META.get('CONTENT_TYPE', '').startswith(
-            'application/x-www-form-urlencoded'):
-        raise AssertionError(CONTENT_TYPE_ERROR)
-
-    logger.debug('PayPal incoming POST data: %s', request.body)
-
-    # Clean up the data as PayPal sends some weird values such as "N/A"
-    # Also, need to cope with custom encoding, which is stored in the body (!).
-    # Assuming the tolerant parsing of QueryDict and an ASCII-like encoding,
-    # such as windows-1252, latin1 or UTF8, the following will work:
-    encoding = request.POST.get('charset', None)
-
-    encoding_missing = encoding is None
-    if encoding_missing:
-        encoding = DEFAULT_ENCODING
-
-    try:
-        data = QueryDict(request.body, encoding=encoding).copy()
-    except LookupError:
-        warn_untested()
-        data = None
-        flag = 'Invalid form - invalid charset'
-
-    if data is not None:
-        if hasattr(MyPayPalIPN._meta, 'get_fields'):
-            date_fields = [f.attname for f in MyPayPalIPN._meta.get_fields() if f.__class__.__name__ == 'DateTimeField']
-        else:
-            date_fields = [f.attname for f, m in MyPayPalIPN._meta.get_fields_with_model()
-                           if f.__class__.__name__ == 'DateTimeField']
-
-        for date_field in date_fields:
-            if data.get(date_field) == 'N/A':
-                del data[date_field]
-
-        form = MyPayPalIPNForm(data)
-        if form.is_valid():
-            try:
-                # When commit = False, object is returned without saving to DB.
-                ipn_obj = form.save(commit=False)
-            except Exception as e:
-                flag = 'Exception while processing. (%s)' % e
-        else:
-            formatted_form_errors = ['{0}: {1}'.format(k, ', '.join(v)) for k, v in form.errors.items()]
-            flag = 'Invalid form. ({0})'.format(', '.join(formatted_form_errors))
-
-    if ipn_obj is None:
-        ipn_obj = MyPayPalIPN()
-
-    # Set query params and sender's IP address
-    ipn_obj.initialize(request)
-
-    if flag is not None:
-        # We save errors in the flag field
-        ipn_obj.set_flag(flag)
-    else:
-        # Secrets should only be used over SSL.
-        if request.is_secure() and 'secret' in request.GET:
-            warn_untested()
-            ipn_obj.verify_secret(form, request.GET['secret'])
-        else:
-            ipn_obj.verify()
-
-    ipn_obj.save()
-    ipn_obj.send_signals()
-
-    if encoding_missing:
-        # Wait until we have an ID to log warning
-        logger.warning('No charset passed with PayPalIPN: %s. Guessing %s', ipn_obj.id, encoding)
-
-    return HttpResponse('OKAY')
+def send_email_shipment(message, title, email_to):
+    send_email(title, message, email_to, bcc_admins=True)

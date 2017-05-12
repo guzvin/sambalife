@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'myauth',
     'product',
     'shipment',
+    'payment',
 ]
 
 MIDDLEWARE = [

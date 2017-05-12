@@ -23,9 +23,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(primary_key=True, serialize=False)),
                 ('weight', models.FloatField(verbose_name='Peso')),
-                ('height', models.FloatField(verbose_name='Altura')),
-                ('width', models.FloatField(verbose_name='Largura')),
-                ('depth', models.FloatField(verbose_name='Profundidade')),
+                ('height', models.FloatField(verbose_name='H')),
+                ('width', models.FloatField(verbose_name='W')),
+                ('length', models.FloatField(verbose_name='L')),
                 ('weight_units', models.SmallIntegerField(choices=[(1, 'Pound'), (2, 'Ounce'), (3, 'Quilograma'), (4, 'Grama')], default=1, verbose_name='Unidade de medida de peso')),
                 ('length_units', models.SmallIntegerField(choices=[(1, 'Centímetro'), (2, 'Milímetro'), (3, 'Inch')], default=1, verbose_name='Unidade de medida de tamanho')),
             ],

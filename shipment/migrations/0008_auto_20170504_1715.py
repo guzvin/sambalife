@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='package',
             name='length_units',
-            field=models.SmallIntegerField(choices=[(1, 'Centímetros'), (2, 'Milímetros'), (3, 'Polegadas')], default=1, verbose_name='Unidade de medida de tamanho'),
+            field=models.SmallIntegerField(choices=[(1, 'Centímetros'), (2, 'Milímetros'), (3, 'Inches')], default=3, verbose_name='Unidade de medida de tamanho'),
         ),
         migrations.AlterField(
             model_name='package',
