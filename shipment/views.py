@@ -431,7 +431,7 @@ def paypal_notification(sender, **kwargs):
         shipment_id = invoice[1]
         try:
             _shipment_details = Shipment.objects.select_related('user').get(pk=shipment_id, user_id=user_id)
-            if str(_shipment_details.cost) != ipn_obj.payment_gross:
+            if str(_shipment_details.cost) != str(ipn_obj.payment_gross):
                 invalid_data.append('<p style="color:#858585;font:13px/120%% \'Helvetica\'">Valor do pagamento não '
                                     'confere com o valor cobrado.'
                                     '<br>Recibo: %s'
