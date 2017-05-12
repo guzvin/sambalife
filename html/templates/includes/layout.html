@@ -70,11 +70,11 @@
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span> {% trans "Administrativo" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li class="{% block usuarios %}{% endblock %}">
-                                <a href="/admin/myauth/myuser"><i class="fa fa-fw fa-users"></i> {% trans "Usuários" %}</a>
+                                <a href="{%url 'admin:myauth_myuser_changelist' %}"><i class="fa fa-fw fa-users"></i> {% trans "Usuários" %}</a>
                             </li>
                             <li class="divider"></li>
                             <li class="{% block pagamentos %}{% endblock %}">
-                                <a href="/pagamentos"><i class="fa fa-fw fa-paypal"></i> {% trans "Pagamentos" %}</a>
+                                <a href="{%url 'admin:payment_mypaypalipn_changelist' %}"><i class="fa fa-fw fa-paypal"></i> {% trans "Pagamentos" %}</a>
                             </li>
 
                             <li class="divider"></li>
