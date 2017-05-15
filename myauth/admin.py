@@ -10,6 +10,7 @@ from django.contrib.admin.utils import unquote
 from django.contrib.admin import utils
 from django.core.exceptions import ObjectDoesNotExist
 from myauth.models import MyUser, UserAddress
+from django.db.models.fields import BLANK_CHOICE_DASH
 import logging
 
 logger = logging.getLogger('django')
@@ -170,6 +171,17 @@ class UserAdmin(BaseUserAdmin):
         AddressInline,
     ]
 
+    actions = ['make_active']
+
+    def make_active(self, request, queryset):
+        rows_updated = queryset.update(is_active=True)
+        if rows_updated == 1:
+            message_bit = _('1 usuário foi ativado.')
+        else:
+            message_bit = _('%s usuários foram ativados.') % rows_updated
+        self.message_user(request, message_bit)
+    make_active.short_description = _('Ativar Usuários selecionados')
+
     def get_readonly_fields(self, request, obj=None):
         page_readonly_fields = self.readonly_fields
         if obj:
@@ -178,6 +190,23 @@ class UserAdmin(BaseUserAdmin):
             if request.user.is_superuser is False and 'is_superuser' not in page_readonly_fields:
                 page_readonly_fields += ('is_superuser',)
         return page_readonly_fields
+
+    def get_action_choices(self, request, default_choices=BLANK_CHOICE_DASH):
+        choices = super(UserAdmin, self).get_action_choices(request, default_choices)
+        logger.debug('@@@@@@@@@@@@ USER ACTION CHOICES @@@@@@@@@@@@')
+        logger.debug(choices)
+        new_choices = []
+        delete_action = None
+        for a, b in choices:
+            if a == 'delete_selected':
+                delete_action = (a, b)
+            else:
+                new_choices.append((a, b))
+        if delete_action:
+            new_choices.append(('', '---------'))
+            new_choices.append(delete_action)
+        logger.debug(new_choices)
+        return new_choices
 
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
