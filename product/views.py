@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.db import transaction
 from product.models import Product, Tracking
+from django.contrib.sites.models import Site
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.http import require_http_methods
@@ -10,9 +11,10 @@ from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpRespo
 from django.utils import formats
 from django.forms import modelformset_factory, inlineformset_factory
 from django.urls import reverse
-from utils.helper import MyBaseInlineFormSet, ObjectView
+from utils.helper import MyBaseInlineFormSet, ObjectView, send_email_basic_template_bcc_admins
 from product.templatetags.products import has_product_perm
 from myauth.templatetags.users import has_user_perm
+from django.utils.html import format_html, mark_safe
 import json
 import logging
 
@@ -177,6 +179,7 @@ def product_edit_status(request, pid=None, output=None):
             if len(fields_to_update) == 0:
                 raise Product.DoesNotExist
             product.save(update_fields=fields_to_update)
+            send_email_product_status(product, product_status_display)
             if output and output == 'json':
                 product_json = {
                     'id': product.id,
@@ -249,3 +252,14 @@ def product_autocomplete(request):
                                           'desc': product.description, 'qty': product.quantity})
     return HttpResponse(json.dumps(products_autocomplete),
                         content_type='application/json')
+
+
+def send_email_product_status(product, product_status_display):
+    email_title = _('Mudança no status do seu produto %(product)s') % {'product': product.name}
+    html_format = '<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p><p><a href="{}">{}</a> {}</p>'
+    texts = (mark_safe(_('O novo status do produto, \'%(product)s\', é: <strong>%(status)s</strong>')
+                       % {'product': product.name, 'status': product_status_display}),
+             ''.join(['https://', Site.objects.get_current().domain, reverse('product_stock')]), _('Clique aqui'),
+             _('para acessar sua lista de produtos.'))
+    email_body = format_html(html_format, *texts)
+    send_email_basic_template_bcc_admins(product.user.first_name, [product.user.email], email_title, email_body)

@@ -5,12 +5,16 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.forms.models import BaseInlineFormSet
 from django.forms.widgets import CheckboxInput
+from django.contrib.sites.models import Site
 from django.forms import BooleanField
 from django.forms.formsets import DELETION_FIELD_NAME
 from pyparsing import Word, alphas, Literal, CaselessLiteral, Combine, Optional, nums, Or, Forward, \
     ZeroOrMore, StringEnd, alphanums
 from django.utils.encoding import smart_str
 from django.contrib.auth import get_user_model
+from django.template import loader, Context
+from smtplib import SMTPException
+import socket
 import hashlib
 import re
 import math
@@ -44,6 +48,14 @@ class ObjectView(object):
         self.__dict__ = d
 
 
+def send_email_basic_template_bcc_admins(user_name, user_email, email_title, email_body):
+    message = loader.get_template('email/basic-template.html').render(
+        Context({'user_name': user_name, 'protocol': 'https',
+                 'domain': Site.objects.get_current().domain, 'email_body': email_body}))
+    str2 = _('Vendedor Online Internacional')
+    send_email(string_concat(email_title, ' ', str2), message, user_email, bcc_admins=True)
+
+
 def send_email(title, body, email_to=None,
                email_from=string_concat(_('Vendedor Online Internacional'), ' ',
                                         string_concat('<no-reply@vendedorinternacional.online>')), bcc_admins=False):
@@ -66,7 +78,15 @@ def send_email(title, body, email_to=None,
         bcc=bcc
     )
     msg.content_subtype = 'html'
-    msg.send(fail_silently=False)
+    logger.info('@@@@@@@@@@@@ EMAIL MESSAGE @@@@@@@@@@@@@@')
+    logger.info(body)
+    try:
+        msg.send(fail_silently=False)
+    except SMTPException as e:
+        for recipient in e.recipients:
+            logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
+    except socket.error as err:
+        logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
 
 
 class MyBaseInlineFormSet(BaseInlineFormSet):

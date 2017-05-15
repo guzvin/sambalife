@@ -5,7 +5,7 @@ from shipment.templatetags.shipments import has_shipment_perm
 from myauth.templatetags.users import has_user_perm
 from myauth.templatetags.permissions import has_group
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
-from django.utils.translation import string_concat,  ugettext as _
+from django.utils.translation import ugettext as _
 from product.models import Product as OriginalProduct
 from shipment.models import Shipment, Product, Package, CostFormula
 from django.contrib.sites.models import Site
@@ -16,19 +16,15 @@ from django.forms.utils import flatatt
 from django.db import transaction
 from django.utils import formats
 from django.utils.encoding import force_text
-from django.template import loader, Context
 from django.conf import settings
 from django.urls import reverse
-from utils.helper import MyBaseInlineFormSet, send_email, ObjectView
+from utils.helper import MyBaseInlineFormSet, send_email_basic_template_bcc_admins, ObjectView, Calculate
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
-from utils.helper import Calculate
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from paypal.standard.models import ST_PP_COMPLETED
 from paypal.standard.ipn.signals import valid_ipn_received
-from smtplib import SMTPException
-import socket
 import magic
 import json
 import os
@@ -524,7 +520,7 @@ def paypal_notification(sender, **kwargs):
         logger.error(invalid_data)
         email_title = _('Informações sobre o pagamento do %(item)s') % {'item': ipn_obj.item_name}
         email_message = ''.join(invalid_data)
-        send_email_shipment_notification(_('Administrador'), None, email_title, email_message)
+        send_email_basic_template_bcc_admins(_('Administrador'), None, email_title, email_message)
         pass
     else:
         logger.debug('SUCCESS')
@@ -532,8 +528,8 @@ def paypal_notification(sender, **kwargs):
         _shipment_details.save(update_fields=['status'])
         email_title = _('Pagamento confirmado pelo PayPal para o %(item)s') % {'item': ipn_obj.item_name}
         email_message = _(paypal_status_message(ipn_obj))
-        send_email_shipment_notification(_shipment_details.user.first_name, [_shipment_details.user.email], email_title,
-                                         email_message)
+        send_email_basic_template_bcc_admins(_shipment_details.user.first_name, [_shipment_details.user.email], email_title,
+                                             email_message)
         send_email_shipment_pdf_2(_shipment_details)
 
 
@@ -580,7 +576,7 @@ def send_email_shipment_add(shipment, products):
     texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment')]), _('Clique aqui'),
               _('para acessar sua lista de envios.'))
     email_body = format_html(html_format, *texts)
-    send_email_shipment_notification(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+    send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
 
 
 def send_email_shipment_add_package(shipment):
@@ -619,7 +615,7 @@ def send_email_shipment_sent(shipment, shipment_code):
     texts += [''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), _('para acessar seu envio.')]
     email_body = format_html(html_format, *tuple(texts))
-    send_email_shipment_notification(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+    send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
 
 
 def send_email_shipment_change_shipment(shipment):
@@ -631,7 +627,7 @@ def send_email_shipment_change_shipment(shipment):
              ''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
              _('Clique aqui'), _('para acessar seu envio.'))
     email_body = format_html(html_format, *texts)
-    send_email_shipment_notification(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+    send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
 
 
 def send_email_shipment_status_change(shipment, link_text, *texts):
@@ -643,24 +639,4 @@ def send_email_shipment_status_change(shipment, link_text, *texts):
     texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), link_text,)
     email_body = format_html(html_format, *texts)
-    send_email_shipment_notification(shipment.user.first_name, [shipment.user.email], email_title, email_body)
-
-
-def send_email_shipment_notification(user_name, user_email, email_title, email_body):
-    message = loader.get_template('email/shipment-notification.html').render(
-        Context({'user_name': user_name, 'protocol': 'https',
-                 'domain': Site.objects.get_current().domain, 'email_body': email_body}))
-    str2 = _('Vendedor Online Internacional')
-    send_email_shipment(message, string_concat(email_title, ' ', str2), user_email)
-
-
-def send_email_shipment(message, title, email_to):
-    logger.info('@@@@@@@@@@@@ EMAIL MESSAGE @@@@@@@@@@@@@@')
-    logger.info(message)
-    try:
-        send_email(title, message, email_to, bcc_admins=True)
-    except SMTPException as e:
-        for recipient in e.recipients:
-            logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
-    except socket.error as err:
-        logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
+    send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
