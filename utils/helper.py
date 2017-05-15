@@ -46,7 +46,7 @@ class ObjectView(object):
 
 def send_email(title, body, email_to=None,
                email_from=string_concat(_('Vendedor Online Internacional'), ' ',
-                                        string_concat('<', settings.EMAIL_HOST_USER, '>')), bcc_admins=False):
+                                        string_concat('<no-reply@vendedorinternacional.online>')), bcc_admins=False):
     bcc = None
     if bcc_admins:
         user_model = get_user_model()

@@ -66,8 +66,7 @@ ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
-# EMAIL_USE_TLS = True
-# EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
 # Application definition
 
