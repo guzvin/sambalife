@@ -30,11 +30,13 @@ def rreplace(s, old, new, occurrence):
 
 
 def valida_senha(senha):
-    if senha is None or len(senha) < 6 or \
-       re.search(r'[a-z]', senha) is None or \
-       re.search(r'[A-Z]', senha) is None or \
-       re.search(r'[\d]', senha) is None or \
-       re.search(r'[^a-zA-Z\d]', senha) is None:
+    # if senha is None or len(senha) < 6 or \
+    #    re.search(r'[a-z]', senha) is None or \
+    #    re.search(r'[A-Z]', senha) is None or \
+    #    re.search(r'[\d]', senha) is None or \
+    #    re.search(r'[^a-zA-Z\d]', senha) is None:
+    #     return False
+    if senha is None or len(senha) == 0:
         return False
     return True
 

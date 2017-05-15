@@ -17,7 +17,7 @@ class UserRegistrationForm(forms.Form):
     zipcode = forms.CharField(label=_('CEP'), max_length=15)
     state = forms.CharField(label=_('Estado'), max_length=2)
     city = forms.CharField(label=_('Cidade'), max_length=60)
-    password = forms.CharField(min_length=6, max_length=30, widget=forms.PasswordInput)
+    password = forms.CharField(max_length=30, widget=forms.PasswordInput)
     password_confirmation = forms.CharField(max_length=30, widget=forms.PasswordInput)
 
     def clean(self):
@@ -25,9 +25,9 @@ class UserRegistrationForm(forms.Form):
         if password != self.cleaned_data.get('password_confirmation'):
             self.add_error('password_confirmation', ValidationError(_('Informe o mesmo valor'), code='invalid_equal'))
 
-        if not valida_senha(password):
-            self.add_error('password', ValidationError(_('Consulte as instruções de formato válido'),
-                                                       code='invalid_format'))
+        # if not valida_senha(password):
+        #     self.add_error('password', ValidationError(_('Consulte as instruções de formato válido'),
+        #                                                code='invalid_format'))
 
         return self.cleaned_data
 

@@ -56,8 +56,8 @@
         <div class="box-resposta">
             {% if success %}
                 {% if expiry is None %}
-                    {% if is_active is False %}
             <p class="titulo">{% trans "Cadastro validado com sucesso." %}</p>
+                    {% if is_active is False %}
             <p>{% trans "Você receberá um e-mail quando o administrador do sistema ativar sua conta." %}</p>
                     {% else %}
             <p>{% trans "Cadastro já se encontra ativo no sistema." %}</p>

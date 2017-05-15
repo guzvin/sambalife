@@ -145,7 +145,7 @@
                   <div class="col-md-6">
                   <label for="estado">{% trans "Estado" %}*</label>
                       {% trans "Digite o estado" as state %}
-                    <input type="text" class="form-control" id="estado" aria-describedby="estado" name="state" placeholder="{{ state }}..." value="{% if form %}{{ form.state.value }}{% endif %}">
+                    <input type="text" maxlength="2" class="form-control" id="estado" aria-describedby="estado" name="state" placeholder="{{ state }}..." value="{% if form %}{{ form.state.value }}{% endif %}">
                     {% for error in form.state.errors %}
                       <label id="estado-error" class="error" for="estado">{{ error|escape }}</label>
                     {% endfor %}
@@ -166,7 +166,7 @@
                 {% for error in form.password.errors %}
                   <label id="senha-error" class="error" for="senha">{{ error|escape }}</label>
                 {% endfor %}
-                <br><small>{% trans "Digite ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caractere especial" %}</small>
+                <!--<br><small>{% trans "Digite ao menos 1 letra minúscula e 1 letra maiúscula" %}</small>-->
               </div>
               <div class="form-group">
                 <label for="cSenha">{% trans "Confirmar Senha" %}*</label>

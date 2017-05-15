@@ -176,8 +176,9 @@ def user_validation(request, uidb64=None, token=None):
                 (token is not None and default_token_generator.check_token(user, token)):
             if user.is_verified is False:
                 user.is_verified = True
-                user.save()
-                send_email_user_registration(user)
+                user.is_active = True
+                user.save(update_fields=['is_verified', 'is_active'])
+                # send_email_user_registration(user)
             return render(request, 'user_validation.html', {'success': True, 'expiry': None,
                                                             'is_active': user.is_active})
         else:
