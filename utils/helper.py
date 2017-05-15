@@ -56,19 +56,23 @@ def send_email_basic_template_bcc_admins(user_name, user_email, email_title, ema
     send_email(string_concat(email_title, ' - ', str2), message, user_email, bcc_admins=True)
 
 
+def get_admins_emails():
+    user_model = get_user_model()
+    admins = user_model.objects.filter(groups__name='admins')
+    admins_email = [user.email for user in admins]
+    if settings.SYS_SU_USER in admins_email:
+        admins_email[admins_email.index(settings.SYS_SU_USER)] = settings.ADMIN_EMAIL
+    logger.debug('@@@@@@@@@@@@ ADMINS EMAIL @@@@@@@@@@@@@@')
+    logger.debug(admins_email)
+    return admins_email
+
+
 def send_email(title, body, email_to=None,
                email_from=string_concat(_('Vendedor Online Internacional'), ' ',
                                         string_concat('<no-reply@vendedorinternacional.online>')), bcc_admins=False):
     bcc = None
     if bcc_admins:
-        user_model = get_user_model()
-        admins = user_model.objects.filter(groups__name='admins')
-        admins_email = [user.email for user in admins]
-        if settings.SYS_SU_USER in admins_email:
-            admins_email[admins_email.index(settings.SYS_SU_USER)] = settings.ADMIN_EMAIL
-        bcc = admins_email
-        logger.debug('@@@@@@@@@@@@ ADMINS EMAIL @@@@@@@@@@@@@@')
-        logger.debug(admins_email)
+        bcc = get_admins_emails()
 
     msg = EmailMessage(
         title,

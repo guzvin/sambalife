@@ -3,7 +3,7 @@
 from django.shortcuts import render
 from sambalife.forms import UserRegistrationForm, UserLoginForm, UserForgotPasswordForm, UserResetPasswordForm
 from myauth.models import UserAddress
-from utils.helper import send_email
+from utils.helper import send_email, send_email_basic_template_bcc_admins
 from django.utils.translation import string_concat, ugettext as _
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
@@ -17,6 +17,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import Group
 from django.urls import reverse
+from django.utils.html import format_html
 import logging
 
 logger = logging.getLogger('django')
@@ -176,6 +177,7 @@ def user_validation(request, uidb64=None, token=None):
             if user.is_verified is False:
                 user.is_verified = True
                 user.save()
+                send_email_user_registration(user)
             return render(request, 'user_validation.html', {'success': True, 'expiry': None,
                                                             'is_active': user.is_active})
         else:
@@ -211,12 +213,17 @@ def send_validation_email(user, uid, token):
     send_email(string_concat(str1, ' - ', str2), message, [user.email])
 
 
-def pagamentos(request):
-    return render(request, 'lista_pagamentos.html')
-
-
-def pagamentoDetalhe(request):
-    return render(request, 'pagamento_detalhe.html')
+def send_email_user_registration(user):
+    email_title = _('Novo cadastro no sistema')
+    html_format = '<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>' \
+                  '<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}: <strong>{}</strong></p>' \
+                  '<p><a href="{}">{}</a> {}</p>'
+    texts = (_('Existe um novo cadastro no sistema pendente de ativação.'),
+             _('E-mail'), user.email,
+             ''.join(['https://', Site.objects.get_current().domain, reverse('admin:myauth_myuser_changelist')]),
+             _('Clique aqui'), _('para acessar a administração de usuários.'))
+    email_body = format_html(html_format, *texts)
+    send_email_basic_template_bcc_admins(_('Administrador'), None, email_title, email_body)
 
 
 def cadastroLote(request):
