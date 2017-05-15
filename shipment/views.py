@@ -570,7 +570,7 @@ def send_email_shipment_add(shipment, products):
              _('Envio'), shipment.id,
              _('Data de envio'), force_text(formats.localize(shipment.send_date, use_l10n=True)),
              _('Quantidade de produtos'), shipment.total_products,
-             _('Valor total'), force_text(formats.localize(shipment.cost, use_l10n=True)))
+             _('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)))
     for product in products:
         texts += (_('Produto'), product.product.name, _('Quantidade'), product.quantity)
     texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment')]), _('Clique aqui'),
