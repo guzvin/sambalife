@@ -71,7 +71,7 @@ def user_forgot_password(request):
                              'protocol': 'https', 'domain': Site.objects.get_current().domain}))
                 str1 = _('Esqueci Senha')
                 str2 = _('Vendedor Online Internacional')
-                send_email(string_concat(str1, ' ', str2), message, [user.email])
+                send_email(string_concat(str1, ' - ', str2), message, [user.email])
                 return render(request, 'login.html', {'success': True, 'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS})
             else:
                 form.add_error(None, _('Conta cadastrada, porém o usuário ainda não foi liberado para acesso '
@@ -208,7 +208,7 @@ def send_validation_email(user, uid, token):
                  'protocol': 'https', 'domain': Site.objects.get_current().domain}))
     str1 = _('Cadastro')
     str2 = _('Vendedor Online Internacional')
-    send_email(string_concat(str1, ' ', str2), message, [user.email])
+    send_email(string_concat(str1, ' - ', str2), message, [user.email])
 
 
 def pagamentos(request):

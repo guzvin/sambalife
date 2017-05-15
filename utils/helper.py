@@ -53,7 +53,7 @@ def send_email_basic_template_bcc_admins(user_name, user_email, email_title, ema
         Context({'user_name': user_name, 'protocol': 'https',
                  'domain': Site.objects.get_current().domain, 'email_body': email_body}))
     str2 = _('Vendedor Online Internacional')
-    send_email(string_concat(email_title, ' ', str2), message, user_email, bcc_admins=True)
+    send_email(string_concat(email_title, ' - ', str2), message, user_email, bcc_admins=True)
 
 
 def send_email(title, body, email_to=None,

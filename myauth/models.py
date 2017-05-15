@@ -89,7 +89,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
                      'domain': Site.objects.get_current().domain}))
         str1 = _('Cadastro')
         str2 = _('Vendedor Online Internacional')
-        send_email(string_concat(str1, ' ', str2), message, [self.email])
+        send_email(string_concat(str1, ' - ', str2), message, [self.email])
 
 
 class UserAddress(models.Model):

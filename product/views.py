@@ -255,7 +255,7 @@ def product_autocomplete(request):
 
 
 def send_email_product_status(product, product_status_display):
-    email_title = _('Mudança no status do seu produto %(product)s') % {'product': product.name}
+    email_title = _('Mudança no status do seu produto \'%(product)s\'') % {'product': product.name}
     html_format = '<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p><p><a href="{}">{}</a> {}</p>'
     texts = (mark_safe(_('O novo status do produto, \'%(product)s\', é: <strong>%(status)s</strong>')
                        % {'product': product.name, 'status': product_status_display}),
