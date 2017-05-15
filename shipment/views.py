@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from shipment.templatetags.shipments import has_shipment_perm
 from myauth.templatetags.users import has_user_perm
+from myauth.templatetags.permissions import has_group
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from django.utils.translation import string_concat,  ugettext as _
 from product.models import Product as OriginalProduct
@@ -10,7 +11,7 @@ from shipment.models import Shipment, Product, Package, CostFormula
 from django.contrib.sites.models import Site
 from django.forms import modelformset_factory, inlineformset_factory, Field, DateField
 from django.forms.widgets import Widget, FileInput
-from django.utils.html import format_html
+from django.utils.html import format_html, mark_safe
 from django.forms.utils import flatatt
 from django.db import transaction
 from django.utils import formats
@@ -26,6 +27,8 @@ from utils.helper import Calculate
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from paypal.standard.models import ST_PP_COMPLETED
 from paypal.standard.ipn.signals import valid_ipn_received
+from smtplib import SMTPException
+import socket
 import magic
 import json
 import os
@@ -150,21 +153,31 @@ def shipment_details(request, pid=None):
         _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
         title = ' '.join([str(_('Envio')), str(_shipment_details.id)])
         context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products}
-        if request.method == 'POST':
-            if request.POST.get('add_shipment_package'):
-                if has_shipment_perm(request.user, 'add_package'):
-                    add_package_response = shipment_add_package(request, pid)
-                    if isinstance(add_package_response, HttpResponse):
-                        return add_package_response
-                    context_data['packages'] = add_package_response
-                else:
-                    return HttpResponseForbidden()
+        if request.method == 'POST' and request.POST.get('add_shipment_package'):
+            if has_shipment_perm(request.user, 'add_package'):
+                add_package_response = shipment_add_package(request, pid)
+                if isinstance(add_package_response, HttpResponse):
+                    return add_package_response
+                context_data['packages'] = add_package_response
             else:
-                return HttpResponseBadRequest()
-        elif request.GET.get('s') == '1' and has_shipment_perm(request.user, 'add_package'):
+                return HttpResponseForbidden()
+        elif has_shipment_perm(request.user, 'add_package') and request.GET.get('s') == '1' \
+                and _shipment_details.status == 2:
             context_data['success'] = True
             context_data['success_message'] = _('Pacote(s) inserido(s) com sucesso.')
-        if _shipment_details.status == 1:  # Preparando para Envio
+        elif request.GET.get('s') == '2' and _shipment_details.status == 4:
+            context_data['success'] = True
+            context_data['success_message'] = _('Upload realizado com sucesso.')
+        elif has_group(request.user, 'admins') and request.GET.get('s') == '3' \
+                and _shipment_details.status == 5:
+            context_data['success'] = True
+            context_data['success_message'] = _('Envio concluído com sucesso.')
+        elif has_shipment_perm(request.user, 'add_package') and request.GET.get('s') == '4' \
+                and _shipment_details.status == 5:
+            context_data['success'] = True
+            context_data['success_message'] = _('Código de postagem salvo com sucesso.')
+        if _shipment_details.status == 1:
+            # Preparando para Envio
             if has_shipment_perm(request.user, 'add_package'):
                 serialized_products = serializers.serialize('json', _shipment_products, fields=('id', 'quantity',
                                                                                                 'product',))
@@ -181,27 +194,85 @@ def shipment_details(request, pid=None):
         else:
             _shipment_packages = Package.objects.filter(shipment=_shipment_details).order_by('id')
             context_data['packages'] = _shipment_packages
-            if _shipment_details.status == 2:  # Pagamento Autorizado
-                if settings.PAYPAL_TEST:
-                    import time
-                    current_milli_time = lambda: int(round(time.time() * 1000))
-                    invoice_id = '_'.join([str(request.user.id), str(pid), 'debug', str(current_milli_time())])
-                else:
-                    invoice_id = '_'.join([str(request.user.id), str(pid)])
-                paypal_dict = {
-                    'business': settings.PAYPAL_BUSINESS,
-                    'amount': _shipment_details.cost,
-                    'item_name': _('Envio %(number)s') % {'number': pid},
-                    'invoice': invoice_id,
-                    'notify_url': 'https://' + Site.objects.get_current().domain + reverse('paypal-ipn'),
-                    'return_url': 'https://' + Site.objects.get_current().domain +
-                                  '%s?p=1' % reverse('shipment_details', args=[pid]),
-                    'cancel_return': 'https://' + Site.objects.get_current().domain + reverse('shipment_details',
-                                                                                              args=[pid]),
-                    # 'custom': 'Upgrade all users!',  # Custom command to correlate to some function later (optional)
-                }
-                context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(initial=paypal_dict)
-                # context_data['paypal_form'] = PayPalPaymentsForm(initial=paypal_dict)
+            if _shipment_details.status == 2:
+                # Pagamento Autorizado
+                if request.user == _shipment_details.user or has_group(request.user, 'admins'):
+                    if settings.PAYPAL_TEST:
+                        import time
+                        current_milli_time = lambda: int(round(time.time() * 1000))
+                        invoice_id = '_'.join([str(request.user.id), str(pid), 'debug', str(current_milli_time())])
+                    else:
+                        invoice_id = '_'.join([str(request.user.id), str(pid)])
+                    paypal_dict = {
+                        'business': settings.PAYPAL_BUSINESS,
+                        'amount': _shipment_details.cost,
+                        'item_name': _('Envio %(number)s') % {'number': pid},
+                        'invoice': invoice_id,
+                        'notify_url': 'https://' + Site.objects.get_current().domain + reverse('paypal-ipn'),
+                        'return_url': 'https://' + Site.objects.get_current().domain +
+                                      '%s?p=1' % reverse('shipment_details', args=[pid]),
+                        'cancel_return': 'https://' + Site.objects.get_current().domain + reverse('shipment_details',
+                                                                                                  args=[pid]),
+                        # 'custom': 'Custom command!',  # Custom command to correlate to some function later (optional)
+                    }
+                    context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(initial=paypal_dict)
+            elif _shipment_details.status == 3:
+                # Upload PDF 2 Autorizado
+                if request.user == _shipment_details.user or has_group(request.user, 'admins'):
+                    ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_2',), min_num=1, max_num=1,
+                                                           widgets={'pdf_2': FileInput(
+                                                               attrs={'class': 'form-control pdf_2-validate'})})
+                    if request.method == 'POST' and request.POST.get('add_shipment_file'):
+                        shipment_formset = ShipmentFormSet(request.POST, request.FILES)
+                        logger.debug('@@@@@@@@@@@@@@@ PDF 2 IS VALID @@@@@@@@@@@@@@@@@')
+                        logger.debug(shipment_formset)
+                        if shipment_formset.is_valid():
+                            for shipment_form in shipment_formset:
+                                shipment = shipment_form.save(commit=False)
+                                logger.debug(shipment.id)
+                                logger.debug(pid)
+                                if force_text(shipment.id) != force_text(pid):
+                                    logger.error('Inconsistent data.')
+                                    return HttpResponseBadRequest()
+                                _shipment_details.status = shipment.status = 4
+                                shipment.save(update_fields=['status', 'pdf_2'])
+                                break
+                            send_email_shipment_add_pdf_2(shipment)
+                            return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
+                        context_data['shipment_formset'] = shipment_formset
+                    else:
+                        context_data['shipment_formset'] = ShipmentFormSet(queryset=Shipment.objects.filter(pk=pid))
+            elif _shipment_details.status == 4 or _shipment_details.status == 5:
+                # Checagens Finais ou Enviado
+                if has_group(request.user, 'admins') or has_shipment_perm(request.user, 'add_package'):
+                    ShipmentFormSet = modelformset_factory(Shipment, fields=('shipment',), min_num=1, max_num=1)
+                    if request.method == 'POST' and request.POST.get('add_shipment_shipment'):
+                        shipment_formset = ShipmentFormSet(request.POST)
+                        if shipment_formset.is_valid():
+                            for shipment_form in shipment_formset:
+                                shipment = shipment_form.save(commit=False)
+                                logger.debug(shipment.id)
+                                logger.debug(pid)
+                                if force_text(shipment.id) != force_text(pid):
+                                    logger.error('Inconsistent data.')
+                                    return HttpResponseBadRequest()
+                                if _shipment_details.status == 4 and has_group(request.user, 'admins'):
+                                    _shipment_details.status = shipment.status = 5
+                                    if shipment.shipment != _shipment_details.shipment:
+                                        shipment.save(update_fields=['status', 'shipment'])
+                                    else:
+                                        shipment.save(update_fields=['status'])
+                                    send_email_shipment_sent(shipment, shipment.shipment != _shipment_details.shipment)
+                                    return HttpResponseRedirect('%s?s=3' % reverse('shipment_details', args=[pid]))
+                                elif has_shipment_perm(request.user, 'add_package') \
+                                        and shipment.shipment != _shipment_details.shipment:
+                                    shipment.save(update_fields=['shipment'])
+                                    send_email_shipment_change_shipment(shipment)
+                                    return HttpResponseRedirect('%s?s=4' % reverse('shipment_details', args=[pid]))
+                                break
+                            return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
+                    else:
+                        context_data['shipment_formset'] = ShipmentFormSet(queryset=Shipment.objects.filter(pk=pid))
         logger.debug(context_data)
         return render(request, 'shipment_details.html', context_data)
     return HttpResponseForbidden()
@@ -296,7 +367,7 @@ def shipment_add(request):
             original_products = OriginalProduct.objects.none()
     else:
         original_products = OriginalProduct.objects.none()
-    ShipmentFormSet = modelformset_factory(Shipment, fields=('send_date', 'pdf_1', 'pdf_2',),
+    ShipmentFormSet = modelformset_factory(Shipment, fields=('send_date', 'pdf_1',),
                                            localized_fields=('send_date',), min_num=1, max_num=1,
                                            widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=MyBaseInlineFormSet, fields=('quantity',
@@ -389,18 +460,19 @@ def _shipment_calculate(items):
 
 @login_required
 @require_http_methods(["GET"])
-def shipment_pdf_1(request, pid=None):
+def shipment_download_pdf(request, pdf=None, pid=None):
     try:
         shipment = Shipment.objects.get(pk=pid)
     except Shipment.DoesNotExist:
         return HttpResponseBadRequest()
     if shipment.user == request.user or request.user.groups.filter(name='admins').exists():
-        content_type = magic.from_file(os.path.sep.join([settings.MEDIA_ROOT, shipment.pdf_1.name]), mime=True)
-        filename = shipment.pdf_1.name.split('/')[-1]
+        pdf_field = shipment.pdf_1 if pdf == 'pdf_1' else shipment.pdf_2
+        content_type = magic.from_file(os.path.sep.join([settings.MEDIA_ROOT, pdf_field.name]), mime=True)
+        filename = pdf_field.name.split('/')[-1]
         logger.debug('@@@@@@@@@@@@ FILE CONTENT TYPE @@@@@@@@@@@@@@')
         logger.debug(filename)
         logger.debug(content_type)
-        response = HttpResponse(shipment.pdf_1, content_type=content_type)
+        response = HttpResponse(pdf_field, content_type=content_type)
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
 
         return response
@@ -416,88 +488,166 @@ def paypal_notification(sender, **kwargs):
     if ipn_obj.payment_status == ST_PP_COMPLETED:
         if ipn_obj.receiver_email != settings.PAYPAL_BUSINESS:
             # Not a valid payment
-            invalid_data.append('<p style="color:#858585;font:13px/120%% \'Helvetica\'">E-mail da conta paypal '
-                                'recebedora não confere com o e-mail configurado no sistema.'
-                                '<br>E-mail recebido pelo paypal: %s'
-                                '<br>E-mail configurado no sistema: %s</p>' % (ipn_obj.receiver_email,
-                                                                               settings.PAYPAL_BUSINESS))
+            texts = (_('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'),
+                     _('E-mail recebido pelo paypal: %(paypal)s') % {'paypal': ipn_obj.receiver_email},
+                     _('E-mail configurado no sistema: %(system)s') % {'system': settings.PAYPAL_BUSINESS})
+            invalid_data.append(_html_format(*texts))
         if ipn_obj.invoice is None or (len(ipn_obj.invoice.split('_')) != 2 and len(ipn_obj.invoice.split('_')) != 4):
-            invalid_data.append('<p style="color:#858585;font:13px/120%% \'Helvetica\'">Valor do campo \'recibo\' '
-                                '(invoice) não está no formato esperado.'
-                                '<br>Recibo: %s</p>' % ipn_obj.invoice if ipn_obj.invoice is not None
-                                else '<em branco>')
+            texts = (_('Valor do campo \'recibo\' (invoice) não está no formato esperado.'),
+                     _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice if ipn_obj.invoice is not None
+                     else _('<em branco>')})
+            invalid_data.append(_html_format(*texts))
         invoice = ipn_obj.invoice.split('_')
         user_id = invoice[0]
         shipment_id = invoice[1]
         try:
             _shipment_details = Shipment.objects.select_related('user').get(pk=shipment_id, user_id=user_id)
             if str(_shipment_details.cost) != str(ipn_obj.payment_gross):
-                invalid_data.append('<p style="color:#858585;font:13px/120%% \'Helvetica\'">Valor do pagamento não '
-                                    'confere com o valor cobrado.'
-                                    '<br>Recibo: %s'
-                                    '<br>Valor pago: %s'
-                                    '<br>Valor cobrado: %s</p>' % (ipn_obj.invoice, ipn_obj.payment_gross,
-                                                                   str(_shipment_details.cost)))
+                texts = (_('Valor do pagamento não confere com o valor cobrado.'),
+                         _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice},
+                         _('Valor pago: %(paid)s') % {'paid': ipn_obj.payment_gross},
+                         _('Valor cobrado: %(charged)s') % {'charged': _shipment_details.cost})
+                invalid_data.append(_html_format(*texts))
         except Shipment.DoesNotExist:
-            invalid_data.append('<p style="color:#858585;font:13px/120%% \'Helvetica\'">Dados do recibo são inválidos.'
-                                '<br>Recibo: %s</p>' % ipn_obj.invoice)
+            texts = (_('Dados do recibo são inválidos.'), _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice})
+            invalid_data.append(_html_format(*texts))
     else:
         logger.info('@@@@@@@@@@@@ PAYMENT STATUS @@@@@@@@@@@@@@')
         invalid_data.append(paypal_status_message(ipn_obj))
-    admin_url = '<p>Para mais informações consulte a área <a href="%s">administrativa</a> de pagamentos.</p>'\
-                % ''.join(['https://', Site.objects.get_current().domain,
-                           reverse('admin:payment_mypaypalipn_changelist')])
     if invalid_data:
+        admin_url = format_html('<p>{}</p>',
+                                mark_safe(_('Para mais informações consulte a área <a href="%(url)s">administrativa</a>'
+                                            ' de pagamentos.')
+                                          % {'url': ''.join(['https://', Site.objects.get_current().domain,
+                                                             reverse('admin:payment_mypaypalipn_changelist')])}))
         invalid_data.append(admin_url)
         logger.error(invalid_data)
-        email_title = 'Informações sobre o pagamento do %s' % ipn_obj.item_name
+        email_title = _('Informações sobre o pagamento do %(item)s') % {'item': ipn_obj.item_name}
         email_message = ''.join(invalid_data)
-        send_email_shipment_payment(_('Administrador'), None, email_title, email_message)
+        send_email_shipment_notification(_('Administrador'), None, email_title, email_message)
         pass
     else:
         logger.debug('SUCCESS')
         _shipment_details.status = 3
         _shipment_details.save(update_fields=['status'])
         email_title = _('Pagamento confirmado pelo PayPal para o %(item)s') % {'item': ipn_obj.item_name}
-        email_message = ''.join([str(_(paypal_status_message(ipn_obj))), str(_(admin_url))])
-        send_email_shipment_payment(_shipment_details.user.first_name, [_shipment_details.user.email], email_title,
-                                    email_message)
+        email_message = _(paypal_status_message(ipn_obj))
+        send_email_shipment_notification(_shipment_details.user.first_name, [_shipment_details.user.email], email_title,
+                                         email_message)
+        send_email_shipment_pdf_2(_shipment_details)
 
 
 def paypal_status_message(ipn_obj):
-    return '<p style="color:#858585;font:13px/120%% \'Helvetica\'">Notificação recebida do paypal.' \
-           '<br>Status: %s' \
-           '<br>Recibo: %s' \
-           '<br>Item: %s' \
-           '<br>Nome cliente: %s' \
-           '<br>Sobrenome cliente: %s' \
-           '<br>Data do pagamento: %s</p>' % (ipn_obj.payment_status, ipn_obj.invoice, ipn_obj.item_name,
-                                              ipn_obj.first_name, ipn_obj.last_name, ipn_obj.payment_date)
+    texts = (_('Notificação recebida do paypal.'),
+             _('Status: %(status)s') % {'status': ipn_obj.payment_status},
+             _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice},
+             _('Item: %(item)s') % {'item': ipn_obj.item_name},
+             _('Nome do cliente: %(name)s') % {'name': ipn_obj.first_name},
+             _('Sobrenome do cliente: %(surname)s') % {'surname': ipn_obj.last_name},
+             _('Data do pagamento: %(date)s') % {'date': force_text(formats.localize(ipn_obj.payment_date,
+                                                                                     use_l10n=True))})
+    return _html_format(*texts)
+
+
+def _html_format(*texts):
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'] +
+                          ['<br>{}'] * len(texts[1:]) +
+                          ['</p>'])
+    return format_html(html_format, *texts)
 
 
 valid_ipn_received.connect(paypal_notification)
 
 
 def send_email_shipment_add(shipment, products):
-    message = loader.get_template('email/shipment-add.html').render(
-        Context({'user_name': shipment.user.first_name, 'protocol': 'https',
-                 'domain': Site.objects.get_current().domain, 'shipment': shipment, 'products': products}))
-    str1 = _('Cadastro de Envio %(number)s') % {'number': shipment.id}
-    str2 = _('Vendedor Online Internacional')
-    send_email_shipment(message, string_concat(str1, ' ', str2), [shipment.user.email])
+    email_title = _('Cadastro de Envio %(number)s') % {'number': shipment.id}
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 3 +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> U$ {}</p>'] +
+                          ['<br>'] +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
+                           '<strong>{}:</strong> {}</p>'
+                           '<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
+                           '<strong>{}:</strong> {}</p>'] * len(products) +
+                          ['<p><a href="{}">{}</a> {}</p>'])
+    texts = (_('Seu envio foi cadastrado com sucesso. Seguem abaixo os dados do envio:'),
+             _('Envio'), shipment.id,
+             _('Data de envio'), force_text(formats.localize(shipment.send_date, use_l10n=True)),
+             _('Quantidade de produtos'), shipment.total_products,
+             _('Valor total'), force_text(formats.localize(shipment.cost, use_l10n=True)))
+    for product in products:
+        texts += (_('Produto'), product.product.name, _('Quantidade'), product.quantity)
+    texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment')]), _('Clique aqui'),
+              _('para acessar sua lista de envios.'))
+    email_body = format_html(html_format, *texts)
+    send_email_shipment_notification(shipment.user.first_name, [shipment.user.email], email_title, email_body)
 
 
 def send_email_shipment_add_package(shipment):
-    message = loader.get_template('email/shipment-add-package.html').render(
-        Context({'user_name': shipment.user.first_name, 'protocol': 'https',
-                 'domain': Site.objects.get_current().domain, 'shipment': shipment}))
-    str1 = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
-    str2 = _('Vendedor Online Internacional')
-    send_email_shipment(message, string_concat(str1, ' ', str2), [shipment.user.email])
+    texts = (_('Realize o pagamento para dar continuidade com o seu envio %(id)s.') % {'id': shipment.id},
+             _('Valor total'), force_text(formats.localize(shipment.cost, use_l10n=True)))
+    send_email_shipment_status_change(shipment, _('para acessar seu envio e efetuar o pagamento.'), *texts)
 
 
-def send_email_shipment_payment(user_name, user_email, email_title, email_body):
-    message = loader.get_template('email/shipment-payment.html').render(
+def send_email_shipment_pdf_2(shipment):
+    texts = (_('Obrigado, agora faça o upload do segundo arquivo para dar continuidade com o seu '
+               'envio %(id)s.') % {'id': shipment.id},)
+    send_email_shipment_status_change(shipment, _('para acessar seu envio e efetuar o upload.'), *texts)
+
+
+def send_email_shipment_add_pdf_2(shipment):
+    texts = (_('Obrigado novamente, agora é só aguardar que, assim que fizermos as checagens finais e tudo estiver ok, '
+               'iremos enviar um novo e-mail para avisar da conclusão do processo do seu envio %(id)s.')
+             % {'id': shipment.id},)
+    send_email_shipment_status_change(shipment, _('para acessar seu envio.'), *texts)
+
+
+def send_email_shipment_sent(shipment, shipment_code):
+    email_title = _('Seu envio %(number)s foi concluído') % {'number': shipment.id}
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>']
+                           if shipment_code else ['']) +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                          ['<p><a href="{}">{}</a> {}</p>'])
+    texts = [_('Seu envio %(id)s foi concluído com sucesso, obrigado.') % {'id': shipment.id}]
+    if shipment_code:
+        texts += [mark_safe(_('Segue o código da postagem do seu envio: <strong>%(code)s</strong>.')
+                            % {'code': shipment.shipment})]
+    texts += [mark_safe(_('No caso de qualquer dúvida é só nos enviar uma mensagem através do '
+                          '<a href="%(url)s">fale conosco</a>.')
+                        % {'url': ''.join(['https://', Site.objects.get_current().domain, '/#contact'])})]
+    texts += [''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
+              _('Clique aqui'), _('para acessar seu envio.')]
+    email_body = format_html(html_format, *tuple(texts))
+    send_email_shipment_notification(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+
+
+def send_email_shipment_change_shipment(shipment):
+    email_title = _('Código da postagem do envio %(number)s foi alterado') % {'number': shipment.id}
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                          ['<p><a href="{}">{}</a> {}</p>'])
+    texts = (mark_safe(_('Segue o código da postagem do seu envio %(id)s: <strong>%(code)s</strong>.')
+                       % {'id': shipment.id, 'code': (shipment.shipment if shipment.shipment != '' else '-')}),
+             ''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
+             _('Clique aqui'), _('para acessar seu envio.'))
+    email_body = format_html(html_format, *texts)
+    send_email_shipment_notification(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+
+
+def send_email_shipment_status_change(shipment, link_text, *texts):
+    email_title = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                          (['<p style="color:#858585;font:13px/120% \'Helvetica\'">'
+                           '<strong>{}:</strong> U$ {}</p>'] if len(texts) == 3 else ['']) +
+                          ['<p><a href="{}">{}</a> {}</p>'])
+    texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
+              _('Clique aqui'), link_text,)
+    email_body = format_html(html_format, *texts)
+    send_email_shipment_notification(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+
+
+def send_email_shipment_notification(user_name, user_email, email_title, email_body):
+    message = loader.get_template('email/shipment-notification.html').render(
         Context({'user_name': user_name, 'protocol': 'https',
                  'domain': Site.objects.get_current().domain, 'email_body': email_body}))
     str2 = _('Vendedor Online Internacional')
@@ -505,4 +655,12 @@ def send_email_shipment_payment(user_name, user_email, email_title, email_body):
 
 
 def send_email_shipment(message, title, email_to):
-    send_email(title, message, email_to, bcc_admins=True)
+    logger.info('@@@@@@@@@@@@ EMAIL MESSAGE @@@@@@@@@@@@@@')
+    logger.info(message)
+    try:
+        send_email(title, message, email_to, bcc_admins=True)
+    except SMTPException as e:
+        for recipient in e.recipients:
+            logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
+    except socket.error as err:
+        logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))

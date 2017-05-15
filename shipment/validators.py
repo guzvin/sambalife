@@ -4,4 +4,4 @@ def validate_file_extension(value):
     ext = os.path.splitext(value.name)[1]  # [0] returns path+filename
     valid_extensions = ['.pdf', '.doc', '.docx', '.jpg', '.png']
     if not ext.lower() in valid_extensions:
-        raise ValidationError(u'Extensão de arquivo inválida (.pdf, .doc, .docx, .jpg ou .png).')
+        raise ValidationError('Extensão de arquivo inválida (.pdf, .doc, .docx, .jpg ou .png).')

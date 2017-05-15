@@ -34,7 +34,7 @@ class Shipment(models.Model):
     pdf_1 = models.FileField(_('PDF 1'), upload_to=user_directory_path, validators=[validate_file_extension])
     pdf_2 = models.FileField(_('PDF 2'), upload_to=user_directory_path, null=True, blank=True,
                              validators=[validate_file_extension])
-    shipment = models.FileField(_('Comprovante de Envio'), upload_to=user_directory_path, null=True)
+    shipment = models.CharField(_('Código UPS'), max_length=50, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:

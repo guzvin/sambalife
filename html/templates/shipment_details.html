@@ -75,7 +75,7 @@
                 <div class="form-group">
                     <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Download PDFs" %}:</label><br><br>
                     <label>PDF 1:</label><br>
-                    <a href="{% url 'shipment_pdf_1' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
+                    <a href="{% url 'shipment_pdf_1' 'pdf_1' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
                     <br>
                     <br>
                     <label>PDF 2:</label>
@@ -84,10 +84,27 @@
                     {% elif shipment.status == 2 %}
                     <br><p>Upload não autorizado</p>
                     {% elif shipment.status == 3 %}
-                    <br><input type="file" name="pdf2" id="pdf2" /><br>
+                      {% if user == shipment.user or user|has_group:'admins' %}
+                    <br>
+                    <form action="" method="post" id="form-upload-file" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <input type="hidden" name="add_shipment_file" value="1">
+                      {{ shipment_formset.management_form }}
+                      {% for shipment_form in shipment_formset %}
+                        {{ shipment_form.id }}
+                        {{ shipment_form.pdf_2 }}
+                        {% for error in shipment_form.pdf_2.errors %}
+                        <label id="{{ shipment_form.pdf_2.id_for_label }}-error" class="error" for="{{ shipment_form.pdf_2.id_for_label }}">{{ error|escape }}</label>
+                        {% endfor %}
+                      {% endfor %}
+                    </form>
+                    <br>
+                      {% else %}
+                    <br><p>Upload não permitido</p>
+                      {% endif %}
                     {% else %}
                     <br>
-                    <a href="#" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
+                    <a href="{% url 'shipment_pdf_2' 'pdf_2' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
                     {% endif %}
 
                 </div>
@@ -119,8 +136,25 @@
             {% if shipment.status > 3 and user|has_shipment_perm:'add_package' %}
             <div class="col-md-2">
                  <div class="form-group">
-                    <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Comprovante UPS" %}:</label><br><br>
-                    <input type="file" name="ups" class="menor" id="ups" />
+                    <form action="" method="post" id="form-add-shipment">
+                      {% csrf_token %}
+                      <input type="hidden" name="add_shipment_shipment" value="1">
+                      {{ shipment_formset.management_form }}
+                      {% for shipment_form in shipment_formset %}
+                        {{ shipment_form.id }}
+                        <label for="{{ shipment_form.shipment.id_for_label }}"><i class="fa fa-fw fa-file-pdf-o"></i> {{ shipment_form.shipment.label }}:</label><br><br>
+                        <input type="text" name="{{ shipment_form.shipment.html_name }}" class="menor" id="{{ shipment_form.shipment.id_for_label }}" value="{% if shipment_form.shipment.value %}{{ shipment_form.shipment.value }}{% endif %}" />
+                        {% for error in shipment_form.shipment.errors %}
+                        <label id="{{ shipment_form.shipment.id_for_label }}-error" class="error" for="{{ shipment_form.shipment.id_for_label }}">{{ error|escape }}</label>
+                        {% endfor %}
+                      {% endfor %}
+                    </form>
+                </div>
+            </div>
+            {% elif shipment.status == 5 and shipment.shipment != '' %}
+            <div class="col-md-2">
+                 <div class="form-group">
+                    {{ shipment.shipment }}
                 </div>
             </div>
             {% endif %}
@@ -216,20 +250,36 @@
               </form>
            </div><hr />
            {% endif %}
-           {% if shipment.status == 2 and user == shipment.user %}
+           {% if shipment.status == 2 %}
+            {% if user == shipment.user or user|has_group:'admins' %}
              <!--<a class="btn btn-default filtar-btn" href="{% url 'payment_details' %}"><i class="fa fa-fw fa-paypal"></i> {% trans "Efetuar Pagamento Agora" %}</a>-->
              {{ paypal_form.render }}
              <br><br>
+            {% endif %}
            {% endif %}
              <div class="row">
-                {% if shipment.status == 4 %}
-                <a class="btn btn-primary filtar-btn alterar-status" href="#">
+                {% if shipment.status == 4 and user|has_group:'admins' %}
+                <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-final" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Enviar e Finalizar Envio" %}
                 </a>
                 <br><br>
                 {% endif %}
-                {% if shipment.status == 1 and user|has_shipment_perm:'add_package' or shipment.status == 3 %}
-                <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-{{ shipment.status }}" href="#">
+                {% if shipment.status == 1 and user|has_shipment_perm:'add_package' %}
+                <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-1" href="#">
+                    <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
+                </a>
+                <br><br>
+                {% endif %}
+                {% if shipment.status == 3 %}
+                 {% if user == shipment.user or user|has_group:'admins' %}
+                <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-3" href="#">
+                    <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
+                </a>
+                <br><br>
+                 {% endif %}
+                {% endif %}
+                {% if shipment.status == 5 and user|has_shipment_perm:'add_package' %}
+                <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-5" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
                 </a>
                 <br><br>
@@ -243,5 +293,23 @@
         <div class="col-md-1 sidebar">
         </div>
       </div>
-
+    {% if shipment.status == 4 and user|has_group:'admins' %}
+    <div id="send-shipment-confirmation" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Confirmação" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Confirma a conclusão do processo de envio?" %}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="send-btn-final-confirmation" class="btn btn-danger">{% trans "Sim" %}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}

@@ -693,6 +693,86 @@
         });
     });
 
+    if($('form#form-upload-file')[0])
+    {
+        $('a#send-btn-3').on('click', function (e)
+        {
+            e.preventDefault();
+            if($(this).hasClass('nosubmit'))
+            {
+                return false;
+            }
+            $(this).addClass('nosubmit');
+            $('form#form-upload-file').submit();
+        });
+
+        $('form#form-upload-file').validate(
+        {
+            submitHandler: function(form)
+            {
+                $('.loading').show();
+                form.submit()
+            },
+            invalidHandler: function(event, validator)
+            {
+                $('a#send-btn-3').removeClass('nosubmit');
+            },
+            onfocusout: false,
+            onkeyup: false,
+            onclick: false
+        });
+
+        $('.pdf_2-validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+            });
+        });
+    }
+
+    if($('form#form-add-shipment')[0])
+    {
+        if($('a#send-btn-final')[0])
+        {
+            $('a#send-btn-final').on('click', function (e)
+            {
+                e.preventDefault();
+                $('#send-shipment-confirmation').modal('show');
+                return false;
+
+            });
+        }
+        if($('button#send-btn-final-confirmation')[0])
+        {
+            $('button#send-btn-final-confirmation').on('click', function (e)
+            {
+                e.preventDefault();
+                if($(this).hasClass('nosubmit'))
+                {
+                    return false;
+                }
+                $(this).addClass('nosubmit');
+                $('.loading').show();
+                $('form#form-add-shipment').submit();
+            });
+        }
+        if($('a#send-btn-5')[0])
+        {
+            $('a#send-btn-5').on('click', function (e)
+            {
+                e.preventDefault();
+                if($(this).hasClass('nosubmit'))
+                {
+                    return false;
+                }
+                $(this).addClass('nosubmit');
+                $('.loading').show();
+                $('form#form-add-shipment').submit();
+            });
+        }
+    }
+
     function assembleModal(title, body)
     {
         $('div.modal-content h4.modal-title')[0].innerHTML = title;

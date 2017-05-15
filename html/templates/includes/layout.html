@@ -77,16 +77,16 @@
                                 <a href="{%url 'admin:payment_mypaypalipn_changelist' %}"><i class="fa fa-fw fa-paypal"></i> {% trans "Pagamentos" %}</a>
                             </li>
 
-                            <li class="divider"></li>
-                            <li class="{% block lotes %}{% endblock %}">
-                                <a href="/lotes-admin"><i class="fa fa-fw fa-th"></i> {% trans "Lotes" %}</a>
-                            </li>
+                            <!--<li class="divider"></li>-->
+                            <!--<li class="{% block lotes %}{% endblock %}">-->
+                                <!--<a href="/lotes-admin"><i class="fa fa-fw fa-th"></i> {% trans "Lotes" %}</a>-->
+                            <!--</li>-->
                         </ul>
                     </li>
                     {% endif %}
-                    <li class="{% block lotes-u %}{% endblock %}">
-                        <a href="/lotes" ><i class="fa fa-th"></i> {% trans "Lotes" %}</a>
-                    </li>
+                    <!--<li class="{% block lotes-u %}{% endblock %}">-->
+                        <!--<a href="/lotes" ><i class="fa fa-th"></i> {% trans "Lotes" %}</a>-->
+                    <!--</li>-->
                     {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Estoque" %} <b class="caret"></b></a>
