@@ -201,24 +201,27 @@ fieldset[disabled] .btn-xl.active {
     color: #3C3E77;
 }
 
-.navbar-brand{
-    min-width: 385px;
-}
-
 @media (min-width: 768px) {
   .navbar-custom {
     background-color: transparent;
-    padding: 25px 0;
+    padding: 10px 0;
     -webkit-transition: padding 0.3s;
     -moz-transition: padding 0.3s;
     transition: padding 0.3s;
     border: none;
   }
+
+  .navbar-header{
+     width: 235px;
+  }
+
   .navbar-custom .navbar-brand {
     font-size: 2em;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     transition: all 0.3s;
+    margin-top: 4px;
+    margin-left: -60px !important;
   }
   .navbar-custom .navbar-nav > .active > a {
     border-radius: 3px;
@@ -771,10 +774,11 @@ body {
 
 .navbar-brand {
     padding: 3px 15px 15px;
+    height: 25px;
 }
 
 .navbar-brand img:first-child{
-    width: 80px;
+    width: 55px;
     float: left;
 }
 
@@ -1148,6 +1152,10 @@ form small{
     float: left;
     width: 100%;
     margin-bottom: 0;
+}
+
+.abre-tutorial{
+    color: darkblue;
 }
 
 .btn-success.add-pacote-shipment{

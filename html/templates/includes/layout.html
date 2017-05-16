@@ -58,7 +58,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="" class="navbar-brand page-scroll"><img src="/static/img/logo_sup.png" /><img src="/static/img/logo_bottom.png" /></a>
+                <a href="" class="navbar-brand page-scroll"><img src="/static/img/logo_sup.png" /><img src="/static/img/logo_bottom.png" width="175" /></a>
             </div>
             <nav class="collapse navbar-collapse" id="bs-navbar">
                 <ul class="nav navbar-nav">
@@ -87,6 +87,9 @@
                     <!--<li class="{% block lotes-u %}{% endblock %}">-->
                         <!--<a href="/lotes" ><i class="fa fa-th"></i> {% trans "Lotes" %}</a>-->
                     <!--</li>-->
+                    <li>
+                        <a href="#" class="abre-tutorial"><i class="fa fa-leanpub"></i> Tutorial Plataforma</a>
+                    </li>
                     {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Estoque" %} <b class="caret"></b></a>

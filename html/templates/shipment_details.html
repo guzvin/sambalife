@@ -143,7 +143,7 @@
                       {% for shipment_form in shipment_formset %}
                         {{ shipment_form.id }}
                         <label for="{{ shipment_form.shipment.id_for_label }}"><i class="fa fa-fw fa-file-pdf-o"></i> {{ shipment_form.shipment.label }}:</label><br><br>
-                        <input type="text" name="{{ shipment_form.shipment.html_name }}" class="menor" id="{{ shipment_form.shipment.id_for_label }}" value="{% if shipment_form.shipment.value %}{{ shipment_form.shipment.value }}{% endif %}" />
+                        <input type="text" name="{{ shipment_form.shipment.html_name }}" class="form-control" id="{{ shipment_form.shipment.id_for_label }}" value="{% if shipment_form.shipment.value %}{{ shipment_form.shipment.value }}{% endif %}" />
                         {% for error in shipment_form.shipment.errors %}
                         <label id="{{ shipment_form.shipment.id_for_label }}-error" class="error" for="{{ shipment_form.shipment.id_for_label }}">{{ error|escape }}</label>
                         {% endfor %}
@@ -153,6 +153,7 @@
             </div>
             {% elif shipment.status == 5 and shipment.shipment != '' %}
             <div class="col-md-2">
+                <label><i class="fa fa-fw fa-envelope"></i> Código UPS:</label><br /><br>
                  <div class="form-group">
                     {{ shipment.shipment }}
                 </div>
