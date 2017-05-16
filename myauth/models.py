@@ -22,7 +22,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('Nome'), max_length=50)
     last_name = models.CharField(_('Sobrenome'), max_length=50)
     email = models.CharField(_('E-mail'), max_length=150, unique=True)
-    doc_number = models.CharField(_('CPF'), max_length=25)
+    doc_number = models.CharField(_('CPF'), max_length=25, null=True)
     phone = models.CharField(_('Telefone'), max_length=25, null=True)
     cell_phone = models.CharField(_('Celular'), max_length=25)
     date_joined = models.DateTimeField(_('Data de criação'), auto_now_add=True)
@@ -32,7 +32,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'doc_number', 'cell_phone']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'cell_phone']
 
     class Meta:
         verbose_name = _('Usuário')

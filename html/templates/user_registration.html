@@ -83,14 +83,6 @@
                   <label id="email-error" class="error" for="email">{{ error|escape }}</label>
                 {% endfor %}
               </div>
-              <div class="form-group">
-                <label for="cpf">{% trans "CPF" %}*</label>
-                  {% trans "Digite o CPF" as doc_number %}
-                <input type="number" class="form-control" id="cpf" name="doc_number" placeholder="{{ doc_number }}..." value="{% if form %}{{ form.doc_number.value }}{% endif %}">
-                {% for error in form.doc_number.errors %}
-                  <label id="cpf-error" class="error" for="cpf">{{ error|escape }}</label>
-                {% endfor %}
-              </div>
                 <div class="form-group">
                 <label for="telefone">{% trans "Telefone" %}</label>
                   {% trans "Digite o telefone" as phone %}

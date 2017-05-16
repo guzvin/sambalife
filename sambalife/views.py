@@ -135,7 +135,6 @@ def user_registration(request):
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
             user.email = form.cleaned_data['email']
-            user.doc_number = form.cleaned_data['doc_number']
             user.phone = form.cleaned_data['phone']
             user.cell_phone = form.cleaned_data['cell_phone']
             user.set_password(form.cleaned_data['password'])

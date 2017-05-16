@@ -60,7 +60,7 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             PAYPAL_BUSINESS = key_value_pair[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
