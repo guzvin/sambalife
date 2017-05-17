@@ -58,9 +58,13 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             PAYPAL_CERT_ID = key_value_pair[1]
         elif key_value_pair[0] == 'paypal_business':
             PAYPAL_BUSINESS = key_value_pair[1]
+        elif key_value_pair[0] == 'django_debug':
+            DJANGO_DEBUG = (key_value_pair[1] == '1')
+        elif key_value_pair[0] == 'paypal_sandbox':
+            PAYPAL_SANDBOX = (key_value_pair[1] == '1')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = DJANGO_DEBUG
 
 ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
@@ -263,7 +267,7 @@ LOGGING = {
     },
 }
 
-PAYPAL_TEST = True
+PAYPAL_TEST = PAYPAL_SANDBOX
 
 PAYPAL_PRIVATE_CERT = os.path.join(PAYPAL_ROOT, 'paypal_private.pem')
 PAYPAL_PUBLIC_CERT = os.path.join(PAYPAL_ROOT, 'paypal_public.pem')

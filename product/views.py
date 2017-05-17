@@ -15,6 +15,7 @@ from utils.helper import MyBaseInlineFormSet, ObjectView, send_email_basic_templ
 from product.templatetags.products import has_product_perm
 from myauth.templatetags.users import has_user_perm
 from django.utils.html import format_html, mark_safe
+from django.conf import settings
 import json
 import logging
 
@@ -28,6 +29,8 @@ def product_stock(request):
         is_user_perm = has_user_perm(request.user, 'view_users')
         queries = []
         logger.debug('@@@@@@@@@@@@ PRODUCT STOCK FILTERS @@@@@@@@@@@@@@')
+        logger.debug(settings.DEBUG)
+        logger.debug(settings.PAYPAL_TEST)
         filter_id = request.GET.get('id')
         logger.debug(str(filter_id))
         filter_name = request.GET.get('name')
