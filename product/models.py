@@ -13,7 +13,7 @@ class Product(models.Model):
     id = BigAutoField(primary_key=True)
     name = models.CharField(_('Nome'), max_length=150)
     description = models.TextField(_('Descrição'), null=True, blank=True)
-    quantity = models.FloatField(_('Quantidade'))
+    quantity = models.PositiveIntegerField(_('Quantidade'))
     send_date = models.DateField(_('Data de Envio'))
     STATUS_CHOICES = (
         (1, _('Enviado')),

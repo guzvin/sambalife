@@ -20,7 +20,7 @@ def user_directory_path(instance, filename):
 
 class Shipment(models.Model):
     id = BigAutoField(primary_key=True)
-    total_products = models.FloatField(_('Total de Produtos'))
+    total_products = models.PositiveIntegerField(_('Total de Produtos'))
     cost = models.DecimalField(_('Valor Total'), max_digits=12, decimal_places=2)
     send_date = models.DateField(_('Data de Envio'))
     STATUS_CHOICES = (
@@ -56,7 +56,7 @@ class Shipment(models.Model):
 
 class Product(models.Model):
     id = BigAutoField(primary_key=True)
-    quantity = models.FloatField(_('Quantidade'))
+    quantity = models.PositiveIntegerField(_('Quantidade'))
     product = models.ForeignKey(OriginalProduct, on_delete=models.CASCADE)
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)
 

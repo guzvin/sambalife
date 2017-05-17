@@ -62,6 +62,8 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             DJANGO_DEBUG = (key_value_pair[1] == '1')
         elif key_value_pair[0] == 'paypal_sandbox':
             PAYPAL_SANDBOX = (key_value_pair[1] == '1')
+        elif key_value_pair[0] == 'log_level':
+            LOG_LEVEL = key_value_pair[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
@@ -252,7 +254,7 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'debug.log'),
             'formatter': 'myformat',
@@ -261,7 +263,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': True,
         },
     },
