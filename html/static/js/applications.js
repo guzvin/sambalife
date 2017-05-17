@@ -843,4 +843,10 @@
                   "<a class='rem-track btn btn-danger' data-toggle='tooltip' title='Remover produto' href='#'><i class='fa fa-fw fa-times'></i> Remover este produto do lote</a>" +
                 "</div>");
     });
+
+    //Modal tutorial
+    $('.abre-tutorial').click(function(){
+        $('#tutorial').modal('show');
+    });
+
 })(jQuery); // End of use strict

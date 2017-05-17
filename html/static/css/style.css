@@ -215,6 +215,14 @@ fieldset[disabled] .btn-xl.active {
      width: 235px;
   }
 
+  .sistema .navbar-header{
+     width: 249px;
+     margin-top: 6px;
+  }
+  .sistema .modal-dialog {
+        width: 1195px;
+   }
+
   .navbar-custom .navbar-brand {
     font-size: 2em;
     -webkit-transition: all 0.3s;
