@@ -153,7 +153,7 @@
             </div>
             {% elif shipment.status == 5 and shipment.shipment != '' %}
             <div class="col-md-2">
-                <label><i class="fa fa-fw fa-envelope"></i> Código UPS:</label><br /><br>
+                <label><i class="fa fa-fw fa-envelope"></i> {% trans "Código UPS" %}:</label><br /><br>
                  <div class="form-group">
                     {{ shipment.shipment }}
                 </div>
@@ -253,7 +253,6 @@
            {% endif %}
            {% if shipment.status == 2 %}
             {% if user == shipment.user or user|has_group:'admins' %}
-             <!--<a class="btn btn-default filtar-btn" href="{% url 'payment_details' %}"><i class="fa fa-fw fa-paypal"></i> {% trans "Efetuar Pagamento Agora" %}</a>-->
              {{ paypal_form.render }}
              <br><br>
             {% endif %}
