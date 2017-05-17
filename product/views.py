@@ -259,10 +259,15 @@ def product_autocomplete(request):
 
 def send_email_product_status(product, product_status_display):
     email_title = _('Mudança no status do seu produto \'%(product)s\'') % {'product': product.name}
-    html_format = '<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p><p><a href="{}">{}</a> {}</p>'
-    texts = (mark_safe(_('O novo status do produto, \'%(product)s\', é: <strong>%(status)s</strong>')
-                       % {'product': product.name, 'status': product_status_display}),
-             ''.join(['https://', Site.objects.get_current().domain, reverse('product_stock')]), _('Clique aqui'),
-             _('para acessar sua lista de produtos.'))
-    email_body = format_html(html_format, *texts)
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] if product.status == '2'
+                           else ['']) +
+                          ['<p><a href="{}">{}</a> {}</p>'])
+    texts = [mark_safe(_('O novo status do produto, \'%(product)s\', é: <strong>%(status)s</strong>')
+                       % {'product': product.name, 'status': product_status_display})]
+    if product.status == '2':
+        texts += [_('Crie seu envio agora mesmo!')]
+    texts += [''.join(['https://', Site.objects.get_current().domain, reverse('product_stock')]), _('Clique aqui'),
+              _('para acessar sua lista de produtos.')]
+    email_body = format_html(html_format, *tuple(texts))
     send_email_basic_template_bcc_admins(product.user.first_name, [product.user.email], email_title, email_body)
