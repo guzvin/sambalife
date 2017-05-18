@@ -67,10 +67,10 @@
             $('.navbar-toggle:visible').click();
     });
 
-    if($('body.index #mainNav').affix)
+    if($('body.index-home #mainNav').affix)
     {
         // Offset for Main Navigation
-        $('body.index #mainNav').affix(
+        $('body.index-home #mainNav').affix(
         {
             offset:
             {
@@ -847,6 +847,12 @@
     //Modal tutorial
     $('.abre-tutorial').click(function(){
         $('#tutorial').modal('show');
+    });
+
+
+    //Modal tutorial redirecionamento BR
+    $('#video-explicativo-br').click(function(){
+        $('#tutorial-br').modal('show');
     });
 
 })(jQuery); // End of use strict
