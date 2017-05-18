@@ -87,9 +87,9 @@
                     <!--<li class="{% block lotes-u %}{% endblock %}">-->
                         <!--<a href="/lotes" ><i class="fa fa-th"></i> {% trans "Lotes" %}</a>-->
                     <!--</li>-->
-                    <!--<li>-->
-                        <!--<a href="#" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>-->
-                    <!--</li>-->
+                    <li>
+                        <a href="#" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
+                    </li>
                     {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Estoque" %} <b class="caret"></b></a>
@@ -196,19 +196,19 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h2 class="modal-title">Tutorial de uso do sistema</h2>
+                    <h2 class="modal-title">{% trans "Tutorial de uso do sistema" %}</h2>
                 </div>
                 <div class="modal-body">
                     <div class="container">
                         <div class="row">
                             <div class="col-lg-12 text-center">
-                                <h3 class="section-subheading text-muted">Assista abaixo nesses dois videos o tutorial de como usar nossa plataforma.</h3>
+                                <h3 class="section-subheading text-muted">{% trans "Assista abaixo, nestes dois vídeos, o tutorial de como usar nossa plataforma" %}.</h3>
                                 <div class="col-md-6">
-                                    <h3>Como se cadastrar e cadastrar seus produtos na nossa plataforma</h3>
+                                    <h3>{% trans "Como se cadastrar e cadastrar seus produtos na nossa plataforma" %}</h3>
                                     <iframe src="https://www.youtube.com/embed/_jovASHwz3s?autoplay=0&amp;rel=0&amp;modestbranding=1&amp;showinfo=0&amp;controls=1&amp;hd=1" frameborder="0" width="100%" height="300"></iframe>
                                 </div>
                                 <div class="col-md-6">
-                                    <h3>Veja como funciona o envio (Redirecionamento) na nossa plataforma</h3>
+                                    <h3>{% trans "Veja como funciona o envio (Redirecionamento) na nossa plataforma" %}</h3>
                                     <iframe src="https://www.youtube.com/embed/9Ikxuy0rSYY?autoplay=0&amp;rel=0&amp;modestbranding=1&amp;showinfo=0&amp;controls=1&amp;hd=1" frameborder="0" width="100%" height="300"></iframe>
                                 </div>
                             </div>
