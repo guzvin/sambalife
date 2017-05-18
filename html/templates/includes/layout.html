@@ -84,9 +84,18 @@
                         </ul>
                     </li>
                     {% endif %}
-                    <!--<li class="{% block lotes-u %}{% endblock %}">-->
-                        <!--<a href="/lotes" ><i class="fa fa-th"></i> {% trans "Lotes" %}</a>-->
-                    <!--</li>-->
+                    <li class="{% block lotes-u %}{% endblock %}">
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %} <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="/lotes"><i class="fa fa-fw fa-shopping-cart"></i> {% trans "Produtos" %}</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <a href="/loja/minhas-compras"><i class="fa fa-fw fa-shopping-basket"></i> {% trans "Minhas compras" %}</a>
+                            </li>
+                        </ul>
+                    </li>
                     <li>
                         <a href="#" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
                     </li>

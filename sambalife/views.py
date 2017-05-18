@@ -240,3 +240,6 @@ def lotesAdmin(request):
 
 def detalheLote(request):
     return render(request, 'detalhe_lote.html')
+
+def minhasCompras(request):
+    return render(request, 'minhas_compras.html')

@@ -64,18 +64,18 @@
             {% endif %}
           <br><br>
             {% if shipments.paginator.count > 0 %}
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered">
               <thead>
                 <tr>
-                  <th>{{ id }}</th>
+                  <th><a title="Ordenar pelo Id" href="#">{{ id }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
-                  <th class="center">{{ user_label }}</th>
+                  <th class="center"><a title="Ordenar pelo usuario" href="#">{{ user_label }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
                   <!-- fim campo -->
                   {% endif %}
-                  <th>{{ send_date }}</th>
-                  <th class="center">{% trans "Quantidade" %}</th>
-                  <th class="center">{{ status }}</th>
+                  <th><a title="Ordenar pelo {{ send_date }}" href="#">{{ send_date }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center"><a title="Ordenar pela quantidade" href="#">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center"><a title="Ordenar pelo status" href="#">{{ status }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
                   <th class="center">{% trans "Ações" %}</th>
                 </tr>
               </thead>

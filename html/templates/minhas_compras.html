@@ -1,0 +1,100 @@
+{% extends 'includes/layout.html' %}
+
+{% block lotes-u %}active{% endblock %}
+
+{% block conteudo %}
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1 sidebar">
+
+        </div>
+        <div class="col-md-10 main">
+          <h1 class="page-header"><i class="fa fa-shopping-basket"></i> Minhas compras</h1>
+          <div class="row">
+              <div class="filtros col-md-12">
+                <h3><i class="fa fa-filter"></i> Filtros</h3>  <br>
+                <div class="form-group col-md-3">
+                    <label for="filtro-nome">Nome</label>
+                    <input type="text" class="form-control" id="filtro-nome" placeholder="Nome...">
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="filtro-status">Status</label>
+
+                    <select class="form-control" id="filtro-status" name="status">
+                      <option value="">Status</option>
+                      <option value="1">Aguardando pagamento</option>
+                      <option value="2">Concluído</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="datepicker">Data da compra</label>
+                    <input type="text" class="form-control datepicker hasDatepicker" id="datepicker" placeholder="Data da compra..." name="date" value="">
+                </div>
+                <div class="form-group col-md-3">
+                    <a class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> Filtrar</a>
+                </div>
+              </div>
+          </div><br><br>
+          <div class="row">
+            <div class="table-responsive">
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th><a title="Ordenar pelo pedido" href="#">Pedido <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th><a title="Ordenar pelo Produto" href="#">Produto <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center"><a title="Ordenar pela Data de Envio" href="#">Data de Envio <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center"><a title="Ordenar pela Quantidade" href="#">Quantidade <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center"><a title="Ordenar pelo Status" href="#">Status <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr>
+                  <td>234354</td>
+                  <td class="limit-field">Poker-Keeno Set in Tin</td>
+                  <td class="center">11 de Maio de 2017</td>
+                  <td class="center">21</td>
+                  <td class="center">Concluído</td>
+                  <td class="center">
+                      <a class=" download" href="/lote/detalhe"><i class="fa fa-pencil"></i> Detalhe</a>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>5446432</td>
+                  <td class="limit-field">5 Camisas Ck pretas</td>
+                  <td class="center">11 de Abril de 2017</td>
+                  <td class="center">5</td>
+                  <td class="center">Aguardando pagamento</td>
+                  <td class="center">
+                      <a class=" download" href="/lote/detalhe"><i class="fa fa-pencil"></i> Detalhe</a>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+
+          </div>
+
+
+          </div>
+          <nav aria-label="...">
+              <ul class="pagination">
+                <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                <li class=""><a href="#">2</a></li>
+                <li class=""><a href="#">3</a></li>
+                <li class=""><a href="#">4</a></li>
+                <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+              </ul>
+            </nav>
+        </div>
+        <div class="col-md-1 sidebar">
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

@@ -974,6 +974,11 @@ table a{
     text-decoration: underline;
 }
 
+table th a{
+    float: left;
+    width: 100%;
+}
+
 .filtar-btn{
     margin-top: 24px;
 }
@@ -1099,11 +1104,14 @@ table a{
 
 .titulo-lote{
     padding: 0 0 20px 0;
+    font-size: 20px;
 }
 
 .btn-comprar-list{
     padding-top: 20px;
 }
+
+
 
 .produto{
     border: 1px solid #ccc;
