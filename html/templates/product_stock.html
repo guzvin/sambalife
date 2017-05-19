@@ -126,7 +126,14 @@
                         {% check_status product '2' as in_stock_status %}
                         <label><input type="radio" name="product_status" value="1" data-current-status="{{ product.status }}" {{ sent_status }} /> {% trans "Enviado" %}</label><br>
                         <label><input type="radio" name="product_status" value="2" data-current-status="{{ product.status }}" {{ in_stock_status }} /> {% trans "Em Estoque" %}</label><br>
-                        <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i></a>
+
+                        <!-- Campo quantidade recebida-->
+                        <br>
+                        <label>Quantidade Recebida:</label>
+                        <input type="number" class="form-control name_validate" name="qtd-recebida" id="qtd-recebida" />
+
+                        <br>
+                            <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i></a>
                         <a class="btn btn-danger fechar" href="javascript:void(0);"><i class="fa fa-times"></i></a>
                         </form>
                        </div>

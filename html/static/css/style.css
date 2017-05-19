@@ -995,12 +995,12 @@ table th a{
 .status{
 	background: #ddd;
     border-radius: 15px;
-    width: 175px;
-    height: 166px;
+    width: 209px;
+    height: 261px;
     position: absolute;
     padding: 20px;
-    top: -215px;
-    right: 44px;
+    top: -300px;
+    right: -30px;
     text-align: left;
 }
 .status:after{
