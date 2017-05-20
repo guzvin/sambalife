@@ -276,7 +276,7 @@
 
 
            <div class="row">
-               <label><i class="fa fa-fw fa-step-forward"></i> {% trans "Status" %}: </label> {% trans "Acompanhe abaixo o status do envio" %}:<br><br><br>
+               <h4><i class="fa fa-fw fa-step-forward"></i> {% trans "Status" %}: </h4> {% trans "Acompanhe abaixo o status do envio" %}:<br><br><br>
 
                <div class="progress">
                   <div class="progress-bar progress-bar-success {% status_bar shipment %}" role="progressbar" aria-valuemin="0" aria-valuemax="100">
@@ -306,7 +306,7 @@
                <form action="{% url 'shipment_details' shipment.id %}" method="post" id="form-add-package">
                    {% csrf_token %}
                <input type="hidden" name="add_shipment_package" value="1">
-               <label><i class="fa fa-fw fa-line-chart"></i> {% trans "Área Administrativa" %}</label><br><br><br>
+               <h4><i class="fa fa-fw fa-line-chart"></i> {% trans "Área Administrativa" %}</h4><br><br><br>
                <div class="col-md-12 js-inline-admin-formset" id="{{ packages.prefix }}-group"
                data-inline-type="stacked"
                data-inline-formset="{{ packages.inline_formset_data }}">
