@@ -58,7 +58,51 @@
               {% endfor %}
               </tbody>
             </table>
-          </div> <hr />
+          </div>
+
+          <!-- informacoes das warehouse - cadastro-->
+            <br><hr>
+          <div class="row">
+              <div class="col-md-12">
+                <h4><i class="fa fa-fw fa-dropbox"></i> Informações sobre destino dos produtos (Warehouses)</h4><br>
+              </div>
+              <div class="lista-warehouses">
+                    <div class='warehouse col-md-6'>
+                        <label for='titulo-wh-1' class='inline_label'>
+                            warehouse #<span class='num-warehouse'>1</span>
+                        </label>
+                        <input type='text' class='form-control' id='titulo-wh-1' name='titulo-wh-1' placeholder='Local envio...' /><br>
+                        <textarea class="form-control textarea-wh" name="produtos-wh-1" id="produtos-wh-1" placeholder="Caso haja mais de um local de envio, digite aqui os produtos e as respectivas quantidades que deverão ser enviados para esta warehouse. Em seguida, abaixo, adicione o outro local..."></textarea>
+                    </div>
+              </div>
+              <div class="col-md-12"><br>
+                <a class="add-wh btn btn-success add-row" title="Adicionar warehouse" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i>Adicionar warehouse</a>
+              </div>
+
+
+            <!-- informacoes apos o cadastro-->
+
+                <div class="lista-wh-info">
+                   <div class="warehouse-info col-md-6">
+                        <label>Warehouse#1: </label> Ohio <br>
+                        <label>Produtos: </label><br>
+                        <p>Gotham Steel Ti-Cerama Nonstick Loaf Pan in Grey/Copper, 2<br>
+                        Hype Bluetooth Dancing Water Speakers,	5<br>
+                        EcoVessel 2014 SCOUT Kids Stainless, 2</p>
+                  </div>
+                  <div class="warehouse-info col-md-6">
+                        <label>Warehouse#2: </label> Nevada <br>
+                        <label>Produtos: </label><br>
+                        <p>Nonstick Loaf Pan in Grey/Copper, 22<br>
+                        Water Speakers,	15<br>
+                        EcoVessel 2014 SCOUT Kids Stainless, 2<br>
+                        Hype Bluetooth, 9</p>
+                  </div>
+                </div>
+            <!-- fim infos warehouses -->
+              <br>
+          </div>
+          <hr />
           <div class="row">
             <div class="col-md-4">
                 <label><i class="fa fa-fw fa-bar-chart"></i> {% trans "Valores" %}:</label><br><br>
@@ -74,7 +118,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Download PDFs" %}:</label><br><br>
-                    <label>PDF 1:</label><br>
+                    <label>Etiqueta do produto:</label><br>
                     <a href="{% url 'shipment_pdf_1' 'pdf_1' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
                     <br>
                     <br>
@@ -162,6 +206,75 @@
            </div>
            <hr />
            {% endif %}
+
+
+          <!-- lista das informacoes dos pacotes. fiz duas linhas com os possiveis campos -->
+
+             <div class="row">
+             <div class="col-md-12">
+                <label><i class="fa fa-fw fa-archive"></i> Informações pacote(s):</label><br><br>
+
+                <div class="form-group pacote-infos">
+                    <div class="col-md-12">
+                        <hr>
+                        <label class="titulo-pct"><span>Pacote 1:</span></label>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="info-wh-1"><i class="fa fa-fw fa-truck"></i> Warehouse:</label><br><br>
+                        <p>Nevada</p>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="warehouse-1"><i class="fa fa-fw fa-info-circle"></i> Informações do pacote:</label><br><br>
+                        <p>Peso: 12.0 lb. / L: 14.0" x W: 14.0" x H: 14.0"</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="info-wh-1"><i class="fa fa-fw fa-file"></i> PDF caixa:</label><br><br>
+                        <p><a href="#" class="download">Download</a></p>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="cod-ups"><i class="fa fa-fw fa-file-pdf-o"></i> Código UPS:</label><br><br>
+                            <!--<input type="text" name="form-0-shipment" class="form-control" id="id_form-0-shipment" value="1ZX057A903295530616">-->
+                            <p>67548582582367</p>
+                        </div>
+                    </div>
+                </div>
+                 <br>
+                <div class="form-group pacote-infos">
+                    <div class="col-md-12">
+                        <hr>
+                        <label class="titulo-pct"><span>Pacote 2:</span></label>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="info-wh-1"><i class="fa fa-fw fa-truck"></i> Warehouse:</label><br><br>
+                        <p>New York</p>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="warehouse-1"><i class="fa fa-fw fa-info-circle"></i> Informações do pacote:</label><br><br>
+                        <p>Peso: 12.0 lb. / L: 14.0" x W: 14.0" x H: 14.0"</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="info-wh-1"><i class="fa fa-fw fa-file"></i> PDF caixa:</label><br><br>
+                        <input type="file" name="pdf-caixa" class="form-group" />
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="cod-ups"><i class="fa fa-fw fa-file-pdf-o"></i> Código UPS:</label><br><br>
+                            <input type="text" name="form-0-shipment" class="form-control" id="id_form-0-shipment" value="1ZX057A903295530616">
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <br>
+
+          <!-- fim lista pacotes -->
+
+
+
+
+
+
+
            <div class="row">
                <label><i class="fa fa-fw fa-step-forward"></i> {% trans "Status" %}: </label> {% trans "Acompanhe abaixo o status do envio" %}:<br><br><br>
 
@@ -208,7 +321,16 @@
                         <div class="col-md-2">
                             <label class="filtar-btn-m inline_label">{% trans "Pacote" %} #{{ forloop.counter }}: </label>
                         </div>
-                        <div class="col-md-2">
+
+                        <!-- campo novo para inserir a warehouse para onde ira o pacote -->
+
+                        <div class="col-md-3">
+                            <input type="text" placeholder="Warehouse..." name="warehouse" class="form-control" id="warehouse" value="" aria-required="true">
+                        </div>
+
+                        <!-- fim campo novo -->
+
+                        <div class="col-md-1">
                             <input type="text" placeholder="{{ package_form.weight.label }}..." name="{{ package_form.weight.html_name }}" class="form-control add-validate-rule" id="{{ package_form.weight.id_for_label }}" value="{% if package_form.weight.value %}{{ package_form.weight.value|unlocalize }}{% endif %}" />
                             {% for error in package_form.weight.errors %}
                               <label id="{{ package_form.weight.id_for_label }}-error" class="error" for="{{ package_form.weight.id_for_label }}">{{ error|escape }}</label>

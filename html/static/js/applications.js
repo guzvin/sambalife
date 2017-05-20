@@ -844,6 +844,21 @@
                 "</div>");
     });
 
+    $('.add-wh').click(function()
+    {
+        var numeroWh = Number($('.lista-warehouses .warehouse:last-child .num-warehouse').text()) + 1;
+
+        $('.lista-warehouses').append("<div class='warehouse col-md-6'>" +
+                       " <label for='titulo-wh-" + numeroWh +" class='inline_label'>" +
+                            "warehouse #<span class='num-warehouse'>" + numeroWh +"</span> " +
+                        "</label> " +
+                        "<input type='text' class='form-control' id='titulo-wh-" + numeroWh +"' name='titulo-wh-" + numeroWh +"' placeholder='Local envio...' /><br>" +
+                        "<textarea class='form-control textarea-wh' name='produtos-wh-" + numeroWh +"' id='produtos-wh-" + numeroWh +"' placeholder='Digite aqui os produtos e as respectivas quantidades que deverão ser enviados para esta warehouse...'></textarea> " +
+                    "<div class=''><a class='rem-wh btn btn-danger' data-toggle='tooltip' title='Remover warehouse' href='#'><i class='fa fa-fw fa-times'></i> Remover destino do Envio</a></div>" +
+                  "</div>");
+
+    });
+
     //Modal tutorial
     $('.abre-tutorial').click(function(){
         $('#tutorial').modal('show');

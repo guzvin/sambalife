@@ -53,6 +53,9 @@
                         <label for="filtro-Rastreamento">{{ tracking_label }}</label>
                         <input type="text" class="form-control" id="filtro-Rastreamento" name="tracking" placeholder="{{ tracking_label }}..." value="{{ filter_values.tracking }}">
                     </div>
+                    <div class="col-md-12">
+                        <label for="filtro-arquivado"><input type="checkbox" class="" id="filtro-arquivado" name="filtro-arquivado"> Exibir produtos arquivados</label>
+                    </div>
                     <div class="form-group col-md-3">
                         <button type="submit" class="btn btn-primary filtar-btn" id="filter-btn"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
                     </div>

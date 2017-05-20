@@ -991,6 +991,28 @@ table th a{
     text-align: center;
 }
 
+.warehouse textarea.form-control.textarea-wh{
+    height: 200px;
+}
+
+.warehouse-info:nth-of-type(odd) {
+    border-left: 1px solid #ccc;
+}
+
+label.titulo-pct{
+    width: 100%;
+}
+
+label.titulo-pct span{
+    display: block;
+    margin: 0 auto;
+    width: 85px;
+    padding: 0 10px;
+    top: -31px;
+    position: relative;
+    background: #fff;
+}
+
 /*balão*/
 .status{
 	background: #ddd;
