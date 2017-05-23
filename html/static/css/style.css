@@ -1013,6 +1013,38 @@ label.titulo-pct span{
     background: #fff;
 }
 
+.manutencao-page .content{
+    width: 100%;
+}
+
+.manutencao-page .content h1{
+    width: 100%;
+    text-align: center;
+    margin-top: 100px;
+    color: #777;
+}
+
+.manutencao-page .content h1 span{
+    font-size: 14px;
+}
+
+.manutencao-page p{
+    font-size: 17px;
+    color: #777;
+}
+
+.manutencao-page .centro{
+    width: 330px;
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.manutencao-page img{
+    display: block;
+    margin: 0 auto;
+}
+
 /*balão*/
 .status{
 	background: #ddd;
