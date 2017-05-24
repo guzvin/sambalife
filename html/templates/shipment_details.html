@@ -291,7 +291,7 @@
                         <label><i class="fa fa-2x fa-shopping-cart"></i><br>{% trans "Pagamento Autorizado" %}</label>
                    </div>
                    <div class="col-md-3 center">
-                        <label><i class="fa fa-2x fa-file-pdf-o"></i><br>{% trans "Upload PDF 2 Autorizado" %}</label>
+                        <label><i class="fa fa-2x fa-file-pdf-o"></i><br>{% trans "Upload etiqueta caixa Autorizado" %}</label>
                    </div>
                    <div class="col-md-2 center">
                         <label><i class="fa fa-2x fa-list-alt"></i><br>{% trans "Checagens Finais" %}</label>
@@ -406,6 +406,14 @@
                 </a>
                 <br><br>
                 {% endif %}
+
+
+                 <!-- Botao arquivar -->
+                    <a class="btn btn-danger filtar-btn alterar-status" id="archive-btn" href="#">
+                        <i class="fa fa-fw fa-archive"></i> {% trans "Arquivar Envio" %}
+                    </a>
+                 <!-- botao arquivar -->
+
                 <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a>
                 <br><br><br><br>
              </div>

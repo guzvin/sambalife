@@ -11,7 +11,7 @@
 
         </div>
         <div class="col-md-10 main">
-          <h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Lista de Envios" %}</h1>
+          <h1 class="page-header"><i class="fa fa-amazon"></i> {% trans "Lista de Envios para os EUA" %}</h1>
           <div class="row">
               <div class="filtros col-md-12">
                 <h3><i class="fa fa-filter"></i> {% trans "Filtros" %}</h3>  <br>
@@ -42,7 +42,7 @@
                       <option value="">{{ status }}</option>
                       <option value="1" {{ preparing_filter_status }}>{% trans "Preparando para Envio" %}</option>
                       <option value="2" {{ payed_filter_status }}>{% trans "Pagamento Autorizado" %}</option>
-                      <option value="3" {{ upload_filter_status }}>{% trans "Upload PDF 2 Autorizado" %}</option>
+                      <option value="3" {{ upload_filter_status }}>{% trans "Upload etiqueta caixa Autorizado" %}</option>
                       <option value="4" {{ checkings_filter_status }}>{% trans "Checagens Finais" %}</option>
                       <option value="5" {{ sent_filter_status }}>{% trans "Enviado" %}</option>
                     </select>
@@ -67,15 +67,15 @@
             <table class="table table-striped table-bordered">
               <thead>
                 <tr>
-                  <th><a title="Ordenar pelo Id" href="#">{{ id }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th><a title="Ordenar pelo Id" href="javascript:void(0);">{{ id }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
-                  <th class="center"><a title="Ordenar pelo usuario" href="#">{{ user_label }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center"><a title="Ordenar pelo usuario" href="javascript:void(0);">{{ user_label }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
                   <!-- fim campo -->
                   {% endif %}
-                  <th><a title="Ordenar pelo {{ send_date }}" href="#">{{ send_date }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
-                  <th class="center"><a title="Ordenar pela quantidade" href="#">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
-                  <th class="center"><a title="Ordenar pelo status" href="#">{{ status }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th><a title="Ordenar pelo {{ send_date }}" href="javascript:void(0);">{{ send_date }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center"><a title="Ordenar pela quantidade" href="javascript:void(0);">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center"><a title="Ordenar pelo status" href="javascript:void(0);">{{ status }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
                   <th class="center">{% trans "Ações" %}</th>
                 </tr>
               </thead>

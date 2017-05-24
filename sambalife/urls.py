@@ -55,6 +55,8 @@ urlpatterns = i18n_patterns(
     url(r'^lotes-admin/', lotesAdmin, name='lotesAdmin'),
     url(r'^lote/detalhe', detalheLote, name='detalheLote'),
     url(r'^loja/minhas-compras', minhasCompras, name='minhasCompras'),
+    url(r'^envios-brasil', enviosBrasil, name='enviosBrasil'),
+    url(r'^envio-brasil/cadastro', envioBrasilCadastro, name='envioBrasilCadastro'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     prefix_default_language=False,
 )

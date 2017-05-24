@@ -243,3 +243,9 @@ def detalheLote(request):
 
 def minhasCompras(request):
     return render(request, 'minhas_compras.html')
+
+def enviosBrasil(request):
+    return render(request, 'lista_envio_brasil.html')
+
+def envioBrasilCadastro(request):
+    return render(request, 'envio_brasil_cadastro.html')

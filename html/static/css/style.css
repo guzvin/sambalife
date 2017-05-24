@@ -790,8 +790,9 @@ body {
 }
 
 .navbar-brand {
-    padding: 3px 15px 15px;
+    padding: 3px 0px 0px;
     height: 25px;
+    width: 235px;
 }
 
 .navbar-brand img:first-child{
@@ -953,6 +954,7 @@ input.menor-me{
 
 .header-sistema{
     border-bottom: 1px solid #eee;
+    padding: 0 25px;
 }
 
 .download{
@@ -995,7 +997,7 @@ table th a{
     height: 200px;
 }
 
-.warehouse-info:nth-of-type(odd) {
+.warehouse-info:nth-of-type(even) {
     border-left: 1px solid #ccc;
 }
 
