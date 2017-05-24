@@ -42,6 +42,16 @@
                     <label id="quantity-error" class="error" for="{{ form.quantity.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
+              {% if user|has_product_perm:'change_product_status' %}
+                <div class="form-group col-md-12">
+                  <label for="{{ form.quantity_partial.id_for_label }}">{{ form.quantity_partial.label }}</label>
+                    {% trans "Digite a quantidade parcial" as quantity_partial %}
+                  <input type="number" class="form-control menor quantity_partial_validate" id="{{ form.quantity_partial.id_for_label }}" name="{{ form.quantity_partial.html_name }}" placeholder="{{ quantity_partial }}..." value="{% if form.quantity_partial.value %}{{ form.quantity_partial.value|unlocalize }}{% endif %}">
+                  {% for error in form.quantity_partial.errors %}
+                    <label id="quantity_partial-error" class="error" for="{{ form.quantity_partial.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+              {% endif %}
                 <div class="form-group col-md-12">
                   <label for="{{ form.send_date.id_for_label }}">{{ form.send_date.label }}*</label>
                     {% trans "Data de envio" as send_date %}
@@ -83,7 +93,7 @@
                 {% endfor %}
               </div>
               <div class="col-md-12"><br>
-                <a class="add-track btn btn-success add-row" title="{{ tracking_formset.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i>{{ tracking_formset.addText }}</a>
+                <a class="add-track btn btn-success {{ tracking_formset.prefix }}-add-row add-row" title="{{ tracking_formset.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i>{{ tracking_formset.addText }}</a>
               </div><br><br>
               <div class="form-group col-md-12"><br><br>
                   <button type="submit" id="send-btn" class="btn btn-primary">{% trans "Salvar" %}</button><br><br>

@@ -14,10 +14,12 @@ class Product(models.Model):
     name = models.CharField(_('Nome'), max_length=150)
     description = models.TextField(_('Descrição'), null=True, blank=True)
     quantity = models.PositiveIntegerField(_('Quantidade'))
+    quantity_partial = models.PositiveIntegerField(_('Quantidade Parcial'), null=True, blank=True)
     send_date = models.DateField(_('Data de Envio'))
     STATUS_CHOICES = (
         (1, _('Enviado')),
         (2, _('Em Estoque')),
+        (99, _('Arquivado')),
     )
     status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -35,8 +37,14 @@ class Product(models.Model):
         if self.send_date and self.send_date > datetime.now().date():
             errors['send_date'] = ValidationError(_('Informe uma data menor ou igual a de hoje.'), code='invalid_date')
         if self.quantity:
-            if self.quantity <= 0:
+            if self.quantity < 0:
                 errors['quantity'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_quantity')
+            if self.quantity_partial:
+                if self.quantity_partial < 0:
+                    errors['quantity_partial'] = ValidationError(_('Informe um número maior que zero.'),
+                                                                 code='invalid_quantity_partial')
+                elif self.quantity_partial > self.quantity:
+                    self.quantity = self.quantity_partial
         if bool(errors):
             raise ValidationError(errors)
 

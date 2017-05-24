@@ -41,6 +41,8 @@ def product_stock(request):
         logger.debug(str(filter_status))
         filter_tracking = request.GET.get('tracking')
         logger.debug(str(filter_tracking))
+        filter_archived = request.GET.get('archived')
+        logger.debug(str(filter_archived))
         filter_values = {
             'status': '',
         }
@@ -59,6 +61,10 @@ def product_stock(request):
         if filter_tracking:
             queries.append(Q(tracking__track_number=filter_tracking))
             filter_values['tracking'] = filter_tracking
+        if filter_archived and filter_archived == 'on':
+            filter_values['archived'] = 'checked=checked'
+        else:
+            queries.append(~Q(status=99))
         logger.debug('@@@@@@@@@@@@ QUERIES @@@@@@@@@@@@@@')
         logger.debug(str(queries))
         logger.debug(str(len(queries)))
@@ -100,7 +106,8 @@ def product_add_edit(request, pid=None):
         return HttpResponseForbidden()
     elif pid is not None and has_product_perm(request.user, 'change_product') is False:
         return HttpResponseForbidden()
-    ProductFormSet = modelformset_factory(Product, fields=('name', 'description', 'quantity', 'send_date'),
+    ProductFormSet = modelformset_factory(Product, fields=('name', 'description', 'quantity', 'quantity_partial',
+                                                           'send_date'),
                                           localized_fields=('send_date',), min_num=1, max_num=1)
     TrackingFormSet = inlineformset_factory(Product, Tracking, formset=MyBaseInlineFormSet, fields=('track_number',),
                                             extra=1)
@@ -137,11 +144,25 @@ def product_add_edit(request, pid=None):
                         product = product_form.save(commit=False)
                         product.status = 1
                         product.user = request.user
+                        if product.quantity_partial is None:
+                            product.quantity_partial = product.quantity
+                        elif product.quantity_partial <= 0:
+                            product.quantity = product.quantity_partial = 0
+                        elif product.quantity_partial > product.quantity:
+                            product.quantity = product.quantity_partial
                         product.save()
                         tracking_formset = TrackingFormSet(request.POST, instance=product,
                                                            prefix='tracking_set', **kwargs)
                 else:
-                    product_formset.save()
+                    for product_form in product_formset:
+                        product = product_form.save(commit=False)
+                        if product.quantity_partial is None:
+                            product.quantity_partial = product.quantity
+                        elif product.quantity_partial <= 0:
+                            product.quantity = product.quantity_partial = 0
+                        elif product.quantity_partial > product.quantity:
+                            product.quantity = product.quantity_partial
+                        product.save()
                     tracking_formset = TrackingFormSet(request.POST, instance=product_instance, prefix='tracking_set',
                                                        **kwargs)
                 tracking_formset.save()
@@ -169,7 +190,25 @@ def product_edit_status(request, pid=None, output=None):
         product = Product.objects.select_related('user').get(pk=pid)
         if product.user == request.user or has_user_perm(request.user, 'view_users'):
             fields_to_update = []
-            product_status = request.PUT.get('product_status')
+            product_quantity_partial = request.PUT.get('product_quantity_partial')
+            if product_quantity_partial:
+                try:
+                    product.quantity_partial = int(product_quantity_partial)
+                    if product.quantity_partial < 0:
+                        int('err')
+                except ValueError:
+                    return HttpResponse(json.dumps({'success': False, 'error': (_('Quantidade deve ser maior ou igual '
+                                                                                  'a zero.')
+                                                                                % {'qty': product.quantity})}),
+                                        content_type='application/json', status=400)
+                fields_to_update.append('quantity_partial')
+                if product.quantity_partial == 0 or product.quantity_partial > product.quantity:
+                    product.quantity = product.quantity_partial
+                    fields_to_update.append('quantity')
+            if product.quantity_partial == 0:
+                product_status = '99'  # Archived
+            else:
+                product_status = request.PUT.get('product_status')
             product_status_display = None
             if product_status:
                 for choice in Product.STATUS_CHOICES:
@@ -189,6 +228,7 @@ def product_edit_status(request, pid=None, output=None):
                     'name': product.name,
                     'description': product.description,
                     'quantity': product.quantity,
+                    'quantity_partial': product.quantity_partial,
                     'send_date': formats.date_format(product.send_date, "DATE_FORMAT"),
                     'status': product.status,
                     'status_display': product_status_display,
@@ -260,13 +300,14 @@ def product_autocomplete(request):
 def send_email_product_status(product, product_status_display):
     email_title = _('Mudança no status do seu produto \'%(product)s\'') % {'product': product.name}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
-                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] if product.status == '2'
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}: {}</p>',
+                            '<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] if product.status == '2'
                            else ['']) +
                           ['<p><a href="{}">{}</a> {}</p>'])
-    texts = [mark_safe(_('O novo status do produto, \'%(product)s\', é: <strong>%(status)s</strong>')
+    texts = [mark_safe(_('O status do produto, \'%(product)s\', é: <strong>%(status)s</strong>')
                        % {'product': product.name, 'status': product_status_display})]
     if product.status == '2':
-        texts += [_('Crie seu envio agora mesmo!')]
+        texts += [_('Quantidade em estoque'), product.quantity_partial, _('Crie seu envio agora mesmo!')]
     texts += [''.join(['https://', Site.objects.get_current().domain, reverse('product_stock')]), _('Clique aqui'),
               _('para acessar sua lista de produtos.')]
     email_body = format_html(html_format, *tuple(texts))

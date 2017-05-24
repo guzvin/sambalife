@@ -95,10 +95,19 @@ def send_email(title, body, email_to=None,
         logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
 
 
+class RequiredBaseInlineFormSet(BaseInlineFormSet):
+    def _construct_form(self, i, **kwargs):
+        form = super(RequiredBaseInlineFormSet, self)._construct_form(i, **kwargs)
+        form.empty_permitted = True
+        return form
+
+
 class MyBaseInlineFormSet(BaseInlineFormSet):
     def __init__(self, data=None, files=None, instance=None,
                  save_as_new=False, prefix=None, queryset=None, **kwargs):
+        self.render_empty_form = kwargs.pop('renderEmptyForm', True)
         self.allow_empty_form = kwargs.pop('allowEmptyForm', True)
+        self.novalidate_fields = kwargs.pop('noValidateFields', [])
         self.addText = kwargs.pop('addText', _('Adicionar'))
         self.deleteText = kwargs.pop('deleteText', _('Remover'))
         self.inline_formset_data = json.dumps({
@@ -115,16 +124,20 @@ class MyBaseInlineFormSet(BaseInlineFormSet):
         """Yields the forms in the order they should be rendered"""
         for form in self.forms:
             yield form
-        yield self.empty_form
+        if self.render_empty_form:
+            yield self.empty_form
 
     def __getitem__(self, index):
         """Returns the form at the given index, based on the rendering order"""
-        if len(self.forms) == index:
+        if self.render_empty_form and len(self.forms) == index:
             return self.empty_form
         return self.forms[index]
 
     def __len__(self):
-        return len(self.forms) + 1
+        if self.render_empty_form:
+            return len(self.forms) + 1
+        else:
+            return len(self.forms)
 
     def _construct_form(self, i, **kwargs):
         form = super(MyBaseInlineFormSet, self)._construct_form(i, **kwargs)
@@ -134,6 +147,11 @@ class MyBaseInlineFormSet(BaseInlineFormSet):
 
     def add_fields(self, form, index):
         super(MyBaseInlineFormSet, self).add_fields(form, index)
+        for field in form.fields:
+            if field in self.novalidate_fields:
+                logger.debug('@@@@@@@@@@@@ NOVALIDATE FORM FIELD @@@@@@@@@@@@@@')
+                logger.debug(field)
+                form.fields[field].required = False
         if self.can_delete:
             form.fields[DELETION_FIELD_NAME] = BooleanField(label=_('Apagar'), required=False, widget=CheckboxInput)
 

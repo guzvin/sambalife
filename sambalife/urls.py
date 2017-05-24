@@ -21,6 +21,8 @@ from sambalife.views import *
 from product.views import *
 from shipment.views import *
 from payment.views import *
+from store.views import *
+from myauth.views import *
 
 urlpatterns = i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),
@@ -34,6 +36,7 @@ urlpatterns = i18n_patterns(
         user_validation, name='user_validation'),
     url(r'^user/validation/resend/(?P<uidb64>[0-9A-Za-z_\-]+)[/]$', user_validation_resend,
         name='user_validation_resend'),
+    url(r'^user/edit[/]$', user_edit, name='user_edit'),
     url(r'^product/stock[/]$', product_stock, name='product_stock'),
     url(r'^product/details/(?P<pid>[0-9]+)[/]$', product_details, name='product_details'),
     url(r'^product/add[/]$', product_add_edit, name='product_add'),
@@ -50,11 +53,11 @@ urlpatterns = i18n_patterns(
     url(r'^shipment/(?P<pdf>pdf_2)/(?P<pid>[0-9]+)[/]$', shipment_download_pdf, name='shipment_pdf_2'),
     url(r'^shipment/delete/product[/]$', shipment_delete_product, name='shipment_delete_product'),
     url(r'^paypal/$', payment_ipn, name='paypal-ipn'),
-    url(r'^lotes/', lotes, name='lotes'),
-    url(r'^lote/cadastro/', cadastroLote, name='cadastroLote'),
-    url(r'^lotes-admin/', lotesAdmin, name='lotesAdmin'),
-    url(r'^lote/detalhe', detalheLote, name='detalheLote'),
-    url(r'^loja/minhas-compras', minhasCompras, name='minhasCompras'),
+    url(r'^store/list[/]$', store_list, name='store'),
+    url(r'^store/lot/details/(?P<pid>[0-9]+)[/]$', store_lot_details, name='store_lot_details'),
+    url(r'^store/lot/add[/]$', store_lot_add, name='store_lot_add'),
+    url(r'^store/admin[/]$', store_admin, name='store_admin'),
+    url(r'^store/purchase', store_purchase, name='store_purchase'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     prefix_default_language=False,
 )

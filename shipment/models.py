@@ -3,6 +3,8 @@ from django.db.models.fields import BigAutoField
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.core.validators import ValidationError
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 from shipment.validators import validate_file_extension
 from datetime import datetime
 from product.models import Product as OriginalProduct
@@ -13,9 +15,16 @@ import logging
 logger = logging.getLogger('django')
 
 
+_UNSAVED_FILEFIELD = 'unsaved_filefield'
+
+
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'user_{0}/{1}'.format(instance.user.id, filename)
+    if type(instance) is Shipment:
+        return 'user_{0}/shipment_{1}/{2}'.format(instance.user.id, instance.id, filename)
+    elif type(instance) is Package:
+        return 'user_{0}/shipment_{1}/package_{2}/{3}'.format(instance.shipment.user.id, instance.shipment.id,
+                                                              instance.id, filename)
 
 
 class Shipment(models.Model):
@@ -31,10 +40,13 @@ class Shipment(models.Model):
         (5, _('Enviado')),  # Shipped
     )
     status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES)
-    pdf_1 = models.FileField(_('PDF 1'), upload_to=user_directory_path, validators=[validate_file_extension])
+    pdf_1 = models.FileField(_('Etiqueta do(s) Produto(s)'), upload_to=user_directory_path,
+                             validators=[validate_file_extension])
+    # TODO ABAIXO TIRAR DAQUI FOI PARA O PACOTE
     pdf_2 = models.FileField(_('PDF 2'), upload_to=user_directory_path, null=True, blank=True,
                              validators=[validate_file_extension])
     shipment = models.CharField(_('Código UPS'), max_length=50, null=True, blank=True)
+    # TODO ACIMA TIRAR DAQUI FOI PARA O PACOTE
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
@@ -54,6 +66,20 @@ class Shipment(models.Model):
             raise ValidationError(errors)
 
 
+@receiver(pre_save, sender=Shipment)
+def skip_saving_file(sender, instance, **kwargs):
+    if not instance.pk and not hasattr(instance, _UNSAVED_FILEFIELD):
+        setattr(instance, _UNSAVED_FILEFIELD, instance.pdf_1)
+        instance.pdf_1 = None
+
+
+@receiver(post_save, sender=Shipment)
+def save_file(sender, instance, created, **kwargs):
+    if created and hasattr(instance, _UNSAVED_FILEFIELD):
+        instance.pdf_1 = getattr(instance, _UNSAVED_FILEFIELD)
+        instance.save()
+
+
 class Product(models.Model):
     id = BigAutoField(primary_key=True)
     quantity = models.PositiveIntegerField(_('Quantidade'))
@@ -70,17 +96,18 @@ class Product(models.Model):
             if self.quantity <= 0:
                 errors['quantity'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_quantity')
             elif self.product:
-                if self.quantity > self.product.quantity:
+                if self.quantity > self.product.quantity_partial:
                     errors['quantity'] = ValidationError(_('Informe um número menor que a quantidade em estoque '
-                                                           '(%(quantity)s).') % {'quantity': self.product.quantity},
+                                                           '(%(quantity)s).')
+                                                         % {'quantity': self.product.quantity_partial},
                                                          code='invalid_stock_quantity')
                 else:
                     try:
                         original_product = OriginalProduct.objects.get(pk=self.product.id)
-                        if self.quantity > original_product.quantity:
+                        if self.quantity > original_product.quantity_partial:
                             errors['quantity'] = ValidationError(_('Informe um número menor que a quantidade em '
                                                                    'estoque (%(quantity)s).') %
-                                                                 {'quantity': original_product.quantity},
+                                                                 {'quantity': original_product.quantity_partial},
                                                                  code='invalid_stock_quantity')
                     except OriginalProduct.DoesNotExist:
                         errors['quantity'] = ValidationError(_('Problema para validar o produto selecionado.'),
@@ -89,8 +116,16 @@ class Product(models.Model):
             raise ValidationError(errors)
 
 
+class Warehouse(models.Model):
+    id = BigAutoField(primary_key=True)
+    name = models.CharField(_('Warehouse'), max_length=150)
+    description = models.TextField(_('Descrição'), null=True, blank=True)
+    shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)
+
+
 class Package(models.Model):
     id = BigAutoField(primary_key=True)
+    warehouse = models.CharField(_('Warehouse'), max_length=150, null=True)
     weight = models.FloatField(_('Peso'))
     height = models.FloatField(_('H'))
     width = models.FloatField(_('W'))
@@ -112,11 +147,22 @@ class Package(models.Model):
     length_units = models.SmallIntegerField(_('Unidade de medida de tamanho'),
                                             choices=tuple((choice[0], choice[1]) for choice in UNITS_LENGTH_CHOICES),
                                             default=3)
+    pdf_2 = models.FileField(_('Etiqueta da caixa'), upload_to=user_directory_path, null=True,
+                             validators=[validate_file_extension])
+    shipment_tracking = models.CharField(_('Código UPS'), max_length=50, null=True, blank=True)
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)
+
+    __original_warehouse = None
+    __original_shipment_tracking = None
 
     class Meta:
         verbose_name = _('Pacote')
         verbose_name_plural = _('Pacotes')
+
+    def __init__(self, *args, **kwargs):
+        super(Package, self).__init__(*args, **kwargs)
+        self.__original_warehouse = self.warehouse
+        self.__original_shipment_tracking = self.shipment_tracking
 
     def clean(self):
         errors = {}

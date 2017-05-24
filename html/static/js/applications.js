@@ -423,7 +423,7 @@
         });
     }
 
-    $('.send-btn-async').click(function()
+    $('.send-btn-async').click(function(e)
     {
         var form = $(this).closest('form.form-change-status');
         var pid = form.find('input.product-id').val();
@@ -432,10 +432,23 @@
             var radioChecked = form.find('input:radio:checked');
             if(radioChecked[0])
             {
+                var tr = form.closest('tr');
+                var quantityColumn = tr.find('td.row-quantity');
+                var inputPartial = tr.find('input.row-qty-partial');
+                var currentPartial = inputPartial.data('current-partial');
+                var newPartialValue = inputPartial.val();
                 var checkedValue = radioChecked.val();
-                var currentValue = radioChecked.attr('data-current-status');
-                if(checkedValue !== currentValue)
+                var currentValue = radioChecked.data('current-status');
+                if(''+checkedValue !== ''+currentValue || ''+currentPartial !== ''+newPartialValue)
                 {
+                    var $this = $(this);
+                    if($this.hasClass('nosubmit'))
+                    {
+                        e.preventDefault();
+                        return false;
+                    }
+                    $this.addClass('nosubmit');
+                    $('.loading').show();
                     $.ajax(
                     {
                         method: 'PUT',
@@ -445,17 +458,37 @@
                     .done(function( obj )
                     {
                         $('span#product-status-display-'+obj.product.id).text(obj.product.status_display);
-                        form.find('input:radio').attr('data-current-status', obj.product.status);
+                        form.find('input:radio').data('current-status', obj.product.status);
+                        inputPartial.data('current-partial', obj.product.quantity_partial);
                         if(obj.product.show_check && obj.product.status === SHIPMENT_STATUS_IN_STOCK && obj.product.quantity >= 0)
                         {
-                            var checkbox = $('<input type="checkbox" name="shipment_product" value="' + obj.product.id + '" id="shipment-' + obj.product.id + '" class="shipment-product" />');
-                            $('span#product-status-display-'+obj.product.id).closest('td').next().append(checkbox);
+                            var checkColumn = $('span#product-status-display-'+obj.product.id).closest('td').next();
+                            if(!checkColumn.find('input[type="checkbox"]')[0])
+                            {
+                                var checkbox = $('<input type="checkbox" name="shipment_product" value="' + obj.product.id + '" id="shipment-' + obj.product.id + '" class="shipment-product" />');
+                                checkColumn.append(checkbox);
+                            }
                         }
                         else
                         {
                             $('span#product-status-display-'+obj.product.id).closest('td').next()[0].innerHTML = '';
                         }
+                        var qtyInfo = obj.product.quantity;
+                        if(parseInt(obj.product.quantity_partial) && !isNaN(obj.product.quantity_partial) && obj.product.quantity !== obj.product.quantity_partial)
+                        {
+                            qtyInfo += ' ('+obj.product.quantity_partial+')';
+                        }
+                        quantityColumn[0].innerHTML = qtyInfo;
                         form.closest('.contem-status').hide();
+                    })
+                    .fail(function(jqXHR, textStatus, errorThrown)
+                    {
+                        alert(jqXHR.responseJSON.error);
+                    })
+                    .always(function()
+                    {
+                        $('.loading').hide();
+                        $this.removeClass('nosubmit');
                     });
                 }
             }
@@ -530,13 +563,9 @@
             onclick: false
         });
 
-        window.addRule = function(element)
+        window.addRule = function(element, rules)
         {
-            element.rules('add',
-            {
-                required: true,
-                positiveNumber: true,
-            });
+            element.rules('add', rules);
         }
 
         $('.quantity_validate').each(function ()
@@ -563,6 +592,14 @@
                 required: true,
             });
         });
+        $('.warehouse_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+            });
+        });
+
     }
 
     if($('form.form-filter')[0] && $('ul.pagination')[0])
@@ -634,16 +671,19 @@
             onclick: false
         });
 
-        window.addRule = function(element)
+        window.addRule = function(element, rules)
         {
-            element.rules('add',
-            {
-                required: true,
-                positiveNumber: true,
-            });
+            element.rules('add', rules);
         }
 
-        $('input.add-validate-rule').each(function ()
+        $('input.required-validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+            });
+        });
+        $('input.required-number-validate').each(function ()
         {
             $(this).rules('add',
             {
@@ -686,6 +726,12 @@
             })
             .done(function( obj )
             {
+                if(obj.redirect)
+                {
+                    window.location.href = obj.redirect;
+                    $('.loading').show();
+                    return;
+                }
                 tr.remove();
                 $('#totalProducts')[0].innerHTML = obj.items;
                 $('#totalCost')[0].innerHTML = obj.cost;
@@ -721,56 +767,55 @@
             onkeyup: false,
             onclick: false
         });
-
-        $('.pdf_2-validate').each(function ()
+        if($('input[type="hidden"][name="edit_package_warehouse"]')[0] === undefined)
         {
-            $(this).rules('add',
+            $('.pdf_2-validate').each(function ()
             {
-                required: true,
+                $(this).rules('add',
+                {
+                    required: true,
+                });
             });
-        });
+        }
     }
 
-    if($('form#form-add-shipment')[0])
+    if($('a#send-btn-final')[0])
     {
-        if($('a#send-btn-final')[0])
+        $('a#send-btn-final').on('click', function (e)
         {
-            $('a#send-btn-final').on('click', function (e)
-            {
-                e.preventDefault();
-                $('#send-shipment-confirmation').modal('show');
-                return false;
+            e.preventDefault();
+            $('#send-shipment-confirmation').modal('show');
+            return false;
 
-            });
-        }
-        if($('button#send-btn-final-confirmation')[0])
+        });
+    }
+    if($('button#send-btn-final-confirmation')[0])
+    {
+        $('button#send-btn-final-confirmation').on('click', function (e)
         {
-            $('button#send-btn-final-confirmation').on('click', function (e)
+            e.preventDefault();
+            if($(this).hasClass('nosubmit'))
             {
-                e.preventDefault();
-                if($(this).hasClass('nosubmit'))
-                {
-                    return false;
-                }
-                $(this).addClass('nosubmit');
-                $('.loading').show();
-                $('form#form-add-shipment').submit();
-            });
-        }
-        if($('a#send-btn-5')[0])
+                return false;
+            }
+            $(this).addClass('nosubmit');
+            $('.loading').show();
+            $('form#form-upload-file').submit();
+        });
+    }
+    if($('a#send-btn-5')[0])
+    {
+        $('a#send-btn-5').on('click', function (e)
         {
-            $('a#send-btn-5').on('click', function (e)
+            e.preventDefault();
+            if($(this).hasClass('nosubmit'))
             {
-                e.preventDefault();
-                if($(this).hasClass('nosubmit'))
-                {
-                    return false;
-                }
-                $(this).addClass('nosubmit');
-                $('.loading').show();
-                $('form#form-add-shipment').submit();
-            });
-        }
+                return false;
+            }
+            $(this).addClass('nosubmit');
+            $('.loading').show();
+            $('form#form-upload-file').submit();
+        });
     }
 
     function assembleModal(title, body)
@@ -842,21 +887,6 @@
                   "</div>" +
                   "<a class='rem-track btn btn-danger' data-toggle='tooltip' title='Remover produto' href='#'><i class='fa fa-fw fa-times'></i> Remover este produto do lote</a>" +
                 "</div>");
-    });
-
-    $('.add-wh').click(function()
-    {
-        var numeroWh = Number($('.lista-warehouses .warehouse:last-child .num-warehouse').text()) + 1;
-
-        $('.lista-warehouses').append("<div class='warehouse col-md-6'>" +
-                       " <label for='titulo-wh-" + numeroWh +" class='inline_label'>" +
-                            "warehouse #<span class='num-warehouse'>" + numeroWh +"</span> " +
-                        "</label> " +
-                        "<input type='text' class='form-control' id='titulo-wh-" + numeroWh +"' name='titulo-wh-" + numeroWh +"' placeholder='Local envio...' /><br>" +
-                        "<textarea class='form-control textarea-wh' name='produtos-wh-" + numeroWh +"' id='produtos-wh-" + numeroWh +"' placeholder='Digite aqui os produtos e as respectivas quantidades que deverão ser enviados para esta warehouse...'></textarea> " +
-                    "<div class=''><a class='rem-wh btn btn-danger' data-toggle='tooltip' title='Remover warehouse' href='#'><i class='fa fa-fw fa-times'></i> Remover destino do Envio</a></div>" +
-                  "</div>");
-
     });
 
     //Modal tutorial

@@ -1,59 +1,66 @@
 function preAddCheck(options)
 {
-    try
+    if(options.prefix === 'product_set')
     {
-        var selectedValue = JSON.parse($( '#' + options.prefix + '-autocomplete-selected' ).val());
-        if(selectedValue && selectedValue.label !== undefined && selectedValue.value !== undefined && selectedValue.desc !== undefined)
+        try
         {
-            var add = true;
-            $('#' + options.prefix + '-group .inline-related .inline-row-key').each(function()
+            var selectedValue = JSON.parse($( '#' + options.prefix + '-autocomplete-selected' ).val());
+            if(selectedValue && selectedValue.label !== undefined && selectedValue.value !== undefined && selectedValue.desc !== undefined)
             {
-                if($(this).val() === '' + selectedValue.value)
+                var add = true;
+                $('#' + options.prefix + '-group .inline-related .inline-row-key').each(function()
                 {
-                    add = false;
-                    return false;
-                }
-            });
-            return add;
+                    if($(this).val() === '' + selectedValue.value)
+                    {
+                        add = false;
+                        return false;
+                    }
+                });
+                return add;
+            }
         }
+        catch (ex)
+        {}
+        return false;
     }
-    catch (ex)
-    {}
-    return false;
+    return true;
 }
 
-function addInlineRow(row, prefix)
+function addInlineRow(row, options)
 {
-    try
+    if(options.prefix === 'product_set')
     {
-        var selectedValue = JSON.parse($( '#' + prefix + '-autocomplete-selected' ).val());
-        row.find('td').each(function(index)
+        try
         {
-            switch(index)
+            var selectedValue = JSON.parse($( '#' + options.prefix + '-autocomplete-selected' ).val());
+            row.find('td').each(function(index)
             {
-                case 0:
-                    $(this).find('.inline-row-key').val(selectedValue.value);
-                    $(this).append(selectedValue.value);
-                    break;
-                case 1:
-                    $(this).append(selectedValue.label);
-                    break;
-                case 2:
-                    $(this).append(selectedValue.desc);
-                    break;
-                case 3:
-                    var element = $(this).find('input.quantity_validate');
-                    element.val(selectedValue.qty);
-                    addQuantityEvent(element, prefix);
-                    return false;
-            }
-        });
-        calculateTotalProducts(prefix);
-        $( '#' + prefix + '-autocomplete' ).val('');
-    }
-    catch(ex)
-    {
-        row.remove();
+                switch(index)
+                {
+                    case 0:
+                        $(this).find('.inline-row-key').val(selectedValue.value);
+                        $(this).append(selectedValue.value);
+                        break;
+                    case 1:
+                        $(this).append(selectedValue.label);
+                        break;
+                    case 2:
+                        $(this).append(selectedValue.desc);
+                        break;
+                    case 3:
+                        var element = $(this).find('input.quantity_validate');
+                        element.val(selectedValue.qty);
+                        addQuantityEvent(element, options.prefix);
+                        return false;
+                }
+            });
+            calculateTotalProducts(options.prefix);
+            $( '#' + options.prefix + '-autocomplete' ).val('');
+        }
+        catch(ex)
+        {
+            row.remove();
+        }
     }
 }
 
@@ -82,23 +89,33 @@ function calculateTotalProducts(prefix)
 
 function formInitialized(options)
 {
-    $('#' + options.prefix + '-group .inline-related .quantity_validate').each(function()
+    if(options.prefix === 'product_set')
     {
-        addQuantityEvent($(this), options.prefix);
-    });
-    calculateTotalProducts(options.prefix);
-    $('#btn-calculate-shipment').click(function(e)
-    {
-        e.preventDefault();
-        $.ajax(
+        $('#' + options.prefix + '-group .inline-related .quantity_validate').each(function()
         {
-            method: 'GET',
-            url: '/shipment/calculate/',
-            data: 'items=' + $('#totalProducts')[0].innerHTML
-        })
-        .done(function( obj )
-        {
-            $('#totalCost')[0].innerHTML = obj.cost;
+            addQuantityEvent($(this), options.prefix);
         });
-    });
+        calculateTotalProducts(options.prefix);
+        $('#btn-calculate-shipment').click(function(e)
+        {
+            e.preventDefault();
+            $.ajax(
+            {
+                method: 'GET',
+                url: '/shipment/calculate/',
+                data: 'items=' + $('#totalProducts')[0].innerHTML
+            })
+            .done(function( obj )
+            {
+                $('#totalCost')[0].innerHTML = obj.cost;
+            });
+        });
+    }
+    else if(options.prefix === 'warehouse_set')
+    {
+        $('#' + options.prefix + '-group .inline-related .warehouse_name_validate').each(function()
+        {
+            addQuantityEvent($(this), options.prefix);
+        });
+    }
 }

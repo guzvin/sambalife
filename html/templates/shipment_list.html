@@ -67,15 +67,30 @@
             <table class="table table-striped table-bordered">
               <thead>
                 <tr>
-                  <th><a title="Ordenar pelo Id" href="#">{{ id }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th>
+                    {% trans "Ordenar pelo ID" as order_id %}
+                    <a title="{{ order_id }}" href="#">{{ id }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                  </th>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
-                  <th class="center"><a title="Ordenar pelo usuario" href="#">{{ user_label }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center">
+                    {% trans "Ordenar pelo usuário" as order_user %}
+                    <a title="{{ order_user }}" href="#">{{ user_label }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                  </th>
                   <!-- fim campo -->
                   {% endif %}
-                  <th><a title="Ordenar pelo {{ send_date }}" href="#">{{ send_date }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
-                  <th class="center"><a title="Ordenar pela quantidade" href="#">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
-                  <th class="center"><a title="Ordenar pelo status" href="#">{{ status }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th>
+                    {% trans "Ordenar pela data de envio" as order_send_date %}
+                    <a title="{{ order_send_date }}" href="#">{{ send_date }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                  </th>
+                  <th class="center">
+                    {% trans "Ordenar pela quantidade" as order_qty %}
+                    <a title="{{ order_qty }}" href="#">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                  </th>
+                  <th class="center">
+                    {% trans "Ordenar pelo status" as order_status %}
+                    <a title="{{ order_status }}" href="#">{{ status }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                  </th>
                   <th class="center">{% trans "Ações" %}</th>
                 </tr>
               </thead>

@@ -225,21 +225,3 @@ def send_email_user_registration(user):
     email_body = format_html(html_format, *texts)
     send_email_basic_template_bcc_admins(_('Administrador'), None, email_title, email_body)
 
-
-def cadastroLote(request):
-    return render(request, 'lote_cadastro.html')
-
-
-def lotes(request):
-    return render(request, 'lista_lotes.html')
-
-
-def lotesAdmin(request):
-    return render(request, 'lista_lotes_admin.html')
-
-
-def detalheLote(request):
-    return render(request, 'detalhe_lote.html')
-
-def minhasCompras(request):
-    return render(request, 'minhas_compras.html')

@@ -32,7 +32,7 @@
               <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Quantidade" %}:</label>
                     <div class="col-xs-9">
-                        <p>{{ product.quantity }}</p>
+                        <p>{{ product.quantity }}{% if product.quantity_partial and product.quantity_partial > 0 and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}</p>
                     </div>
                 </div>
               {% if user|has_user_perm:'view_users' %}

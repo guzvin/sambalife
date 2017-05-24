@@ -5,9 +5,9 @@ from shipment.templatetags.shipments import has_shipment_perm
 from myauth.templatetags.users import has_user_perm
 from myauth.templatetags.permissions import has_group
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext as _, ungettext
 from product.models import Product as OriginalProduct
-from shipment.models import Shipment, Product, Package, CostFormula
+from shipment.models import Shipment, Product, Warehouse, Package, CostFormula
 from django.contrib.sites.models import Site
 from django.forms import modelformset_factory, inlineformset_factory, Field, DateField
 from django.forms.widgets import Widget, FileInput
@@ -25,6 +25,7 @@ from django.core import serializers
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from paypal.standard.models import ST_PP_COMPLETED
 from paypal.standard.ipn.signals import valid_ipn_received
+from shipment.templatetags.shipments import unit_weight_display, unit_length_display
 import magic
 import json
 import os
@@ -147,33 +148,31 @@ def shipment_details(request, pid=None):
         except Shipment.DoesNotExist:
             return HttpResponseBadRequest()
         _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
+        _shipment_warehouses = Warehouse.objects.filter(shipment=_shipment_details).order_by('id')
         title = ' '.join([str(_('Envio')), str(_shipment_details.id)])
-        context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products}
-        if request.method == 'POST' and request.POST.get('add_shipment_package'):
-            if has_shipment_perm(request.user, 'add_package'):
-                add_package_response = shipment_add_package(request, pid)
-                if isinstance(add_package_response, HttpResponse):
-                    return add_package_response
-                context_data['packages'] = add_package_response
-            else:
-                return HttpResponseForbidden()
-        elif has_shipment_perm(request.user, 'add_package') and request.GET.get('s') == '1' \
-                and _shipment_details.status == 2:
-            context_data['success'] = True
-            context_data['success_message'] = _('Pacote(s) inserido(s) com sucesso.')
-        elif request.GET.get('s') == '2' and _shipment_details.status == 4:
-            context_data['success'] = True
-            context_data['success_message'] = _('Upload realizado com sucesso.')
-        elif has_group(request.user, 'admins') and request.GET.get('s') == '3' \
-                and _shipment_details.status == 5:
-            context_data['success'] = True
-            context_data['success_message'] = _('Envio concluído com sucesso.')
-        elif has_shipment_perm(request.user, 'add_package') and request.GET.get('s') == '4' \
-                and _shipment_details.status == 5:
-            context_data['success'] = True
-            context_data['success_message'] = _('Código de postagem salvo com sucesso.')
+        context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products,
+                        'warehouses': _shipment_warehouses}
+        custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
+        PackageFormSet = inlineformset_factory(Shipment, Package, formset=MyBaseInlineFormSet,
+                                               fields=('warehouse', 'weight', 'height', 'width', 'length', 'pdf_2',
+                                                       'shipment_tracking'),
+                                               extra=1,
+                                               error_messages={'weight': custom_error_messages,
+                                                               'height': custom_error_messages,
+                                                               'width': custom_error_messages,
+                                                               'length': custom_error_messages},
+                                               widgets={'pdf_2': FileInput(
+                                                   attrs={'class': 'form-control pdf_2-validate'})})
         if _shipment_details.status == 1:
             # Preparando para Envio
+            if request.method == 'POST' and request.POST.get('add_shipment_package'):
+                if has_shipment_perm(request.user, 'add_package'):
+                    add_package_response = shipment_add_package(request, PackageFormSet, pid)
+                    if isinstance(add_package_response, HttpResponse):
+                        return add_package_response
+                    context_data['packages'] = add_package_response
+                else:
+                    return HttpResponseForbidden()
             if has_shipment_perm(request.user, 'add_package'):
                 serialized_products = serializers.serialize('json', _shipment_products, fields=('id', 'quantity',
                                                                                                 'product',))
@@ -181,26 +180,59 @@ def shipment_details(request, pid=None):
                 logger.debug(serialized_products)
                 request.session['shipment_products'] = serialized_products
                 if 'packages' not in context_data:
-                    PackageFormSet = inlineformset_factory(Shipment, Package, formset=MyBaseInlineFormSet,
-                                                           fields=('weight', 'height', 'width', 'length',),
-                                                           extra=1)
                     kwargs = {'addText': _('Adicionar pacote'), 'deleteText': _('Remover pacote')}
                     package_formset = PackageFormSet(instance=_shipment_details, prefix='package_set', **kwargs)
                     context_data['packages'] = package_formset
         else:
-            _shipment_packages = Package.objects.filter(shipment=_shipment_details).order_by('id')
-            context_data['packages'] = _shipment_packages
+            PackageFormSet.extra = 0
+            PackageFormSet.max_num = 1
+            novalidate_fields = []
+            if _shipment_details.status != 3:
+                novalidate_fields.append('pdf_2')
+            package_kwargs = {'renderEmptyForm': False, 'noValidateFields': novalidate_fields}
+            package_formset = None
             if _shipment_details.status == 2:
                 # Pagamento Autorizado
+                if has_shipment_perm(request.user, 'add_package'):
+                    if request.method == 'GET':
+                        package_formset = PackageFormSet(
+                            queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
+                            instance=_shipment_details, prefix='package_set', **package_kwargs)
+                        if request.GET.get('s') == '1':
+                            context_data['success'] = True
+                            context_data['success_message'] = ungettext('Pacote inserido com sucesso.',
+                                                                        'Pacotes inseridos com sucesso.',
+                                                                        len(package_formset))
+                        elif request.GET.get('s') == '2':
+                            context_data['success'] = True
+                            context_data['success_message'] = _('Alteração salva com sucesso.')
+                    elif request.method == 'POST':
+                        package_formset = PackageFormSet(request.POST, instance=_shipment_details, prefix='package_set',
+                                                         **package_kwargs)
+                        if package_formset.is_valid():
+                            try:
+                                if edit_warehouse(package_formset, pid):
+                                    return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
+                                else:
+                                    return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
+                            except Shipment.DoesNotExist:
+                                return HttpResponseBadRequest()
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
-                    if settings.PAYPAL_TEST:
+                    is_sandbox = (request.user.email in settings.PAYPAL_SANDBOX_USERS)
+                    if settings.PAYPAL_TEST or is_sandbox:
                         import time
                         current_milli_time = lambda: int(round(time.time() * 1000))
                         invoice_id = '_'.join([str(request.user.id), str(pid), 'debug', str(current_milli_time())])
+                        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
+                        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
+                        paypal_cert = settings.PAYPAL_CERT_SANDBOX
                     else:
                         invoice_id = '_'.join([str(request.user.id), str(pid)])
+                        paypal_business = settings.PAYPAL_BUSINESS
+                        paypal_cert_id = settings.PAYPAL_CERT_ID
+                        paypal_cert = settings.PAYPAL_CERT
                     paypal_dict = {
-                        'business': settings.PAYPAL_BUSINESS,
+                        'business': paypal_business,
                         'amount': _shipment_details.cost,
                         'item_name': _('Envio %(number)s') % {'number': pid},
                         'invoice': invoice_id,
@@ -211,110 +243,169 @@ def shipment_details(request, pid=None):
                                                                                                   args=[pid]),
                         # 'custom': 'Custom command!',  # Custom command to correlate to some function later (optional)
                     }
-                    context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(initial=paypal_dict)
+                    context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
+                                                                                            initial=paypal_dict,
+                                                                                            paypal_cert=paypal_cert,
+                                                                                            cert_id=paypal_cert_id)
             elif _shipment_details.status == 3:
                 # Upload PDF 2 Autorizado
-                if request.user == _shipment_details.user or has_group(request.user, 'admins'):
-                    ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_2',), min_num=1, max_num=1,
-                                                           widgets={'pdf_2': FileInput(
-                                                               attrs={'class': 'form-control pdf_2-validate'})})
-                    if request.method == 'POST' and request.POST.get('add_shipment_file'):
-                        shipment_formset = ShipmentFormSet(request.POST, request.FILES)
+                if request.user == _shipment_details.user or has_group(request.user, 'admins') \
+                        or has_shipment_perm(request.user, 'add_package'):
+                    if request.method == 'GET' and request.GET.get('s') == '1':
+                            context_data['success'] = True
+                            context_data['success_message'] = _('Alteração salva com sucesso.')
+                    elif request.method == 'POST' and request.POST.get('add_package_file'):
+                        package_formset = PackageFormSet(request.POST, request.FILES, instance=_shipment_details,
+                                                         prefix='package_set', **package_kwargs)
                         logger.debug('@@@@@@@@@@@@@@@ PDF 2 IS VALID @@@@@@@@@@@@@@@@@')
-                        logger.debug(shipment_formset)
-                        if shipment_formset.is_valid():
-                            for shipment_form in shipment_formset:
-                                shipment = shipment_form.save(commit=False)
-                                logger.debug(shipment.id)
-                                logger.debug(pid)
-                                if force_text(shipment.id) != force_text(pid):
-                                    logger.error('Inconsistent data.')
-                                    return HttpResponseBadRequest()
-                                _shipment_details.status = shipment.status = 4
-                                shipment.save(update_fields=['status', 'pdf_2'])
-                                break
-                            send_email_shipment_add_pdf_2(shipment)
-                            return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
-                        context_data['shipment_formset'] = shipment_formset
-                    else:
-                        context_data['shipment_formset'] = ShipmentFormSet(queryset=Shipment.objects.filter(pk=pid))
+                        logger.debug(package_formset)
+                        if package_formset.is_valid() and (request.user == _shipment_details.user
+                                                           or has_group(request.user, 'admins')):
+                            try:
+                                with transaction.atomic():
+                                    for package_form in package_formset:
+                                        package = package_form.save(commit=False)
+                                        package_shipment_id = package.shipment.id
+                                        logger.debug(package_shipment_id)
+                                        logger.debug(pid)
+                                        logger.debug(package_form.has_changed())
+                                        if force_text(package_shipment_id) != force_text(pid):
+                                            logger.error('Inconsistent data.')
+                                            raise Shipment.DoesNotExist('Inconsistent data.')
+                                        if has_group(request.user, 'admins'):
+                                            package.save(update_fields=['warehouse', 'pdf_2'])
+                                        else:
+                                            package.save(update_fields=['pdf_2'])
+                                    _shipment_details.status = 4
+                                    _shipment_details.save(update_fields=['status'])
+                            except Shipment.DoesNotExist:
+                                return HttpResponseBadRequest()
+                            send_email_shipment_add_pdf_2(_shipment_details)
+                            return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
+                        elif has_shipment_perm(request.user, 'add_package'):
+                            novalidate_fields.append('pdf_2')
+                            package_formset = PackageFormSet(request.POST, instance=_shipment_details,
+                                                             prefix='package_set', **package_kwargs)
+                            try:
+                                if edit_warehouse(package_formset, pid):
+                                    return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
+                                else:
+                                    return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
+                            except Shipment.DoesNotExist:
+                                return HttpResponseBadRequest()
             elif _shipment_details.status == 4 or _shipment_details.status == 5:
                 # Checagens Finais ou Enviado
+                if request.method == 'GET':
+                    package_formset = PackageFormSet(
+                        queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
+                        instance=_shipment_details, prefix='package_set', **package_kwargs)
+                    if _shipment_details.status == 4 and request.GET.get('s') == '1':
+                        context_data['success'] = True
+                        context_data['success_message'] = ungettext('Upload realizado com sucesso.',
+                                                                    'Uploads realizados com sucesso.',
+                                                                    len(package_formset))
+                    elif _shipment_details.status == 5:
+                        if has_group(request.user, 'admins') and request.GET.get('s') == '1':
+                            context_data['success'] = True
+                            context_data['success_message'] = _('Envio concluído com sucesso.')
+                        elif has_shipment_perm(request.user, 'add_package') and request.GET.get('s') == '2':
+                            context_data['success'] = True
+                            context_data['success_message'] = _('Código(s) de postagem salvo(s) com sucesso.')
                 if has_group(request.user, 'admins') or has_shipment_perm(request.user, 'add_package'):
-                    ShipmentFormSet = modelformset_factory(Shipment, fields=('shipment',), min_num=1, max_num=1)
-                    if request.method == 'POST' and request.POST.get('add_shipment_shipment'):
-                        shipment_formset = ShipmentFormSet(request.POST)
-                        if shipment_formset.is_valid():
-                            for shipment_form in shipment_formset:
-                                shipment = shipment_form.save(commit=False)
-                                logger.debug(shipment.id)
-                                logger.debug(pid)
-                                if force_text(shipment.id) != force_text(pid):
-                                    logger.error('Inconsistent data.')
-                                    return HttpResponseBadRequest()
-                                if _shipment_details.status == 4 and has_group(request.user, 'admins'):
-                                    _shipment_details.status = shipment.status = 5
-                                    if shipment.shipment != _shipment_details.shipment:
-                                        shipment.save(update_fields=['status', 'shipment'])
-                                    else:
-                                        shipment.save(update_fields=['status'])
-                                    send_email_shipment_sent(shipment, shipment.shipment != _shipment_details.shipment)
-                                    return HttpResponseRedirect('%s?s=3' % reverse('shipment_details', args=[pid]))
-                                elif has_shipment_perm(request.user, 'add_package') \
-                                        and shipment.shipment != _shipment_details.shipment:
-                                    shipment.save(update_fields=['shipment'])
-                                    send_email_shipment_change_shipment(shipment)
-                                    return HttpResponseRedirect('%s?s=4' % reverse('shipment_details', args=[pid]))
-                                break
+                    if request.method == 'POST' and request.POST.get('add_package_tracking'):
+                        package_formset = PackageFormSet(request.POST, instance=_shipment_details, prefix='package_set',
+                                                         **package_kwargs)
+                        if package_formset.is_valid():
+                            try:
+                                with transaction.atomic():
+                                    form_has_changed = False
+                                    packages = []
+                                    for package_form in package_formset:
+                                        if package_form.has_changed() is False:
+                                            continue
+                                        form_has_changed = True
+                                        package = package_form.save(commit=False)
+                                        package_shipment_id = package.shipment.id
+                                        logger.debug(package_shipment_id)
+                                        logger.debug(pid)
+                                        logger.debug(package_form.has_changed())
+                                        if force_text(package_shipment_id) != force_text(pid):
+                                            logger.error('Inconsistent data.')
+                                            raise Shipment.DoesNotExist('Inconsistent data.')
+                                        package.save(update_fields=['shipment_tracking'])
+                                        packages.append(package)
+                                    previous_state = _shipment_details.status
+                                    if _shipment_details.status == 4 and has_group(request.user, 'admins'):
+                                        _shipment_details.status = 5
+                                        _shipment_details.save(update_fields=['status'])
+                            except Shipment.DoesNotExist:
+                                return HttpResponseBadRequest()
+                            if previous_state != _shipment_details.status:
+                                send_email_shipment_sent(_shipment_details, packages)
+                                return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
+                            elif form_has_changed:
+                                send_email_shipment_change_shipment(_shipment_details, packages)
+                                return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
                             return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
-                    else:
-                        context_data['shipment_formset'] = ShipmentFormSet(queryset=Shipment.objects.filter(pk=pid))
+            if package_formset is None:
+                package_formset = PackageFormSet(
+                    queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
+                    instance=_shipment_details, prefix='package_set', **package_kwargs)
+            context_data['packages'] = package_formset
         logger.debug(context_data)
         return render(request, 'shipment_details.html', context_data)
     return HttpResponseForbidden()
 
 
-def shipment_add_package(request, pid=None):
+def edit_warehouse(package_formset, pid):
+    logger.debug('@@@@@@@@@@@@@@@ EDIT WAREHOUSE @@@@@@@@@@@@@@@@@')
+    form_has_changed = False
+    for package_form in package_formset:
+        if package_form.has_changed() is False:
+            logger.debug('Nothing changed')
+            continue
+        form_has_changed = True
+        package = package_form.save(commit=False)
+        logger.debug(package.shipment.id)
+        logger.debug(pid)
+        logger.debug(package_form.has_changed())
+        if force_text(package.shipment.id) != force_text(pid):
+            logger.error('Inconsistent data.')
+            raise Shipment.DoesNotExist('Inconsistent data.')
+        package.save(update_fields=['warehouse'])
+    return form_has_changed
+
+
+def shipment_add_package(request, PackageFormSet, pid=None):
     if has_shipment_perm(request.user, 'view_shipments') is False or \
                     has_shipment_perm(request.user, 'add_package') is False:
         return HttpResponseForbidden()
     logger.debug('@@@@@@@@@@@@ ADD PACKAGE @@@@@@@@@@@@@@')
-    custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
-    PackageFormSet = inlineformset_factory(Shipment, Package, formset=MyBaseInlineFormSet,
-                                           fields=('weight', 'height', 'width', 'length',),
-                                           extra=1,
-                                           error_messages={'weight': custom_error_messages,
-                                                           'height': custom_error_messages,
-                                                           'width': custom_error_messages,
-                                                           'length': custom_error_messages})
-    kwargs = {'addText': _('Adicionar pacote'), 'deleteText': _('Remover pacote'), 'allowEmptyForm': False}
+    kwargs = {'addText': _('Adicionar pacote'), 'deleteText': _('Remover pacote'), 'allowEmptyForm': False,
+              'noValidateFields': ['pdf_2']}
     try:
         with transaction.atomic():
             shipment = Shipment.objects.select_for_update().select_related('user').get(pk=pid, status=1)
             package_formset = PackageFormSet(request.POST, instance=shipment, prefix='package_set', **kwargs)
             if package_formset.is_valid():
-                for package_form in package_formset:
-                    package = package_form.save(commit=False)
-                    logger.debug(package.shipment.id)
-                    logger.debug(pid)
-                    if force_text(package.shipment.id) != force_text(pid):
-                        raise Shipment.DoesNotExist('Inconsistent data.')
-                    shipment.status = 2
-                    shipment_products = Product.objects.filter(shipment=shipment)
-                    session_products = request.session.pop('shipment_products', '[]')
-                    session_products = json.loads(session_products)
-                    logger.debug(str(len(shipment_products)))
-                    logger.debug(str(len(session_products)))
-                    if len(shipment_products) != len(session_products):
-                        raise Product.DoesNotExist('Inconsistent data.')
-                    shipment.save(update_fields=['status'])
-                    break
-                package_formset.save()
-                send_email_shipment_add_package(shipment)
+                shipment.status = 2
+                shipment_products = Product.objects.filter(shipment=shipment)
+                session_products = request.session.pop('shipment_products', '[]')
+                session_products = json.loads(session_products)
+                logger.debug(str(len(shipment_products)))
+                logger.debug(str(len(session_products)))
+                if len(shipment_products) != len(session_products):
+                    raise Product.DoesNotExist('Inconsistent data.')
+                shipment.save(update_fields=['status'])
+                packages = package_formset.save()
+                send_email_shipment_add_package(shipment, packages)
                 return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
+            else:
+                logger.error(package_formset.errors)
         return package_formset
     except (Product.DoesNotExist, Shipment.DoesNotExist) as err:
         logger.error(err)
+        logger.exception(err)
         return HttpResponseBadRequest()
 
 
@@ -334,15 +425,20 @@ def shipment_delete_product(request):
             original_product = product.product
             logger.debug(product.quantity)
             logger.debug(original_product.quantity)
+            logger.debug(original_product.quantity_partial)
             shipment.total_products -= product.quantity
             http_response, cost = _shipment_calculate(shipment.total_products)
             shipment.cost = cost
             original_product.quantity += product.quantity
+            original_product.quantity_partial += product.quantity
             deleted = product.delete()
             if deleted[0] == 0:
                 raise Product.DoesNotExist('Delete did not affect any row.')
+            original_product.save(update_fields=['quantity', 'quantity_partial'])
+            if shipment.total_products == 0:
+                shipment.delete()
+                return HttpResponse(json.dumps({'redirect': reverse('shipment')}), content_type='application/json')
             shipment.save(update_fields=['total_products', 'cost'])
-            original_product.save(update_fields=['quantity'])
     except (Product.DoesNotExist, Shipment.DoesNotExist) as err:
         logger.error(err)
         return HttpResponseBadRequest()
@@ -372,7 +468,10 @@ def shipment_add(request):
                                            widgets={'product': InlineProductWidget},
                                            formfield_callback=my_formfield_callback,
                                            extra=original_products.count())
-    kwargs = {'addText': _('Adicionar produto'), 'deleteText': _('Remover produto')}
+    WarehouseFormSet = inlineformset_factory(Shipment, Warehouse, formset=MyBaseInlineFormSet,
+                                             fields=('name', 'description'), extra=1)
+    kwargs_p = {'addText': _('Adicionar produto'), 'deleteText': _('Remover produto')}
+    kwargs_w = {'addText': _('Adicionar warehouse'), 'deleteText': _('Remover warehouse')}
     logger.debug('@@@@@@@@@@@@ REQUEST METHOD @@@@@@@@@@@@@@')
     logger.debug(request.method)
     if request.method == 'GET' and request.GET.get('s') == '1':
@@ -381,14 +480,18 @@ def shipment_add(request):
                                                      'shipment_formset':
                                                          ShipmentFormSet(queryset=Shipment.objects.none()),
                                                      'product_formset':
-                                                         ProductFormSet(prefix='product_set', **kwargs)})
+                                                         ProductFormSet(prefix='product_set', **kwargs_p),
+                                                     'warehouse_formset':
+                                                         WarehouseFormSet(prefix='warehouse_set', **kwargs_w)})
     logger.debug(str(request.method == 'POST' and request.POST.get('save_shipment')))
     if request.method == 'POST' and request.POST.get('save_shipment'):
         shipment_formset = ShipmentFormSet(request.POST, request.FILES, queryset=Shipment.objects.none())
-        product_formset = ProductFormSet(request.POST, prefix='product_set', **kwargs)
+        product_formset = ProductFormSet(request.POST, prefix='product_set', **kwargs_p)
+        warehouse_formset = WarehouseFormSet(request.POST, prefix='warehouse_set', **kwargs_w)
         shipment_formset_is_valid = shipment_formset.is_valid()
         product_formset_is_valid = product_formset.is_valid()
-        if shipment_formset_is_valid and product_formset_is_valid:
+        warehouse_formset_is_valid = warehouse_formset.is_valid()
+        if shipment_formset_is_valid and product_formset_is_valid and warehouse_formset_is_valid:
             with transaction.atomic():
                 for shipment_form in shipment_formset:
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE PROCESS @@@@@@@@@@@@@@')
@@ -400,6 +503,7 @@ def shipment_add(request):
                     for product in products:
                         original_product = OriginalProduct.objects.get(pk=product.product.id)
                         original_product.quantity -= product.quantity
+                        original_product.quantity_partial -= product.quantity
                         original_product.save()
                         shipment.total_products += product.quantity
                     cost_formula = CostFormula.objects.all()
@@ -412,10 +516,12 @@ def shipment_add(request):
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
                     shipment.save()
                     product_formset.instance = shipment
+                    warehouse_formset.instance = shipment
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
                     product_formset.save()
+                    warehouses = warehouse_formset.save()
                     logger.debug('@@@@@@@@@@@@ SEND PDF 1 EMAIL @@@@@@@@@@@@@@')
-                    send_email_shipment_add(shipment, products)
+                    send_email_shipment_add(shipment, products, warehouses)
             return HttpResponseRedirect('%s?s=1' % reverse('shipment_add'))
         else:
             logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
@@ -423,14 +529,16 @@ def shipment_add(request):
             logger.warning(product_formset.errors)
     else:
         shipment_formset = ShipmentFormSet(queryset=Shipment.objects.none())
-        product_formset = ProductFormSet(prefix='product_set', **kwargs)
+        product_formset = ProductFormSet(prefix='product_set', **kwargs_p)
+        warehouse_formset = WarehouseFormSet(prefix='warehouse_set', **kwargs_w)
         for subform, data in zip(product_formset.forms, original_products):
             subform.initial = {
-                'quantity': data.quantity,
+                'quantity': data.quantity_partial,
                 'product': data
             }
     return render(request, 'shipment_add.html', {'title': _('Envio'), 'shipment_formset': shipment_formset,
-                                                 'product_formset': product_formset})
+                                                 'product_formset': product_formset,
+                                                 'warehouse_formset': warehouse_formset})
 
 
 @login_required
@@ -457,12 +565,21 @@ def _shipment_calculate(items):
 @login_required
 @require_http_methods(["GET"])
 def shipment_download_pdf(request, pdf=None, pid=None):
-    try:
-        shipment = Shipment.objects.get(pk=pid)
-    except Shipment.DoesNotExist:
-        return HttpResponseBadRequest()
-    if shipment.user == request.user or request.user.groups.filter(name='admins').exists():
-        pdf_field = shipment.pdf_1 if pdf == 'pdf_1' else shipment.pdf_2
+    if pdf == 'pdf_1':
+        try:
+            shipment = Shipment.objects.get(pk=pid)
+            pdf_field = shipment.pdf_1
+            user = shipment.user
+        except Shipment.DoesNotExist:
+            return HttpResponseBadRequest()
+    else:
+        try:
+            package = Package.objects.get(pk=pid)
+            pdf_field = package.pdf_2
+            user = package.shipment.user
+        except Package.DoesNotExist:
+            return HttpResponseBadRequest()
+    if user == request.user or request.user.groups.filter(name='admins').exists():
         content_type = magic.from_file(os.path.sep.join([settings.MEDIA_ROOT, pdf_field.name]), mime=True)
         filename = pdf_field.name.split('/')[-1]
         logger.debug('@@@@@@@@@@@@ FILE CONTENT TYPE @@@@@@@@@@@@@@')
@@ -482,11 +599,15 @@ def paypal_notification(sender, **kwargs):
     logger.debug(ipn_obj)
     invalid_data = []
     if ipn_obj.payment_status == ST_PP_COMPLETED:
-        if ipn_obj.receiver_email != settings.PAYPAL_BUSINESS:
+        if ipn_obj.test_ipn:
+            paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
+        else:
+            paypal_business = settings.PAYPAL_BUSINESS
+        if ipn_obj.receiver_email != paypal_business:
             # Not a valid payment
             texts = (_('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'),
                      _('E-mail recebido pelo paypal: %(paypal)s') % {'paypal': ipn_obj.receiver_email},
-                     _('E-mail configurado no sistema: %(system)s') % {'system': settings.PAYPAL_BUSINESS})
+                     _('E-mail configurado no sistema: %(system)s') % {'system': paypal_business})
             invalid_data.append(_html_format(*texts))
         if ipn_obj.invoice is None or (len(ipn_obj.invoice.split('_')) != 2 and len(ipn_obj.invoice.split('_')) != 4):
             texts = (_('Valor do campo \'recibo\' (invoice) não está no formato esperado.'),
@@ -555,11 +676,14 @@ def _html_format(*texts):
 valid_ipn_received.connect(paypal_notification)
 
 
-def send_email_shipment_add(shipment, products):
+def send_email_shipment_add(shipment, products, warehouses):
     email_title = _('Cadastro de Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 3 +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> U$ {}</p>'] +
+                          ['<br>'] +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
+                           '<strong>{}:</strong> {}</p>'] * len(warehouses) +
                           ['<br>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
                            '<strong>{}:</strong> {}</p>'
@@ -571,6 +695,9 @@ def send_email_shipment_add(shipment, products):
              _('Data de envio'), force_text(formats.localize(shipment.send_date, use_l10n=True)),
              _('Quantidade de produtos'), shipment.total_products,
              _('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)))
+
+    for warehouse in warehouses:
+        texts += (_('Warehouse'), warehouse.name)
     for product in products:
         texts += (_('Produto'), product.product.name, _('Quantidade'), product.quantity)
     texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment')]), _('Clique aqui'),
@@ -579,10 +706,25 @@ def send_email_shipment_add(shipment, products):
     send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
 
 
-def send_email_shipment_add_package(shipment):
-    texts = (_('Realize o pagamento para dar continuidade com o seu envio %(id)s.') % {'id': shipment.id},
-             _('Valor total'), force_text(formats.localize(shipment.cost, use_l10n=True)))
-    send_email_shipment_status_change(shipment, _('para acessar seu envio e efetuar o pagamento.'), *texts)
+def send_email_shipment_add_package(shipment, packages):
+    email_title = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">Warehouse: {} / Peso: {} {} / '
+                           'L: {}{} x W: {}{} x H: {}{}</p>'] * len(packages) +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}</strong></p>',
+                           '<p style="color:#858585;font:13px/120% \'Helvetica\'">'
+                           '<strong>{}:</strong> U$ {}</p><p><a href="{}">{}</a> {}</p>'])
+    texts = (_('Os seguintes pacotes foram cadastrado para o seu envio:'),)
+    for package in packages:
+        texts += (package.warehouse, package.weight, unit_weight_display(1, abbreviate=True), package.length,
+                  unit_length_display(3, abbreviate=True), package.width, unit_length_display(3, abbreviate=True),
+                  package.height, unit_length_display(3, abbreviate=True))
+    texts += (_('Realize o pagamento para dar continuidade com o seu envio %(id)s.') % {'id': shipment.id},
+              _('Valor total'), force_text(formats.localize(shipment.cost, use_l10n=True)),
+              ''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
+              _('Clique aqui'), _('para acessar seu envio e efetuar o pagamento.'),)
+    email_body = format_html(html_format, *texts)
+    send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
 
 
 def send_email_shipment_pdf_2(shipment):
@@ -598,17 +740,23 @@ def send_email_shipment_add_pdf_2(shipment):
     send_email_shipment_status_change(shipment, _('para acessar seu envio.'), *texts)
 
 
-def send_email_shipment_sent(shipment, shipment_code):
+def send_email_shipment_sent(shipment, packages):
+    packages_qty = len(packages)
     email_title = _('Seu envio %(number)s foi concluído') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
-                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>']
-                           if shipment_code else ['']) +
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] if packages_qty > 0
+                           else []) +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] * packages_qty +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           ['<p><a href="{}">{}</a> {}</p>'])
     texts = [_('Seu envio %(id)s foi concluído com sucesso, obrigado.') % {'id': shipment.id}]
-    if shipment_code:
-        texts += [mark_safe(_('Segue o código da postagem do seu envio: <strong>%(code)s</strong>.')
-                            % {'code': shipment.shipment})]
+    if packages_qty > 0:
+        texts += [ungettext('Segue o código de postagem do seu envio:',
+                            'Seguem os códigos de postagem do seu envio:',
+                            packages_qty)]
+        for package in packages:
+            texts += [mark_safe(_('Warehouse: <strong>%(warehouse)s</strong> / Código: <strong>%(code)s</strong>.')
+                                % {'warehouse': package.warehouse, 'code': package.shipment_tracking})]
     texts += [mark_safe(_('No caso de qualquer dúvida é só nos enviar uma mensagem através do '
                           '<a href="%(url)s">fale conosco</a>.')
                         % {'url': ''.join(['https://', Site.objects.get_current().domain, '/#contact'])})]
@@ -618,13 +766,18 @@ def send_email_shipment_sent(shipment, shipment_code):
     send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
 
 
-def send_email_shipment_change_shipment(shipment):
-    email_title = _('Código da postagem do envio %(number)s foi alterado') % {'number': shipment.id}
+def send_email_shipment_change_shipment(shipment, packages):
+    packages_qty = len(packages)
+    email_title = _('Código de postagem do envio %(number)s atualizado') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] * packages_qty +
                           ['<p><a href="{}">{}</a> {}</p>'])
-    texts = (mark_safe(_('Segue o código da postagem do seu envio %(id)s: <strong>%(code)s</strong>.')
-                       % {'id': shipment.id, 'code': (shipment.shipment if shipment.shipment != '' else '-')}),
-             ''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
+    texts = (ungettext('Segue o código de postagem do seu envio:', 'Seguem os códigos de postagem do seu envio:',
+                       packages_qty),)
+    for package in packages:
+        texts += (mark_safe(_('Warehouse: <strong>%(warehouse)s</strong> / Código: <strong>%(code)s</strong>.')
+                            % {'warehouse': package.warehouse, 'code': package.shipment_tracking}),)
+    texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
              _('Clique aqui'), _('para acessar seu envio.'))
     email_body = format_html(html_format, *texts)
     send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
