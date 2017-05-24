@@ -30,7 +30,7 @@
                     <input type="hidden" name="{{ product_formset.prefix }}-autocomplete-selected" id="{{ product_formset.prefix }}-autocomplete-selected" />
                 </div>
                 <div class="col-md-3">
-                    <a class="btn btn-primary filtar-btn add-row" title="{{ product_formset.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus-square"></i> {{ product_formset.addText }}</a>
+                    <a class="btn btn-primary filtar-btn {{ product_formset.prefix }}-add-row add-row" title="{{ product_formset.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus-square"></i> {{ product_formset.addText }}</a>
                 </div>
             </div>
           </div>
@@ -42,6 +42,7 @@
             <input type="hidden" name="save_shipment" value="1">
             {{ shipment_formset.management_form }}
             {{ product_formset.management_form }}
+            {{ warehouse_formset.management_form }}
           <div class="table-responsive">
             <table class="table table-striped js-inline-admin-formset" id="{{ product_formset.prefix }}-group"
                data-inline-type="stacked"
@@ -64,7 +65,7 @@
                   id="{{ product_formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
                   {{ product_form.product|safe }}
                   <td class="center">
-                      <input type="number" class="form-control menor-m quantity_validate add-validate-rule" id="{{ product_form.quantity.id_for_label }}" name="{{ product_form.quantity.html_name }}" value="{% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}" />
+                      <input type="number" class="form-control menor-m quantity_validate required-number-validate" id="{{ product_form.quantity.id_for_label }}" name="{{ product_form.quantity.html_name }}" value="{% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}" />
                       {% for error in product_form.quantity.errors %}
                         <label id="{{ product_form.quantity.id_for_label }}-error" class="error" for="{{ product_form.quantity.id_for_label }}">{{ error|escape }}</label>
                       {% endfor %}
@@ -105,21 +106,55 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Download PDFs" %}:</label><br><br>
+                    <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Upload/Download Arquivos" %}:</label><br><br>
                     <label>{{ shipment_form.pdf_1.label }}:</label>{{ shipment_form.pdf_1 }}
-                      {% for error in shipment_form.pdf_1.errors %}
+                    {% for error in shipment_form.pdf_1.errors %}
                         <label id="{{ shipment_form.pdf_1.id_for_label }}-error" class="error" for="{{ shipment_form.pdf_1.id_for_label }}">{{ error|escape }}</label>
-                      {% endfor %}
-                    <br>
-                    <label>PDF 2:</label><br><p>{% trans "Upload não autorizado" %}</p>
+                    {% endfor %}
                 </div>
             </div>
           </div>
           {% endfor %}
-            <hr />
-           <div class="row">
-            <button class="btn btn-primary filtar-btn alterar-status" id="send-btn" type="submit"><i class="fa fa-fw fa-paper-plane"></i> Salvar</button><br><br><!--
-            <a class="btn btn-primary filtar-btn" href="#"><i class="fa fa-fw fa-paypal"></i> Salvar e efetuar Pagamento Agora</a><br>--><a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> Voltar</a><br><br><br><br>
+          <hr />
+          <div class="row">
+            <div class="col-md-12">
+                <h4><i class="fa fa-fw fa-dropbox"></i> {% trans "Informações sobre destino dos produtos (Warehouses)" %}</h4><br>
+            </div>
+            <div class="lista-warehouses js-inline-admin-formset" id="{{ warehouse_formset.prefix }}-group"
+                data-inline-type="stacked"
+                data-inline-formset="{{ warehouse_formset.inline_formset_data }}">
+                {% for warehouse_form in warehouse_formset %}
+                {{ warehouse_form.id }}
+                <div class="warehouse col-md-6 inline-related {% if forloop.last %}empty-form{% endif %}"
+                    id="{{ warehouse_formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+                    <label for="{{ warehouse_form.name.id_for_label }}" class="inline_label">
+                        {{ warehouse_form.name.label }} #{{ forloop.counter }}
+                    </label>
+                    {{ warehouse_form.shipment }}
+                    <input type="text" class="form-control warehouse_validate required-validate" id="{{ warehouse_form.name.id_for_label }}" name="{{ warehouse_form.name.html_name }}" value="{% if warehouse_form.name.value %}{{ warehouse_form.name.value }}{% endif %}" placeholder="Local de envio ex.: New York ou Miami etc..." />
+                    {% for error in warehouse_form.name.errors %}
+                        <label id="{{ warehouse_form.name.id_for_label }}-error" class="error" for="{{ warehouse_form.name.id_for_label }}">{{ error|escape }}</label>
+                    {% endfor %}
+                    <br>
+                    <textarea class="form-control textarea-wh" name="{{ warehouse_form.description.html_name }}" id="{{ warehouse_form.description.id_for_label }}" placeholder="Caso haja mais de um local de envio, digite aqui os produtos e as respectivas quantidades que deverão ser enviados para esta warehouse. Em seguida, abaixo, adicione o outro local...">{% if warehouse_form.description.value %}{{ warehouse_form.description.value }}{% endif %}</textarea>
+                    {% if user|has_shipment_perm:'delete_warehouse' and warehouse_formset.can_delete %}
+                        {% if forloop.first is False %}
+                        <div class="">
+                            <a class="rem-wh btn btn-danger inline-deletelink" title="{{ warehouse_formset.deleteText }}" href="#"><i class="fa fa-fw fa-times"></i> {{ warehouse_formset.deleteText }}</a>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="col-md-12"><br>
+                <a class="add-wh btn btn-success {{ warehouse_formset.prefix }}-add-row add-row" title="{{ warehouse_formset.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i>Adicionar warehouse</a>
+            </div>
+            <br>
+          </div>
+          <div class="row">
+            <button class="btn btn-primary filtar-btn alterar-status" id="send-btn" type="submit"><i class="fa fa-fw fa-paper-plane"></i> Salvar</button><br><br>
+            <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> Voltar</a><br><br><br><br>
            </div>
         </form>
           </div>

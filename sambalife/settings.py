@@ -58,6 +58,12 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             PAYPAL_CERT_ID = key_value_pair[1]
         elif key_value_pair[0] == 'paypal_business':
             PAYPAL_BUSINESS = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_cert_id_sandbox':
+            PAYPAL_CERT_ID_SANDBOX = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_business_sandbox':
+            PAYPAL_BUSINESS_SANDBOX = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_sandbox_users':
+            PAYPAL_SANDBOX_USERS = key_value_pair[1].split(',')
         elif key_value_pair[0] == 'django_debug':
             DJANGO_DEBUG = (key_value_pair[1] == '1')
         elif key_value_pair[0] == 'paypal_sandbox':
@@ -94,6 +100,7 @@ INSTALLED_APPS = [
     'product',
     'shipment',
     'payment',
+    'store',
 ]
 
 MIDDLEWARE = [
@@ -274,3 +281,4 @@ PAYPAL_TEST = PAYPAL_SANDBOX
 PAYPAL_PRIVATE_CERT = os.path.join(PAYPAL_ROOT, 'paypal_private.pem')
 PAYPAL_PUBLIC_CERT = os.path.join(PAYPAL_ROOT, 'paypal_public.pem')
 PAYPAL_CERT = os.path.join(PAYPAL_ROOT, 'paypal_cert.pem')
+PAYPAL_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_cert.pem'))

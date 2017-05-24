@@ -61,46 +61,24 @@
           </div>
 
           <!-- informacoes das warehouse - cadastro-->
-            <br><hr>
+          <br><hr>
           <div class="row">
-              <div class="col-md-12">
-                <h4><i class="fa fa-fw fa-dropbox"></i> Informações sobre destino dos produtos (Warehouses)</h4><br>
-              </div>
-              <div class="lista-warehouses">
-                    <div class='warehouse col-md-6'>
-                        <label for='titulo-wh-1' class='inline_label'>
-                            warehouse #<span class='num-warehouse'>1</span>
-                        </label>
-                        <input type='text' class='form-control' id='titulo-wh-1' name='titulo-wh-1' placeholder='Local envio...' /><br>
-                        <textarea class="form-control textarea-wh" name="produtos-wh-1" id="produtos-wh-1" placeholder="Caso haja mais de um local de envio, digite aqui os produtos e as respectivas quantidades que deverão ser enviados para esta warehouse. Em seguida, abaixo, adicione o outro local..."></textarea>
-                    </div>
-              </div>
-              <div class="col-md-12"><br>
-                <a class="add-wh btn btn-success add-row" title="Adicionar warehouse" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i>Adicionar warehouse</a>
-              </div>
-
-
+            <div class="col-md-12">
+                <h4><i class="fa fa-fw fa-dropbox"></i> {% trans "Informações sobre destino dos produtos (Warehouses)" %}</h4><br>
+            </div>
             <!-- informacoes apos o cadastro-->
 
-                <div class="lista-wh-info">
-                   <div class="warehouse-info col-md-6">
-                        <label>Warehouse#1: </label> Ohio <br>
-                        <label>Produtos: </label><br>
-                        <p>Gotham Steel Ti-Cerama Nonstick Loaf Pan in Grey/Copper, 2<br>
-                        Hype Bluetooth Dancing Water Speakers,	5<br>
-                        EcoVessel 2014 SCOUT Kids Stainless, 2</p>
-                  </div>
-                  <div class="warehouse-info col-md-6">
-                        <label>Warehouse#2: </label> Nevada <br>
-                        <label>Produtos: </label><br>
-                        <p>Nonstick Loaf Pan in Grey/Copper, 22<br>
-                        Water Speakers,	15<br>
-                        EcoVessel 2014 SCOUT Kids Stainless, 2<br>
-                        Hype Bluetooth, 9</p>
-                  </div>
+            <div class="lista-wh-info">
+                {% for warehouse in warehouses %}
+                <div class="warehouse-info col-md-6">
+                    <label>Warehouse #{{ forloop.counter }}: </label> {{ warehouse.name }} <br>
+                    <label>{% trans "Descrição" %}: </label><br>
+                    <p>{{ warehouse.description }}</p>
                 </div>
+                {% endfor %}
+            </div>
             <!-- fim infos warehouses -->
-              <br>
+            <br>
           </div>
           <hr />
           <div class="row">
@@ -117,40 +95,10 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Download PDFs" %}:</label><br><br>
-                    <label>Etiqueta do produto:</label><br>
+                    <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Upload/Download Arquivos" %}:</label><br><br>
+                    <label>{% trans "Etiqueta do produto" %}:</label><br>
                     <a href="{% url 'shipment_pdf_1' 'pdf_1' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
                     <br>
-                    <br>
-                    <label>PDF 2:</label>
-                    {% if shipment.status == 1 %}
-                    <p>Ainda não cadastrado</p>
-                    {% elif shipment.status == 2 %}
-                    <br><p>Upload não autorizado</p>
-                    {% elif shipment.status == 3 %}
-                      {% if user == shipment.user or user|has_group:'admins' %}
-                    <br>
-                    <form action="" method="post" id="form-upload-file" enctype="multipart/form-data">
-                      {% csrf_token %}
-                      <input type="hidden" name="add_shipment_file" value="1">
-                      {{ shipment_formset.management_form }}
-                      {% for shipment_form in shipment_formset %}
-                        {{ shipment_form.id }}
-                        {{ shipment_form.pdf_2 }}
-                        {% for error in shipment_form.pdf_2.errors %}
-                        <label id="{{ shipment_form.pdf_2.id_for_label }}-error" class="error" for="{{ shipment_form.pdf_2.id_for_label }}">{{ error|escape }}</label>
-                        {% endfor %}
-                      {% endfor %}
-                    </form>
-                    <br>
-                      {% else %}
-                    <br><p>Upload não permitido</p>
-                      {% endif %}
-                    {% else %}
-                    <br>
-                    <a href="{% url 'shipment_pdf_2' 'pdf_2' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
-                    {% endif %}
-
                 </div>
             </div>
            </div>
@@ -161,120 +109,90 @@
            {% trans "H" as height %}
            {% if shipment.status != 1 %}
            <div class="row">
-             <div class="col-md-10">
-                <label><i class="fa fa-fw fa-archive"></i> {% trans "Informações pacote(s)" %}:</label><br><br>
+          <!-- lista das informacoes dos pacotes. fiz duas linhas com os possiveis campos -->
+             <div class="col-md-12">
+                <label><i class="fa fa-fw fa-archive"></i> {% trans "Informações dos pacote(s)" %}:</label><br><br>
+                <form action="" method="post" id="form-upload-file" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  {% if shipment.status == 3 %}
+                  <input type="hidden" name="add_package_file" value="1">
+                  {% elif shipment.status > 3 and user|has_shipment_perm:'add_package' %}
+                  <input type="hidden" name="add_package_tracking" value="1">
+                  {% endif %}
+                  {% if shipment.status <= 3 and user|has_shipment_perm:'add_package' %}
+                    <input type="hidden" name="edit_package_warehouse" value="1">
+                  {% endif %}
+                  {{ packages.management_form }}
                 {% for package in packages %}
+                    {{ package.id }}
                 <div class="form-group pacote-infos">
-                    <div class="col-md-2">
-                        <label class="">{% trans "Pacote" %} {{ forloop.counter }}: </label>
+                    <div class="col-md-12">
+                        <hr>
+                        <label class="titulo-pct"><span>{% trans "Pacote" %} {{ forloop.counter }}:</span></label>
                     </div>
-                    <div class="col-md-8">
-                        <p>{{ weight }}: {{ package.weight|unlocalize }} {% unit_weight_display 1 abbreviate=True %} / {{ length }}: {{ package.length|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ width }}: {{ package.width|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ height }}: {{ package.height|unlocalize }}{% unit_length_display 3 abbreviate=True %}</p>
+                    <div class="col-md-2">
+                        <label><i class="fa fa-fw fa-truck"></i> {{ package.warehouse.label }}:</label><br><br>
+                        {% if shipment.status <= 3 and user|has_shipment_perm:'add_package' %}
+                        <p><input type="text" placeholder="{{ package.warehouse.label }}..." name="{{ package.warehouse.html_name }}" class="form-control" id="{{ package.warehouse.id_for_label }}" aria-required="true" value="{% if package.warehouse.value %}{{ package.warehouse.value }}{% endif %}"/></p>
+                        {% else %}
+                        <p>{{ package.warehouse.value }}</p>
+                        <input type="hidden" name="{{ package.warehouse.html_name }}" value="{{ package.warehouse.value }}">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-5">
+                        <label><i class="fa fa-fw fa-info-circle"></i> {% trans "Informações do pacote" %}:</label><br><br>
+                        <p>{{ weight }}: {{ package.weight.value|unlocalize }} {% unit_weight_display 1 abbreviate=True %} / {{ length }}: {{ package.length.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ width }}: {{ package.width.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ height }}: {{ package.height.value|unlocalize }}{% unit_length_display 3 abbreviate=True %}</p>
+                        <input type="hidden" name="{{ package.weight.html_name }}" value="{{ package.weight.value|unlocalize }}">
+                        <input type="hidden" name="{{ package.length.html_name }}" value="{{ package.length.value|unlocalize }}">
+                        <input type="hidden" name="{{ package.width.html_name }}" value="{{ package.width.value|unlocalize }}">
+                        <input type="hidden" name="{{ package.height.html_name }}" value="{{ package.height.value|unlocalize }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label><i class="fa fa-fw fa-file"></i> {{package.pdf_2.label}}:</label><br><br>
+                        {% if shipment.status == 2 %}
+                        <p>{% trans "Upload não autorizado" %}</p>
+                        {% elif shipment.status == 3 %}
+                          {% if user == shipment.user or user|has_group:'admins' %}
+                        <p>
+                            {{ package.pdf_2 }}
+                            {% for error in package.pdf_2.errors %}
+                            <label id="{{ package.pdf_2.id_for_label }}-error" class="error" for="{{ package.pdf_2.id_for_label }}">{{ error|escape }}</label>
+                            {% endfor %}
+                        </p>
+                          {% else %}
+                        <p>{% trans "Upload não permitido" %}</p>
+                          {% endif %}
+                        {% else %}
+                        <p><a href="{% url 'shipment_pdf_2' 'pdf_2' package.id.value %}" class="download" target="_blank">Download</a></p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="{{ package.shipment_tracking.id_for_label }}"><i class="fa fa-fw fa-file-pdf-o"></i> {{ package.shipment_tracking.label }}:</label><br><br>
+                            <p>
+                                {% if shipment.status > 3 and user|has_shipment_perm:'add_package' %}
+                                <input type="text" name="{{ package.shipment_tracking.html_name }}" class="form-control" id="{{ package.shipment_tracking.id_for_label }}" value="{% if package.shipment_tracking.value %}{{ package.shipment_tracking.value }}{% endif %}" />
+                                {% for error in package.shipment_tracking.errors %}
+                                <label id="{{ package.shipment_tracking.id_for_label }}-error" class="error" for="{{ package.shipment_tracking.id_for_label }}">{{ error|escape }}</label>
+                                {% endfor %}
+                                {% elif shipment.status == 5 and shipment.shipment != '' %}
+                                {% if package.shipment_tracking.value %}{{ package.shipment_tracking.value }}{% endif %}
+                                {% endif %}
+                            </p>
+                        </div>
                     </div>
                 </div>
                 {% if not forloop.last %}
-                <br><br>
+                <br>
                 {% endif %}
                 {% endfor %}
+                </form>
              </div>
-            {% if shipment.status > 3 and user|has_shipment_perm:'add_package' %}
-            <div class="col-md-2">
-                 <div class="form-group">
-                    <form action="" method="post" id="form-add-shipment">
-                      {% csrf_token %}
-                      <input type="hidden" name="add_shipment_shipment" value="1">
-                      {{ shipment_formset.management_form }}
-                      {% for shipment_form in shipment_formset %}
-                        {{ shipment_form.id }}
-                        <label for="{{ shipment_form.shipment.id_for_label }}"><i class="fa fa-fw fa-file-pdf-o"></i> {{ shipment_form.shipment.label }}:</label><br><br>
-                        <input type="text" name="{{ shipment_form.shipment.html_name }}" class="form-control" id="{{ shipment_form.shipment.id_for_label }}" value="{% if shipment_form.shipment.value %}{{ shipment_form.shipment.value }}{% endif %}" />
-                        {% for error in shipment_form.shipment.errors %}
-                        <label id="{{ shipment_form.shipment.id_for_label }}-error" class="error" for="{{ shipment_form.shipment.id_for_label }}">{{ error|escape }}</label>
-                        {% endfor %}
-                      {% endfor %}
-                    </form>
-                </div>
-            </div>
-            {% elif shipment.status == 5 and shipment.shipment != '' %}
-            <div class="col-md-2">
-                <label><i class="fa fa-fw fa-envelope"></i> {% trans "Código UPS" %}:</label><br /><br>
-                 <div class="form-group">
-                    {{ shipment.shipment }}
-                </div>
-            </div>
-            {% endif %}
+          <!-- fim lista pacotes -->
            </div>
+           <br>
            <hr />
            {% endif %}
-
-
-          <!-- lista das informacoes dos pacotes. fiz duas linhas com os possiveis campos -->
-
-             <div class="row">
-             <div class="col-md-12">
-                <label><i class="fa fa-fw fa-archive"></i> Informações pacote(s):</label><br><br>
-
-                <div class="form-group pacote-infos">
-                    <div class="col-md-12">
-                        <hr>
-                        <label class="titulo-pct"><span>Pacote 1:</span></label>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="info-wh-1"><i class="fa fa-fw fa-truck"></i> Warehouse:</label><br><br>
-                        <p>Nevada</p>
-                    </div>
-                    <div class="col-md-5">
-                        <label for="warehouse-1"><i class="fa fa-fw fa-info-circle"></i> Informações do pacote:</label><br><br>
-                        <p>Peso: 12.0 lb. / L: 14.0" x W: 14.0" x H: 14.0"</p>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="info-wh-1"><i class="fa fa-fw fa-file"></i> PDF caixa:</label><br><br>
-                        <p><a href="#" class="download">Download</a></p>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="cod-ups"><i class="fa fa-fw fa-file-pdf-o"></i> Código UPS:</label><br><br>
-                            <!--<input type="text" name="form-0-shipment" class="form-control" id="id_form-0-shipment" value="1ZX057A903295530616">-->
-                            <p>67548582582367</p>
-                        </div>
-                    </div>
-                </div>
-                 <br>
-                <div class="form-group pacote-infos">
-                    <div class="col-md-12">
-                        <hr>
-                        <label class="titulo-pct"><span>Pacote 2:</span></label>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="info-wh-1"><i class="fa fa-fw fa-truck"></i> Warehouse:</label><br><br>
-                        <p>New York</p>
-                    </div>
-                    <div class="col-md-5">
-                        <label for="warehouse-1"><i class="fa fa-fw fa-info-circle"></i> Informações do pacote:</label><br><br>
-                        <p>Peso: 12.0 lb. / L: 14.0" x W: 14.0" x H: 14.0"</p>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="info-wh-1"><i class="fa fa-fw fa-file"></i> PDF caixa:</label><br><br>
-                        <input type="file" name="pdf-caixa" class="form-group" />
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="cod-ups"><i class="fa fa-fw fa-file-pdf-o"></i> Código UPS:</label><br><br>
-                            <input type="text" name="form-0-shipment" class="form-control" id="id_form-0-shipment" value="1ZX057A903295530616">
-                        </div>
-                    </div>
-                </div>
-             </div>
-             <br>
-
-          <!-- fim lista pacotes -->
-
-
-
-
-
-
-
            <div class="row">
                <h4><i class="fa fa-fw fa-step-forward"></i> {% trans "Status" %}: </h4> {% trans "Acompanhe abaixo o status do envio" %}:<br><br><br>
 
@@ -325,34 +243,34 @@
                         <!-- campo novo para inserir a warehouse para onde ira o pacote -->
 
                         <div class="col-md-3">
-                            <input type="text" placeholder="Warehouse..." name="warehouse" class="form-control" id="warehouse" value="" aria-required="true">
+                            <input type="text" placeholder="{{ package_form.warehouse.label }}..." name="{{ package_form.warehouse.html_name }}" class="form-control required-validate" id="{{ package_form.warehouse.id_for_label }}" aria-required="true" value="{% if package_form.warehouse.value %}{{ package_form.warehouse.value }}{% endif %}"/>
                         </div>
 
                         <!-- fim campo novo -->
 
                         <div class="col-md-1">
-                            <input type="text" placeholder="{{ package_form.weight.label }}..." name="{{ package_form.weight.html_name }}" class="form-control add-validate-rule" id="{{ package_form.weight.id_for_label }}" value="{% if package_form.weight.value %}{{ package_form.weight.value|unlocalize }}{% endif %}" />
+                            <input type="text" placeholder="{{ package_form.weight.label }}..." name="{{ package_form.weight.html_name }}" class="form-control required-number-validate" id="{{ package_form.weight.id_for_label }}" value="{% if package_form.weight.value %}{{ package_form.weight.value|unlocalize }}{% endif %}" />
                             {% for error in package_form.weight.errors %}
                               <label id="{{ package_form.weight.id_for_label }}-error" class="error" for="{{ package_form.weight.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
                             <span class="badge">{% trans "em" %} {% unit_weight_display 1 %}</span>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" placeholder="{{ package_form.length.label }}..." name="{{ package_form.length.html_name }}" class="form-control add-validate-rule" id="{{ package_form.length.id_for_label }}" value="{% if package_form.length.value %}{{ package_form.length.value|unlocalize }}{% endif %}" />
+                            <input type="text" placeholder="{{ package_form.length.label }}..." name="{{ package_form.length.html_name }}" class="form-control required-number-validate" id="{{ package_form.length.id_for_label }}" value="{% if package_form.length.value %}{{ package_form.length.value|unlocalize }}{% endif %}" />
                             {% for error in package_form.length.errors %}
                               <label id="{{ package_form.length.id_for_label }}-error" class="error" for="{{ package_form.length.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
                             <span class="badge profun">{% trans "em" %} {% unit_length_display 3 %}</span><br><br>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" placeholder="{{ package_form.width.label }}..." name="{{ package_form.width.html_name }}" class="form-control add-validate-rule" id="{{ package_form.width.id_for_label }}" value="{% if package_form.width.value %}{{ package_form.width.value|unlocalize }}{% endif %}" />
+                            <input type="text" placeholder="{{ package_form.width.label }}..." name="{{ package_form.width.html_name }}" class="form-control required-number-validate" id="{{ package_form.width.id_for_label }}" value="{% if package_form.width.value %}{{ package_form.width.value|unlocalize }}{% endif %}" />
                             {% for error in package_form.width.errors %}
                               <label id="{{ package_form.width.id_for_label }}-error" class="error" for="{{ package_form.width.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
                             <span class="badge largura">{% trans "em" %} {% unit_length_display 3 %}</span>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" placeholder="{{ package_form.height.label }}..." name="{{ package_form.height.html_name }}" class="form-control add-validate-rule" id="{{ package_form.height.id_for_label }}" value="{% if package_form.height.value %}{{ package_form.height.value|unlocalize }}{% endif %}" />
+                            <input type="text" placeholder="{{ package_form.height.label }}..." name="{{ package_form.height.html_name }}" class="form-control required-number-validate" id="{{ package_form.height.id_for_label }}" value="{% if package_form.height.value %}{{ package_form.height.value|unlocalize }}{% endif %}" />
                             {% for error in package_form.height.errors %}
                               <label id="{{ package_form.height.id_for_label }}-error" class="error" for="{{ package_form.height.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
@@ -366,7 +284,7 @@
                      </div>
                    {% endfor %}
                      <div class="col-md-12">
-                         <a class="add-track btn btn-success add-pacote-shipment add-row" title="{{ packages.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i> {% trans "Adicionar Pacote ao Envio" %}</a>
+                         <a class="add-track btn btn-success add-pacote-shipment {{ packages.prefix }}-add-row add-row" title="{{ packages.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i> {% trans "Adicionar Pacote ao Envio" %}</a>
                      </div>
                     </div>
               </div>
@@ -393,18 +311,20 @@
                 <br><br>
                 {% endif %}
                 {% if shipment.status == 3 %}
-                 {% if user == shipment.user or user|has_group:'admins' %}
+                 {% if user == shipment.user or user|has_group:'admins' or user|has_shipment_perm:'add_package' %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-3" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
                 </a>
                 <br><br>
                  {% endif %}
                 {% endif %}
-                {% if shipment.status == 5 and user|has_shipment_perm:'add_package' %}
+                {% if shipment.status == 5 or shipment.status == 2 %}
+                 {% if user|has_shipment_perm:'add_package' %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-5" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
                 </a>
                 <br><br>
+                 {% endif %}
                 {% endif %}
 
 

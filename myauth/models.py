@@ -29,6 +29,18 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_('Ativo'), default=False)
     is_verified = models.BooleanField(_('Verificado'), default=False)
 
+    def __iter__(self):
+        yield 'id', self.id
+        yield 'first_name', self.first_name
+        yield 'last_name', self.last_name
+        yield 'email', self.email
+        yield 'doc_number', self.doc_number
+        yield 'phone', self.phone
+        yield 'cell_phone', self.cell_phone
+        yield 'date_joined', self.date_joined
+        yield 'is_active', self.is_active
+        yield 'is_verified', self.is_verified
+
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'

@@ -42,10 +42,12 @@
                         <label for="filtro-status">{{ status }}</label>
                         {% select_status filter_values '1' as sent_filter_status %}
                         {% select_status filter_values '2' as in_stock_filter_status %}
+                        {% select_status filter_values '99' as archived_filter_status %}
                         <select class="form-control" id="filtro-status" name="status">
                           <option value="">{{ status }}</option>
                           <option value="1" {{ sent_filter_status }}>{% trans "Enviado" %}</option>
                           <option value="2" {{ in_stock_filter_status }}>{% trans "Em Estoque" %}</option>
+                          <option value="99" {{ archived_filter_status }}>{% trans "Arquivado" %}</option>
                         </select>
                     </div>
                     <div class="form-group col-md-2">
@@ -54,7 +56,9 @@
                         <input type="text" class="form-control" id="filtro-Rastreamento" name="tracking" placeholder="{{ tracking_label }}..." value="{{ filter_values.tracking }}">
                     </div>
                     <div class="col-md-12">
-                        <label for="filtro-arquivado"><input type="checkbox" class="" id="filtro-arquivado" name="filtro-arquivado"> Exibir produtos arquivados</label>
+                        <label for="filtro-arquivado">
+                            <input type="checkbox" class="" id="filtro-arquivado" name="archived" {{ filter_values.archived }}> {% trans "Exibir produtos arquivados" %}
+                        </label>
                     </div>
                     <div class="form-group col-md-3">
                         <button type="submit" class="btn btn-primary filtar-btn" id="filter-btn"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
@@ -67,11 +71,11 @@
             <a class="btn btn-default" href="{% url 'product_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
             {% endif %}
             {% if user|has_shipment_perm:'add_shipment' %}
-            <a class="btn btn-default" id="btn-add-shipment"><i class="fa fa-amazon"></i> {% trans "Criar Envio para os EUA" %}</a>
-
+            <a class="btn btn-default" id="btn-add-shipment"><i class="fa fa-amazon"></i> {% trans "Criar Envio para Amazon" %}</a>
+{% comment %}
             <!-- Novo botao -->
-            <a class="btn btn-default" id="btn-add-shipment"><i class="fa fa-globe"></i> {% trans "Criar Envio para o Brasil" %}</a>
-
+            <a class="btn btn-default" id="btn-add-shipment-brazil"><i class="fa fa-globe"></i> {% trans "Criar Envio para o Brasil" %}</a>
+{% endcomment %}
             <form action="{% url 'shipment_add' %}" method="post" class="form-add-shipment" id="form-add-shipment">
                 {% csrf_token %}
             </form>
@@ -81,16 +85,31 @@
             <table class="table table-striped table-bordered">
               <thead>
                 <tr>
-                  <th><a title="Ordenar pelo Id" href="javascript:void(0);">{{ id }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
-                  <th><a title="Ordenar pelo nome" href="javascript:void(0);">{{ name }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th>
+                      {% trans "Ordenar pelo ID" as order_id %}
+                      <a title="{{ order_id }}" href="#">{{ id }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                  </th>
+                  <th>
+                      {% trans "Ordenar pelo nome" as order_name %}
+                      <a title="{{ order_name }}" href="#">{{ name }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                  </th>
                   <th>{% trans "Data de Envio" %}</th>
-                  <th class="center"><a title="Ordenar pela quantidade" href="javascript:void(0);">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center">
+                      {% trans "Ordenar pela quantidade" as order_qty %}
+                      <a title="{{ order_qty }}" href="#">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                  </th>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
-                  <th class="center"><a title="Ordenar pelo usuario" href="javascript:void(0);">{{ user_label }} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center">
+                      {% trans "Ordenar pelo usuário" as order_user %}
+                      <a title="{{ order_user }}" href="#">{{ user_label }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                  </th>
                   <!-- fim campo -->
                   {% endif %}
-                  <th class="center"><a title="Ordenar pelo status" href="javascript:void(0);">{% trans "Status" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
+                  <th class="center">
+                      {% trans "Ordenar pelo status" as order_status %}
+                      <a title="{{ order_status }}" href="#">{% trans "Status" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                  </th>
                   {% if user|has_shipment_perm:'add_shipment' %}
                   <th class="center">{% trans "Envio" %}</th>
                   {% endif %}
@@ -103,7 +122,7 @@
                   <td>{{ product.id }}</td>
                   <td class="limit-field">{{ product.name }}</td>
                   <td>{{ product.send_date }}</td>
-                  <td class="center">{{ product.quantity }}</td>
+                  <td class="center row-quantity" data-current-qty="{{ product.quantity }}">{{ product.quantity }}{% if product.quantity_partial and product.quantity_partial > 0 and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}</td>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
                   <td class="center">{{ product.user.first_name }}</td>
@@ -131,16 +150,18 @@
                         <input type="hidden" name="product_id" value="{{ product.id }}" class="product-id">
                         {% check_status product '1' as sent_status %}
                         {% check_status product '2' as in_stock_status %}
+                        {% check_status product '99' as archived_status %}
                         <label><input type="radio" name="product_status" value="1" data-current-status="{{ product.status }}" {{ sent_status }} /> {% trans "Enviado" %}</label><br>
                         <label><input type="radio" name="product_status" value="2" data-current-status="{{ product.status }}" {{ in_stock_status }} /> {% trans "Em Estoque" %}</label><br>
+                        <label><input type="radio" name="product_status" value="99" data-current-status="{{ product.status }}" {{ archived_status }} /> {% trans "Arquivado" %}</label><br>
 
                         <!-- Campo quantidade recebida-->
                         <br>
-                        <label>Quantidade Recebida:</label>
-                        <input type="number" class="form-control name_validate" name="qtd-recebida" id="qtd-recebida" />
+                        <label>{% trans "Quantidade Recebida" %}:</label>
+                        <input type="number" class="form-control row-qty-partial" name="product_quantity_partial" value="{% if product.quantity_partial is not None %}{{ product.quantity_partial }}{% endif %}" data-current-partial="{{ product.quantity_partial }}"  />
 
                         <br>
-                            <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i></a>
+                        <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i></a>
                         <a class="btn btn-danger fechar" href="javascript:void(0);"><i class="fa fa-times"></i></a>
                         </form>
                        </div>

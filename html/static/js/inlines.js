@@ -118,7 +118,7 @@
         });
         if ($this.length && showAddButton)
         {
-            var addButton = $('a.' + options.addCssClass);
+            var addButton = $('a.' + options.prefix + '-' + options.addCssClass);
             addButton.click(function(e)
             {
                 e.preventDefault();
@@ -183,9 +183,21 @@
                 });
                 if(window.addRule)
                 {
-                    row.find('.add-validate-rule').each(function()
+                    row.find('.required-number-validate').each(function()
                     {
-                        window.addRule($(this));
+                        window.addRule($(this),
+                        {
+                            required: true,
+                            positiveNumber: true,
+                        });
+                    });
+
+                    row.find('.required-validate').each(function()
+                    {
+                        window.addRule($(this),
+                        {
+                            required: true,
+                        });
                     });
                 }
                 // If a post-add callback was supplied, call it with the added form:
@@ -277,7 +289,7 @@
         {
             if(window.addInlineRow)
             {
-                window.addInlineRow(row, options.prefix);
+                window.addInlineRow(row, options);
             }
         };
 

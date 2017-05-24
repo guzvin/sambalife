@@ -3,6 +3,7 @@ from paypal.standard.forms import PayPalStandardBaseForm
 from paypal.standard.forms import PayPalEncryptedPaymentsForm
 from payment.models import MyPayPalIPN
 from utils.helper import my_make_secret
+from django.conf import settings
 import logging
 
 logger = logging.getLogger('django')
@@ -23,6 +24,7 @@ class MyPayPalIPNForm(PayPalStandardBaseForm):
 
 class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
     def __init__(self, *args, **kwargs):
+        self.is_sandbox = kwargs.pop('is_sandbox', False)
         super(MyPayPalSharedSecretEncryptedPaymentsForm, self).__init__(*args, **kwargs)
         # @@@ Attach the secret parameter in a way that is safe for other query params.
         secret_param = "?secret=%s" % my_make_secret(self)
@@ -58,3 +60,10 @@ class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
         logger.debug('@@@@@@@@@@@@ CIPHERTEXT @@@@@@@@@@@@@@')
         logger.debug(ciphertext)
         return ciphertext
+
+    def test_mode(self):
+        logger.debug('@@@@@@@@@@@@ IS SANDBOX @@@@@@@@@@@@@@')
+        logger.debug(self.is_sandbox)
+        if self.is_sandbox:
+            return True
+        return getattr(settings, 'PAYPAL_TEST', True)
