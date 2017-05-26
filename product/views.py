@@ -88,7 +88,7 @@ def product_stock(request):
     else:
         products_list = []
     page = request.GET.get('page', 1)
-    paginator = Paginator(products_list, 10)
+    paginator = Paginator(products_list, 30)
     try:
         products = paginator.page(page)
     except PageNotAnInteger:
