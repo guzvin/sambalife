@@ -289,10 +289,10 @@ def product_autocomplete(request):
     term = request.GET.get('term')
     if term is not None and len(term) >= 3:
         products = Product.objects.filter(name__icontains=term, status=2, user=request.user,
-                                          quantity__gt=0).order_by('id')
+                                          quantity_partial__gt=0).order_by('id')
         for product in products:
             products_autocomplete.append({'value': product.id, 'label': product.name,
-                                          'desc': product.description, 'qty': product.quantity})
+                                          'desc': product.description, 'qty': product.quantity_partial})
     return HttpResponse(json.dumps(products_autocomplete),
                         content_type='application/json')
 

@@ -62,6 +62,22 @@ function addInlineRow(row, options)
             row.remove();
         }
     }
+
+    if(options.prefix === 'warehouse_set')
+    {
+        var whcke = row.find('textarea.wh-ck');
+        if(whcke[0])
+        {
+            whcke.each(function ()
+            {
+                row.find('#cke_' + $(this).attr('id')).remove();
+                CKEDITOR.replace($(this).attr('id'),
+                {
+                    customConfig: 'my_config.js'
+                });
+            });
+        }
+    }
 }
 
 function addQuantityEvent(element, prefix)

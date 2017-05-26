@@ -651,7 +651,7 @@ def paypal_notification(sender, **kwargs):
         email_message = _(paypal_status_message(ipn_obj))
         send_email_basic_template_bcc_admins(_shipment_details.user.first_name, [_shipment_details.user.email], email_title,
                                              email_message)
-        send_email_shipment_pdf_2(_shipment_details)
+        send_email_shipment_pdf_2(_shipment_details, Warehouse.objects.filter(shipment=_shipment_details).count())
 
 
 def paypal_status_message(ipn_obj):
@@ -727,9 +727,10 @@ def send_email_shipment_add_package(shipment, packages):
     send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
 
 
-def send_email_shipment_pdf_2(shipment):
-    texts = (_('Obrigado, agora faça o upload do segundo arquivo para dar continuidade com o seu '
-               'envio %(id)s.') % {'id': shipment.id},)
+def send_email_shipment_pdf_2(shipment, warehouse_qty):
+    texts = (ungettext('Obrigado, agora faça o upload da etiqueta da caixa para dar continuidade com o seu envio '
+                       '%(id)s.', 'Obrigado, agora faça o upload das etiquetas das caixas para dar continuidade com o '
+                                  'seu envio %(id)s.', warehouse_qty) % {'id': shipment.id},)
     send_email_shipment_status_change(shipment, _('para acessar seu envio e efetuar o upload.'), *texts)
 
 

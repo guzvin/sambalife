@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block specific_scripts %}
+<script src="/static/externo/ckeditor/ckeditor.js"></script>
 <script src="/static/js/specifics/shipment.js"></script>
 {% endblock %}
 
@@ -136,7 +137,7 @@
                         <label id="{{ warehouse_form.name.id_for_label }}-error" class="error" for="{{ warehouse_form.name.id_for_label }}">{{ error|escape }}</label>
                     {% endfor %}
                     <br>
-                    <textarea class="form-control textarea-wh" name="{{ warehouse_form.description.html_name }}" id="{{ warehouse_form.description.id_for_label }}" placeholder="Caso haja mais de um local de envio, digite aqui os produtos e as respectivas quantidades que deverão ser enviados para esta warehouse. Em seguida, abaixo, adicione o outro local...">{% if warehouse_form.description.value %}{{ warehouse_form.description.value }}{% endif %}</textarea>
+                    <textarea class="form-control textarea-wh wh-ck" name="{{ warehouse_form.description.html_name }}" id="{{ warehouse_form.description.id_for_label }}" style="visibility: hidden; display: none;">{% if warehouse_form.description.value %}{{ warehouse_form.description.value }}{% endif %}</textarea>
                     {% if user|has_shipment_perm:'delete_warehouse' and warehouse_formset.can_delete %}
                         {% if forloop.first is False %}
                         <div class="">

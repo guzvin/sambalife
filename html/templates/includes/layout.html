@@ -76,26 +76,29 @@
                             <li class="{% block pagamentos %}{% endblock %}">
                                 <a href="{%url 'admin:payment_mypaypalipn_changelist' %}"><i class="fa fa-fw fa-paypal"></i> {% trans "Pagamentos" %}</a>
                             </li>
-
-                            <!--<li class="divider"></li>-->
-                            <!--<li class="{% block lotes %}{% endblock %}">-->
-                                <!--<a href="/lotes-admin"><i class="fa fa-fw fa-th"></i> {% trans "Lotes" %}</a>-->
-                            <!--</li>-->
+{% comment %}
+                            <li class="divider"></li>
+                            <li class="{% block lotes %}{% endblock %}">
+                                <a href="{%url 'admin:store_lot_changelist' %}"><i class="fa fa-fw fa-th"></i> {% trans "Lotes" %}</a>
+                            </li>
+{% endcomment %}
                         </ul>
                     </li>
                     {% endif %}
+{% comment %}
                     <li class="{% block lotes-u %}{% endblock %}">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="/lotes"><i class="fa fa-fw fa-shopping-cart"></i> {% trans "Produtos" %}</a>
+                                <a href="{% url 'store' %}"><i class="fa fa-fw fa-shopping-cart"></i> {% trans "Produtos" %}</a>
                             </li>
                             <li class="divider"></li>
                             <li>
-                                <a href="/loja/minhas-compras"><i class="fa fa-fw fa-shopping-basket"></i> {% trans "Minhas compras" %}</a>
+                                <a href="{% url 'store_purchase' %}"><i class="fa fa-fw fa-shopping-basket"></i> {% trans "Minhas compras" %}</a>
                             </li>
                         </ul>
                     </li>
+{% endcomment %}
                     <li>
                         <a href="#" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
                     </li>
@@ -142,12 +145,12 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span>  {% trans "Olá" %}, {{ user.first_name }} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li class="{% block usuarioedit %}{% endblock %}">
-                                <a href="/editar-usuario"><i class="fa fa-fw fa-user"></i> {% trans "Editar cadastro" %}</a>
+                            <li class="{% block edituser %}{% endblock %}">
+                                <a href="{% url 'user_edit' %}"><i class="fa fa-fw fa-user"></i> {% trans "Editar cadastro" %}</a>
                             </li>
                             <li class="divider"></li>
                             <li class="">
-                                <a href="/logout"><i class="fa fa-fw fa-power-off"></i> {% trans "sair" %}</a>
+                                <a href="{% url 'logout' %}"><i class="fa fa-fw fa-power-off"></i> {% trans "sair" %}</a>
                             </li>
                         </ul>
                     </li>

@@ -818,6 +818,17 @@
         });
     }
 
+    if($('textarea.wh-ck')[0])
+    {
+        $('textarea.wh-ck').each(function ()
+        {
+            CKEDITOR.replace($(this).attr('id'),
+            {
+                customConfig: 'my_config.js'
+            });
+        });
+    }
+
     function assembleModal(title, body)
     {
         $('div.modal-content h4.modal-title')[0].innerHTML = title;

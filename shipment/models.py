@@ -42,11 +42,6 @@ class Shipment(models.Model):
     status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES)
     pdf_1 = models.FileField(_('Etiqueta do(s) Produto(s)'), upload_to=user_directory_path,
                              validators=[validate_file_extension])
-    # TODO ABAIXO TIRAR DAQUI FOI PARA O PACOTE
-    pdf_2 = models.FileField(_('PDF 2'), upload_to=user_directory_path, null=True, blank=True,
-                             validators=[validate_file_extension])
-    shipment = models.CharField(_('Código UPS'), max_length=50, null=True, blank=True)
-    # TODO ACIMA TIRAR DAQUI FOI PARA O PACOTE
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:

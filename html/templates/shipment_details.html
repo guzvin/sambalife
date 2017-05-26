@@ -73,7 +73,7 @@
                 <div class="warehouse-info col-md-6">
                     <label>Warehouse #{{ forloop.counter }}: </label> {{ warehouse.name }} <br>
                     <label>{% trans "Descrição" %}: </label><br>
-                    <p>{{ warehouse.description }}</p>
+                    <p>{{ warehouse.description|safe }}</p>
                 </div>
                 {% endfor %}
             </div>
@@ -209,7 +209,7 @@
                         <label><i class="fa fa-2x fa-shopping-cart"></i><br>{% trans "Pagamento Autorizado" %}</label>
                    </div>
                    <div class="col-md-3 center">
-                        <label><i class="fa fa-2x fa-file-pdf-o"></i><br>{% trans "Upload etiqueta caixa Autorizado" %}</label>
+                        <label><i class="fa fa-2x fa-file-pdf-o"></i><br>{% trans "Upload Etiqueta Caixa Autorizado" %}</label>
                    </div>
                    <div class="col-md-2 center">
                         <label><i class="fa fa-2x fa-list-alt"></i><br>{% trans "Checagens Finais" %}</label>
@@ -329,9 +329,9 @@
 
 
                  <!-- Botao arquivar -->
-                    <a class="btn btn-danger filtar-btn alterar-status" id="archive-btn" href="#">
-                        <i class="fa fa-fw fa-archive"></i> {% trans "Arquivar Envio" %}
-                    </a>
+                    <!--<a class="btn btn-danger filtar-btn alterar-status" id="archive-btn" href="#">-->
+                        <!--<i class="fa fa-fw fa-archive"></i> {% trans "Arquivar Envio" %}-->
+                    <!--</a>-->
                  <!-- botao arquivar -->
 
                 <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a>
