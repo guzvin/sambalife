@@ -44,6 +44,7 @@
     "February": "Fevereiro",
     "Filter": "Filtro",
     "Hide": "Esconder",
+    "In case of more than one warehouse, type in here the products and quantity for this warehouse and then click to add another warehouse...": "Caso haja mais de um local de envio, digite aqui os produtos e as respectivas quantidades que dever\u00e3o ser enviados para esta warehouse. Em seguida, abaixo, adicione o outro local...",
     "January": "Janeiro",
     "July": "Julho",
     "June": "Junho",

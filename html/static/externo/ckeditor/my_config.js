@@ -34,5 +34,5 @@ CKEDITOR.editorConfig = function( config ) {
 
     config.extraPlugins = 'confighelper';
 
-	config.placeholder = gettext('Caso haja mais de um local de envio, digite aqui os produtos e as respectivas quantidades que deverão ser enviados para esta warehouse. Em seguida, abaixo, adicione o outro local...');
+	config.placeholder = gettext('In case of more than one warehouse, type in here the products and quantity for this warehouse and then click to add another warehouse...');
 };

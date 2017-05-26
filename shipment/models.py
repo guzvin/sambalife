@@ -35,7 +35,7 @@ class Shipment(models.Model):
     STATUS_CHOICES = (
         (1, _('Preparando para Envio')),  # Preparing for Shipment
         (2, _('Pagamento Autorizado')),  # Payment Authorized
-        (3, _('Upload PDF 2 Autorizado')),  # Upload PDF 2 Authorized
+        (3, _('Upload Etiqueta Caixa Autorizado')),  # Upload Box Label Authorized
         (4, _('Checagens Finais')),  # Final Checkings
         (5, _('Enviado')),  # Shipped
     )
