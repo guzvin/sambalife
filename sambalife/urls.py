@@ -58,6 +58,9 @@ urlpatterns = i18n_patterns(
     url(r'^store/lot/add[/]$', store_lot_add, name='store_lot_add'),
     url(r'^store/admin[/]$', store_admin, name='store_admin'),
     url(r'^store/purchase', store_purchase, name='store_purchase'),
+    url(r'^envios-brasil', enviosBrasil, name='enviosBrasil'),
+    url(r'^envio-brasil/cadastro', envioBrasilCadastro, name='envioBrasilCadastro'),
+    url(r'^envio-brasil/detalhe', envioBrasilDetalhe, name='envioBrasilDetalhe'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     prefix_default_language=False,
 )

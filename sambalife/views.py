@@ -249,3 +249,6 @@ def enviosBrasil(request):
 
 def envioBrasilCadastro(request):
     return render(request, 'envio_brasil_cadastro.html')
+
+def envioBrasilDetalhe(request):
+    return render(request, 'detalhe_envio_brasil.html')

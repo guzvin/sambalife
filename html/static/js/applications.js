@@ -911,4 +911,14 @@
         $('#tutorial-br').modal('show');
     });
 
+    //Click radio cadastro de envio brasil
+    $(".endereco-cadastro-chk").click(function(){
+         var classe = $(this).find("input[type='radio']").attr("class");
+         if(classe == "endereco-novo"){
+            $(".endereco-novo-form").show();
+         }else{
+            $(".endereco-novo-form").hide();
+         }
+    });
+
 })(jQuery); // End of use strict

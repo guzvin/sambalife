@@ -989,6 +989,38 @@ table th a{
     margin-top: 6px;
 }
 
+.nav > li > a.abre-tutorial{
+    color: #fff;
+    font-weight: bold;
+}
+
+.nav > li.tutorial{
+    position: fixed;
+    top: 50px;
+    left: 0;
+    background: red;
+    color: #fff;
+    width: 107px;
+    text-align: center;
+}
+
+.endereco-novo-form{
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding-top: 10px;
+    float: left;
+    display:none;
+}
+
+.endereco-novo-form.detail{
+    display: block;
+}
+
+input[type="checkbox"], input[type="radio"]{
+    top: 3px;
+    position: relative;
+}
+
 .center{
     text-align: center;
 }
@@ -1117,6 +1149,18 @@ label.titulo-pct span{
 }
 
 .enviado{
+    width: 100%;
+}
+
+.preparado-envio-brasil{
+    width: 18%;
+}
+
+.aguardando-pagamento-brasil{
+    width: 50%;
+}
+
+.enviado-brasil{
     width: 100%;
 }
 

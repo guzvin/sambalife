@@ -1,0 +1,144 @@
+{% extends 'includes/layout.html' %}
+
+{% block criarenviobrasil %}active{% endblock %}
+
+{% block specific_styles %}
+    <link href="/static/css/inlines.css" rel="stylesheet">
+{% endblock %}
+
+{% block specific_scripts %}
+    <script src="/static/externo/ckeditor/ckeditor.js"></script>
+    <script src="/static/js/specifics/shipment.js"></script>
+{% endblock %}
+
+
+
+{% block conteudo %}
+
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-md-1 sidebar">
+
+        </div>
+        <div class="col-md-10 main">
+          <h1 class="page-header"><i class="fa fa-globe"></i> Titulo envio</h1>
+          <div class="row">
+            <div class="form-group">
+                <div class="col-md-5">
+                    <label>Adicionar mais itens a este envio:</label>
+
+                    <input type="text" name="product_set-autocomplete" placeholder="Digite o nome do item a ser inserido no envio..." class="form-control ui-autocomplete-input" id="product_set-autocomplete" autocomplete="off">
+                </div>
+                <div class="col-md-3">
+                    <a class="btn btn-primary filtar-btn product_set-add-row add-row" title="Adicionar item" href="javascript:void(0);"><i class="fa fa-fw fa-plus-square"></i> Adicionar Item</a>
+                </div>
+            </div>
+          </div>
+          <br><br>
+          <label>Lista de itens deste envio:</label>
+          <div class="table-responsive">
+            <table class="table table-striped js-inline-admin-formset" id="product_set-group" data-inline-type="stacked" data-inline-autocomplete="/product/autocomplete" data-inline-formset="{&quot;name&quot;: &quot;#product_set&quot;, &quot;options&quot;: {&quot;prefix&quot;: &quot;product_set&quot;, &quot;addText&quot;: &quot;Adicionar produto&quot;, &quot;deleteText&quot;: &quot;Remover produto&quot;}}">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome</th>
+                  <th>Descrição</th>
+                  <th>Peso</th>
+                  <th class="center">Quantidade</th>
+
+                  <th>Retirar</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>65</td>
+                  <td>Camisa Polo Ralph Loren</td>
+                  <td>Camisa Polo Ralph Loren descricao</td>
+                  <td>2 Lbs</td>
+                  <td class="center">
+                      <input type="number" class="form-control menor-m quantity_validate required-number-validate" id="item_qtd" name="item_qtd" value="" aria-required="true">
+                  </td>
+                  <td>
+                      <a class="btn btn-danger inline-deletelink" title="Remover item" href="javascript:void(0);"><i class="fa fa-fw fa-close"></i></a>
+                  </td>
+
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-md-12">
+                <h4><i class="fa fa-fw fa-info-circle"></i> Informações gerais:</h4><br>
+                <div class="col-md-5">
+                    <label><i class="fa fa-fw fa-money"></i> Custo total do envio:</label><br>
+                    <ul class="list-group col-md-12">
+                        <li class="list-group-item">
+                            <p><strong><i class="fa fa-balance-scale"></i> Peso total: </strong>12Lbs</p>
+                        </li>
+                    </ul>
+                    <p class="download">Após o cadastro dos itens do envio, nós calcularemos os custos e os enviaremos logo em seguida.</p>
+                </div>
+                <div class="col-md-7">
+                    <label><i class="fa fa-fw fa-map-marker"></i> Endereço de entrega:</label><br>
+                    <ul class="list-group col-md-6">
+                        <li class="list-group-item">
+                            <label class="endereco-cadastro-chk">
+                                <input type="radio" checked class="endereco-cad" id="endereco-cadastro-novo-chk" name="endereco-cadastro"> Utilizar endereço do cadastro
+                            </label>
+                        </li>
+                        <li class="list-group-item">
+                            <label class="endereco-cadastro-chk">
+                                <input type="radio" class="endereco-novo" id="endereco-cadastro-chk" name="endereco-cadastro"> Utilizar outro endereço
+                            </label>
+                        </li>
+                    </ul>
+                    <br>
+                    <form class="endereco-novo-form">
+                        <div class="form-group col-md-12">
+                            <label for="endereco">Endereço*</label>
+                            <input type="text" class="form-control" id="endereco" aria-describedby="endereco" name="address_1" placeholder="Digite o endereço..." value="">
+                        </div>
+                        <div class="form-group espaco-bottom">
+                          <div class="col-md-4">
+                             <label for="complemento">Complemento</label>
+                             <input type="text" class="form-control" id="complemento" aria-describedby="complemento" name="address_2" placeholder="Digite o complemento..." value="">
+                          </div>
+                          <div class="col-md-4">
+                            <label for="bairro">Bairro*</label>
+                            <input type="text" class="form-control" id="bairro" aria-describedby="bairro" name="neighborhood" placeholder="Digite o bairro..." value="">
+                          </div>
+                          <div class="col-md-4">
+                            <label for="cidade">Cidade*</label>
+                            <input type="text" class="form-control" id="cidade" aria-describedby="cidade" name="city" placeholder="Digite o cidade..." value="">
+                          </div>
+                      </div>
+                      <div class="form-group espaco-bottom">
+                          <div class="col-md-6">
+                          <label for="estado">Estado*</label>
+                            <input type="text" maxlength="2" class="form-control" id="estado" aria-describedby="estado" name="state" placeholder="Digite o estado..." value="">
+                          </div>
+                          <div class="col-md-6">
+                            <label for="cep">CEP*</label>
+                            <input type="number" class="form-control" id="cep" aria-describedby="cep" name="zipcode" placeholder="Digite o CEP..." value="">
+                          </div>
+                      </div>
+                    </form>
+                </div>
+                <br><br>
+                  <div class="form-group col-md-12"><br><br>
+                      <button type="submit" id="send-btn" class="btn btn-primary">Enviar</button><br><br>
+                      <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> Voltar</a><br><br><br>
+                  </div>
+                <br><br>
+            </div>
+        </div>
+        <div class="col-md-1 sidebar">
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

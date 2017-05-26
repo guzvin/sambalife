@@ -1,0 +1,251 @@
+{% extends 'includes/layout.html' %}
+
+{% block criarenviobrasil %}active{% endblock %}
+
+{% block specific_styles %}
+    <link href="/static/css/inlines.css" rel="stylesheet">
+{% endblock %}
+
+{% block specific_scripts %}
+    <script src="/static/externo/ckeditor/ckeditor.js"></script>
+    <script src="/static/js/specifics/shipment.js"></script>
+{% endblock %}
+
+
+
+{% block conteudo %}
+
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-md-1 sidebar">
+
+        </div>
+        <div class="col-md-10 main">
+          <h1 class="page-header"><i class="fa fa-globe"></i> Titulo envio</h1>
+          <div class="row">
+            <div class="form-group">
+                <div class="col-md-5">
+                    <label>Adicionar mais itens a este envio:</label>
+
+                    <input type="text" name="product_set-autocomplete" placeholder="Digite o nome do item a ser inserido no envio..." class="form-control ui-autocomplete-input" id="product_set-autocomplete" autocomplete="off">
+                </div>
+                <div class="col-md-3">
+                    <a class="btn btn-primary filtar-btn product_set-add-row add-row" title="Adicionar item" href="javascript:void(0);"><i class="fa fa-fw fa-plus-square"></i> Adicionar Item</a>
+                </div>
+            </div>
+          </div>
+          <br><br>
+          <label>Lista de itens deste envio:</label>
+          <div class="table-responsive">
+            <table class="table table-striped js-inline-admin-formset" id="product_set-group" data-inline-type="stacked" data-inline-autocomplete="/product/autocomplete" data-inline-formset="{&quot;name&quot;: &quot;#product_set&quot;, &quot;options&quot;: {&quot;prefix&quot;: &quot;product_set&quot;, &quot;addText&quot;: &quot;Adicionar produto&quot;, &quot;deleteText&quot;: &quot;Remover produto&quot;}}">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome</th>
+                  <th>Descrição</th>
+                  <th>Peso</th>
+                  <th class="center">Quantidade</th>
+
+                  <th>Retirar</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>65</td>
+                  <td>Camisa Polo Ralph Loren</td>
+                  <td>Camisa Polo Ralph Loren descricao</td>
+                  <td>2 Lbs</td>
+                  <td class="center">
+                      <input type="number" class="form-control menor-m quantity_validate required-number-validate" id="item_qtd" name="item_qtd" value="" aria-required="true">
+                  </td>
+                  <td>
+                      <a class="btn btn-danger inline-deletelink" title="Remover item" href="javascript:void(0);"><i class="fa fa-fw fa-close"></i></a>
+                  </td>
+
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-md-12">
+                <h4><i class="fa fa-fw fa-info-circle"></i> Informações gerais:</h4><br>
+                <div class="col-md-4">
+                    <label><i class="fa fa-fw fa-money"></i> Custo total do envio:</label><br>
+                    <ul class="list-group col-md-12">
+                        <li class="list-group-item">
+                            <p><strong><i class="fa fa-balance-scale"></i> Peso total: </strong>12Lbs</p>
+                        </li>
+                        <li class="list-group-item">
+                            <p><strong><i class="fa fa-barcode"></i> Taxa envio: </strong> U$ 15,48</p>
+                        </li>
+                        <!-- o gustavo ir'a cadastrar essa taxa apos receber o cadastro do envio -->
+                        <li class="list-group-item">
+                            <input type="text" class="form-control" name="taxa-site" id="taxa-site" placeholder="Taxa correio EUA" />
+                        </li>
+                        <!-- fim campo -->
+
+                        <!-- no proximo passo o usuario recebera as informacoes e visualizara assims-->
+                        <li class="list-group-item">
+                            <p><strong><i class="fa fa-envelope"></i> Taxa envio: </strong> U$ 15,48</p>
+                        </li>
+                        <li class="list-group-item">
+                            <p><strong><i class="fa fa-calculator"></i> Total a pagar: </strong> U$ 29,50</p>
+                        </li>
+
+                        <!-- fim do campo -->
+
+                    </ul>
+                </div>
+                <div class="col-md-5">
+                    <label><i class="fa fa-fw fa-map-marker"></i> Endereço de entrega:</label><br>
+                    <div class="endereco-novo-form detail">
+                        <div class="form-group col-md-12">
+                            <p><strong>Endereço: </strong>Avenida Salvador Allende, 931</p>
+                            <p><strong>Complemento: </strong> Bloco Recreio, apt 303</p>
+                            <p><strong>Bairro: </strong>Recreio do Bandeirantes</p>
+                            <p><strong>Cidade: </strong> Rio de Janeiro - <strong>Estado: </strong> RJ</p>
+                            <p><strong>CEP: </strong>22780-160</p>
+                            <p><strong>País: </strong> Brasil</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label><i class="fa fa-fw fa-calendar"></i> Data de envio para o Brasil:</label><br>
+
+                    <!-- o gustavo ira cadastrar a data de envio apos o usuario efetuar o pagamento -->
+
+                    <input type="text" class="form-control datepicker hasDatepicker" id="datepicker" placeholder="Data de Envio para Brasil..." name="date" value="">
+
+                    <!--fim campo-->
+
+                    <!--apos o cadastro da data a visualizacao fica assim-->
+                    <br>
+                    <p class="center">26 de Maio de 2017</p>
+
+                </div>
+                <br><br>
+            </div>
+        </div>
+
+        <!-- cadastro das infos dos pacotes -->
+        <hr />
+           <div class="row">
+               <form id="form-add-package">
+               <h4><i class="fa fa-fw fa-line-chart"></i> Área Administrativa</h4><br>
+               <div class="col-md-12 js-inline-admin-formset" id="1-group">
+                   <label>Informações pacote(s):</label>
+                    <div class="lista-pacotes-cadastro">
+                     <div class="form-group pacote-infos pacote-infos-item inline-related">
+                        <div class="col-md-2">
+                            <label class="filtar-btn-m inline_label">Pacote #1: </label>
+                        </div>
+
+                        <div class="col-md-2">
+                            <input type="text" placeholder="Peso..." name="peso-1" class="form-control required-number-validate" id="peso-1" value="" />
+
+                            <span class="badge">Em Lbs</span>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" placeholder="Altura..." name="altura-1" class="form-control required-number-validate" id="altura-1" value="" />
+                            <span class="badge profun">Em Cm</span><br><br>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" placeholder="Largura..." name="Largura-1" class="form-control required-number-validate" id="Largura-1" value="" />
+                            <span class="badge largura">Em Cm</span>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" placeholder="Profundidade..." name="Profundidade-1" class="form-control required-number-validate" id="Profundidade-1" value="" />
+                            <span class="badge altura">Em Cm</span>
+                        </div>
+                        <div class="col-md-2">
+                            <a class="rem-track btn btn-danger rem-pacote-shipment inline-deletelink" title="Excluir Pacote" href="#"><i class="fa fa-fw fa-times"></i></a>
+                        </div>
+
+                     </div>
+                     <div class="col-md-12">
+                         <a class="add-track btn btn-success add-pacote-shipment add-row" title="Adicionar pacote" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i> Adicionar Pacote ao Envio</a>
+                     </div>
+                    </div>
+              </div>
+            </form>
+
+            <!-- fim cadastro pacotes -->
+
+            <!-- Apos o cadastro das informacoes dos pacotes, a visualizacao ficara assim:-->
+
+            <div class="form-group pacote-infos">
+                <div class="col-md-12">
+                    <hr>
+                    <label class="titulo-pct"><span>Pacote 1:</span></label>
+                </div>
+                <div class="col-md-5">
+                    <label><i class="fa fa-fw fa-info-circle"></i> Dimensões do pacote:</label><br><br>
+                    <p>Peso: 2.0 lb. / L: 2.0" x W: 2.0" x H: 2.0"</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="id_package_set-0-shipment_tracking"><i class="fa fa-fw fa-file-pdf-o"></i> Código UPS:</label>
+                        <input type="text" id="cod-ups-pct-1" name="" class="form-control" placeholder="Código UPS..."/>
+
+                        <!-- apos cadastrado -->
+                        <br><br>
+                        <p>UYTR865JHJFJFJ</p>
+                    </div>
+                </div>
+            </div>
+        </div><hr />
+        <div class="row">
+           <h4><i class="fa fa-fw fa-step-forward"></i> Status: </h4> Acompanhe abaixo o status do envio:<br><br><br>
+
+            <!-- status Preparando para Envio -->
+            <div class="progress">
+              <div class="progress-bar progress-bar-success preparado-envio-brasil" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+              </div>
+           </div>
+
+            <!-- status Pacote preparado(Aguardando pagamento) -->
+            <div class="progress">
+              <div class="progress-bar progress-bar-success aguardando-pagamento-brasil" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+              </div>
+           </div>
+
+            <!-- status Enviado para o destino -->
+            <div class="progress">
+              <div class="progress-bar progress-bar-success enviado-brasil" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+              </div>
+           </div>
+
+
+
+           <div class="col-md-12 itens-progress">
+               <div class="col-md-4 center">
+                    <label><i class="fa fa-2x fa-fw fa-plus-square"></i><br>Preparando para Envio</label>
+               </div>
+               <div class="col-md-4 center">
+                    <label><i class="fa fa-2x fa-shopping-cart"></i><br>Pacote preparado(Aguardando pagamento)</label>
+               </div>
+               <div class="col-md-4 item-progress last">
+                    <label><i class="fa fa-2x fa-thumbs-up"></i><br>Enviado para o destino</label>
+               </div>
+           </div>
+        </div>
+
+
+
+
+
+             <br><br>
+              <div class="form-group col-md-12"><br><br>
+                  <button type="submit" id="send-btn" class="btn btn-primary">Enviar</button><br><br>
+                  <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> Voltar</a><br><br><br>
+              </div>
+        <div class="col-md-1 sidebar">
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
