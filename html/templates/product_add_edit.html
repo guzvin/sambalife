@@ -52,6 +52,17 @@
                   {% endfor %}
                 </div><br>
               {% endif %}
+
+              <!-- Campo novo Peso -->
+
+              <div class="form-group col-md-12">
+                  <label for="peso">Peso por item</label>
+                  <input type="number" class="form-control menor" id="peso" name="peso" placeholder="Digite o peso em Lbs..." value="" />
+              </div><br>
+
+              <!-- fim campo novo -->
+
+
                 <div class="form-group col-md-12">
                   <label for="{{ form.send_date.id_for_label }}">{{ form.send_date.label }}*</label>
                     {% trans "Data de envio" as send_date %}

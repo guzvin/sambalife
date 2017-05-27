@@ -34,7 +34,27 @@
                     <div class="col-xs-9">
                         <p>{{ product.quantity }}{% if product.quantity_partial and product.quantity_partial > 0 and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}</p>
                     </div>
-                </div>
+              </div>
+
+              <!-- com o envio para o brasil, precisamos controlar os dias do produto em estoque para nao passar de 90 dias
+                   e o peso de cada para o calculo do envio
+              -->
+              <div class="form-group">
+                    <label class="control-label col-xs-3">Peso por item:</label>
+                    <div class="col-xs-9">
+                        <p>9 Lbs</p>
+                    </div>
+              </div>
+
+              <div class="form-group">
+                    <label class="control-label col-xs-3">Em estoque há:</label>
+                    <div class="col-xs-9">
+                        <p>89 dias</p>
+                    </div>
+              </div>
+
+              <!-- fim novos campo -->
+
               {% if user|has_user_perm:'view_users' %}
                 <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Usuário" %}:</label>

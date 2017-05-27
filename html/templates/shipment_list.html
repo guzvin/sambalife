@@ -69,27 +69,27 @@
                 <tr>
                   <th>
                     {% trans "Ordenar pelo ID" as order_id %}
-                    <a title="{{ order_id }}" href="#">{{ id }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                    <a title="{{ order_id }}" href="javascript:void(0);">{{ id }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
                   <th class="center">
                     {% trans "Ordenar pelo usuário" as order_user %}
-                    <a title="{{ order_user }}" href="#">{{ user_label }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                    <a title="{{ order_user }}" href="javascript:void(0);">{{ user_label }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
                   <!-- fim campo -->
                   {% endif %}
                   <th>
                     {% trans "Ordenar pela data de envio" as order_send_date %}
-                    <a title="{{ order_send_date }}" href="#">{{ send_date }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                    <a title="{{ order_send_date }}" href="javascript:void(0);">{{ send_date }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
                   <th class="center">
                     {% trans "Ordenar pela quantidade" as order_qty %}
-                    <a title="{{ order_qty }}" href="#">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                    <a title="{{ order_qty }}" href="javascript:void(0);">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
                   <th class="center">
                     {% trans "Ordenar pelo status" as order_status %}
-                    <a title="{{ order_status }}" href="#">{{ status }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                    <a title="{{ order_status }}" href="javascript:void(0);">{{ status }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
                   <th class="center">{% trans "Ações" %}</th>
                 </tr>
@@ -119,7 +119,7 @@
             {% if shipments.has_other_pages %}
               <ul class="pagination">
                 {% if shipments.has_previous %}
-                  <li><a href="#" class="pagination-page" data-page="{{ shipments.previous_page_number }}">&laquo;</a></li>
+                  <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ shipments.previous_page_number }}">&laquo;</a></li>
                 {% else %}
                   <li class="disabled"><span>&laquo;</span></li>
                 {% endif %}
@@ -127,11 +127,11 @@
                   {% if shipments.number == i %}
                     <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
                   {% else %}
-                    <li><a href="#" class="pagination-page" data-page="{{ i }}">{{ i }}</a></li>
+                    <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ i }}">{{ i }}</a></li>
                   {% endif %}
                 {% endfor %}
                 {% if shipments.has_next %}
-                  <li><a href="#" class="pagination-page" data-page="{{ shipments.next_page_number }}">&raquo;</a></li>
+                  <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ shipments.next_page_number }}">&raquo;</a></li>
                 {% else %}
                   <li class="disabled"><span>&raquo;</span></li>
                 {% endif %}
