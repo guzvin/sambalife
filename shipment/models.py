@@ -42,6 +42,7 @@ class Shipment(models.Model):
     status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES)
     pdf_1 = models.FileField(_('Etiqueta do(s) Produto(s)'), upload_to=user_directory_path,
                              validators=[validate_file_extension])
+    is_archived = models.BooleanField(_('Arquivado'), default=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:

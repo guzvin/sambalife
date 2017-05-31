@@ -81,6 +81,8 @@ def shipment_list(request):
         logger.debug(str(filter_user))
         filter_status = request.GET.get('status')
         logger.debug(str(filter_status))
+        filter_archived = request.GET.get('archived')
+        logger.debug(str(filter_archived))
         filter_values = {
             'status': '',
         }
@@ -98,6 +100,10 @@ def shipment_list(request):
         if filter_send_date:
             queries.append(Q(send_date=DateField().to_python(filter_send_date)))
             filter_values['date'] = filter_send_date
+        if filter_archived and filter_archived == 'on':
+            filter_values['archived'] = 'checked=checked'
+        else:
+            queries.append(Q(is_archived=False))
         logger.debug(str(queries))
         logger.debug(str(len(queries)))
         if is_user_perm is False:
@@ -443,6 +449,29 @@ def shipment_delete_product(request):
         logger.error(err)
         return HttpResponseBadRequest()
     return http_response
+
+
+@login_required
+@require_http_methods(["POST"])
+def shipment_archive(request, pid=None):
+    try:
+        if request.POST.get('archive_shipment') is None:
+            raise Shipment.DoesNotExist('archive_shipment parameter not found in request.')
+        _shipment_details = Shipment.objects.get(pk=pid)
+        if request.user != _shipment_details.user and has_group(request.user, 'admins') is False:
+            raise Shipment.DoesNotExist('Shipment from another user and user is not from admins group.')
+    except Shipment.DoesNotExist as err:
+        logger.error(err)
+        logger.exception(err)
+        return HttpResponseBadRequest()
+    if _shipment_details.is_archived:
+        _shipment_details.is_archived = False
+        _shipment_details.save(update_fields=['is_archived'])
+        return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
+    else:
+        _shipment_details.is_archived = True
+        _shipment_details.save(update_fields=['is_archived'])
+        return HttpResponseRedirect(reverse('shipment'))
 
 
 @login_required

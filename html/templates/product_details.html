@@ -35,7 +35,7 @@
                         <p>{{ product.quantity }}{% if product.quantity_partial and product.quantity_partial > 0 and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}</p>
                     </div>
               </div>
-
+{% comment %}
               <!-- com o envio para o brasil, precisamos controlar os dias do produto em estoque para nao passar de 90 dias
                    e o peso de cada para o calculo do envio
               -->
@@ -54,7 +54,7 @@
               </div>
 
               <!-- fim novos campo -->
-
+{% endcomment %}
               {% if user|has_user_perm:'view_users' %}
                 <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Usuário" %}:</label>

@@ -501,6 +501,15 @@
         $('#confirmacao-exclusao').modal('show');
     });
 
+    if($('#form-archive-shipment')[0])
+    {
+        $('#archive-btn').click(function()
+        {
+            $('.loading').show();
+            $('#form-archive-shipment').submit();
+        });
+    }
+
     $('.privatebtn').click(function()
     {
         $('#portfolioModal1').modal('show');

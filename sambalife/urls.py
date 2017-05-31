@@ -52,6 +52,7 @@ urlpatterns = i18n_patterns(
     url(r'^shipment/(?P<pdf>pdf_1)/(?P<pid>[0-9]+)[/]$', shipment_download_pdf, name='shipment_pdf_1'),
     url(r'^shipment/(?P<pdf>pdf_2)/(?P<pid>[0-9]+)[/]$', shipment_download_pdf, name='shipment_pdf_2'),
     url(r'^shipment/delete/product[/]$', shipment_delete_product, name='shipment_delete_product'),
+    url(r'^shipment/archive/(?P<pid>[0-9]+)[/]$', shipment_archive, name='shipment_archive'),
     url(r'^paypal/$', payment_ipn, name='paypal-ipn'),
     url(r'^store/list[/]$', store_list, name='store'),
     url(r'^store/lot/details/(?P<pid>[0-9]+)[/]$', store_lot_details, name='store_lot_details'),

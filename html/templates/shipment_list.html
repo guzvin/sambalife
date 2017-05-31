@@ -11,7 +11,7 @@
 
         </div>
         <div class="col-md-10 main">
-          <h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Lista de Envios" %}</h1>
+          <h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Lista de Envios EUA" %}</h1>
           <div class="row">
               <div class="filtros col-md-12">
                 <h3><i class="fa fa-filter"></i> {% trans "Filtros" %}</h3>  <br>
@@ -51,6 +51,11 @@
                   {% trans "Data de Envio" as send_date %}
                     <label for="datepicker">{{ send_date }}</label>
                     <input type="text" class="form-control datepicker" id="datepicker" placeholder="{{ send_date }}..." name="date" value="{{ filter_values.date }}">
+                </div>
+                <div class="col-md-12">
+                  <label for="filtro-arquivado">
+                    <input type="checkbox" class="" id="filtro-arquivado" name="archived" {{ filter_values.archived }}> {% trans "Exibir envios arquivados" %}
+                  </label>
                 </div>
                 <div class="form-group col-md-2">
                     <button type="submit" class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
@@ -96,8 +101,8 @@
               </thead>
               <tbody>
               {% for shipment in shipments %}
-                <tr>
-                  <td>{{ shipment.id }}</td>
+                <tr {% if shipment.is_archived %}style="color: gray;"{% endif %}>
+                  <td>{{ shipment.id }}{% if shipment.is_archived %} ({% trans "Arquivado" %}){% endif %}</td>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
                   <td class="center">{{ shipment.user.first_name }}</td>
