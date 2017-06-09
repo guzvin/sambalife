@@ -1081,14 +1081,14 @@ label.titulo-pct span{
 
 /*balão*/
 .status{
-	background: #ddd;
+    background: #ddd;
     border-radius: 15px;
-    width: 209px;
-    height: 261px;
+    width: 217px;
+    height: 362px;
     position: absolute;
     padding: 20px;
-    top: -300px;
-    right: -30px;
+    top: -405px;
+    right: -41px;
     text-align: left;
 }
 .status:after{

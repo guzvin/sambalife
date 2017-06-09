@@ -60,8 +60,24 @@
             </table>
           </div>
 
+          <!-- Bloco Informacoes do usuario -->
+
+          <div class="row">
+            <div class="col-md-12">
+                <h4><i class="fa fa-fw fa-user"></i> Informações do usuário</h4><br>
+            </div>
+            <div class="col-md-6">
+                 <label>Id: </label> 7436524 <br>
+                 <label>Nome: </label> Fábio Marques<br>
+                 <label>Email: </label> fabionmh@gmail.com<br>
+                <br> <p><a href="#" class="btn btn-default"><i class="fa fa-external-link"></i> Acessar cadastro do usuário</a></p>
+            </div>
+          </div>
+
+          <!-- fim bloco informacoes do usuario -->
+
           <!-- informacoes das warehouse - cadastro-->
-          <br><hr>
+          <hr>
           <div class="row">
             <div class="col-md-12">
                 <h4><i class="fa fa-fw fa-dropbox"></i> {% trans "Informações sobre destino dos produtos (Warehouses)" %}</h4><br>
@@ -183,7 +199,7 @@
                     </div>
                 </div>
                 {% if not forloop.last %}
-                <br>
+
                 {% endif %}
                 {% endfor %}
                 </form>

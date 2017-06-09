@@ -128,7 +128,7 @@
                   <td class="center">{{ product.user.first_name }}</td>
                   <!-- fim campo -->
                   {% endif %}
-                  <td class="center">
+                  <td class="">
                       {% if user|has_product_perm:'change_product_status' %}
                       <!-- somente admin visualiza o botao de editar status-->
 
@@ -161,6 +161,13 @@
                         <input type="number" class="form-control row-qty-partial" name="product_quantity_partial" value="{% if product.quantity_partial is not None %}{{ product.quantity_partial }}{% endif %}" data-current-partial="{{ product.quantity_partial }}"  />
 
                         <br>
+
+                        <!-- Campo data de vencimento do produto -->
+
+                        <label><i class="fa fa-calendar"></i> Data de vencimento</label><br>
+                        <input type="text" class="form-control data-vencimento" name="data-vencimento" id="datepicker"><br>
+
+
                         <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i></a>
                         <a class="btn btn-danger fechar" href="javascript:void(0);"><i class="fa fa-times"></i></a>
                         </form>
