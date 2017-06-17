@@ -1090,16 +1090,30 @@ label.titulo-pct span{
     font-size: 18px;
 }
 
+.coluna-form-status{
+    width: 180px;
+    float: left;
+}
+
+.label-status{
+    width: 230px;
+    float: left;
+}
+
+.status a.btn{
+    text-decoration: none;
+}
+
 /*balão*/
 .status{
     background: #ddd;
     border-radius: 15px;
-    width: 217px;
-    height: 362px;
+    width: 409px;
+    height: 414px;
     position: absolute;
     padding: 20px;
-    top: -405px;
-    right: -41px;
+    top: -475px;
+    right: -117px;
     text-align: left;
 }
 .status:after{
@@ -1111,7 +1125,7 @@ label.titulo-pct span{
 	border-right: 20px solid transparent;
 	border-top: 20px solid #ddd;
 	bottom: -20px;
-	left: 20%;
+	left: 179px;
 }
 /*fim balão*/
 

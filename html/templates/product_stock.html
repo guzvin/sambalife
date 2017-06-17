@@ -113,7 +113,7 @@
                   {% if user|has_shipment_perm:'add_shipment' %}
                   <th class="center">{% trans "Envio" %}</th>
                   {% endif %}
-                  <th class="center">{% trans "Ações" %}</th>
+                  <th class="center">{% trans "Editar" %}</th>
                 </tr>
               </thead>
               <tbody>
@@ -143,33 +143,45 @@
                       <!-- somente admin visualiza -->
 
                       <div class="contem-status" style="display:none;">
-                       <div class="status">
-                        <p><i class="fa fa-pencil"></i> {% trans "Alterar Status" %}:</p>
+                       <div class="status row">
                         <form action="" method="post" class="form-change-status" id="form-change-status-{{ product.id }}">
                         {% csrf_token %}
-                        <input type="hidden" name="product_id" value="{{ product.id }}" class="product-id">
+                         <input type="hidden" name="product_id" value="{{ product.id }}" class="product-id">
                         {% check_status product '1' as sent_status %}
                         {% check_status product '2' as in_stock_status %}
                         {% check_status product '99' as archived_status %}
-                        <label><input type="radio" name="product_status" value="1" data-current-status="{{ product.status }}" {{ sent_status }} /> {% trans "Enviado" %}</label><br>
-                        <label><input type="radio" name="product_status" value="2" data-current-status="{{ product.status }}" {{ in_stock_status }} /> {% trans "Em Estoque" %}</label><br>
-                        <label><input type="radio" name="product_status" value="99" data-current-status="{{ product.status }}" {{ archived_status }} /> {% trans "Arquivado" %}</label><br>
+                        <div class="coluna-form-status col-md-12">
+                            <label class="label-status"><i class="fa fa-pencil"></i> {% trans "Alterar Status" %}:</label><br><br>
+                            <label><input type="radio" name="product_status" value="1" data-current-status="{{ product.status }}" {{ sent_status }} /> {% trans "Enviado" %}</label><br>
+                            <label><input type="radio" name="product_status" value="2" data-current-status="{{ product.status }}" {{ in_stock_status }} /> {% trans "Em Estoque" %}</label><br>
+                            <label><input type="radio" name="product_status" value="99" data-current-status="{{ product.status }}" {{ archived_status }} /> {% trans "Arquivado" %}</label><br>
+                        </div>
+                        <div class="coluna-form-status col-md-12">
+                            <label><i class="fa fa-list-ol"></i> {% trans "Quantidade Recebida" %}:</label>
+                            <input type="number" class="form-control row-qty-partial" name="product_quantity_partial" value="{% if product.quantity_partial is not None %}{{ product.quantity_partial }}{% endif %}" data-current-partial="{{ product.quantity_partial }}"  />
+                            <br>
 
-                        <!-- Campo quantidade recebida-->
-                        <br>
-                        <label>{% trans "Quantidade Recebida" %}:</label>
-                        <input type="number" class="form-control row-qty-partial" name="product_quantity_partial" value="{% if product.quantity_partial is not None %}{{ product.quantity_partial }}{% endif %}" data-current-partial="{{ product.quantity_partial }}"  />
+                            <label><i class="fa fa-calendar"></i> {% trans "Data de vencimento" %}:</label><br>
+                            <input type="text" class="form-control data-vencimento" name="data-vencimento" id="datepicker"><br>
+                        </div>
+                        <div class="form-group col-md-12">
+                          <label for="condProduto"><i class="fa fa-archive"></i> {% trans "Condição do(s) produto(s)" %}:</label>
+                          <select class="form-control" id="condProduto" name="condProduto">
+                            <option>New</option>
+                            <option>Refurbished</option>
+                            <option>Used Like New</option>
+                            <option>Used Very good</option>
+                            <option>Used good</option>
+                            <option>Used Acceptable</option>
+                          </select>
+                        </div>
+                        <div class="form-group col-md-12">
+                          <label for="descCondicoes"><i class="fa fa-desktop"></i> {% trans "Descrição Condição do(s) produto(s)" %}:</label>
+                          <textarea class="form-control" id="descCondicoes" name="descCondicoes" placeholder="Descrição Condição do(s) produto(s)..."></textarea>
+                        </div>
 
-                        <br>
-
-                        <!-- Campo data de vencimento do produto -->
-
-                        <label><i class="fa fa-calendar"></i> Data de vencimento</label><br>
-                        <input type="text" class="form-control data-vencimento" name="data-vencimento" id="datepicker"><br>
-
-
-                        <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i></a>
-                        <a class="btn btn-danger fechar" href="javascript:void(0);"><i class="fa fa-times"></i></a>
+                        <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i> {% trans "Salvar" %}</a>
+                        <a class="btn btn-danger fechar" href="javascript:void(0);"><i class="fa fa-times"></i> {% trans "Fechar" %}</a>
                         </form>
                        </div>
                       </div>
@@ -185,7 +197,7 @@
                   </td>
                   {% endif %}
                   <td class="center">
-                      <a class=" download" href="{% url 'product_details' product.id %}"><i class="fa fa-pencil"></i> {% trans "Visualizar" %}</a>
+                      <a class=" download" href="{% url 'product_details' product.id %}"><i class="fa fa-pencil-square"></i></a>
                   </td>
                 </tr>
                 {% endfor %}
