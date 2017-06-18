@@ -88,7 +88,8 @@ class PaymentAdmin(admin.ModelAdmin):
     #     "payment_status", "created_at"
     # ]
     search_fields = ('invoice', 'item_name')
-    list_display = ('__unicode__', 'payment_status', 'invoice', 'item_name', 'first_name', 'last_name', 'payment_date')
+    list_display = ('__unicode__', 'mc_gross', 'payment_status', 'invoice', 'item_name', 'first_name', 'last_name',
+                    'payment_date')
     readonly_fields = ('business', 'charset', 'custom', 'notify_version', 'parent_txn_id', 'receiver_email',
                        'receiver_id', 'residence_country', 'test_ipn', 'txn_id', 'txn_type', 'verify_sign',
                        'address_country', 'address_city', 'address_country_code', 'address_name', 'address_state',
