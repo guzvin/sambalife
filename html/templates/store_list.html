@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-
+{% load i18n l10n permissions users commons %}
 {% block lotes-u %}active{% endblock %}
 
 {% block conteudo %}
@@ -10,98 +10,62 @@
 
         </div>
         <div class="col-md-10 main">
-          <h1 class="page-header"><i class="fa fa-shopping-bag"></i> Loja</h1>
+          <h1 class="page-header"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</h1>
           <div class="row">
               <div class="filtros col-md-12">
-                <h3><i class="fa fa-filter"></i> Filtros</h3>  <br>
+                <h3><i class="fa fa-filter"></i> {% trans "Filtros" %}</h3>  <br>
+                <form action="" method="get" id="form-filter-lot" class="form-filter">
                 <div class="form-group col-md-3">
-                    <label for="filtro-nome">Nome</label>
-                    <input type="text" class="form-control" id="filtro-nome" placeholder="Nome...">
+                    {% trans "Nome" as name_label %}
+                    <label for="filtro-nome">{{ name_label }}</label>
+                    <input type="text" name="name" class="form-control" id="filtro-nome" placeholder="{{ name_label }}..." value="{{ filter_values.name }}">
                 </div>
                 <div class="form-group col-md-3">
-                    <a class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> Filtrar</a>
+                    <button type="submit" class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
                 </div>
+                </form>
               </div>
           </div><br>
           <div class="row">
-
+            {% for lot in lots %}
             <div class="col-md-3 col-sm-6 hero-feature">
                 <div class="thumbnail">
                     <div class="caption">
-                        <h3 class="text-center border-bottom titulo-lote"><i class="fa fa-cart-arrow-down"></i><br> Lote 4</h3>
-                        <p><strong>Lucro: </strong> U$ 83,27</p>
-                        <p><strong>ROI médio: </strong> 53,30%</p>
-                        <p><strong>Valor a pagar: </strong> U$ 162,89</p>
+                        <h3 class="text-center border-bottom titulo-lote"><i class="fa fa-cart-arrow-down"></i><br> {{ lot.name }}</h3>
+                        <p><strong>{% trans "Lucro" %}: </strong> U$ {{ lot.profit|localize }}</p>
+                        <p><strong>{% trans "ROI médio" %}: </strong> {{ lot.average_roi|localize }}%</p>
+                        <p><strong>{% trans "Valor a pagar" %}: </strong> U$ {{ lot.lot_cost|localize }}</p>
                         <p class="text-center border-top btn-comprar-list">
-                            <a href="/lote/detalhe" class="btn btn-primary"><i class="fa fa-fw fa-shopping-cart"></i> Comprar</a>
+                            <a href="{% url 'store_lot_details' lot.id %}" class="btn btn-primary"><i class="fa fa-fw fa-shopping-cart"></i> {% trans "Comprar" %}</a>
                         </p>
                     </div>
                 </div>
             </div>
-              <div class="col-md-3 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <div class="caption">
-                        <h3 class="text-center border-bottom titulo-lote"><i class="fa fa-cart-arrow-down"></i><br> Lote 3</h3>
-                        <p><strong>Lucro: </strong> U$ 83,27</p>
-                        <p><strong>ROI médio: </strong> 53,30%</p>
-                        <p><strong>Valor a pagar: </strong> U$ 162,89</p>
-                        <p class="text-center border-top btn-comprar-list">
-                            <a href="/lote/detalhe" class="btn btn-primary"><i class="fa fa-fw fa-shopping-cart"></i> Comprar</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-              <div class="col-md-3 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <div class="caption">
-                        <h3 class="text-center border-bottom titulo-lote"><i class="fa fa-cart-arrow-down"></i><br> Lote 2</h3>
-                        <p><strong>Lucro: </strong> U$ 83,27</p>
-                        <p><strong>ROI médio: </strong> 53,30%</p>
-                        <p><strong>Valor a pagar: </strong> U$ 162,89</p>
-                        <p class="text-center border-top btn-comprar-list">
-                            <a href="/lote/detalhe" class="btn btn-primary"><i class="fa fa-fw fa-shopping-cart"></i> Comprar</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-              <div class="col-md-3 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <div class="caption">
-                        <h3 class="text-center border-bottom titulo-lote"><i class="fa fa-cart-arrow-down"></i><br> Lote 1</h3>
-                        <p><strong>Lucro: </strong> U$ 83,27</p>
-                        <p><strong>ROI médio: </strong> 53,30%</p>
-                        <p><strong>Valor a pagar: </strong> U$ 162,89</p>
-                        <p class="text-center border-top btn-comprar-list">
-                            <a href="/lote/detalhe" class="btn btn-primary"><i class="fa fa-fw fa-shopping-cart"></i> Comprar</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-              <div class="col-md-3 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <div class="caption">
-                        <h3 class="text-center border-bottom titulo-lote"><i class="fa fa-cart-arrow-down"></i><br> Lote 0</h3>
-                        <p><strong>Lucro: </strong> U$ 83,27</p>
-                        <p><strong>ROI médio: </strong> 53,30%</p>
-                        <p><strong>Valor a pagar: </strong> U$ 162,89</p>
-                        <p class="text-center border-top btn-comprar-list">
-                            <a href="/lote/detalhe" class="btn btn-primary"><i class="fa fa-fw fa-shopping-cart"></i> Comprar</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+            {% endfor %}
+          </div>
           <nav aria-label="...">
+            {% if lots.has_other_pages %}
               <ul class="pagination">
-                <li class="disabled"><a href="javascript:void(0);" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-                <li class="active"><a href="javascript:void(0);">1 <span class="sr-only">(current)</span></a></li>
-                <li class=""><a href="javascript:void(0);">2</a></li>
-                <li class=""><a href="javascript:void(0);">3</a></li>
-                <li class=""><a href="javascript:void(0);">4</a></li>
-                <li><a href="javascript:void(0);" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                {% if lots.has_previous %}
+                  <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ lots.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                  <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in lots.paginator.page_range %}
+                  {% if lots.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                  {% else %}
+                    <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if lots.has_next %}
+                  <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ lots.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                  <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
               </ul>
-            </nav>
+            {% endif %}
+          </nav>
         </div>
         <div class="col-md-1 sidebar">
         </div>

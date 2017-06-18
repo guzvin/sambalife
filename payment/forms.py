@@ -2,7 +2,7 @@
 from paypal.standard.forms import PayPalStandardBaseForm
 from paypal.standard.forms import PayPalEncryptedPaymentsForm
 from payment.models import MyPayPalIPN
-from utils.helper import my_make_secret
+from utils import helper
 from django.conf import settings
 import logging
 
@@ -27,7 +27,7 @@ class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
         self.is_sandbox = kwargs.pop('is_sandbox', False)
         super(MyPayPalSharedSecretEncryptedPaymentsForm, self).__init__(*args, **kwargs)
         # @@@ Attach the secret parameter in a way that is safe for other query params.
-        secret_param = "?secret=%s" % my_make_secret(self)
+        secret_param = "?secret=%s" % helper.my_make_secret(self)
         # Initial data used in form construction overrides defaults
         if 'notify_url' in self.initial:
             self.initial['notify_url'] += secret_param

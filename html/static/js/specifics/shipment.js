@@ -48,6 +48,9 @@ function addInlineRow(row, options)
                         $(this).append(selectedValue.desc);
                         break;
                     case 3:
+                        $(this).append(selectedValue.bb);
+                        break;
+                    case 4:
                         var element = $(this).find('input.quantity_validate');
                         element.val(selectedValue.qty);
                         addQuantityEvent(element, options.prefix);

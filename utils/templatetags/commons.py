@@ -11,3 +11,8 @@ def check_status(item, status):
 @register.simple_tag
 def select_status(item, status):
     return 'selected="selected"' if str(item.status) == status else ''
+
+
+@register.simple_tag
+def select_condition(item, condition):
+    return 'selected="selected"' if str(item) == condition else ''

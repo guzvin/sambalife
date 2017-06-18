@@ -1316,6 +1316,24 @@ form small{
     width: 240px;
 }
 
+.help-icon {
+    background: url(../admin/img/icon-unknown.svg) 0 0 no-repeat;
+    display: inline-block;
+    vertical-align: middle;
+    margin: -2px 0 0 2px;
+    width: 13px;
+    height: 13px;
+}
+
+.help-tooltip {
+    cursor: help;
+}
+
+.help, p.help, form p.help {
+    font-size: 11px;
+    color: #999;
+}
+
 @media (max-width: 767px){
     .navbar-brand img:last-child {
         display: none;

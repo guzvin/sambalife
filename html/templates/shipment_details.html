@@ -25,7 +25,7 @@
                   <th>{% trans "ID" %}</th>
                   <th>{% trans "Nome" %}</th>
                   <th>{% trans "Descrição" %}</th>
-                  <th>{% trans "Vencimento" %}</th>
+                  <th>{% trans "Validade" %}</th>
                   <th class="center">{% trans "Quantidade" %}</th>
                   {% if user|has_user_perm:'view_users' %}
                   <th>{% trans "Usuário" %}</th>
@@ -42,7 +42,13 @@
                   <td>{{ product.product.name }}</td>
                   <td>{{ product.product.description }}</td>
 
-                  <td>27 de dezembro de 2017</td>
+                  <td>
+                      {% with best_before_date=product.product.best_before|date:'SHORT_DATE_FORMAT' %}
+                      {% if best_before_date %}
+                          {{ best_before_date }}
+                      {% endif %}
+                      {% endwith %}
+                  </td>
 
                   <td class="center">{{ product.quantity }}</td>
                   {% if user|has_user_perm:'view_users' %}
@@ -63,23 +69,23 @@
               </tbody>
             </table>
           </div>
-
+          {% if user|has_user_perm:'view_users' %}
           <!-- Bloco Informacoes do usuario -->
 
           <div class="row">
             <div class="col-md-12">
-                <h4><i class="fa fa-fw fa-user"></i> Informações do usuário</h4><br>
+                <h4><i class="fa fa-fw fa-user"></i> {% trans "Informações do usuário" %}</h4><br>
             </div>
             <div class="col-md-6">
-                 <label>Id: </label> 7436524 <br>
-                 <label>Nome: </label> Fábio Marques<br>
-                 <label>Email: </label> fabionmh@gmail.com<br>
-                <br> <p><a href="#" class="btn btn-default"><i class="fa fa-external-link"></i> Acessar cadastro do usuário</a></p>
+                 <label>{% trans "ID" %}: </label> {{ shipment.user.id }} <br>
+                 <label>{% trans "Nome" %}: </label> {{ shipment.user.first_name }} {{ shipment.user.last_name }}<br>
+                 <label>{% trans "Email" %}: </label> {{ shipment.user.email }}<br>
+                <br> <p><a href="{%url 'admin:myauth_myuser_change' shipment.user.id %}" class="btn btn-default"><i class="fa fa-external-link"></i> Acessar cadastro do usuário</a></p>
             </div>
           </div>
 
           <!-- fim bloco informacoes do usuario -->
-
+          {% endif %}
           <!-- informacoes das warehouse - cadastro-->
           <hr>
           <div class="row">

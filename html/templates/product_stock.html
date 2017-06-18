@@ -45,8 +45,8 @@
                         {% select_status filter_values '99' as archived_filter_status %}
                         <select class="form-control" id="filtro-status" name="status">
                           <option value="">{{ status }}</option>
-                          <option value="1" {{ sent_filter_status }}>{% trans "Enviado" %}</option>
-                          <option value="2" {{ in_stock_filter_status }}>{% trans "Em Estoque" %}</option>
+                          <option value="1" {{ sent_filter_status }}>{% trans "Encaminhado VOI" %}</option>
+                          <option value="2" {{ in_stock_filter_status }}>{% trans "Em Estoque VOI" %}</option>
                           <option value="99" {{ archived_filter_status }}>{% trans "Arquivado" %}</option>
                         </select>
                     </div>
@@ -122,7 +122,21 @@
                   <td>{{ product.id }}</td>
                   <td class="limit-field">{{ product.name }}</td>
                   <td>{{ product.send_date }}</td>
-                  <td class="center row-quantity" data-current-qty="{{ product.quantity }}">{{ product.quantity }}{% if product.quantity_partial and product.quantity_partial > 0 and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}</td>
+                  <td class="center row-quantity" data-current-qty="{{ product.quantity }}">
+                      <span class="row-quantity-display">
+                      {{ product.quantity }}{% if product.quantity_partial and product.quantity_partial > 0 and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}
+                      </span>
+                      {% with best_before_date=product.best_before|date:'SHORT_DATE_FORMAT' %}
+                      {% if best_before_date %}
+                      <br>
+                      <span class="row-bestbefore-display">
+                          Validade:
+                          <br>
+                          {{ best_before_date }}
+                      </span>
+                      {% endif %}
+                      {% endwith %}
+                  </td>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
                   <td class="center">{{ product.user.first_name }}</td>
@@ -146,38 +160,46 @@
                        <div class="status row">
                         <form action="" method="post" class="form-change-status" id="form-change-status-{{ product.id }}">
                         {% csrf_token %}
-                         <input type="hidden" name="product_id" value="{{ product.id }}" class="product-id">
+                        <input type="hidden" name="product_id" value="{{ product.id }}" class="product-id">
                         {% check_status product '1' as sent_status %}
                         {% check_status product '2' as in_stock_status %}
                         {% check_status product '99' as archived_status %}
                         <div class="coluna-form-status col-md-12">
                             <label class="label-status"><i class="fa fa-pencil"></i> {% trans "Alterar Status" %}:</label><br><br>
-                            <label><input type="radio" name="product_status" value="1" data-current-status="{{ product.status }}" {{ sent_status }} /> {% trans "Enviado" %}</label><br>
-                            <label><input type="radio" name="product_status" value="2" data-current-status="{{ product.status }}" {{ in_stock_status }} /> {% trans "Em Estoque" %}</label><br>
+                            <label><input type="radio" name="product_status" value="1" data-current-status="{{ product.status }}" {{ sent_status }} /> {% trans "Encaminhado VOI" %}</label><br>
+                            <label><input type="radio" name="product_status" value="2" data-current-status="{{ product.status }}" {{ in_stock_status }} /> {% trans "Em Estoque VOI" %}</label><br>
                             <label><input type="radio" name="product_status" value="99" data-current-status="{{ product.status }}" {{ archived_status }} /> {% trans "Arquivado" %}</label><br>
                         </div>
                         <div class="coluna-form-status col-md-12">
                             <label><i class="fa fa-list-ol"></i> {% trans "Quantidade Recebida" %}:</label>
                             <input type="number" class="form-control row-qty-partial" name="product_quantity_partial" value="{% if product.quantity_partial is not None %}{{ product.quantity_partial }}{% endif %}" data-current-partial="{{ product.quantity_partial }}"  />
                             <br>
-
-                            <label><i class="fa fa-calendar"></i> {% trans "Data de vencimento" %}:</label><br>
-                            <input type="text" class="form-control data-vencimento" name="data-vencimento" id="datepicker"><br>
+                            {% with best_before_date=product.best_before|date:'SHORT_DATE_FORMAT' %}
+                            <label><i class="fa fa-calendar"></i> {% trans "Data de Validade" %}:</label><br>
+                            <input type="text" class="form-control row-best-before datepicker" name="product_best_before" value="{% if best_before_date %}{{ best_before_date }}{% endif %}" data-best-before="{% if best_before_date %}{{ best_before_date }}{% endif %}"><br>
+                            {% endwith %}
                         </div>
                         <div class="form-group col-md-12">
-                          <label for="condProduto"><i class="fa fa-archive"></i> {% trans "Condição do(s) produto(s)" %}:</label>
-                          <select class="form-control" id="condProduto" name="condProduto">
-                            <option>New</option>
-                            <option>Refurbished</option>
-                            <option>Used Like New</option>
-                            <option>Used Very good</option>
-                            <option>Used good</option>
-                            <option>Used Acceptable</option>
+                          <label><i class="fa fa-archive"></i> {% trans "Condição no Recebimento" %}:</label>
+                            {% select_condition product.actual_condition '1' as new_condition %}
+                            {% select_condition product.actual_condition '2' as refurbished_condition %}
+                            {% select_condition product.actual_condition '3' as used_like_new_condition %}
+                            {% select_condition product.actual_condition '4' as used_very_good_condition %}
+                            {% select_condition product.actual_condition '5' as used_good_condition %}
+                            {% select_condition product.actual_condition '6' as used_acceptable_condition %}
+                          <select class="form-control row-actual-condition" name="product_actual_condition" data-actual-condition="{% if product.actual_condition %}{{ product.actual_condition }}{% endif %}">
+                            <option value="">{% trans "Condição" %}</option>
+                            <option value="1" {{ new_condition }}>{% trans "New" %}</option>
+                            <option value="2" {{ refurbished_condition }}>{% trans "Refurbished" %}</option>
+                            <option value="3" {{ used_like_new_condition }}>{% trans "Used Like New" %}</option>
+                            <option value="4" {{ used_very_good_condition }}>{% trans "Used Very Good" %}</option>
+                            <option value="5" {{ used_good_condition }}>{% trans "Used Good" %}</option>
+                            <option value="6" {{ used_acceptable_condition }}>{% trans "Used Acceptable" %}</option>
                           </select>
                         </div>
                         <div class="form-group col-md-12">
-                          <label for="descCondicoes"><i class="fa fa-desktop"></i> {% trans "Descrição Condição do(s) produto(s)" %}:</label>
-                          <textarea class="form-control" id="descCondicoes" name="descCondicoes" placeholder="Descrição Condição do(s) produto(s)..."></textarea>
+                          <label><i class="fa fa-desktop"></i> {% trans "Comentários da Condição" %}:</label>
+                          <input type="text" class="form-control row-condition-comments" name="product_condition_comments" value="{% if product.condition_comments %}{{ product.condition_comments }}{% endif %}" data-condition-comments="{% if product.condition_comments %}{{ product.condition_comments }}{% endif %}">
                         </div>
 
                         <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i> {% trans "Salvar" %}</a>

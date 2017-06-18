@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.core.validators import ValidationError
 from datetime import datetime
+from django.utils import timezone
 import logging
 
 logger = logging.getLogger('django')
@@ -17,11 +18,26 @@ class Product(models.Model):
     quantity_partial = models.PositiveIntegerField(_('Quantidade Parcial'), null=True, blank=True)
     send_date = models.DateField(_('Data de Envio'))
     STATUS_CHOICES = (
-        (1, _('Enviado')),
-        (2, _('Em Estoque')),
+        (1, _('Encaminhado VOI')),
+        (2, _('Em Estoque VOI')),
         (99, _('Arquivado')),
     )
     status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES, null=True)
+    CONDITION_CHOICES = (
+        (1, _('New')),
+        (2, _('Refurbished')),
+        (3, _('Used Like New')),
+        (4, _('Used Very Good')),
+        (5, _('Used Good')),
+        (6, _('Used Acceptable')),
+    )
+    condition = models.SmallIntegerField(_('Condição'), choices=CONDITION_CHOICES, null=True)
+    actual_condition = models.SmallIntegerField(_('Condição no Recebimento'), choices=CONDITION_CHOICES, null=True,
+                                                blank=True)
+    condition_comments = models.CharField(_('Comentários da Condição'), max_length=200, null=True, blank=True)
+    best_before = models.DateTimeField(_('Data de Validade'), null=True, blank=True)
+    create_date = models.DateTimeField(_('Data de Cadastro'), auto_now_add=True, null=True)
+    receive_date = models.DateTimeField(_('Data de Recebimento'), null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
@@ -34,6 +50,12 @@ class Product(models.Model):
 
     def clean(self):
         errors = {}
+        logger.debug('@@@@@@@@@@@@ PRODUCT CLEAN SEND DATE @@@@@@@@@@@@@@')
+        logger.debug(self.best_before)
+        logger.debug(self.create_date)
+        logger.debug(self.send_date)
+        logger.debug(datetime.now())
+        logger.debug(timezone.now())
         if self.send_date and self.send_date > datetime.now().date():
             errors['send_date'] = ValidationError(_('Informe uma data menor ou igual a de hoje.'), code='invalid_date')
         if self.quantity:

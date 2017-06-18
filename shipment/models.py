@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from shipment.validators import validate_file_extension
 from datetime import datetime
 from product.models import Product as OriginalProduct
-from utils.helper import Calculate
+from utils import helper
 from pyparsing import ParseException
 import logging
 
@@ -184,7 +184,7 @@ class CostFormula(models.Model):
 
     def clean(self):
         try:
-            Calculate().parse(self.formula)
+            helper.Calculate().parse(self.formula)
         except ParseException as err:
             logger.error(str(err))
             raise ValidationError(_('Fórmula inválida.'), code='invalid_formula')

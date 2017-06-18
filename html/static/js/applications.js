@@ -412,6 +412,13 @@
                 positiveNumber: true,
             });
         });
+        $('.quantity_partial_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                positiveNumber: true,
+            });
+        });
         $('.send_date_validate').each(function ()
         {
             $(this).rules('add',
@@ -419,6 +426,20 @@
                 required: true,
                 date: true,
                 dateLessThanOrEqualNow: true,
+            });
+        });
+        $('.best_before_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                date: true,
+            });
+        });
+        $('.condition_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
             });
         });
     }
@@ -437,9 +458,19 @@
                 var inputPartial = tr.find('input.row-qty-partial');
                 var currentPartial = inputPartial.data('current-partial');
                 var newPartialValue = inputPartial.val();
+                var inputBestBefore = tr.find('input.row-best-before');
+                var currentBestBefore = inputBestBefore.data('best-before')
+                var newBestBeforeValue = inputBestBefore.val();
+                var selectActualCondition = tr.find('select.row-actual-condition');
+                var currentActualCondition = selectActualCondition.data('actual-condition')
+                var newActualConditionValue = selectActualCondition.val();
+                var inputConditionComments = tr.find('input.row-condition-comments');
+                var currentConditionComments = inputConditionComments.data('condition-comments')
+                var newConditionCommentsValue = inputConditionComments.val();
                 var checkedValue = radioChecked.val();
                 var currentValue = radioChecked.data('current-status');
-                if(''+checkedValue !== ''+currentValue || ''+currentPartial !== ''+newPartialValue)
+                if(''+checkedValue !== ''+currentValue || ''+currentPartial !== ''+newPartialValue || ''+currentBestBefore != ''+newBestBeforeValue
+                || ''+currentActualCondition != ''+newActualConditionValue || ''+currentConditionComments != ''+newConditionCommentsValue)
                 {
                     var $this = $(this);
                     if($this.hasClass('nosubmit'))
@@ -460,6 +491,9 @@
                         $('span#product-status-display-'+obj.product.id).text(obj.product.status_display);
                         form.find('input:radio').data('current-status', obj.product.status);
                         inputPartial.data('current-partial', obj.product.quantity_partial);
+                        inputBestBefore.data('best-before', obj.product.best_before);
+                        selectActualCondition.data('actual-condition', obj.product.actual_condition);
+                        inputConditionComments.data('condition-comments', obj.product.condition_comments);
                         if(obj.product.show_check && obj.product.status === SHIPMENT_STATUS_IN_STOCK && obj.product.quantity >= 0)
                         {
                             var checkColumn = $('span#product-status-display-'+obj.product.id).closest('td').next();
@@ -478,7 +512,13 @@
                         {
                             qtyInfo += ' ('+obj.product.quantity_partial+')';
                         }
-                        quantityColumn[0].innerHTML = qtyInfo;
+                        quantityColumn[0].innerHTML = '';
+                        quantityColumn.append($('<span class="row-quantity-display">' + qtyInfo + '</span>'));
+                        var bestBefore = obj.product.best_before;
+                        if(bestBefore !== '')
+                        {
+                            quantityColumn.append($('<br><span class="row-bestbefore-display">Validade:<br>' + bestBefore + '</span>'));
+                        }
                         form.closest('.contem-status').hide();
                     })
                     .fail(function(jqXHR, textStatus, errorThrown)

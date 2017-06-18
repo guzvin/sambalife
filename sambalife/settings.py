@@ -288,3 +288,7 @@ CRONJOBS = [
     ('0 0 1 * *', 'utils.cron.archive_shipped_shipments'),
     # ('0   4 * * *', 'django.core.management.call_command', ['clearsessions']),
 ]
+
+DEFAULT_REDIRECT_FACTOR = 1.29
+DEFAULT_AMAZON_FEE = 0.99
+DEFAULT_AMAZON_SHIPPING_COST = 0.30

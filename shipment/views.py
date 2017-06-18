@@ -18,13 +18,11 @@ from django.utils import formats
 from django.utils.encoding import force_text
 from django.conf import settings
 from django.urls import reverse
-from utils.helper import MyBaseInlineFormSet, send_email_basic_template_bcc_admins, ObjectView, Calculate
+from utils import helper
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
-from paypal.standard.models import ST_PP_COMPLETED
-from paypal.standard.ipn.signals import valid_ipn_received
 from shipment.templatetags.shipments import unit_weight_display, unit_length_display
 import magic
 import json
@@ -45,11 +43,12 @@ class InlineProductWidget(Widget):
             # Only add the 'value' attribute if a value is non-empty.
             final_attrs['value'] = hidden_value
         hidden_tag = format_html('<input{} class="inline-row-key"/>', flatatt(final_attrs))
-        html_fragment = format_html('<td>{}{}</td><td>{}</td><td>{}</td>',
+        html_fragment = format_html('<td>{}{}</td><td>{}</td><td>{}</td><td>{}</td>',
                                     hidden_tag,
                                     value.id if value else '',
                                     value.name if value else '',
-                                    value.description if value else '')
+                                    value.description if value else '',
+                                    formats.date_format(value.best_before, "SHORT_DATE_FORMAT") if value else '')
         return html_fragment
 
     def value_from_datadict(self, data, files, name):
@@ -134,7 +133,7 @@ def shipment_list(request):
     except EmptyPage:
         shipments = paginator.page(paginator.num_pages)
     return render(request, 'shipment_list.html', {'title': _('Estoque'), 'shipments': shipments,
-                                                  'filter_values': ObjectView(filter_values)})
+                                                  'filter_values': helper.ObjectView(filter_values)})
 
 
 @login_required
@@ -148,9 +147,7 @@ def shipment_details(request, pid=None):
         try:
             if is_user_perm is False:
                 query &= Q(user=request.user)
-                _shipment_details = Shipment.objects.get(query)
-            else:
-                _shipment_details = Shipment.objects.select_related('user').get(query)
+            _shipment_details = Shipment.objects.select_related('user').get(query)
         except Shipment.DoesNotExist:
             return HttpResponseBadRequest()
         _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
@@ -159,7 +156,7 @@ def shipment_details(request, pid=None):
         context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products,
                         'warehouses': _shipment_warehouses}
         custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
-        PackageFormSet = inlineformset_factory(Shipment, Package, formset=MyBaseInlineFormSet,
+        PackageFormSet = inlineformset_factory(Shipment, Package, formset=helper.MyBaseInlineFormSet,
                                                fields=('warehouse', 'weight', 'height', 'width', 'length', 'pdf_2',
                                                        'shipment_tracking'),
                                                extra=1,
@@ -228,12 +225,12 @@ def shipment_details(request, pid=None):
                     if settings.PAYPAL_TEST or is_sandbox:
                         import time
                         current_milli_time = lambda: int(round(time.time() * 1000))
-                        invoice_id = '_'.join([str(request.user.id), str(pid), 'debug', str(current_milli_time())])
+                        invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
                         paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
                         paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
                         paypal_cert = settings.PAYPAL_CERT_SANDBOX
                     else:
-                        invoice_id = '_'.join([str(request.user.id), str(pid)])
+                        invoice_id = '_'.join(['A', str(request.user.id), str(pid)])
                         paypal_business = settings.PAYPAL_BUSINESS
                         paypal_cert_id = settings.PAYPAL_CERT_ID
                         paypal_cert = settings.PAYPAL_CERT
@@ -344,6 +341,19 @@ def shipment_details(request, pid=None):
                                     if _shipment_details.status == 4 and has_group(request.user, 'admins'):
                                         _shipment_details.status = 5
                                         _shipment_details.save(update_fields=['status'])
+                                        products = _shipment_details.product_set.all()
+                                        original_products_to_update = []
+                                        for product in products:
+                                            try:
+                                                original_product = OriginalProduct.objects.get(pk=product.product_id)
+                                                if original_product.quantity == original_product.quantity_partial and \
+                                                   original_product.quantity == 0:
+                                                    original_products_to_update.append(product.product_id)
+                                            except OriginalProduct.DoesNotExist:
+                                                pass
+                                        if original_products_to_update:
+                                            OriginalProduct.objects.filter(id__in=original_products_to_update)\
+                                                .update(status=99)
                             except Shipment.DoesNotExist:
                                 return HttpResponseBadRequest()
                             if previous_state != _shipment_details.status:
@@ -491,13 +501,13 @@ def shipment_add(request):
     ShipmentFormSet = modelformset_factory(Shipment, fields=('send_date', 'pdf_1',),
                                            localized_fields=('send_date',), min_num=1, max_num=1,
                                            widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
-    ProductFormSet = inlineformset_factory(Shipment, Product, formset=MyBaseInlineFormSet, fields=('quantity',
+    ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
                                                                                                    'product'),
                                            field_classes={'product': Field},
                                            widgets={'product': InlineProductWidget},
                                            formfield_callback=my_formfield_callback,
                                            extra=original_products.count())
-    WarehouseFormSet = inlineformset_factory(Shipment, Warehouse, formset=MyBaseInlineFormSet,
+    WarehouseFormSet = inlineformset_factory(Shipment, Warehouse, formset=helper.MyBaseInlineFormSet,
                                              fields=('name', 'description'), extra=1)
     kwargs_p = {'addText': _('Adicionar produto'), 'deleteText': _('Remover produto')}
     kwargs_w = {'addText': _('Adicionar warehouse'), 'deleteText': _('Remover warehouse')}
@@ -537,9 +547,10 @@ def shipment_add(request):
                         shipment.total_products += product.quantity
                     cost_formula = CostFormula.objects.all()
                     if len(cost_formula) > 0:
-                        cost = Calculate().evaluate(cost_formula[0].formula, variables={'x': shipment.total_products})
+                        cost = helper.Calculate().evaluate(cost_formula[0].formula,
+                                                           variables={'x': shipment.total_products})
                     else:
-                        cost = shipment.total_products * 1.25
+                        cost = shipment.total_products * 1.29
                     if cost > 0:
                         shipment.cost = cost
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
@@ -582,9 +593,9 @@ def shipment_calculate(request):
 def _shipment_calculate(items):
     cost_formula = CostFormula.objects.all()
     if len(cost_formula) > 0:
-        cost = Calculate().evaluate(cost_formula[0].formula, variables={'x': items})
+        cost = helper.Calculate().evaluate(cost_formula[0].formula, variables={'x': items})
     else:
-        cost = items * 1.25
+        cost = items * 1.29
     return HttpResponse(json.dumps({'cost': force_text(formats.number_format(cost, use_l10n=True,
                                                                              decimal_pos=2)),
                                     'items': items}),
@@ -622,87 +633,29 @@ def shipment_download_pdf(request, pdf=None, pid=None):
         return HttpResponseForbidden()
 
 
-def paypal_notification(sender, **kwargs):
-    ipn_obj = sender
-    logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')
-    logger.debug(ipn_obj)
-    invalid_data = []
-    if ipn_obj.payment_status == ST_PP_COMPLETED:
-        if ipn_obj.test_ipn:
-            paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
-        else:
-            paypal_business = settings.PAYPAL_BUSINESS
-        if ipn_obj.receiver_email != paypal_business:
-            # Not a valid payment
-            texts = (_('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'),
-                     _('E-mail recebido pelo paypal: %(paypal)s') % {'paypal': ipn_obj.receiver_email},
-                     _('E-mail configurado no sistema: %(system)s') % {'system': paypal_business})
-            invalid_data.append(_html_format(*texts))
-        if ipn_obj.invoice is None or (len(ipn_obj.invoice.split('_')) != 2 and len(ipn_obj.invoice.split('_')) != 4):
-            texts = (_('Valor do campo \'recibo\' (invoice) não está no formato esperado.'),
-                     _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice if ipn_obj.invoice is not None
-                     else _('<em branco>')})
-            invalid_data.append(_html_format(*texts))
-        invoice = ipn_obj.invoice.split('_')
-        user_id = invoice[0]
-        shipment_id = invoice[1]
-        try:
-            _shipment_details = Shipment.objects.select_related('user').get(pk=shipment_id, user_id=user_id)
-            if str(_shipment_details.cost) != str(ipn_obj.payment_gross):
-                texts = (_('Valor do pagamento não confere com o valor cobrado.'),
-                         _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice},
-                         _('Valor pago: %(paid)s') % {'paid': ipn_obj.payment_gross},
-                         _('Valor cobrado: %(charged)s') % {'charged': _shipment_details.cost})
-                invalid_data.append(_html_format(*texts))
-        except Shipment.DoesNotExist:
-            texts = (_('Dados do recibo são inválidos.'), _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice})
-            invalid_data.append(_html_format(*texts))
-    else:
-        logger.info('@@@@@@@@@@@@ PAYMENT STATUS @@@@@@@@@@@@@@')
-        invalid_data.append(paypal_status_message(ipn_obj))
-    if invalid_data:
-        admin_url = format_html('<p>{}</p>',
-                                mark_safe(_('Para mais informações consulte a área <a href="%(url)s">administrativa</a>'
-                                            ' de pagamentos.')
-                                          % {'url': ''.join(['https://', Site.objects.get_current().domain,
-                                                             reverse('admin:payment_mypaypalipn_changelist')])}))
-        invalid_data.append(admin_url)
-        logger.error(invalid_data)
-        email_title = _('Informações sobre o pagamento do %(item)s') % {'item': ipn_obj.item_name}
-        email_message = ''.join(invalid_data)
-        send_email_basic_template_bcc_admins(_('Administrador'), None, email_title, email_message)
-        pass
-    else:
-        logger.debug('SUCCESS')
-        _shipment_details.status = 3
-        _shipment_details.save(update_fields=['status'])
-        email_title = _('Pagamento confirmado pelo PayPal para o %(item)s') % {'item': ipn_obj.item_name}
-        email_message = _(paypal_status_message(ipn_obj))
-        send_email_basic_template_bcc_admins(_shipment_details.user.first_name, [_shipment_details.user.email], email_title,
-                                             email_message)
-        send_email_shipment_pdf_2(_shipment_details, Warehouse.objects.filter(shipment=_shipment_details).count())
+def shipment_paypal_notification(user_id, shipment_id, ipn_obj):
+    try:
+        _shipment_details = Shipment.objects.select_related('user').get(pk=shipment_id, user_id=user_id)
+        if str(_shipment_details.cost) != str(ipn_obj.payment_gross):
+            texts = (_('Valor do pagamento não confere com o valor cobrado.'),
+                     _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice},
+                     _('Valor pago: %(paid)s') % {'paid': ipn_obj.payment_gross},
+                     _('Valor cobrado: %(charged)s') % {'charged': _shipment_details.cost})
+            return None, texts
+    except Shipment.DoesNotExist:
+        texts = (_('Dados do recibo são inválidos.'), _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice})
+        return None, texts
+    return _shipment_details, None
 
 
-def paypal_status_message(ipn_obj):
-    texts = (_('Notificação recebida do paypal.'),
-             _('Status: %(status)s') % {'status': ipn_obj.payment_status},
-             _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice},
-             _('Item: %(item)s') % {'item': ipn_obj.item_name},
-             _('Nome do cliente: %(name)s') % {'name': ipn_obj.first_name},
-             _('Sobrenome do cliente: %(surname)s') % {'surname': ipn_obj.last_name},
-             _('Data do pagamento: %(date)s') % {'date': force_text(formats.localize(ipn_obj.payment_date,
-                                                                                     use_l10n=True))})
-    return _html_format(*texts)
-
-
-def _html_format(*texts):
-    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'] +
-                          ['<br>{}'] * len(texts[1:]) +
-                          ['</p>'])
-    return format_html(html_format, *texts)
-
-
-valid_ipn_received.connect(paypal_notification)
+def shipment_paypal_notification_success(_shipment_details, ipn_obj, paypal_status_message):
+    _shipment_details.status = 3
+    _shipment_details.save(update_fields=['status'])
+    email_title = _('Pagamento confirmado pelo PayPal para o %(item)s') % {'item': ipn_obj.item_name}
+    email_message = paypal_status_message
+    helper.send_email_basic_template_bcc_admins(_shipment_details.user.first_name, [_shipment_details.user.email],
+                                                email_title, email_message)
+    send_email_shipment_pdf_2(_shipment_details, Warehouse.objects.filter(shipment=_shipment_details).count())
 
 
 def send_email_shipment_add(shipment, products, warehouses):
@@ -717,7 +670,7 @@ def send_email_shipment_add(shipment, products, warehouses):
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
                            '<strong>{}:</strong> {}</p>'
                            '<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
-                           '<strong>{}:</strong> {}</p>'] * len(products) +
+                           '<strong>{}:</strong> {}</p>{}'] * len(products) +
                           ['<p><a href="{}">{}</a> {}</p>'])
     texts = (_('Seu envio foi cadastrado com sucesso. Seguem abaixo os dados do envio:'),
              _('Envio'), shipment.id,
@@ -729,10 +682,19 @@ def send_email_shipment_add(shipment, products, warehouses):
         texts += (_('Warehouse'), warehouse.name)
     for product in products:
         texts += (_('Produto'), product.product.name, _('Quantidade'), product.quantity)
+        if product.product.best_before:
+            texts += (mark_safe('<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>%(best_before_label)s:'
+                                '</strong> %(best_before_value)s</p>'
+                                % {'best_before_label': _('Validade'),
+                                   'best_before_value': formats.date_format(product.product.best_before,
+                                                                            "SHORT_DATE_FORMAT")}),)
+        else:
+            texts += ('',)
     texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment')]), _('Clique aqui'),
               _('para acessar sua lista de envios.'))
     email_body = format_html(html_format, *texts)
-    send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+    helper.send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title,
+                                                email_body)
 
 
 def send_email_shipment_add_package(shipment, packages):
@@ -753,7 +715,8 @@ def send_email_shipment_add_package(shipment, packages):
               ''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), _('para acessar seu envio e efetuar o pagamento.'),)
     email_body = format_html(html_format, *texts)
-    send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+    helper.send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title,
+                                                email_body)
 
 
 def send_email_shipment_pdf_2(shipment, warehouse_qty):
@@ -793,7 +756,8 @@ def send_email_shipment_sent(shipment, packages):
     texts += [''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), _('para acessar seu envio.')]
     email_body = format_html(html_format, *tuple(texts))
-    send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+    helper.send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title,
+                                                email_body)
 
 
 def send_email_shipment_change_shipment(shipment, packages):
@@ -810,7 +774,8 @@ def send_email_shipment_change_shipment(shipment, packages):
     texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
              _('Clique aqui'), _('para acessar seu envio.'))
     email_body = format_html(html_format, *texts)
-    send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+    helper.send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title,
+                                                email_body)
 
 
 def send_email_shipment_status_change(shipment, link_text, *texts):
@@ -822,4 +787,5 @@ def send_email_shipment_status_change(shipment, link_text, *texts):
     texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), link_text,)
     email_body = format_html(html_format, *texts)
-    send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title, email_body)
+    helper.send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title,
+                                                email_body)

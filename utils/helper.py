@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.utils.translation import string_concat
 from django.utils.translation import ugettext as _
 from django.core.mail import EmailMessage
@@ -14,6 +13,15 @@ from django.utils.encoding import smart_str
 from django.contrib.auth import get_user_model
 from django.template import loader, Context
 from smtplib import SMTPException
+from paypal.standard.models import ST_PP_COMPLETED, ST_PP_PENDING, ST_PP_VOIDED
+from paypal.standard.ipn.signals import valid_ipn_received
+from django.utils.html import format_html, mark_safe
+from django.utils import formats
+from django.utils.encoding import force_text
+from django.urls import reverse
+from django.db import transaction
+from shipment.views import shipment_paypal_notification, shipment_paypal_notification_success
+from store.views import store_paypal_notification, store_paypal_notification_success
 import socket
 import hashlib
 import re
@@ -284,3 +292,99 @@ def get_sha1_hexdigest(salt, raw_password):
     value = smart_str(salt) + smart_str(raw_password)
     hash_sha = hashlib.sha1(value.encode())
     return hash_sha.hexdigest()
+
+
+class VoidPaymentException(Exception):
+    pass
+
+
+class PaymentException(Exception):
+    pass
+
+
+def paypal_notification(sender, **kwargs):
+    ipn_obj, invalid_data, entity, texts, invoice = sender, [], None, None, None
+    logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')
+    logger.debug(ipn_obj)
+    try:
+        with transaction.atomic():
+            if ipn_obj.payment_status == ST_PP_COMPLETED:
+                if ipn_obj.test_ipn:
+                    paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
+                else:
+                    paypal_business = settings.PAYPAL_BUSINESS
+                if ipn_obj.receiver_email != paypal_business:
+                    # Not a valid payment
+                    texts = (_('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'),
+                             _('E-mail recebido pelo paypal: %(paypal)s') % {'paypal': ipn_obj.receiver_email},
+                             _('E-mail configurado no sistema: %(system)s') % {'system': paypal_business})
+                    invalid_data.append(_html_format(*texts))
+                invoice = ipn_obj.invoice.split('_')
+                if ipn_obj.invoice is None or (len(invoice) != 3 and len(invoice) != 5) or (invoice[0] != 'A'
+                                                                                            and invoice[0] != 'B'):
+                    texts = (_('Valor do campo \'recibo\' (invoice) não está no formato esperado.'),
+                             _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice if ipn_obj.invoice is not None
+                             else _('<em branco>')})
+                    invalid_data.append(_html_format(*texts))
+                if invoice[0] == 'A':
+                    entity, texts = shipment_paypal_notification(invoice[1], invoice[2], ipn_obj)
+                elif invoice[0] == 'B':
+                    entity, texts = store_paypal_notification(invoice[2], ipn_obj)
+                if entity is None:
+                    invalid_data.append(_html_format(*texts))
+            else:
+                logger.info('@@@@@@@@@@@@ PAYMENT STATUS @@@@@@@@@@@@@@')
+                invalid_data.append(paypal_status_message(ipn_obj))
+            if invalid_data:
+                raise PaymentException()
+            else:
+                logger.debug('SUCCESS')
+                if invoice[0] == 'A':
+                    shipment_paypal_notification_success(entity, ipn_obj, _(paypal_status_message(ipn_obj)))
+                elif invoice[0] == 'B':
+                    store_paypal_notification_success(entity, invoice[1], ipn_obj, _(paypal_status_message(ipn_obj)))
+    except PaymentException:
+        admin_url = format_html('<p>{}</p>',
+                                mark_safe(_('Para mais informações consulte a área <a href="%(url)s">administrativa</a>'
+                                            ' de pagamentos.')
+                                          % {'url': ''.join(['https://', Site.objects.get_current().domain,
+                                                             reverse('admin:payment_mypaypalipn_changelist')])}))
+        invalid_data.append(admin_url)
+        logger.error('Problema no processamento do retorno do paypal: {0}'.format(invalid_data))
+        email_title = _('Informações sobre o pagamento do %(item)s, recibo %(invoice)s') % {'item': ipn_obj.item_name,
+                                                                                            'invoice': ipn_obj.invoice
+                                                                                            if ipn_obj.invoice is not
+                                                                                            None else _('<em branco>')}
+        email_message = ''.join(invalid_data)
+        send_email_basic_template_bcc_admins(_('Administrador'), None, email_title, email_message)
+    except VoidPaymentException:
+        # https://api-3t.paypal.com/nvp
+
+        # https://api-3t.sandbox.paypal.com/nvp
+        # megantate_api2.hotmail.com - USER
+        # W89B6FYA64ZSTRQS - PWD
+        # AFcWxV21C7fd0v3bYYYRCpSSRl31AOREyRaUrsAQ3ffe6FLVufjfr1ZZ - SIGNATURE
+        # 94.0
+        pass
+
+
+def paypal_status_message(ipn_obj):
+    texts = (_('Notificação recebida do paypal.'),
+             _('Status: %(status)s') % {'status': ipn_obj.payment_status},
+             _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice},
+             _('Item: %(item)s') % {'item': ipn_obj.item_name},
+             _('Nome do cliente: %(name)s') % {'name': ipn_obj.first_name},
+             _('Sobrenome do cliente: %(surname)s') % {'surname': ipn_obj.last_name},
+             _('Data do pagamento: %(date)s') % {'date': force_text(formats.localize(ipn_obj.payment_date,
+                                                                                     use_l10n=True))})
+    return _html_format(*texts)
+
+
+def _html_format(*texts):
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'] +
+                          ['<br>{}'] * len(texts[1:]) +
+                          ['</p>'])
+    return format_html(html_format, *texts)
+
+
+valid_ipn_received.connect(paypal_notification)

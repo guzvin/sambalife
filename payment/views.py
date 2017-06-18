@@ -39,6 +39,7 @@ def payment_ipn(request):
 
     try:
         data = QueryDict(request.body, encoding=encoding).copy()
+        logger.debug('@@@@@@@@@@@@ PayPal DATA: @@@@@@@@@@@@\n%s', data)
     except LookupError:
         data = None
         flag = 'Invalid form - invalid charset'

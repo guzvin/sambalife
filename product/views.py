@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden
-from django.utils import formats
+from django.utils import formats, timezone
 from django.forms import modelformset_factory, inlineformset_factory
 from django.urls import reverse
 from utils.helper import MyBaseInlineFormSet, ObjectView, send_email_basic_template_bcc_admins
@@ -18,6 +18,8 @@ from django.utils.html import format_html, mark_safe
 from django.conf import settings
 import json
 import logging
+import datetime
+import pytz
 
 logger = logging.getLogger('django')
 
@@ -107,7 +109,8 @@ def product_add_edit(request, pid=None):
     elif pid is not None and has_product_perm(request.user, 'change_product') is False:
         return HttpResponseForbidden()
     ProductFormSet = modelformset_factory(Product, fields=('name', 'description', 'quantity', 'quantity_partial',
-                                                           'send_date'),
+                                                           'send_date', 'best_before', 'condition', 'actual_condition',
+                                                           'condition_comments'),
                                           localized_fields=('send_date',), min_num=1, max_num=1)
     TrackingFormSet = inlineformset_factory(Product, Tracking, formset=MyBaseInlineFormSet, fields=('track_number',),
                                             extra=1)
@@ -190,6 +193,7 @@ def product_edit_status(request, pid=None, output=None):
         product = Product.objects.select_related('user').get(pk=pid)
         if product.user == request.user or has_user_perm(request.user, 'view_users'):
             fields_to_update = []
+            error_msg = []
             product_quantity_partial = request.PUT.get('product_quantity_partial')
             if product_quantity_partial:
                 try:
@@ -197,31 +201,68 @@ def product_edit_status(request, pid=None, output=None):
                     if product.quantity_partial < 0:
                         int('err')
                 except ValueError:
-                    return HttpResponse(json.dumps({'success': False, 'error': (_('Quantidade deve ser maior ou igual '
-                                                                                  'a zero.')
-                                                                                % {'qty': product.quantity})}),
-                                        content_type='application/json', status=400)
+                    error_msg.append(_('Quantidade deve ser maior ou igual a zero.') % {'qty': product.quantity})
                 fields_to_update.append('quantity_partial')
                 if product.quantity_partial == 0 or product.quantity_partial > product.quantity:
                     product.quantity = product.quantity_partial
                     fields_to_update.append('quantity')
+            product_best_before = request.PUT.get('product_best_before')
+            if product_best_before:
+                try:
+                    product_best_before = datetime.datetime.strptime(product_best_before, '%d/%m/%Y')
+                    if product.best_before is None or product.best_before.date() != product_best_before.date():
+                        product.best_before = product_best_before
+                        fields_to_update.append('best_before')
+                except ValueError:
+                    error_msg.append(_('Data de Vencimento inválida.'))
+            elif product.best_before:
+                product.best_before = None
+                fields_to_update.append('best_before')
+            if error_msg:
+                return HttpResponse(json.dumps({'success': False, 'error': (_(' ; ').join(error_msg))}),
+                                    content_type='application/json', status=400)
             if product.quantity_partial == 0:
                 product_status = '99'  # Archived
             else:
                 product_status = request.PUT.get('product_status')
+            if str(product.status) != product_status:
+                fields_to_update.append('status')
+                if product_status == '2':
+                    product.receive_date = datetime.datetime.now()
+                    fields_to_update.append('receive_date')
             product_status_display = None
-            if product_status:
+            for choice in Product.STATUS_CHOICES:
+                if str(choice[0]) == product_status:
+                    product_status_display = str(choice[1])
+                    break
+            if product_status_display is not None:
+                product.status = product_status
+            else:
                 for choice in Product.STATUS_CHOICES:
-                    if str(choice[0]) == product_status:
-                        product.status = product_status
+                    if str(choice[0]) == str(product.status):
                         product_status_display = str(choice[1])
                         break
-                if product_status_display is not None:
-                    fields_to_update.append('status')
+            product_actual_condition = request.PUT.get('product_actual_condition')
+            if str(product.actual_condition) != product_actual_condition:
+                fields_to_update.append('actual_condition')
+            product_actual_condition_display = None
+            for choice in Product.CONDITION_CHOICES:
+                if str(choice[0]) == product_actual_condition:
+                    product_actual_condition_display = str(choice[1])
+                    break
+            if product_actual_condition_display is None:
+                product.actual_condition = None
+                product_actual_condition_display = ''
+            else:
+                product.actual_condition = product_actual_condition
+            product_condition_comments = request.PUT.get('product_condition_comments')
+            if product.condition_comments != product_condition_comments:
+                product.condition_comments = product_condition_comments
+                fields_to_update.append('condition_comments')
             if len(fields_to_update) == 0:
                 raise Product.DoesNotExist
             product.save(update_fields=fields_to_update)
-            send_email_product_status(product, product_status_display)
+            send_email_product_info(product, product_status_display, product_actual_condition_display)
             if output and output == 'json':
                 product_json = {
                     'id': product.id,
@@ -230,6 +271,10 @@ def product_edit_status(request, pid=None, output=None):
                     'quantity': product.quantity,
                     'quantity_partial': product.quantity_partial,
                     'send_date': formats.date_format(product.send_date, "DATE_FORMAT"),
+                    'best_before': '' if product.best_before is None else formats.date_format(product.best_before,
+                                                                                              "SHORT_DATE_FORMAT"),
+                    'actual_condition': '' if product.actual_condition is None else product.actual_condition,
+                    'condition_comments': '' if product.condition_comments is None else product.condition_comments,
                     'status': product.status,
                     'status_display': product_status_display,
                     'show_check': product.user == request.user,
@@ -292,22 +337,36 @@ def product_autocomplete(request):
                                           quantity_partial__gt=0).order_by('id')
         for product in products:
             products_autocomplete.append({'value': product.id, 'label': product.name,
-                                          'desc': product.description, 'qty': product.quantity_partial})
+                                          'desc': product.description, 'qty': product.quantity_partial,
+                                          'bb': formats.date_format(product.best_before, "SHORT_DATE_FORMAT")
+                                          if product.best_before else ''})
     return HttpResponse(json.dumps(products_autocomplete),
                         content_type='application/json')
 
 
-def send_email_product_status(product, product_status_display):
-    email_title = _('Mudança no status do seu produto \'%(product)s\'') % {'product': product.name}
+def send_email_product_info(product, product_status_display, product_actual_condition_display):
+    email_title = _('Mudança nos dados sobre o seu produto \'%(product)s\'') % {'product': product.name}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
-                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}: {}</p>',
-                            '<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] if product.status == '2'
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}: {}</p>']
+                           if product.status == '2' else ['']) +
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}: {}</p>'] if product.best_before
+                           else ['']) +
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}: {}</p>']) +
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}: {}</p>']) +
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] if product.status == '2'
                            else ['']) +
                           ['<p><a href="{}">{}</a> {}</p>'])
     texts = [mark_safe(_('O status do produto, \'%(product)s\', é: <strong>%(status)s</strong>')
                        % {'product': product.name, 'status': product_status_display})]
     if product.status == '2':
-        texts += [_('Quantidade em estoque'), product.quantity_partial, _('Crie seu envio agora mesmo!')]
+        texts += [_('Quantidade em estoque na VOI'), product.quantity_partial]
+    if product.best_before:
+        texts += [_('Data de validade'), formats.date_format(product.best_before, "DATE_FORMAT")]
+    texts += [_('Condição do produto no recebimento'), product_actual_condition_display]
+    texts += [_('Comentários sobre a condição'), product.condition_comments if product.condition_comments is not None
+              else '']
+    if product.status == '2':
+        texts += [_('Crie seu envio agora mesmo!')]
     texts += [''.join(['https://', Site.objects.get_current().domain, reverse('product_stock')]), _('Clique aqui'),
               _('para acessar sua lista de produtos.')]
     email_body = format_html(html_format, *tuple(texts))

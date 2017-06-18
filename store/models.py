@@ -3,12 +3,6 @@ from django.db.models.fields import BigAutoField
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-from django.core.validators import ValidationError
-from shipment.validators import validate_file_extension
-from datetime import datetime
-from product.models import Product as OriginalProduct
-from utils.helper import Calculate
-from pyparsing import ParseException
 import logging
 
 logger = logging.getLogger('django')
@@ -36,14 +30,18 @@ class Lot(models.Model):
         related_name="lot_set",
         related_query_name="lot",
     )
-    # products_cost = ??
-    # profit = soma de todos (total_profit) dos produtos no lote
-    # average_roi = soma de todos (roi) divididos pelo número de produtos no lote
-    # lot_cost = soma de todos (buy_price * quantity) de todos produtos do lote
+    products_cost = models.DecimalField(_('Custo dos Produtos'), max_digits=12, decimal_places=2, default=0)
+    profit = models.DecimalField(_('Lucro'), max_digits=12, decimal_places=2, default=0)
+    average_roi = models.DecimalField(_('ROI Médio'), max_digits=12, decimal_places=2, default=0)
+    redirect_cost = models.DecimalField(_('Redirecionamento'), max_digits=12, decimal_places=2, default=0)
+    lot_cost = models.DecimalField(_('Valor do Lote'), max_digits=12, decimal_places=2, default=0)
 
     class Meta:
         verbose_name = _('Lote')
         verbose_name_plural = _('Lotes')
+
+    def __str__(self):
+        return self.name
 
 
 class Product(models.Model):
@@ -55,13 +53,17 @@ class Product(models.Model):
     sell_price = models.DecimalField(_('Valor de Venda'), max_digits=12, decimal_places=2)
     quantity = models.PositiveIntegerField(_('Quantidade'))
     fba_fee = models.DecimalField(_('Tarifa FBA'), max_digits=12, decimal_places=2)
-    amazon_fee = models.DecimalField(_('Tarifa Amazon'), max_digits=12, decimal_places=2, default=0.99)
-    shipping_cost = models.DecimalField(_('Custo de Envio'), max_digits=12, decimal_places=2, default=0.30)
+    amazon_fee = models.DecimalField(_('Tarifa Amazon'), max_digits=12, decimal_places=2,
+                                     default=settings.DEFAULT_AMAZON_FEE)
+    shipping_cost = models.DecimalField(_('Custo de Envio para Amazon'), max_digits=12, decimal_places=2,
+                                        default=settings.DEFAULT_AMAZON_SHIPPING_COST)
+    redirect_factor = models.DecimalField(_('Redirecionamento'), max_digits=12, decimal_places=2,
+                                          default=settings.DEFAULT_REDIRECT_FACTOR)
+    product_cost = models.DecimalField(_('Custo do Produto'), max_digits=12, decimal_places=2, default=0)
+    profit_per_unit = models.DecimalField(_('Lucro por Unidade'), max_digits=12, decimal_places=2, default=0)
+    total_profit = models.DecimalField(_('Lucro Total'), max_digits=12, decimal_places=2, default=0)
+    roi = models.DecimalField(_('ROI'), max_digits=12, decimal_places=2, default=0)
     lot = models.ForeignKey(Lot, on_delete=models.CASCADE)
-    # product_cost = buy_price + amazon_fee + fba_fee + shipping_cost + redirect_factor(1.29)
-    # profit_per_unit = sell_price - product_cost
-    # total_profit = profit_per_unit * quantity
-    # roi = profit_per_unit / product_cost
 
     class Meta:
         verbose_name = _('Produto')

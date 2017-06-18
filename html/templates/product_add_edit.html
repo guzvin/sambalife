@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n l10n products %}
+{% load i18n l10n products commons %}
 {% block addproduto %}{% if '/add' in request.path %}active{% endif %}{% endblock %}
 
 {% block specific_styles %}
@@ -62,7 +62,6 @@
 
               <!-- fim campo novo -->
 {% endcomment %}
-
                 <div class="form-group col-md-12">
                   <label for="{{ form.send_date.id_for_label }}">{{ form.send_date.label }}*</label>
                     {% trans "Data de envio" as send_date %}
@@ -73,6 +72,70 @@
                     <label id="send_date-error" class="error" for="{{ form.send_date.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
+                {% if user|has_product_perm:'change_product_status' %}
+                <div class="form-group col-md-12">
+                  <label for="{{ form.best_before.id_for_label }}">{{ form.best_before.label }}</label>
+                    {% trans "Data de Validade" as best_before %}
+                  {% with formatted_date2=form.best_before.value|date:'SHORT_DATE_FORMAT' %}
+                  <input type="text" class="form-control menor datepicker best_before_validate" id="{{ form.best_before.id_for_label }}" name="{{ form.best_before.html_name }}" placeholder="{{ best_before }}..." value="{% if formatted_date2 %}{{ formatted_date2 }}{% elif form.best_before.value %}{{ form.best_before.value }}{% endif %}">
+                  {% endwith %}
+                  {% for error in form.best_before.errors %}
+                    <label id="best_before-error" class="error" for="{{ form.best_before.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                {% endif %}
+                <div class="form-group col-md-12">
+                  <label for="{{ form.condition.id_for_label }}">{{ form.condition.label }}*</label>
+                    {% select_condition form.condition.value '1' as new_condition %}
+                    {% select_condition form.condition.value '2' as refurbished_condition %}
+                    {% select_condition form.condition.value '3' as used_like_new_condition %}
+                    {% select_condition form.condition.value '4' as used_very_good_condition %}
+                    {% select_condition form.condition.value '5' as used_good_condition %}
+                    {% select_condition form.condition.value '6' as used_acceptable_condition %}
+                    <select class="form-control condition_validate" id="{{ form.condition.id_for_label }}" name="{{ form.condition.html_name }}">
+                        <option value="">{{ form.condition.label }}</option>
+                        <option value="1" {{ new_condition }}>{% trans "New" %}</option>
+                        <option value="2" {{ refurbished_condition }}>{% trans "Refurbished" %}</option>
+                        <option value="3" {{ used_like_new_condition }}>{% trans "Used Like New" %}</option>
+                        <option value="4" {{ used_very_good_condition }}>{% trans "Used Very Good" %}</option>
+                        <option value="5" {{ used_good_condition }}>{% trans "Used Good" %}</option>
+                        <option value="6" {{ used_acceptable_condition }}>{% trans "Used Acceptable" %}</option>
+                    </select>
+                  {% for error in form.condition.errors %}
+                    <label id="condition-error" class="error" for="{{ form.condition.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                {% if user|has_product_perm:'change_product_status' %}
+                <div class="form-group col-md-12">
+                  <label for="{{ form.actual_condition.id_for_label }}">{{ form.actual_condition.label }}</label>
+                    {% select_condition form.actual_condition.value '1' as new_condition %}
+                    {% select_condition form.actual_condition.value '2' as refurbished_condition %}
+                    {% select_condition form.actual_condition.value '3' as used_like_new_condition %}
+                    {% select_condition form.actual_condition.value '4' as used_very_good_condition %}
+                    {% select_condition form.actual_condition.value '5' as used_good_condition %}
+                    {% select_condition form.actual_condition.value '6' as used_acceptable_condition %}
+                    <select class="form-control" id="{{ form.actual_condition.id_for_label }}" name="{{ form.actual_condition.html_name }}">
+                        <option value="">{{ form.actual_condition.label }}</option>
+                        <option value="1" {{ new_condition }}>{% trans "New" %}</option>
+                        <option value="2" {{ refurbished_condition }}>{% trans "Refurbished" %}</option>
+                        <option value="3" {{ used_like_new_condition }}>{% trans "Used Like New" %}</option>
+                        <option value="4" {{ used_very_good_condition }}>{% trans "Used Very Good" %}</option>
+                        <option value="5" {{ used_good_condition }}>{% trans "Used Good" %}</option>
+                        <option value="6" {{ used_acceptable_condition }}>{% trans "Used Acceptable" %}</option>
+                    </select>
+                  {% for error in form.actual_condition.errors %}
+                    <label id="actual_condition-error" class="error" for="{{ form.actual_condition.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                <div class="form-group col-md-12">
+                  <label for="{{ form.condition_comments.id_for_label }}">{{ form.condition_comments.label }}</label>
+                    {% blocktrans asvar condition_comments with condition_comments_label=form.condition_comments.label|lower %}Digite os {{ condition_comments_label }}{% endblocktrans %}
+                  <input type="text" class="form-control" id="{{ form.condition_comments.id_for_label }}" aria-describedby="condition_comments" name="{{ form.condition_comments.html_name }}" placeholder="{{ condition_comments }}..." value="{% if form.condition_comments.value %}{{ form.condition_comments.value }}{% endif %}">
+                  {% for error in form.condition_comments.errors %}
+                    <label id="condition_comments-error" class="error" for="{{ form.condition_comments.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                {% endif %}
               {% endfor %}
               <div class="lista-tracks js-inline-admin-formset" id="{{ tracking_formset.prefix }}-group"
                data-inline-type="stacked"
@@ -102,29 +165,6 @@
                     <br>
                   </div>
                 {% endfor %}
-
-                <!-- Novos campos -->
-
-                <div class="form-group col-md-12"><br><br>
-                  <label for="DataValidade">Data de validade*</label>
-                  <input class="form-control menor datepicker DataValidade hasDatepicker" id="DataValidade" name="DataValidade" placeholder="Data de validade..." value="15/05/2017" aria-required="true" type="text">
-                </div>
-                <div class="form-group col-md-6"><br>
-                  <label for="condProduto">Condição do(s) produto(s)</label>
-                  <select class="form-control" id="condProduto" name="condProduto">
-                    <option>New</option>
-                    <option>Refurbished</option>
-                    <option>Used Like New</option>
-                    <option>Used Very good</option>
-                    <option>Used good</option>
-                    <option>Used Acceptable</option>
-                  </select>
-                </div>
-                <div class="form-group col-md-12"><br>
-                  <label for="descCondicoes">Descrição Condição do(s) produto(s)</label>
-                  <textarea class="form-control" id="descCondicoes" name="descCondicoes" placeholder="Descrição Condição do(s) produto(s)..."></textarea>
-                </div>
-
               </div>
               <div class="col-md-12"><br>
                 <a class="add-track btn btn-success {{ tracking_formset.prefix }}-add-row add-row" title="{{ tracking_formset.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i>{{ tracking_formset.addText }}</a>

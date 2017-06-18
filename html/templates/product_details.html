@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n permissions products users %}
+{% load i18n tz permissions products users %}
 {% block conteudo %}
 
 <div class="container-fluid">
@@ -33,6 +33,29 @@
                     <label class="control-label col-xs-3">{% trans "Quantidade" %}:</label>
                     <div class="col-xs-9">
                         <p>{{ product.quantity }}{% if product.quantity_partial and product.quantity_partial > 0 and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}</p>
+                    </div>
+              </div>
+              <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "Data de Envio" %}:</label>
+                    <div class="col-xs-9">
+                        <p>{{ product.send_date|date:'SHORT_DATE_FORMAT' }}</p>
+                    </div>
+              </div>
+              <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "Data de Validade" %}:</label>
+                    <div class="col-xs-9">
+                        <p>{{ product.best_before|date:'SHORT_DATE_FORMAT' }}</p>
+                    </div>
+              </div>
+              <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "Data de Cadastro" %}:</label>
+                    <div class="col-xs-9">
+                        {% timezone "Brazil/East" %}
+                        <p>{{ product.create_date|date:'SHORT_DATETIME_FORMAT' }} - <small>{% trans "Horário de Brasília" %}</small></p>
+                        {% endtimezone %}
+                        {% timezone "US/Eastern" %}
+                        <p>{{ product.create_date|date:'SHORT_DATETIME_FORMAT' }} - <small>Eastern Time</small></p>
+                        {% endtimezone %}
                     </div>
               </div>
 {% comment %}
@@ -69,6 +92,24 @@
                         <p>{% if product.status %}{{ product.get_status_display }}{% endif %}</p>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "Condição" %}:</label>
+                    <div class="col-xs-9">
+                        <p>{% if product.condition %}{{ product.get_condition_display }}{% endif %}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "Condição no Recebimento" %}:</label>
+                    <div class="col-xs-9">
+                        <p>{% if product.actual_condition %}{{ product.get_actual_condition_display }}{% endif %}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "Comentários da Condição" %}:</label>
+                    <div class="col-xs-9">
+                        <p>{% if product.condition_comments %}{{ product.condition_comments }}{% endif %}</p>
+                    </div>
+                </div>
               <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Rastreamento" %}:</label>
                     <div class="col-xs-9">
@@ -77,30 +118,6 @@
                         {% endfor %}
                     </div>
                 </div>
-
-              <div class="form-group">
-                <label class="control-label col-xs-3">{% trans "Data Vencimento" %}:</label>
-                <div class="col-xs-9">
-                    <p>27 de Dezembro de 2019​</p>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="control-label col-xs-3">{% trans "Condição do(s) produto(s)" %}:</label>
-                <div class="col-xs-9">
-                    <p>Used Very good</p>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="control-label col-xs-3">{% trans "Descrição Condição do(s) produto(s)" %}:</label>
-                <div class="col-xs-9">
-                    <p>Produtos avariados na parte inferior.​</p>
-                </div>
-              </div>
-
-
-
               {% if user|has_product_perm:'change_product' %}
               <a href="{% url 'product_edit' product.id %}" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
               {% endif %}

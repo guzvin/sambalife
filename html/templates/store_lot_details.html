@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-
+{% load i18n l10n lots permissions users commons %}
 {% block conteudo %}
 
 <div class="container-fluid">
@@ -8,203 +8,116 @@
 
         </div>
         <div class="col-md-10 main">
-          <h1 class="page-header"><i class="fa fa-cart-arrow-down"></i> Nome do produto/lote</h1>
+          <h1 class="page-header"><i class="fa fa-cart-arrow-down"></i> {{ lot.name }}</h1>
           <div class="row">
               <div class="col-md-4">
-                  <p><strong>Situação: </strong> Vendido</p>
-                  <p><strong>Data venda: </strong> 03/04/2017</p>
-                  <p><strong>Valor dos Produtos: </strong> U$ 147,89</p>
-                  <p><strong>Lucro: </strong> U$ 87,00</p>
+                  <p><strong>{% trans "Situação" %}: </strong> {% if lot.status %}{{ lot.get_status_display  }}{% endif %}</p>
+                  <p><strong>{% trans "Data venda" %}: </strong> {% if lot.sell_date %}{{ lot.sell_date }}{% endif %}</p>
+                  <p><strong>{% trans "Custo dos Produtos" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Custos dos Produtos&quot; multiplicados pela &quot;Quantidade&quot; de produtos de cada produto do lote.' %}"></span>: </strong> U$ {{ lot.products_cost|localize }}</p>
+                  <p><strong>{% trans "Lucro" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Lucros Totais&quot; dos produtos do lote.' %}"></span>: </strong> U$ {{ lot.profit|localize }}</p>
               </div>
               <div class="col-md-4">
-                  <p><strong>ROI médio: </strong> 58,30%</p>
-                  <p><strong>Redirecionamento: </strong> U$ 14,90</p>
-                  <p><strong>Total a pagar: </strong> U$ 162,08</p>
+                  <p><strong>{% trans "ROI médio" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;ROI&quot; divididos pelo número de produtos do lote.' %}"></span>: </strong> {{ lot.average_roi|localize }}%</p>
+                  <p><strong>{% trans "Redirecionamento" %} <span class="help help-tooltip help-icon" title="{% trans 'Este valor é somente informativo, ele será pago no processo de criação do envio por esta plataforma.' %}"></span>: </strong> U$ {{ lot.redirect_cost|localize }}</p>
+                  <p><strong>{% trans "Total a pagar" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Valores de Compra&quot; multiplicados pela &quot;Quantidade&quot; de produtos de cada produto do lote.' %}"></span>: </strong> U$ {{ lot.lot_cost|localize }}</p>
               </div>
               <div class="col-md-4">
                   <!-- Aparece apenas para usuarios comuns -->
                     <br><br>
-                    <a class="btn btn-default" href="#"><i class="fa fa-fw fa-paypal"></i> Comprar Agora</a>
+                    {{ paypal_form.render }}
                   <!-- fim botao compra -->
               </div>
           </div>
           <div class="row">
-              <br><h3><i class="fa fa-list-ol"></i> Produto(s)</h3><br><br>
+              <br><h3><i class="fa fa-list-ol"></i> {% trans "Produto(s)" %}</h3><br><br>
           </div>
           <div class="row lista itens">
+              {% for product in lot.product_set.all %}
               <div class="col-md-4 item">
                   <div class="col-md-12">
-                      <p class="nome"><strong>Nome:</strong><br> my Charge - Transit Plus 3000 mAh Power Bank</p>
+                      <p class="nome"><strong>{% trans "Nome" %}:</strong><br> {{ product.name }}</p>
                   </div>
                   <div class="col-md-12">
-                      <p><strong>UPC / CODIGO IDENTIFICADOR:</strong><br> 847843002842</p>
+                      <p><strong>{% trans "UPC / CODIGO IDENTIFICADOR" %}:</strong><br> {{ product.identifier }}</p>
                   </div>
                   <div class="col-md-6">
-                      <p><strong>Valor Compra:</strong><br> U$ 11,99</p>
+                      <p><strong>{% trans "Valor de Compra" %}:</strong><br> U$ {{ product.buy_price|localize }}</p>
                   </div>
                   <div class="col-md-6">
-                      <p><strong>Quantidade:</strong><br> 6</p>
+                      <p><strong>{% trans "Quantidade" %}:</strong><br> {{ product.quantity }}</p>
                   </div>
                   <div class="col-md-6">
-                      <p><strong>Valor Venda:</strong><br> U$ 26,18</p>
+                      <p><strong>{% trans "Valor de Venda" %}:</strong><br> U$ {{ product.sell_price|localize }}</p>
                   </div>
                   <div class="col-md-6">
-                      <p><strong>FBA Fee:</strong><br> U$ 6,18</p>
+                      <p><strong>{% trans "Tarifa FBA" %}:</strong><br> U$ {{ product.fba_fee|localize }}</p>
                   </div>
                   <div class="col-md-6">
-                      <p><strong>Amazon Fee:</strong><br> U$ 0,99</p>
+                      <p><strong>{% trans "Tarifa Amazon" %}:</strong><br> U$ {{ product.amazon_fee|localize }}</p>
                   </div>
                   <div class="col-md-6">
-                      <p><strong>Redirecionamento:</strong><br> U$ 1,29</p>
+                      <p><strong>{% trans "Redirecionamento" %}:</strong><br> U$ {{ product.redirect_factor|localize }}</p>
                   </div>
                   <div class="col-md-12">
-                      <p><strong>Envio para Amazon:</strong><br> U$ 6,99</p>
+                      <p><strong>{% trans "Custo de Envio para Amazon" %}:</strong><br> U$ {{ product.shipping_cost|localize }}</p>
+                  </div>
+                  <div class="col-md-12">
+                      <p><strong>{% trans "Custo do Produto" %} <span class="help help-tooltip help-icon" title="{% trans 'Valor informativo que é composto por: &quot;Valor de Compra&quot; mais &quot;Tarifa FBA&quot; mais &quot;Tarifa Amazon&quot; mais &quot;Redirecionamento&quot; mais &quot;Custo de Envio para Amazon&quot;.' %}"></span>:</strong><br> U$ {{ product.product_cost|localize }}</p>
                   </div>
 
                   <div class="col-md-12">
-                      <p><strong>Lucro liquido por unidade:</strong><br> U$ 4,29</p>
+                      <p><strong>{% trans "Lucro Líquido por Unidade" %} <span class="help help-tooltip help-icon" title="{% trans 'Valor informativo que é composto por: &quot;Valor de Venda&quot; menos &quot;Custo do Produto&quot;.' %}"></span>:</strong><br> U$ {{ product.profit_per_unit|localize }}</p>
                   </div>
                   <div class="col-md-6">
-                      <p><strong>Lucro total:</strong><br> U$ 24,29</p>
+                      <p><strong>{% trans "Lucro Total" %} <span class="help help-tooltip help-icon" title="{% trans 'Valor informativo que é composto por: &quot;Lucro líquido por Unidade&quot; vezes &quot;Quantidade&quot;.' %}"></span>:</strong><br> U$ {{ product.total_profit|localize }}</p>
                   </div>
                   <div class="col-md-6">
-                      <p><strong>ROI (%):</strong><br> 41</p>
+                      <p><strong>{% trans "ROI" %} (%):</strong><br> {{ product.roi|localize }}</p>
                   </div>
               </div>
-              <div class="col-md-4 item">
-                  <div class="col-md-12">
-                      <p class="nome"><strong>Nome:</strong><br> LEE Capri Preto</p>
-                  </div>
-                  <div class="col-md-12">
-                      <p><strong>UPC / CODIGO IDENTIFICADOR:</strong><br> 847843002842</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Valor Compra:</strong><br> U$ 11,99</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Quantidade:</strong><br> 6</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Valor Venda:</strong><br> U$ 26,18</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>FBA Fee:</strong><br> U$ 6,18</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Amazon Fee:</strong><br> U$ 0,99</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Redirecionamento:</strong><br> U$ 1,29</p>
-                  </div>
-                  <div class="col-md-12">
-                      <p><strong>Envio para Amazon:</strong><br> U$ 6,99</p>
-                  </div>
-
-                  <div class="col-md-12">
-                      <p><strong>Lucro liquido por unidade:</strong><br> U$ 4,29</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Lucro total:</strong><br> U$ 24,29</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>ROI (%):</strong><br> 41</p>
-                  </div>
-              </div>
-              <div class="col-md-4 item">
-                  <div class="col-md-12">
-                      <p class="nome"><strong>Nome:</strong><br> Calça Jeans LEE</p>
-                  </div>
-                  <div class="col-md-12">
-                      <p><strong>UPC / CODIGO IDENTIFICADOR:</strong><br> 847843002842</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Valor Compra:</strong><br> U$ 11,99</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Quantidade:</strong><br> 6</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Valor Venda:</strong><br> U$ 26,18</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>FBA Fee:</strong><br> U$ 6,18</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Amazon Fee:</strong><br> U$ 0,99</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Redirecionamento:</strong><br> U$ 1,29</p>
-                  </div>
-                  <div class="col-md-12">
-                      <p><strong>Envio para Amazon:</strong><br> U$ 6,99</p>
-                  </div>
-
-                  <div class="col-md-12">
-                      <p><strong>Lucro liquido por unidade:</strong><br> U$ 4,29</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Lucro total:</strong><br> U$ 24,29</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>ROI (%):</strong><br> 41</p>
-                  </div>
-              </div>
-              <div class="col-md-4 item">
-                  <div class="col-md-12">
-                      <p class="nome"><strong>Nome:</strong><br> Sutian Maidenform</p>
-                  </div>
-                  <div class="col-md-12">
-                      <p><strong>UPC / CODIGO IDENTIFICADOR:</strong><br> 847843002842</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Valor Compra:</strong><br> U$ 11,99</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Quantidade:</strong><br> 6</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Valor Venda:</strong><br> U$ 26,18</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>FBA Fee:</strong><br> U$ 6,18</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Amazon Fee:</strong><br> U$ 0,99</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Redirecionamento:</strong><br> U$ 1,29</p>
-                  </div>
-                  <div class="col-md-12">
-                      <p><strong>Envio para Amazon:</strong><br> U$ 6,99</p>
-                  </div>
-
-                  <div class="col-md-12">
-                      <p><strong>Lucro liquido por unidade:</strong><br> U$ 4,29</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>Lucro total:</strong><br> U$ 24,29</p>
-                  </div>
-                  <div class="col-md-6">
-                      <p><strong>ROI (%):</strong><br> 41</p>
-                  </div>
-              </div>
+              {% endfor %}
           </div>
             <!-- Aparece apenas para usuarios comuns -->
             <br><br>
 
-            <a class="btn btn-default" href="#"><i class="fa fa-fw fa-paypal"></i> Comprar Agora</a>
+            {{ paypal_form.render }}
 
             <!-- fim botao compra -->
 
             <br><br>
-            <a href="cadastro_produto.html" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> Editar</a>
-            <a href="#" class="btn btn-danger"><i class="fa fa-fw fa-trash"></i> Excluir</a><br><br>
-            <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> Voltar</a>
+            {% if user|has_store_perm:'change_lot' %}
+            <a href="{%url 'admin:store_lot_change' lot.id %}" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
+            {% endif %}
+            {% if user|has_store_perm:'delete_lot' %}
+            <a href="#" class="btn btn-danger send-btn-delete"><i class="fa fa-fw fa-trash"></i> {% trans "Excluir" %}</a><br><br>
+            {% endif %}
+            <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a>
             <br><br><br>
         </div>
         <div class="col-md-1 sidebar">
         </div>
       </div>
     </div>
-
+    {% if user|has_store_perm:'delete_lot' %}
+    <form action="{%url 'admin:store_lot_delete' lot.id %}" method="post" class="form-delete-lot" id="form-delete-lot">
+    {% csrf_token %}
+    <div id="confirmacao-exclusao" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Excluir" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Confirma a exclusão do lote?" %}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">{% trans "Sim" %}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+    {% endif %}
 {% endblock %}
