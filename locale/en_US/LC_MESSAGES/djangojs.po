@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-26 01:00-0300\n"
+"POT-Creation-Date: 2017-06-18 14:17-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -302,22 +302,26 @@ msgstr ""
 msgid "Please enter a number greater than zero."
 msgstr ""
 
-#: html/static/js/applications.js:712
+#: html/static/js/applications.js:522 html/static/js/applications.js:526
+msgid "Expiration date"
+msgstr ""
+
+#: html/static/js/applications.js:775
 msgid ""
 "Sorry, but there seems to be some inconsistencies. Please reload the page "
 "and try again."
 msgstr ""
 
-#: html/static/js/applications.js:713 html/static/js/applications.js:718
-#: html/static/js/applications.js:723
+#: html/static/js/applications.js:776 html/static/js/applications.js:781
+#: html/static/js/applications.js:786
 msgid "Error"
 msgstr ""
 
-#: html/static/js/applications.js:717
+#: html/static/js/applications.js:780
 msgid "Access denied"
 msgstr ""
 
-#: html/static/js/applications.js:722
+#: html/static/js/applications.js:785
 msgid ""
 "Sorry, we are unable to process your operation. Please reload the page and "
 "try again."

@@ -126,11 +126,16 @@
                       <span class="row-quantity-display">
                       {{ product.quantity }}{% if product.quantity_partial is not None and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}
                       </span>
+                      {% with associated_shipments=product|exists_shipment_associated %}
+                      {% if associated_shipments %}
+                      <span class="help help-tooltip help-icon" title="{% blocktrans with associated_shipments=associated_shipments %}Este produto se encontra associado a um ou mais envios ainda em andamento. ID(s): {{ associated_shipments }}{% endblocktrans %}"></span>
+                      {% endif %}
+                      {% endwith %}
                       {% with best_before_date=product.best_before|date:'SHORT_DATE_FORMAT' %}
                       {% if best_before_date %}
-                      <br>
                       <span class="row-bestbefore-display">
-                          Validade:
+                          <br>
+                          {% trans "Validade" %}:
                           <br>
                           {{ best_before_date }}
                       </span>

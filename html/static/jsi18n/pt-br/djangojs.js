@@ -41,6 +41,7 @@
     "Click to remove all chosen %s at once.": "Clique para remover de uma s\u00f3 vez todos os %s escolhidos.",
     "December": "Dezembro",
     "Error": "Erro",
+    "Expiration date": "Validade",
     "February": "Fevereiro",
     "Filter": "Filtro",
     "Hide": "Esconder",

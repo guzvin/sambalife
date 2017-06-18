@@ -347,8 +347,7 @@ def shipment_details(request, pid=None):
                                         for product in products:
                                             if Product.objects.filter(Q(product__id=product.product_id) &
                                                                       ~Q(shipment__id=_shipment_details.id) &
-                                                                      ~Q(shipment__status=5) &
-                                                                      ~Q(shipment__status=99)).exists() is True:
+                                                                      ~Q(shipment__status=5)).exists() is True:
                                                 continue
                                             try:
                                                 original_product = OriginalProduct.objects.get(pk=product.product_id)

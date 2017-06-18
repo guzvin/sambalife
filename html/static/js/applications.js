@@ -512,12 +512,26 @@
                         {
                             qtyInfo += ' ('+obj.product.quantity_partial+')';
                         }
-                        quantityColumn[0].innerHTML = '';
-                        quantityColumn.append($('<span class="row-quantity-display">' + qtyInfo + '</span>'));
+                        quantityColumn.find('span.row-quantity-display')[0].innerHTML = qtyInfo;
                         var bestBefore = obj.product.best_before;
+                        var rowBestBefore = quantityColumn.find('span.row-bestbefore-display');
                         if(bestBefore !== '')
                         {
-                            quantityColumn.append($('<br><span class="row-bestbefore-display">Validade:<br>' + bestBefore + '</span>'));
+                            if(rowBestBefore[0])
+                            {
+                                rowBestBefore[0].innerHTML = '<br>' + gettext('Expiration date') + ':<br>' + bestBefore;
+                            }
+                            else
+                            {
+                                quantityColumn.append($('<span class="row-bestbefore-display"><br>' + gettext('Expiration date') + ':<br>' + bestBefore + '</span>'));
+                            }
+                        }
+                        else
+                        {
+                            if(rowBestBefore[0])
+                            {
+                                rowBestBefore.remove();
+                            }
                         }
                         form.closest('.contem-status').hide();
                     })
