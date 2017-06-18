@@ -48,7 +48,8 @@ class InlineProductWidget(Widget):
                                     value.id if value else '',
                                     value.name if value else '',
                                     value.description if value else '',
-                                    formats.date_format(value.best_before, "SHORT_DATE_FORMAT") if value else '')
+                                    formats.date_format(value.best_before, "SHORT_DATE_FORMAT")
+                                    if value and value.best_before else '')
         return html_fragment
 
     def value_from_datadict(self, data, files, name):
@@ -344,6 +345,11 @@ def shipment_details(request, pid=None):
                                         products = _shipment_details.product_set.all()
                                         original_products_to_update = []
                                         for product in products:
+                                            if Product.objects.filter(Q(product__id=product.product_id) &
+                                                                      ~Q(shipment__id=_shipment_details.id) &
+                                                                      ~Q(shipment__status=5) &
+                                                                      ~Q(shipment__status=99)).exists() is True:
+                                                continue
                                             try:
                                                 original_product = OriginalProduct.objects.get(pk=product.product_id)
                                                 if original_product.quantity == original_product.quantity_partial and \
@@ -502,7 +508,7 @@ def shipment_add(request):
                                            localized_fields=('send_date',), min_num=1, max_num=1,
                                            widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
-                                                                                                   'product'),
+                                                                                                          'product'),
                                            field_classes={'product': Field},
                                            widgets={'product': InlineProductWidget},
                                            formfield_callback=my_formfield_callback,

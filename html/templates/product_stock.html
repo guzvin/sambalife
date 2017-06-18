@@ -124,7 +124,7 @@
                   <td>{{ product.send_date }}</td>
                   <td class="center row-quantity" data-current-qty="{{ product.quantity }}">
                       <span class="row-quantity-display">
-                      {{ product.quantity }}{% if product.quantity_partial and product.quantity_partial > 0 and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}
+                      {{ product.quantity }}{% if product.quantity_partial is not None and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}
                       </span>
                       {% with best_before_date=product.best_before|date:'SHORT_DATE_FORMAT' %}
                       {% if best_before_date %}
@@ -213,8 +213,10 @@
                   </td>
                   {% if user|has_shipment_perm:'add_shipment' %}
                   <td class="center">
-                      {% if product.status == 2 and product.quantity > 0 and product.user == request.user %}
+                      {% if product.status == 2 and product.user == request.user %}
+                      {% if product.quantity_partial is not None and product.quantity_partial > 0 or product.quantity_partial is None and product.quantity > 0 %}
                       <input type="checkbox" name="shipment_product" value="{{ product.id }}" id="shipment-{{ product.id }}" class="shipment-product" />
+                      {% endif %}
                       {% endif %}
                   </td>
                   {% endif %}
