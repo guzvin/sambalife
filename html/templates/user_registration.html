@@ -145,7 +145,7 @@
                   <div class="col-md-6">
                     <label for="cep">{% trans "CEP" %}*</label>
                       {% trans "Digite o CEP" as zipcode %}
-                    <input type="number" class="form-control" id="cep" aria-describedby="cep" name="zipcode" placeholder="{{ zipcode }}..." value="{% if form %}{{ form.zipcode.value }}{% endif %}">
+                    <input type="text" class="form-control" id="cep" aria-describedby="cep" name="zipcode" placeholder="{{ zipcode }}..." value="{% if form %}{{ form.zipcode.value }}{% endif %}">
                     {% for error in form.zipcode.errors %}
                       <label id="cep-error" class="error" for="cep">{{ error|escape }}</label>
                     {% endfor %}
