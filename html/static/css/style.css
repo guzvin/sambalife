@@ -1112,8 +1112,8 @@ label.titulo-pct span{
     height: 414px;
     position: absolute;
     padding: 20px;
-    top: -475px;
-    right: -117px;
+    top: -459px;
+    right: -31px;
     text-align: left;
 }
 .status:after{
@@ -1338,9 +1338,37 @@ form small{
     .navbar-brand img:last-child {
         display: none;
     }
+
+    .navbar-brand img:first-child {
+        margin-top: 10px;
+    }
+
+    .navbar-brand {
+        width: 100px;
+    }
+
+    .navbar-toggle {
+        border: 1px solid #666;
+    }
+
+    .navbar-toggle .icon-bar {
+        background: #666;
+    }
     
     iframe{
         width: 100%;
+    }
+
+    .nav > li > a.abre-tutorial {
+        color: #777;
+        font-weight: bold;
+    }
+
+    .nav > li.tutorial {
+        position: inherit;
+        background: transparent;
+        width: auto;
+        text-align: left;
     }
     
     section h2.section-heading {

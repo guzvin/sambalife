@@ -10,7 +10,7 @@
         <div class="col-md-1 sidebar">
 
         </div>
-        <div class="col-md-10 main">
+        <div class="col-md-11 main">
           <h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Estoque" %}</h1>
           <div class="row">
               <div class="filtros col-md-12">
@@ -66,21 +66,21 @@
                 </form>
               </div>
           </div><br><br>
-          <div class="table-responsive">
-            {% if user|has_product_perm:'add_product' %}
+          {% if user|has_product_perm:'add_product' %}
             <a class="btn btn-default" href="{% url 'product_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
-            {% endif %}
-            {% if user|has_shipment_perm:'add_shipment' %}
+          {% endif %}
+          {% if user|has_shipment_perm:'add_shipment' %}
             <a class="btn btn-default" id="btn-add-shipment"><i class="fa fa-amazon"></i> {% trans "Criar Envio para Amazon" %}</a>
-{% comment %}
+          {% comment %}
             <!-- Novo botao -->
             <a class="btn btn-default" id="btn-add-shipment-brazil"><i class="fa fa-globe"></i> {% trans "Criar Envio para o Brasil" %}</a>
-{% endcomment %}
+          {% endcomment %}
+          <div class="table-responsive">
             <form action="{% url 'shipment_add' %}" method="post" class="form-add-shipment" id="form-add-shipment">
                 {% csrf_token %}
             </form>
             {% endif %}
-            <br><br>
+            <br>
             {% if products.paginator.count > 0 %}
             <table class="table table-striped table-bordered">
               <thead>
@@ -113,7 +113,7 @@
                   {% if user|has_shipment_perm:'add_shipment' %}
                   <th class="center">{% trans "Envio" %}</th>
                   {% endif %}
-                  <th class="center">{% trans "Editar" %}</th>
+                  <th class="center"> {% trans "Visualizar" %}</th>
                 </tr>
               </thead>
               <tbody>
@@ -217,16 +217,16 @@
                       {% endif %}
                   </td>
                   {% if user|has_shipment_perm:'add_shipment' %}
-                  <td class="center">
-                      {% if product.status == 2 and product.user == request.user %}
-                      {% if product.quantity_partial is not None and product.quantity_partial > 0 or product.quantity_partial is None and product.quantity > 0 %}
-                      <input type="checkbox" name="shipment_product" value="{{ product.id }}" id="shipment-{{ product.id }}" class="shipment-product" />
-                      {% endif %}
-                      {% endif %}
-                  </td>
+                      <td class="center">
+                          {% if product.status == 2 and product.user == request.user %}
+                              {% if product.quantity_partial is not None and product.quantity_partial > 0 or product.quantity_partial is None and product.quantity > 0 %}
+                                <input type="checkbox" name="shipment_product" value="{{ product.id }}" id="shipment-{{ product.id }}" class="shipment-product" />
+                              {% endif %}
+                          {% endif %}
+                      </td>
                   {% endif %}
                   <td class="center">
-                      <a class=" download" href="{% url 'product_details' product.id %}"><i class="fa fa-pencil-square"></i></a>
+                      <a class=" download" href="{% url 'product_details' product.id %}"><i class="fa fa-pencil-square"></i>  {% trans "Visualizar" %}</a>
                   </td>
                 </tr>
                 {% endfor %}
@@ -259,8 +259,6 @@
               </ul>
             {% endif %}
             </nav>
-        </div>
-        <div class="col-md-1 sidebar">
         </div>
         {% endif %}
       </div>
