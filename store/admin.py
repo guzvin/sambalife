@@ -111,11 +111,12 @@ class LotAdmin(admin.ModelAdmin):
     list_filter = [
         'status',
         ('create_date', DateFieldListFilter),
+        'payment_complete',
     ]
 
     search_fields = ('name', 'product__name',)
     list_display_links = ('id', 'name',)
-    list_display = ('id', 'name', 'status', 'create_date', 'sell_date', 'user')
+    list_display = ('id', 'name', 'payment_complete', 'status', 'create_date', 'sell_date', 'user')
     fieldsets = (
         (None, {'fields': ('name', 'description', 'groups')}),
     )

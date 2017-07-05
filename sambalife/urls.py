@@ -32,6 +32,7 @@ urlpatterns = i18n_patterns(
     url(r'^user/password/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})[/]$',
         user_reset_password, name='user_reset_password'),
     url(r'^user/registration[/]$', user_registration, name='user_registration'),
+    url(r'^user/(?P<pid>[0-9A-Za-z]{4})/registration[/]$', user_registration, name='user_registration_partner'),
     url(r'^user/validation/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})[/]$',
         user_validation, name='user_validation'),
     url(r'^user/validation/resend/(?P<uidb64>[0-9A-Za-z_\-]+)[/]$', user_validation_resend,

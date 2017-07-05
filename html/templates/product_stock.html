@@ -144,7 +144,7 @@
                   </td>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
-                  <td class="center">{{ product.user.first_name }}</td>
+                  <td class="center">{{ product.user.first_name }}<br>({{ product.user.email }})</td>
                   <!-- fim campo -->
                   {% endif %}
                   <td class="">

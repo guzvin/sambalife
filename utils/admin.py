@@ -9,6 +9,21 @@ logger = logging.getLogger('django')
 class ParamsAdmin(admin.ModelAdmin):
     list_display = ('translated_name',)
 
+    fieldsets = (
+        (None, {
+            'fields': [
+                'amazon_fee', 'shipping_cost', 'partner_cost'
+            ]
+        }),
+        (_('Redirecionamento'), {
+            'description': _('Configuração do redirecionamento.'),
+            'fields': [
+                'redirect_factor', 'time_period_one', 'redirect_factor_two',
+                'time_period_two', 'redirect_factor_three', 'time_period_three'
+            ]
+        }),
+    )
+
     def translated_name(self, obj):
         return _('Parâmetros')
 

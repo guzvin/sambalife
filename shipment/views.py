@@ -24,6 +24,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from shipment.templatetags.shipments import unit_weight_display, unit_length_display
+from django.contrib.auth import get_user_model
 import magic
 import json
 import os
@@ -92,7 +93,8 @@ def shipment_list(request):
             queries.append(Q(pk__startswith=filter_id))
             filter_values['id'] = filter_id
         if is_user_perm and filter_user:
-            queries.append(Q(user__first_name__icontains=filter_user) | Q(user__last_name__icontains=filter_user))
+            queries.append(Q(user__first_name__icontains=filter_user) | Q(user__last_name__icontains=filter_user) |
+                           Q(user__email__icontains=filter_user))
             filter_values['user'] = filter_user
         if filter_status:
             queries.append(Q(status=filter_status))
@@ -448,7 +450,7 @@ def shipment_delete_product(request):
             logger.debug(original_product.quantity)
             logger.debug(original_product.quantity_partial)
             shipment.total_products -= product.quantity
-            http_response, cost = _shipment_calculate(shipment.total_products)
+            http_response, cost = _shipment_calculate(shipment.total_products, request.user.id)
             shipment.cost = cost
             original_product.quantity += product.quantity
             original_product.quantity_partial += product.quantity
@@ -550,12 +552,7 @@ def shipment_add(request):
                         original_product.quantity_partial -= product.quantity
                         original_product.save()
                         shipment.total_products += product.quantity
-                    cost_formula = CostFormula.objects.all()
-                    if len(cost_formula) > 0:
-                        cost = helper.Calculate().evaluate(cost_formula[0].formula,
-                                                           variables={'x': shipment.total_products})
-                    else:
-                        cost = shipment.total_products * 1.29
+                    x_response, cost = _shipment_calculate(shipment.total_products, request.user.id)
                     if cost > 0:
                         shipment.cost = cost
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
@@ -591,16 +588,25 @@ def shipment_add(request):
 def shipment_calculate(request):
     if has_shipment_perm(request.user, 'add_shipment') is False:
         return HttpResponseForbidden()
-    http_response, cost = _shipment_calculate(request.GET.get('items'))
+    http_response, cost = _shipment_calculate(request.GET.get('items'), request.user.id)
     return http_response
 
 
-def _shipment_calculate(items):
-    cost_formula = CostFormula.objects.all()
-    if len(cost_formula) > 0:
-        cost = helper.Calculate().evaluate(cost_formula[0].formula, variables={'x': items})
-    else:
-        cost = items * 1.29
+def _shipment_calculate(items, user_id):
+    user_model = get_user_model()
+    try:
+        current_user = user_model.objects.select_related('partner').get(pk=user_id)
+        partner = current_user.partner
+    except user_model.DoesNotExist:
+        partner = None
+    try:
+        cost_formula = CostFormula.objects.first()
+        formula = helper.resolve_formula(cost_formula.formula, partner)
+        logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        logger.debug(formula)
+        cost = helper.Calculate().evaluate(formula, variables={'x': items})
+    except CostFormula.DoesNotExist:
+        cost = items * (settings.DEFAULT_REDIRECT_FACTOR + helper.resolve_partner_value(partner))
     return HttpResponse(json.dumps({'cost': force_text(formats.number_format(cost, use_l10n=True,
                                                                              decimal_pos=2)),
                                     'items': items}),
@@ -705,14 +711,14 @@ def send_email_shipment_add(shipment, products, warehouses):
 def send_email_shipment_add_package(shipment, packages):
     email_title = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
-                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">Warehouse: {} / Peso: {} {} / '
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">Warehouse: {} / {}: {} {} / '
                            'L: {}{} x W: {}{} x H: {}{}</p>'] * len(packages) +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}</strong></p>',
                            '<p style="color:#858585;font:13px/120% \'Helvetica\'">'
                            '<strong>{}:</strong> U$ {}</p><p><a href="{}">{}</a> {}</p>'])
     texts = (_('Os seguintes pacotes foram cadastrado para o seu envio:'),)
     for package in packages:
-        texts += (package.warehouse, package.weight, unit_weight_display(1, abbreviate=True), package.length,
+        texts += (package.warehouse, _('Peso'), package.weight, unit_weight_display(1, abbreviate=True), package.length,
                   unit_length_display(3, abbreviate=True), package.width, unit_length_display(3, abbreviate=True),
                   package.height, unit_length_display(3, abbreviate=True))
     texts += (_('Realize o pagamento para dar continuidade com o seu envio %(id)s.') % {'id': shipment.id},

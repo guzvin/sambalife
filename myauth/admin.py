@@ -45,12 +45,12 @@ class UserCreationForm(forms.ModelForm):
         self.fields['email'].label = _('E-mail*')
         self.fields['first_name'].label = _('Nome*')
         self.fields['last_name'].label = _('Sobrenome*')
-        self.fields['cell_phone'].label = _('Celular*')
+        self.fields['cell_phone'].label = _('Telefone 1*')
         self.fields['phone'].required = False
 
     class Meta:
         model = MyUser
-        fields = ('email', 'first_name', 'last_name', 'phone', 'cell_phone', 'is_active', 'is_superuser')
+        fields = ('email', 'first_name', 'last_name', 'cell_phone', 'phone', 'is_active', 'is_superuser')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -95,7 +95,7 @@ class UserChangeForm(forms.ModelForm):
         self.fields['password'].label = _('Senha*')
         # self.fields['first_name'].label = _('Nome*')
         self.fields['last_name'].label = _('Sobrenome*')
-        self.fields['cell_phone'].label = _('Celular*')
+        self.fields['cell_phone'].label = _('Telefone 1*')
         self.fields['phone'].required = False
         # If it is an existing user (saved objects have a pk).
         if self.instance.pk:
@@ -104,7 +104,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        fields = ('email', 'password', 'first_name', 'last_name', 'phone', 'cell_phone', 'is_active',
+        fields = ('email', 'password', 'first_name', 'last_name', 'cell_phone', 'phone', 'is_active',
                   'is_superuser')
 
     def clean_password(self):
@@ -139,9 +139,9 @@ class UserAddressForm(forms.ModelForm):
         # first call parent's constructor
         super(UserAddressForm, self).__init__(*args, **kwargs)
         # there's a `fields` property now
+        self.fields['country'].label = _('País*')
         self.fields['address_1'].label = _('Endereço*')
         self.fields['address_2'].required = False
-        self.fields['neighborhood'].label = _('Bairro*')
         self.fields['zipcode'].label = _('CEP*')
         self.fields['state'].label = _('Estado*')
         self.fields['city'].label = _('Cidade*')
@@ -149,7 +149,7 @@ class UserAddressForm(forms.ModelForm):
 
     class Meta:
         model = UserAddress
-        fields = ('address_1', 'address_2', 'neighborhood', 'zipcode', 'state', 'city', 'type', 'default')
+        fields = ('country', 'address_1', 'address_2', 'zipcode', 'state', 'city', 'type', 'default')
 
 
 class AddressInline(admin.TabularInline):
@@ -209,13 +209,13 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('id', 'email', 'is_superuser', 'is_active', 'is_verified')
+    list_display = ('id', 'email', 'is_superuser', 'is_active', 'is_verified', 'partner')
     list_display_links = ('id', 'email',)
-    list_filter = ('is_superuser', 'is_active', 'is_verified')
+    list_filter = ('is_superuser', 'is_active', 'is_verified', 'partner')
+    # readonly_fields = ('partner',)
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'is_verified', 'password1', 'password2')}),
-        (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'phone', 'cell_phone',
-                                              'is_active',)}),
+        (None, {'fields': ('email', 'partner', 'password', 'is_verified', 'is_active', 'password1', 'password2')}),
+        (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
         (_('Permissões'), {'fields': ('is_superuser',)}),
         (_('Grupos'), {'fields': ('groups',)}),
     )
@@ -224,7 +224,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'first_name', 'last_name', 'phone', 'cell_phone', 'is_verified',
+            'fields': ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone', 'is_verified',
                        'is_active', 'is_superuser', 'password1', 'password2', 'groups')}
          ),
     )
@@ -236,11 +236,11 @@ class UserAdmin(BaseUserAdmin):
                 self.add_fieldsets = (
                     (None, {
                         'classes': ('wide',),
-                        'fields': ('email', 'first_name', 'last_name', 'phone', 'cell_phone',
+                        'fields': ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
                                    'is_verified', 'is_active', 'password1', 'password2', 'groups')}
                      ),
                 )
-                kwargs['fields'] = ('email', 'first_name', 'last_name', 'phone', 'cell_phone',
+                kwargs['fields'] = ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
                                     'is_verified', 'is_active', 'password1', 'password2', 'groups')
         return super(UserAdmin, self).get_form(request, obj, **kwargs)
 

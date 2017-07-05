@@ -11,6 +11,7 @@ from django.template import loader, Context
 from django.contrib.sites.models import Site
 from utils.helper import send_email
 from smtplib import SMTPException
+from partner.models import Partner
 import socket
 import logging
 
@@ -23,11 +24,12 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('Sobrenome'), max_length=50)
     email = models.CharField(_('E-mail'), max_length=150, unique=True)
     doc_number = models.CharField(_('CPF'), max_length=25, null=True)
-    phone = models.CharField(_('Telefone'), max_length=25, null=True)
-    cell_phone = models.CharField(_('Celular'), max_length=25)
+    cell_phone = models.CharField(_('Telefone 1'), max_length=25)
+    phone = models.CharField(_('Telefone 2'), max_length=25, null=True)
     date_joined = models.DateTimeField(_('Data de criação'), auto_now_add=True)
     is_active = models.BooleanField(_('Ativo'), default=False)
     is_verified = models.BooleanField(_('Verificado'), default=False)
+    partner = models.ForeignKey(Partner, verbose_name=_('Parceiro'), on_delete=models.SET_NULL, null=True, blank=True)
 
     def __iter__(self):
         yield 'id', self.id
@@ -40,6 +42,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         yield 'date_joined', self.date_joined
         yield 'is_active', self.is_active
         yield 'is_verified', self.is_verified
+        yield 'partner', self.partner
 
     objects = MyUserManager()
 
@@ -107,11 +110,11 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 class UserAddress(models.Model):
     id = BigAutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    country = models.CharField(_('País'), max_length=2, null=True)
     address_1 = models.CharField(_('Endereço'), max_length=200)
     address_2 = models.CharField(_('Complemento'), max_length=100, null=True)
-    neighborhood = models.CharField(_('Bairro'), max_length=100)
     zipcode = models.CharField(_('CEP'), max_length=15)
-    state = models.CharField(_('Estado'), max_length=2)
+    state = models.CharField(_('Estado'), max_length=100)
     city = models.CharField(_('Cidade'), max_length=60)
     TYPE_CHOICES = (
         (1, _('Entrega')),

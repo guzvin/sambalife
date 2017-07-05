@@ -36,78 +36,24 @@
                 </div><br>
                 <!--  AJUSTAR ABAIXO  -->
                 {% comment "MODIFICAR" %}
-                <div class="form-group">
-                <label for="telefone">{% trans "Telefone" %}</label>
+              <div class="form-group">
+                <label for="celular">{% trans "Telefone 1" %}*</label>
+                  {% trans "Digite o telefone, celular de preferência" as cell_phone %}
+                <input type="number" class="form-control" id="celular" name="cell_phone" placeholder="{{ cell_phone }}..." value="{% if form %}{{ form.cell_phone.value }}{% endif %}">
+                {% for error in form.cell_phone.errors %}
+                  <label id="celular-error" class="error" for="celular">{{ error|escape }}</label>
+                {% endfor %}
+              </div>
+              <div class="form-group">
+                <label for="telefone">{% trans "Telefone 2" %}</label>
                   {% trans "Digite o telefone" as phone %}
                 <input type="number" class="form-control" id="telefone" name="phone" placeholder="{{ phone }}..." value="{% if form %}{{ form.phone.value }}{% endif %}">
                 {% for error in form.phone.errors %}
                   <label id="telefone-error" class="error" for="telefone">{{ error|escape }}</label>
                 {% endfor %}
               </div>
-                <div class="form-group">
-                <label for="celular">{% trans "Celular" %}*</label>
-                  {% trans "Digite o celular" as cell_phone %}
-                <input type="number" class="form-control" id="celular" name="cell_phone" placeholder="{{ cell_phone }}..." value="{% if form %}{{ form.cell_phone.value }}{% endif %}">
-                {% for error in form.cell_phone.errors %}
-                  <label id="celular-error" class="error" for="celular">{{ error|escape }}</label>
-                {% endfor %}
-              </div>
                 {% endcomment %}
               {% endfor %}
-                {% comment "MODIFICAR" %}
-              <div class="form-group">
-                <label for="endereco">{% trans "Endereço" %}*</label>
-                  {% trans "Digite o endereço" as address_1 %}
-                <input type="text" class="form-control" id="endereco" aria-describedby="endereco" name="address_1" placeholder="{{ address_1 }}..." value="{% if form %}{{ form.address_1.value }}{% endif %}">
-                {% for error in form.address_1.errors %}
-                  <label id="endereco-error" class="error" for="endereco">{{ error|escape }}</label>
-                {% endfor %}
-              </div>
-              <div class="form-group espaco-bottom">
-                  <div class="col-md-4">
-                     <label for="complemento">{% trans "Complemento" %}</label>
-                      {% trans "Digite o complemento" as address_2 %}
-                     <input type="text" class="form-control" id="complemento" aria-describedby="complemento" name="address_2" placeholder="{{ address_2 }}..." value="{% if form %}{{ form.address_2.value }}{% endif %}">
-                    {% for error in form.address_2.errors %}
-                      <label id="complemento-error" class="error" for="complemento">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="col-md-4">
-                    <label for="bairro">{% trans "Bairro" %}*</label>
-                      {% trans "Digite o bairro" as neighborhood %}
-                    <input type="text" class="form-control" id="bairro" aria-describedby="bairro" name="neighborhood" placeholder="{{ neighborhood }}..." value="{% if form %}{{ form.neighborhood.value }}{% endif %}">
-                    {% for error in form.neighborhood.errors %}
-                      <label id="bairro-error" class="error" for="bairro">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="col-md-4">
-                    <label for="cidade">{% trans "Cidade" %}*</label>
-                      {% trans "Digite o cidade" as city %}
-                    <input type="text" class="form-control" id="cidade" aria-describedby="cidade" name="city" placeholder="{{ city }}..." value="{% if form %}{{ form.city.value }}{% endif %}">
-                    {% for error in form.city.errors %}
-                      <label id="cidade-error" class="error" for="cidade">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-              </div>
-              <div class="form-group espaco-bottom">
-                  <div class="col-md-6">
-                  <label for="estado">{% trans "Estado" %}*</label>
-                      {% trans "Digite o estado" as state %}
-                    <input type="text" maxlength="2" class="form-control" id="estado" aria-describedby="estado" name="state" placeholder="{{ state }}..." value="{% if form %}{{ form.state.value }}{% endif %}">
-                    {% for error in form.state.errors %}
-                      <label id="estado-error" class="error" for="estado">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="col-md-6">
-                    <label for="cep">{% trans "CEP" %}*</label>
-                      {% trans "Digite o CEP" as zipcode %}
-                    <input type="number" class="form-control" id="cep" aria-describedby="cep" name="zipcode" placeholder="{{ zipcode }}..." value="{% if form %}{{ form.zipcode.value }}{% endif %}">
-                    {% for error in form.zipcode.errors %}
-                      <label id="cep-error" class="error" for="cep">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-              </div>
-                {% endcomment %}
               <button type="submit" id="send-btn" class="btn btn-primary">{% trans "Enviar" %}</button><br><br>
               <a href="/"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
             </form>

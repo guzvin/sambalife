@@ -133,7 +133,7 @@
                         {{ warehouse_form.name.label }} #{{ forloop.counter }}
                     </label>
                     {{ warehouse_form.shipment }}
-                    <input type="text" class="form-control warehouse_validate required-validate" id="{{ warehouse_form.name.id_for_label }}" name="{{ warehouse_form.name.html_name }}" value="{% if warehouse_form.name.value %}{{ warehouse_form.name.value }}{% endif %}" placeholder="Local de envio ex.: New York ou Miami etc..." />
+                    <input type="text" class="form-control warehouse_validate required-validate" id="{{ warehouse_form.name.id_for_label }}" name="{{ warehouse_form.name.html_name }}" value="{% if warehouse_form.name.value %}{{ warehouse_form.name.value }}{% endif %}" placeholder="{% trans 'Local de envio dos produtos...' %}" />
                     {% for error in warehouse_form.name.errors %}
                         <label id="{{ warehouse_form.name.id_for_label }}-error" class="error" for="{{ warehouse_form.name.id_for_label }}">{{ error|escape }}</label>
                     {% endfor %}

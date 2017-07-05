@@ -109,7 +109,7 @@
             yearSuffix: ''
         };
 
-        $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+        $.datepicker.setDefaults($.datepicker.regional[gettext('en-US')]);
 
         $( ".datepicker" ).datepicker();
     }
@@ -197,7 +197,7 @@
                 passwordFormat: gettext('See instructions for valid format.'),
                 email: gettext('Please enter a valid email address.'),
                 date: gettext('Please enter a valid date.'),
-                dateLessThanOrEqualNow: gettext('Please enter a date less than or equal today.'),
+                dateLessThanOrEqualNow: gettext('Please enter a date less than or equal to today.'),
                 positiveNumber: gettext('Please enter a number greater than zero.'),
             }
         );
@@ -224,8 +224,8 @@
                 email: { required: true },
                 doc_number: { required: true },
                 cell_phone: { required: true },
+                country: { required: true },
                 address_1: { required: true },
-                neighborhood: { required: true },
                 city: { required: true },
                 state: { required: true },
                 zipcode: { required: true },
@@ -570,26 +570,57 @@
 
     if($('#form-add-shipment')[0])
     {
+        var shipmentProducts = sessionStorage.getItem('shipment_products');
+        if(!shipmentProducts)
+        {
+            shipmentProducts = '{}'
+        }
+        shipmentProducts = JSON.parse(shipmentProducts);
+        $('.shipment-product').each(function()
+        {
+            if(shipmentProducts['p' + $(this).val()])
+            {
+                this.checked = true;
+            }
+        });
+
         var shipmentForm = $('#form-add-shipment');
+        $('.shipment-product').change(function()
+        {
+            if(this.checked)
+            {
+                shipmentProducts['p' + $(this).val()] = $(this).val();
+            }
+            else
+            {
+                delete shipmentProducts['p' + $(this).val()];
+            }
+            sessionStorage.setItem('shipment_products', JSON.stringify(shipmentProducts));
+        });
         $('#btn-add-shipment').click(function()
         {
             var get = true;
-            $('.shipment-product:checked').each(function()
+            for(var shipmentProduct in shipmentProducts)
             {
                 var checkedProduct = $('<input type="hidden" name="shipment_product"></input>');
-                checkedProduct.val($(this).val());
+                checkedProduct.val(shipmentProducts[shipmentProduct]);
                 checkedProduct.appendTo(shipmentForm);
                 get = false;
-            });
+            }
             if(get)
             {
                 window.location.href = shipmentForm.attr('action');
             }
             else
             {
+                sessionStorage.removeItem('shipment_products');
                 shipmentForm.submit();
             }
         });
+    }
+    else
+    {
+        sessionStorage.removeItem('shipment_products');
     }
 
     if($('form#form-save-shipment')[0])

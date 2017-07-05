@@ -55,7 +55,8 @@ def product_stock(request):
             queries.append(Q(name__icontains=filter_name))
             filter_values['name'] = filter_name
         if is_user_perm and filter_user:
-            queries.append(Q(user__first_name__icontains=filter_user) | Q(user__last_name__icontains=filter_user))
+            queries.append(Q(user__first_name__icontains=filter_user) | Q(user__last_name__icontains=filter_user) |
+                           Q(user__email__icontains=filter_user))
             filter_values['user'] = filter_user
         if filter_status:
             queries.append(Q(status=filter_status))
@@ -356,8 +357,8 @@ def send_email_product_info(product, product_status_display, product_actual_cond
                           (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] if product.status == '2'
                            else ['']) +
                           ['<p><a href="{}">{}</a> {}</p>'])
-    texts = [mark_safe(_('O status do produto, \'%(product)s\', é: <strong>%(status)s</strong>')
-                       % {'product': product.name, 'status': product_status_display})]
+    texts = [mark_safe(_('Status do produto: <strong>%(status)s</strong>')
+                       % {'status': product_status_display})]
     if product.status == '2':
         texts += [_('Quantidade em estoque na VOI'), product.quantity_partial]
     if product.best_before:

@@ -64,17 +64,29 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             PAYPAL_BUSINESS_SANDBOX = key_value_pair[1]
         elif key_value_pair[0] == 'paypal_sandbox_users':
             PAYPAL_SANDBOX_USERS = key_value_pair[1].split(',')
-        elif key_value_pair[0] == 'django_debug':
-            DJANGO_DEBUG = (key_value_pair[1] == '1')
         elif key_value_pair[0] == 'paypal_sandbox':
             PAYPAL_SANDBOX = (key_value_pair[1] == '1')
+        elif key_value_pair[0] == 'paypal_nvp_user':
+            PAYPAL_NVP_USER = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_nvp_pwd':
+            PAYPAL_NVP_PWD = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_nvp_signature':
+            PAYPAL_NVP_SIGNATURE = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_nvp_user_sandbox':
+            PAYPAL_NVP_USER_SANDBOX = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_nvp_pwd_sandbox':
+            PAYPAL_NVP_PWD_SANDBOX = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_nvp_signature_sandbox':
+            PAYPAL_NVP_SIGNATURE_SANDBOX = key_value_pair[1]
+        elif key_value_pair[0] == 'django_debug':
+            DJANGO_DEBUG = (key_value_pair[1] == '1')
         elif key_value_pair[0] == 'log_level':
             LOG_LEVEL = key_value_pair[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net']
+ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net', 'fbaprepmaster.com']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -101,6 +113,7 @@ INSTALLED_APPS = [
     'shipment',
     'payment',
     'store',
+    'partner',
     'django_crontab',
 ]
 
@@ -109,6 +122,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'utils.middleware.locale.DomainLocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -226,6 +240,10 @@ LANGUAGES = [
     ('en-us', _('Inglês')),
 ]
 
+LANGUAGES_DOMAINS = {
+    'fbaprepmaster.com': 'en-us',
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
@@ -242,6 +260,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CSRF_TRUSTED_ORIGINS = (
     'localhost',
     'vendedorinternacional.net',
+    'fbaprepmaster.com',
 )
 
 PASSWORD_RESET_TIMEOUT_DAYS = 2

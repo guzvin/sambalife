@@ -17,6 +17,7 @@ class Lot(models.Model):
         (2, _('Vendido')),  # Sold
     )
     status = models.SmallIntegerField(_('Situação'), choices=STATUS_CHOICES, default=1)
+    payment_complete = models.BooleanField(_('Pagamento de reserva'), default=False)
     create_date = models.DateField(_('Data de Cadastro'), auto_now_add=True)
     sell_date = models.DateField(_('Data da Venda'), null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)

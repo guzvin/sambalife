@@ -105,7 +105,7 @@
                   <td>{{ shipment.id }}{% if shipment.is_archived %} ({% trans "Arquivado" %}){% endif %}</td>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
-                  <td class="center">{{ shipment.user.first_name }}</td>
+                  <td class="center">{{ shipment.user.first_name }}<br>({{ shipment.user.email }})</td>
                   <!-- fim campo -->
                   {% endif %}
                   <td>{{ shipment.send_date }}</td>

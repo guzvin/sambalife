@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-18 14:17-0300\n"
+"POT-Creation-Date: 2017-07-02 17:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -269,6 +269,10 @@ msgstr ""
 "respectivas quantidades que deverão ser enviados para esta warehouse. Em "
 "seguida, abaixo, adicione o outro local..."
 
+#: html/static/js/applications.js:118
+msgid "en-US"
+msgstr "pt-BR"
+
 #: html/static/js/applications.js:170 html/static/js/applications.js:187
 msgid "mm/dd/yy"
 msgstr "dd/mm/yy"
@@ -298,7 +302,7 @@ msgid "Please enter a valid date."
 msgstr "Informe uma data válida."
 
 #: html/static/js/applications.js:206
-msgid "Please enter a date less than or equal today."
+msgid "Please enter a date less than or equal to today."
 msgstr "Informe uma data menor ou igual a de hoje."
 
 #: html/static/js/applications.js:207

@@ -7,11 +7,11 @@ from django.forms.widgets import CheckboxInput
 from django.contrib.sites.models import Site
 from django.forms import BooleanField
 from django.forms.formsets import DELETION_FIELD_NAME
-from pyparsing import Word, alphas, Literal, CaselessLiteral, Combine, Optional, nums, Or, Forward, \
+from pyparsing import Word, alphas, Literal, CaselessLiteral, Combine, Optional, nums, Or, Forward,\
     ZeroOrMore, StringEnd, alphanums
 from django.utils.encoding import smart_str
 from django.contrib.auth import get_user_model
-from django.template import loader, Context
+from django.template import loader
 from smtplib import SMTPException
 from paypal.standard.models import ST_PP_COMPLETED, ST_PP_PENDING, ST_PP_VOIDED
 from paypal.standard.ipn.signals import valid_ipn_received
@@ -21,12 +21,17 @@ from django.utils.encoding import force_text
 from django.urls import reverse
 from django.db import transaction
 from shipment.views import shipment_paypal_notification, shipment_paypal_notification_success
-from store.views import store_paypal_notification, store_paypal_notification_success
+from store.views import store_paypal_notification, store_paypal_notification_success,\
+    store_paypal_notification_post_transaction
+from django.template import Context, Template
+from django.template.base import VariableNode
+from utils.models import Params
 import socket
 import hashlib
 import re
 import math
 import json
+import datetime
 import logging
 
 logger = logging.getLogger('django')
@@ -101,6 +106,54 @@ def send_email(title, body, email_to=None,
             logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
     except socket.error as err:
         logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
+
+
+def resolve_formula(formula, partner=None, reference_date=None):
+    template = Template(formula)
+    context_var = {}
+    for var in template:
+        if isinstance(var, VariableNode):
+            var = str(var.filter_expression)
+            if var == 'partner':
+                context_var[var] = str(resolve_partner_value(partner))
+            elif var == 'price':
+                context_var[var] = str(resolve_price_value(reference_date))
+    logger.debug(context_var)
+    return template.render(Context(context_var))
+
+
+def resolve_partner_value(partner):
+    if partner:
+        if partner.cost:
+            return float(partner.cost)
+        try:
+            return float(Params.objects.first().partner_cost)
+        except Params.DoesNotExist:
+            pass
+    return 0
+
+
+def resolve_price_value(reference_date):
+    try:
+        params = Params.objects.first()
+    except Params.DoesNotExist:
+        return settings.DEFAULT_REDIRECT_FACTOR
+    if reference_date:
+        time_period_one = params.time_period_one
+        time_period_two = params.time_period_two
+        elapsed = datetime.datetime.now() - reference_date
+        elapsed = elapsed.days
+        if time_period_one:
+            if elapsed <= time_period_one:
+                return float(params.redirect_factor)
+            if time_period_two:
+                if elapsed <= time_period_one + time_period_two:
+                    return float(params.redirect_factor_two)
+                if params.redirect_factor_three:
+                    return float(params.redirect_factor_three)
+            if params.redirect_factor_two:
+                return float(params.redirect_factor_two)
+    return float(params.redirect_factor)
 
 
 class RequiredBaseInlineFormSet(BaseInlineFormSet):
@@ -306,66 +359,65 @@ def paypal_notification(sender, **kwargs):
     ipn_obj, invalid_data, entity, texts, invoice = sender, [], None, None, None
     logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')
     logger.debug(ipn_obj)
+    if ipn_obj.test_ipn:
+        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
+    else:
+        paypal_business = settings.PAYPAL_BUSINESS
+    if ipn_obj.receiver_email != paypal_business:
+        # Not a valid payment
+        texts = (_('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'),
+                 _('E-mail recebido pelo paypal: %(paypal)s') % {'paypal': ipn_obj.receiver_email},
+                 _('E-mail configurado no sistema: %(system)s') % {'system': paypal_business})
+        invalid_data.append(_html_format(*texts))
+    invoice = ipn_obj.invoice.split('_')
+    if ipn_obj.invoice is None or (len(invoice) != 3 and len(invoice) != 5) or (invoice[0] != 'A'
+                                                                                and invoice[0] != 'B'):
+        texts = (_('Valor do campo \'recibo\' (invoice) não está no formato esperado.'),
+                 _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice if ipn_obj.invoice is not None
+                 else _('<em branco>')})
+        invalid_data.append(_html_format(*texts))
     try:
+        if invalid_data:
+            raise PaymentException()
         with transaction.atomic():
-            if ipn_obj.payment_status == ST_PP_COMPLETED:
-                if ipn_obj.test_ipn:
-                    paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
-                else:
-                    paypal_business = settings.PAYPAL_BUSINESS
-                if ipn_obj.receiver_email != paypal_business:
-                    # Not a valid payment
-                    texts = (_('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'),
-                             _('E-mail recebido pelo paypal: %(paypal)s') % {'paypal': ipn_obj.receiver_email},
-                             _('E-mail configurado no sistema: %(system)s') % {'system': paypal_business})
-                    invalid_data.append(_html_format(*texts))
-                invoice = ipn_obj.invoice.split('_')
-                if ipn_obj.invoice is None or (len(invoice) != 3 and len(invoice) != 5) or (invoice[0] != 'A'
-                                                                                            and invoice[0] != 'B'):
-                    texts = (_('Valor do campo \'recibo\' (invoice) não está no formato esperado.'),
-                             _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice if ipn_obj.invoice is not None
-                             else _('<em branco>')})
-                    invalid_data.append(_html_format(*texts))
-                if invoice[0] == 'A':
-                    entity, texts = shipment_paypal_notification(invoice[1], invoice[2], ipn_obj)
-                elif invoice[0] == 'B':
-                    entity, texts = store_paypal_notification(invoice[2], ipn_obj)
-                if entity is None:
-                    invalid_data.append(_html_format(*texts))
-            else:
-                logger.info('@@@@@@@@@@@@ PAYMENT STATUS @@@@@@@@@@@@@@')
-                invalid_data.append(paypal_status_message(ipn_obj))
-            if invalid_data:
-                raise PaymentException()
-            else:
+            if invoice[0] == 'A':
+                entity, texts = shipment_paypal_notification(invoice[1], invoice[2], ipn_obj)
+            elif invoice[0] == 'B':
+                entity, texts = store_paypal_notification(invoice[1], invoice[2], ipn_obj)
+            if entity is None:
+                invalid_data.append(_html_format(*texts))
+            if entity is not None and (ipn_obj.payment_status == ST_PP_COMPLETED or (invoice[0] == 'B' and
+               (ipn_obj.payment_status == ST_PP_PENDING or ipn_obj.payment_status == ST_PP_VOIDED))):
                 logger.debug('SUCCESS')
                 if invoice[0] == 'A':
                     shipment_paypal_notification_success(entity, ipn_obj, _(paypal_status_message(ipn_obj)))
                 elif invoice[0] == 'B':
-                    store_paypal_notification_success(entity, invoice[1], ipn_obj, _(paypal_status_message(ipn_obj)))
+                    store_paypal_notification_success(entity, invoice[1], ipn_obj)
+            else:
+                logger.info('@@@@@@@@@@@@ PAYMENT STATUS @@@@@@@@@@@@@@')
+                invalid_data.append(paypal_status_message(ipn_obj))
+                raise PaymentException()
+        if invoice[0] == 'B':
+            store_paypal_notification_post_transaction(entity, ipn_obj, _(paypal_status_message(ipn_obj)))
     except PaymentException:
         admin_url = format_html('<p>{}</p>',
-                                mark_safe(_('Para mais informações consulte a área <a href="%(url)s">administrativa</a>'
-                                            ' de pagamentos.')
+                                mark_safe(_('Para mais informações consulte a área <a href="%(url)s">administrativa'
+                                            ' de pagamentos</a>.')
                                           % {'url': ''.join(['https://', Site.objects.get_current().domain,
                                                              reverse('admin:payment_mypaypalipn_changelist')])}))
         invalid_data.append(admin_url)
         logger.error('Problema no processamento do retorno do paypal: {0}'.format(invalid_data))
-        email_title = _('Informações sobre o pagamento do %(item)s, recibo %(invoice)s') % {'item': ipn_obj.item_name,
-                                                                                            'invoice': ipn_obj.invoice
-                                                                                            if ipn_obj.invoice is not
-                                                                                            None else _('<em branco>')}
+        email_title = _('Informações sobre o pagamento do item \'%(item)s\', recibo %(invoice)s') % \
+            {'item': ipn_obj.item_name, 'invoice': ipn_obj.invoice if ipn_obj.invoice is not None else _('<em branco>')}
         email_message = ''.join(invalid_data)
         send_email_basic_template_bcc_admins(_('Administrador'), None, email_title, email_message)
     except VoidPaymentException:
-        # https://api-3t.paypal.com/nvp
-
-        # https://api-3t.sandbox.paypal.com/nvp
-        # megantate_api2.hotmail.com - USER
-        # W89B6FYA64ZSTRQS - PWD
-        # AFcWxV21C7fd0v3bYYYRCpSSRl31AOREyRaUrsAQ3ffe6FLVufjfr1ZZ - SIGNATURE
-        # 94.0
-        pass
+        ipn_obj.void_authorization()
+        email_title = _('\'%(item)s\' indisponível') % {'item': ipn_obj.item_name}
+        texts = (_('Foi enviada solicitação para o PayPal cancelar seu pagamento, nenhum valor será cobrado da sua '
+                   'conta.'),)
+        email_message = _(_html_format(*texts))
+        send_email_basic_template_bcc_admins(entity.user.first_name, [entity.user.email], email_title, email_message)
 
 
 def paypal_status_message(ipn_obj):

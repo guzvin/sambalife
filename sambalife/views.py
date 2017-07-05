@@ -2,7 +2,6 @@
 
 from django.shortcuts import render
 from sambalife.forms import UserRegistrationForm, UserLoginForm, UserForgotPasswordForm, UserResetPasswordForm
-from myauth.models import UserAddress
 from utils.helper import send_email, send_email_basic_template_bcc_admins
 from django.utils.translation import string_concat, ugettext as _
 from django.conf import settings
@@ -18,6 +17,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.utils.html import format_html
+from partner.models import Partner
 import logging
 
 logger = logging.getLogger('django')
@@ -108,7 +108,7 @@ def user_reset_password(request, uidb64=None, token=None):
                   status=400)
 
 
-def user_registration(request):
+def user_registration(request, pid=None):
     if request.method != 'POST':
         context_data = None
         if request.GET.get('s') == '1':
@@ -138,26 +138,34 @@ def user_registration(request):
             user.phone = form.cleaned_data['phone']
             user.cell_phone = form.cleaned_data['cell_phone']
             user.set_password(form.cleaned_data['password'])
+            if pid:
+                try:
+                    user.partner = Partner.objects.get(identity=pid)
+                except Partner.DoesNotExist:
+                    pass
             user.save()
             all_users_group = Group.objects.get(name='all_users')
             all_users_group.user_set.add(user)
             all_users_group.save()
-            user_address = UserAddress()
-            user_address.user = user
-            user_address.address_1 = form.cleaned_data['address_1']
-            user_address.address_2 = form.cleaned_data['address_2']
-            user_address.neighborhood = form.cleaned_data['neighborhood']
-            user_address.zipcode = form.cleaned_data['zipcode']
-            user_address.state = form.cleaned_data['state']
-            user_address.city = form.cleaned_data['city']
-            user_address.type = 1  # entrega
-            user_address.default = True
-            user_address.save()
+            # user_address = UserAddress()
+            # user_address.user = user
+            # user_address.address_1 = form.cleaned_data['address_1']
+            # user_address.address_2 = form.cleaned_data['address_2']
+            # user_address.country = form.cleaned_data['country']
+            # user_address.zipcode = form.cleaned_data['zipcode']
+            # user_address.state = form.cleaned_data['state']
+            # user_address.city = form.cleaned_data['city']
+            # user_address.type = 1  # entrega
+            # user_address.default = True
+            # user_address.save()
 
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
             send_validation_email(user, uidb64, token)
-            return HttpResponseRedirect('%s?s=1' % reverse('user_registration'))
+            if pid:
+                return HttpResponseRedirect('%s?s=1' % reverse('user_registration_partner', args=[pid]))
+            else:
+                return HttpResponseRedirect('%s?s=1' % reverse('user_registration'))
         return render(request, 'user_registration.html', {'form': form, 'success': False, 'status_code': 400},
                       status=400)
 
