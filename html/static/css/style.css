@@ -1334,6 +1334,81 @@ form small{
     color: #999;
 }
 
+/*versao en*/
+
+.en header .intro-text {
+    padding-top: 270px;
+    padding-bottom: 132px;
+}
+
+.en header .intro-text .intro-heading {
+    font-size: 55px;
+}
+
+.en header .intro-text .intro-lead-in {
+    font-size: 31px;
+}
+
+.box-topo{
+    margin-top: 150px;
+    background: #fff;
+    color: #666;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.box-topo ul{
+    padding: 0;
+    float: left;
+    width: 100%;
+}
+
+.box-topo ul li{
+    font-weight: bold;
+    margin-bottom: 15px;
+   list-style: none;
+   text-transform: uppercase;
+   width: 100;
+   float: left;
+}
+
+.signup{
+    padding: 0;
+    display: block;
+    width: 160px;
+    height: 45px;
+    line-height: 43px;
+    margin: 20px auto 10px auto;
+    clear: both;
+}
+
+.box-topo ul li i{
+    float: left;
+    height: 50px;
+    padding: 0 10px 0 0;
+}
+
+.list-qua{
+    text-align: left;
+    list-style: none;
+}
+
+.list-qua li{
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #3C3E77;
+}
+
+.en footer {
+    padding: 10px 0;
+    border-top: 1px solid #ccc;
+}
+
+.en .navbar-brand img:first-child {
+    width: auto;
+}
+
 @media (max-width: 767px){
     .navbar-brand img:last-child {
         display: none;
