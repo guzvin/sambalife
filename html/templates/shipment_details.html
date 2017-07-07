@@ -137,7 +137,7 @@
            <div class="row">
           <!-- lista das informacoes dos pacotes. fiz duas linhas com os possiveis campos -->
              <div class="col-md-12">
-                <label><i class="fa fa-fw fa-archive"></i> {% trans "Informações dos pacote(s)" %}:</label><br><br>
+                <h4><i class="fa fa-fw fa-archive"></i> {% trans "Informações dos pacote(s)" %}:</h4><br><br>
                 <form action="" method="post" id="form-upload-file" enctype="multipart/form-data">
                   {% csrf_token %}
                   {% if shipment.status == 3 %}
