@@ -908,7 +908,11 @@ body.login{
 
 .form-cad-cliente{
     margin: 10px auto 0 auto;
-    width: 45%;
+    width: 100%;
+}
+
+footer .quicklinks a{
+    text-decoration: underline;
 }
 
 .espaco-bottom input, .espaco-bottom select{
@@ -960,7 +964,6 @@ input.menor-me{
 .download{
     color: #DC3438;
     text-decoration: underline;
-    padding-right: 10px;
 }
 
 .select-status{

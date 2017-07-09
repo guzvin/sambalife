@@ -183,6 +183,26 @@
 
     {% block conteudo %}Conteudo pagina{% endblock %}
 
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <span class="copyright">{% trans "Copyright &copy; Vendedor Online 2017" %}</span>
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-5">
+                    <ul class="list-inline quicklinks">
+                        <li>
+                            {% trans "<a href='/termos-e-condicoes-de-uso.html'>Termos e Condições de Uso" %}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
      <!-- Modal confirmacao de acao-->
     <script type="text/javascript">
     $(function(){
