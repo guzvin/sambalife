@@ -224,6 +224,29 @@
         </div>
     </div>
 
+   <!-- Modal termos -->
+       <div id="termos" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Importante!" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Nossos termos foram atualizados. Para uma maior agilidade e transparência no atendimento aos nossos usuários, a partir de agora os valores dos envios são calculados de acordo com o tempo de permanência conosco. Seguem os valores:" %}</p>
+                    <p>{% trans "Produto em estoque conosco até 30 dias: USD 1,29 por produto" %}</p>
+                    <p>{% trans "Produto em estoque conosco de 31 até 45 dias: USD 1,39 por produto" %}</p>
+                    <p>{% trans "Produto em estoque conosco de 46 até 60 dias: USD 1,99 por produto" %}</p>
+                    <p>{% trans "A partir do dia 61, o produto será considerado abandonado e retirado do estoque do usuário." %}</p>
+                    <p>{% trans "Veja nossos termos <a href='/termos-e-condicoes-de-uso.html' class='download'>clicando aqui</a>" %}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading basta dar display block-->
     <div class="loading" style="display: none;">{% trans "Carregando" %}...</div>
 

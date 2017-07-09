@@ -1409,6 +1409,28 @@ form small{
     width: auto;
 }
 
+.termos .page-header{
+    margin-top: 90px;
+}
+
+footer{
+    border-top: 1px solid #eee;
+}
+
+.cadastro-usuario .terms-cond label{
+    line-height: 40px;
+    padding: 10px;
+    background: #eee;
+    border-radius: 8px;
+}
+
+.cadastro-usuario .terms-cond label input{
+    width: auto;
+    float: left;
+    margin: 0 7px 0 0;
+    padding: 0;
+}
+
 @media (max-width: 767px){
     .navbar-brand img:last-child {
         display: none;
