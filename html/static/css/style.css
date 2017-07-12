@@ -1340,8 +1340,8 @@ form small{
 /*versao en*/
 
 .en header .intro-text {
-    padding-top: 270px;
-    padding-bottom: 132px;
+    padding-top: 240px;
+    padding-bottom: 162px;
 }
 
 .en header .intro-text .intro-heading {
@@ -1418,6 +1418,12 @@ form small{
 
 footer{
     border-top: 1px solid #eee;
+    width: 100%;
+}
+
+footer.fixed-footer{
+    position: absolute;
+    bottom: 0;
 }
 
 .cadastro-usuario .terms-cond label{
