@@ -1494,4 +1494,39 @@ footer.fixed-footer{
     header .intro-text .intro-heading, header .intro-text .intro-lead-in { 
         background: rgba(0,0,0,0.5);
     }
+
+    .en header .intro-text {
+        padding-top: 65px;
+        padding-bottom: 50px;
+    }
+
+    .en header .intro-text .intro-heading {
+        font-size: 35px;
+    }
+
+    .en header .intro-text .intro-lead-in {
+        font-size: 25px;
+        padding: 25px;
+        line-height: 28px;
+    }
+
+    .en .box-topo {
+        margin: 25px 0;
+    }
+
+    .en section {
+        padding: 20px 0;
+    }
+
+    .termos .page-header {
+        margin-top: 0px;
+    }
+
+    .en .navbar-brand img:first-child{
+        display: block;
+        width: 140px;
+        margin: 18px 0 0 10px;
+    }
+
+
 }
