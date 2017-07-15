@@ -21,6 +21,7 @@ class Product(models.Model):
         (1, _('Encaminhado VOI')),
         (2, _('Em Estoque VOI')),
         (99, _('Arquivado')),
+        (100, _('Abandonado')),
     )
     status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES, null=True)
     CONDITION_CHOICES = (
@@ -38,7 +39,7 @@ class Product(models.Model):
     best_before = models.DateTimeField(_('Data de Validade'), null=True, blank=True)
     create_date = models.DateTimeField(_('Data de Cadastro'), auto_now_add=True, null=True)
     receive_date = models.DateTimeField(_('Data de Recebimento'), null=True, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = _('Produto')

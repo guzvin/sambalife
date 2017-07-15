@@ -71,6 +71,7 @@ def payment_ipn(request):
 
     # Set query params and sender's IP address
     ipn_obj.initialize(request)
+    ipn_obj.current_domain = request.CURRENT_DOMAIN
 
     if flag is not None:
         # We save errors in the flag field

@@ -40,6 +40,14 @@
         }
     });
 
+    $(document).ajaxError(function( event, jqXHR, settings, thrownError )
+    {
+        if(jqXHR.responseJSON && jqXHR.responseJSON.terms_and_conditions)
+        {
+            $('#terms_conditions').modal('show');
+        }
+    });
+
     // jQuery for page scrolling feature - requires jQuery Easing plugin
     $('a.page-scroll').bind('click', function(event)
     {
@@ -232,14 +240,24 @@
                 password:
                 {
                     required: true,
-//                    minlength: 6,
-//                    passwordFormat: true
                 },
                 password_confirmation:
                 {
                     required: true,
                     equalTo: '#senha'
                 },
+                terms: { required: true },
+            },
+            errorPlacement: function(error, element)
+            {
+                if (element.attr('name') == 'terms')
+                {
+                    error.insertAfter(element.parent());
+                }
+                else
+                {
+                    error.insertAfter(element);
+                }
             },
             submitHandler: function(form)
             {
@@ -531,6 +549,10 @@
                     })
                     .fail(function(jqXHR, textStatus, errorThrown)
                     {
+                        if(jqXHR.responseJSON && jqXHR.responseJSON.terms_and_conditions)
+                        {
+                            return;
+                        }
                         alert(jqXHR.responseJSON.error);
                     })
                     .always(function()
@@ -791,12 +813,16 @@
             $.ajax(
             {
                 method: 'DELETE',
-                url: '/shipment/delete/product',
+                url: '/shipment/delete/product.json',
                 data: form.serialize(),
                 statusCode:
                 {
-                    400: function()
+                    400: function(jqXHR, textStatus, errorThrown)
                     {
+                        if(jqXHR.responseJSON && jqXHR.responseJSON.terms_and_conditions)
+                        {
+                            return;
+                        }
                         var body = gettext('Sorry, but there seems to be some inconsistencies. Please reload the page and try again.');
                         assembleModal(gettext('Error'), body);
                     },
@@ -924,6 +950,27 @@
         modalBody[0].innerHTML = '';
         modalBody.append($('<p>' + body + '</p>'));
         $('#confirmacao').modal('show');
+    }
+
+    if($('#terms_conditions')[0])
+    {
+        $('#terms_conditions').modal('show');
+        if($('#terms-conditions-acceptance')[0])
+        {
+            $('#terms-conditions-acceptance').click(function()
+            {
+                $.ajax(
+                {
+                    method: 'POST',
+                    url: '/user/accept_terms/',
+                })
+                .done(function()
+                {
+                    $('#terms_conditions').modal('hide');
+                });
+                return false;
+            });
+        }
     }
 
     $('.add-pro').click(function()

@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.db import transaction
 from product.models import Product, Tracking
-from django.contrib.sites.models import Site
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.http import require_http_methods
@@ -72,6 +71,7 @@ def product_stock(request):
         logger.debug(str(queries))
         logger.debug(str(len(queries)))
         if is_user_perm is False:
+            queries.append(~Q(status=100))
             queries.append(Q(user=request.user))
         is_filtered = len(queries) > 0
         if is_filtered:
@@ -263,7 +263,7 @@ def product_edit_status(request, pid=None, output=None):
             if len(fields_to_update) == 0:
                 raise Product.DoesNotExist
             product.save(update_fields=fields_to_update)
-            send_email_product_info(product, product_status_display, product_actual_condition_display)
+            send_email_product_info(request, product, product_status_display, product_actual_condition_display)
             if output and output == 'json':
                 product_json = {
                     'id': product.id,
@@ -345,7 +345,7 @@ def product_autocomplete(request):
                         content_type='application/json')
 
 
-def send_email_product_info(product, product_status_display, product_actual_condition_display):
+def send_email_product_info(request, product, product_status_display, product_actual_condition_display):
     email_title = _('Mudança nos dados sobre o seu produto \'%(product)s\'') % {'product': product.name}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}: {}</p>']
@@ -368,7 +368,8 @@ def send_email_product_info(product, product_status_display, product_actual_cond
               else '']
     if product.status == '2':
         texts += [_('Crie seu envio agora mesmo!')]
-    texts += [''.join(['https://', Site.objects.get_current().domain, reverse('product_stock')]), _('Clique aqui'),
+    texts += [''.join(['https://', request.CURRENT_DOMAIN, reverse('product_stock')]), _('Clique aqui'),
               _('para acessar sua lista de produtos.')]
     email_body = format_html(html_format, *tuple(texts))
-    send_email_basic_template_bcc_admins(product.user.first_name, [product.user.email], email_title, email_body)
+    send_email_basic_template_bcc_admins(request, product.user.first_name, [product.user.email], email_title,
+                                         email_body)

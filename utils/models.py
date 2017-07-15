@@ -1,5 +1,9 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.validators import ValidationError, MinValueValidator
+import logging
+
+logger = logging.getLogger('django')
 
 
 class Params(models.Model):
@@ -9,15 +13,19 @@ class Params(models.Model):
     partner_cost = models.DecimalField(_('Valor do Parceiro'), max_digits=12, decimal_places=2, default=0.20)
     redirect_factor = models.DecimalField(_('Valor Base'), max_digits=12, decimal_places=2, default=1.29)
     time_period_one = models.SmallIntegerField(_('Período Base'), null=True, blank=True,
-                                               default=30, help_text=_('Em dias.'))
-    redirect_factor_two = models.DecimalField(_('Valor do Segundo Período'), max_digits=12, decimal_places=2,
+                                               default=30, help_text=_('Em dias.'),
+                                               validators=[MinValueValidator(1)])
+    redirect_factor_two = models.DecimalField(_('Valor Pós Período Base'), max_digits=12, decimal_places=2,
                                               null=True, blank=True, default=1.49)
     time_period_two = models.SmallIntegerField(_('Segundo Período'), null=True, blank=True, default=15,
-                                               help_text=_('Em dias. Após o primeiro período.'))
-    redirect_factor_three = models.DecimalField(_('Valor do Terceiro Período'), max_digits=12, decimal_places=2,
+                                               help_text=_('Em dias. Acumulativo com o período base.'),
+                                               validators=[MinValueValidator(1)])
+    redirect_factor_three = models.DecimalField(_('Valor Pós Segundo Período'), max_digits=12, decimal_places=2,
                                                 null=True, blank=True, default=1.99)
     time_period_three = models.SmallIntegerField(_('Terceiro Período'), null=True, blank=True, default=15,
-                                                 help_text=_('Em dias. Após o segundo período.'))
+                                                 help_text=_('Em dias. Acumulativo com os períodos anteriores. Após '
+                                                             'este período o produto será considerado abandonado.'),
+                                                 validators=[MinValueValidator(1)])
 
     class Meta:
         verbose_name = _('Parametrizações')
@@ -25,3 +33,60 @@ class Params(models.Model):
 
     def __str__(self):
         return str(_('Parametrizações'))
+
+    def clean(self):
+        errors = {}
+        logger.debug('@@@@@@@@@@@@ PARAMS CLEAN PREP AND SHIP @@@@@@@@@@@@@@')
+        if self.redirect_factor_three is not None:
+            if self.time_period_two is None:
+                errors['time_period_two'] = ValidationError(_('Quando o campo \'Valor Pós Segundo Período\' está '
+                                                              'preenchido, este campo se torna obrigatório.'),
+                                                            code='invalid_time_period_two')
+            if self.time_period_one is None:
+                errors['time_period_one'] = ValidationError(_('Quando o campo \'Valor Pós Segundo Período\' está '
+                                                              'preenchido, este campo se torna obrigatório.'),
+                                                            code='invalid_time_period_one')
+            if self.redirect_factor_two is None:
+                errors['redirect_factor_two'] = ValidationError(_('Quando o campo \'Valor Pós Segundo Período\' está '
+                                                                  'preenchido, este campo se torna obrigatório.'),
+                                                                code='invalid_redirect_factor_two')
+            if self.redirect_factor_two and self.redirect_factor_two > self.redirect_factor_three:
+                errors['redirect_factor_three'] = self.redirect_factor_three_error_message()
+            elif self.redirect_factor > self.redirect_factor_three:
+                errors['redirect_factor_three'] = self.redirect_factor_three_error_message()
+        if 'redirect_factor_two' not in errors and self.redirect_factor_two is not None:
+            if 'time_period_one' not in errors and self.time_period_one is None:
+                errors['time_period_one'] = ValidationError(_('Quando o campo \'Valor Pós Período Base\' está '
+                                                              'preenchido, este campo se torna obrigatório.'),
+                                                            code='invalid_time_period_one')
+            if self.redirect_factor > self.redirect_factor_two:
+                errors['redirect_factor_two'] = ValidationError(_('Informe um valor maior ou igual a %(price)s.')
+                                                                % {'price': self.redirect_factor},
+                                                                code='invalid_redirect_factor_two')
+        if 'time_period_two' not in errors and self.time_period_two is not None:
+            if self.redirect_factor_three is None:
+                errors['redirect_factor_three'] = ValidationError(_('Quando o campo \'Segundo Período\' está '
+                                                                    'preenchido, este campo se torna obrigatório.'),
+                                                                  code='invalid_redirect_factor_three')
+            if 'time_period_one' not in errors and self.time_period_one is None:
+                errors['time_period_one'] = ValidationError(_('Quando o campo \'Segundo Período\' está preenchido, este'
+                                                              ' campo se torna obrigatório.'),
+                                                            code='invalid_time_period_one')
+            if self.redirect_factor_two is None:
+                errors['redirect_factor_two'] = ValidationError(_('Quando o campo \'Segundo Período\' está '
+                                                                  'preenchido, este campo se torna obrigatório.'),
+                                                                code='invalid_redirect_factor_two')
+        if 'time_period_one' not in errors and self.time_period_one is not None:
+            if self.redirect_factor_two is None:
+                errors['redirect_factor_two'] = ValidationError(_('Quando o campo \'Período Base\' está preenchido, '
+                                                                  'este campo se torna obrigatório.'),
+                                                                code='invalid_redirect_factor_two')
+        if bool(errors):
+            raise ValidationError(errors)
+
+    def redirect_factor_three_error_message(self):
+        price = self.redirect_factor_two if self.redirect_factor_two and self.redirect_factor_two > 0 and \
+                                            self.redirect_factor_two > self.redirect_factor else \
+                                            self.redirect_factor
+        return ValidationError(_('Informe um valor maior ou igual a %(price)s.') % {'price': price},
+                               code='invalid_redirect_factor_three')

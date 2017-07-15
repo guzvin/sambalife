@@ -31,7 +31,11 @@
 
 <body id="page-top" class="login">
     <div id="login-box">
+            {% if LANGUAGE_CODE == 'pt-br' %}
             <img src="/static/img/logosite.png" />
+            {% else %}
+            <img src="/static/img/logo-en.png" style="width: 275px;" />
+            {% endif %}
             <p>{% trans "Digite abaixo seus dados de acesso" %}</p>
             <form action="" method="post" id="form-login">
               {% csrf_token %}

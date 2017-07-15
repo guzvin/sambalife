@@ -10,6 +10,8 @@ logger = logging.getLogger('django')
 
 
 class MyPayPalIPN(PayPalIPN):
+    current_domain = ''
+
     class Meta:
         proxy = True
         verbose_name = _('Pagamento')

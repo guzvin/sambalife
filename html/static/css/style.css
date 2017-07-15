@@ -1426,14 +1426,14 @@ footer.fixed-footer{
     bottom: 0;
 }
 
-.cadastro-usuario .terms-cond label{
+.cadastro-usuario .terms-cond label#terms-conditions-check{
     line-height: 40px;
     padding: 10px;
     background: #eee;
     border-radius: 8px;
 }
 
-.cadastro-usuario .terms-cond label input{
+.cadastro-usuario .terms-cond label#terms-conditions-check input{
     width: auto;
     float: left;
     margin: 0 7px 0 0;

@@ -39,7 +39,14 @@
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span> {% trans "Menu" %} <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand page-scroll" href="#page-top"><img src="/static/img/logo_sup.png" /><img width="175px" src="/static/img/logo_bottom.png" /></a>
+                <a class="navbar-brand page-scroll" href="#page-top">
+                    {% if LANGUAGE_CODE == 'pt-br' %}
+                    <img src="/static/img/logo_sup.png" />
+                    <img width="175px" src="/static/img/logo_bottom.png" />
+                    {% else %}
+                    <img src="/static/img/logo-en.png" style="width: 275px;" />
+                    {% endif %}
+                </a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">

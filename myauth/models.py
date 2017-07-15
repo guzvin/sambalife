@@ -30,6 +30,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_('Ativo'), default=False)
     is_verified = models.BooleanField(_('Verificado'), default=False)
     partner = models.ForeignKey(Partner, verbose_name=_('Parceiro'), on_delete=models.SET_NULL, null=True, blank=True)
+    terms_conditions = models.BooleanField(_('Termos e Condições'), default=False)
 
     def __iter__(self):
         yield 'id', self.id
@@ -43,6 +44,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         yield 'is_active', self.is_active
         yield 'is_verified', self.is_verified
         yield 'partner', self.partner
+        yield 'terms_conditions', self.terms_conditions
 
     objects = MyUserManager()
 
@@ -92,13 +94,18 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
             elif self.is_active is True:
                 self._send_email('email/account-activation.html')
         except SMTPException as e:
-            for recipient in e.recipients:
-                logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
+            try:
+                for recipient in e.recipients:
+                    logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
+            except AttributeError:
+                pass
+            logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(e))
         except socket.error as err:
             logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
         super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
 
     def _send_email(self, template_name):
+        Site.objects.clear_cache()
         message = loader.get_template(template_name).render(
             Context({'user_name': self.first_name, 'protocol': 'https',
                      'domain': Site.objects.get_current().domain}))

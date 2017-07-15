@@ -8,7 +8,6 @@ from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpRespo
 from django.utils.translation import ugettext as _, ungettext
 from product.models import Product as OriginalProduct
 from shipment.models import Shipment, Product, Warehouse, Package, CostFormula
-from django.contrib.sites.models import Site
 from django.forms import modelformset_factory, inlineformset_factory, Field, DateField
 from django.forms.widgets import Widget, FileInput
 from django.utils.html import format_html, mark_safe
@@ -151,7 +150,8 @@ def shipment_details(request, pid=None):
             if is_user_perm is False:
                 query &= Q(user=request.user)
             _shipment_details = Shipment.objects.select_related('user').get(query)
-        except Shipment.DoesNotExist:
+        except Shipment.DoesNotExist as e:
+            logger.error(e)
             return HttpResponseBadRequest()
         _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
         _shipment_warehouses = Warehouse.objects.filter(shipment=_shipment_details).order_by('id')
@@ -221,7 +221,8 @@ def shipment_details(request, pid=None):
                                     return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
                                 else:
                                     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
-                            except Shipment.DoesNotExist:
+                            except Shipment.DoesNotExist as e:
+                                logger.error(e)
                                 return HttpResponseBadRequest()
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
                     is_sandbox = (request.user.email in settings.PAYPAL_SANDBOX_USERS)
@@ -229,30 +230,40 @@ def shipment_details(request, pid=None):
                         import time
                         current_milli_time = lambda: int(round(time.time() * 1000))
                         invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
-                        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
-                        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
+                        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if _('pt') == 'pt' else \
+                            settings.PAYPAL_BUSINESS_EN_SANDBOX
+                        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX if _('pt') == 'pt' else \
+                            settings.PAYPAL_CERT_ID_EN_SANDBOX
                         paypal_cert = settings.PAYPAL_CERT_SANDBOX
                     else:
                         invoice_id = '_'.join(['A', str(request.user.id), str(pid)])
-                        paypal_business = settings.PAYPAL_BUSINESS
-                        paypal_cert_id = settings.PAYPAL_CERT_ID
+                        paypal_business = settings.PAYPAL_BUSINESS if _('pt') == 'pt' else settings.PAYPAL_BUSINESS_EN
+                        paypal_cert_id = settings.PAYPAL_CERT_ID if _('pt') == 'pt' else settings.PAYPAL_CERT_ID_EN
                         paypal_cert = settings.PAYPAL_CERT
+                    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT if _('pt') == 'pt' else \
+                        settings.PAYPAL_PRIVATE_CERT_EN
+                    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT if _('pt') == 'pt' else \
+                        settings.PAYPAL_PUBLIC_CERT_EN
                     paypal_dict = {
                         'business': paypal_business,
                         'amount': _shipment_details.cost,
                         'item_name': _('Envio %(number)s') % {'number': pid},
                         'invoice': invoice_id,
-                        'notify_url': 'https://' + Site.objects.get_current().domain + reverse('paypal-ipn'),
-                        'return_url': 'https://' + Site.objects.get_current().domain +
+                        'notify_url': 'https://' + request.CURRENT_DOMAIN + reverse('paypal-ipn'),
+                        'return_url': 'https://' + request.CURRENT_DOMAIN +
                                       '%s?p=1' % reverse('shipment_details', args=[pid]),
-                        'cancel_return': 'https://' + Site.objects.get_current().domain + reverse('shipment_details',
+                        'cancel_return': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details',
                                                                                                   args=[pid]),
                         # 'custom': 'Custom command!',  # Custom command to correlate to some function later (optional)
                     }
                     context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
                                                                                             initial=paypal_dict,
                                                                                             paypal_cert=paypal_cert,
-                                                                                            cert_id=paypal_cert_id)
+                                                                                            cert_id=paypal_cert_id,
+                                                                                            private_cert=
+                                                                                            paypal_private_cert,
+                                                                                            public_cert=
+                                                                                            paypal_public_cert)
             elif _shipment_details.status == 3:
                 # Upload PDF 2 Autorizado
                 if request.user == _shipment_details.user or has_group(request.user, 'admins') \
@@ -284,9 +295,10 @@ def shipment_details(request, pid=None):
                                             package.save(update_fields=['pdf_2'])
                                     _shipment_details.status = 4
                                     _shipment_details.save(update_fields=['status'])
-                            except Shipment.DoesNotExist:
+                            except Shipment.DoesNotExist as e:
+                                logger.error(e)
                                 return HttpResponseBadRequest()
-                            send_email_shipment_add_pdf_2(_shipment_details)
+                            send_email_shipment_add_pdf_2(request, _shipment_details)
                             return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
                         elif has_shipment_perm(request.user, 'add_package'):
                             novalidate_fields.append('pdf_2')
@@ -297,7 +309,8 @@ def shipment_details(request, pid=None):
                                     return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
                                 else:
                                     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
-                            except Shipment.DoesNotExist:
+                            except Shipment.DoesNotExist as e:
+                                logger.error(e)
                                 return HttpResponseBadRequest()
             elif _shipment_details.status == 4 or _shipment_details.status == 5:
                 # Checagens Finais ou Enviado
@@ -361,13 +374,14 @@ def shipment_details(request, pid=None):
                                         if original_products_to_update:
                                             OriginalProduct.objects.filter(id__in=original_products_to_update)\
                                                 .update(status=99)
-                            except Shipment.DoesNotExist:
+                            except Shipment.DoesNotExist as e:
+                                logger.error(e)
                                 return HttpResponseBadRequest()
                             if previous_state != _shipment_details.status:
-                                send_email_shipment_sent(_shipment_details, packages)
+                                send_email_shipment_sent(request, _shipment_details, packages)
                                 return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
                             elif form_has_changed:
-                                send_email_shipment_change_shipment(_shipment_details, packages)
+                                send_email_shipment_change_shipment(request, _shipment_details, packages)
                                 return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
                             return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
             if package_formset is None:
@@ -421,7 +435,7 @@ def shipment_add_package(request, PackageFormSet, pid=None):
                     raise Product.DoesNotExist('Inconsistent data.')
                 shipment.save(update_fields=['status'])
                 packages = package_formset.save()
-                send_email_shipment_add_package(shipment, packages)
+                send_email_shipment_add_package(request, shipment, packages)
                 return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
             else:
                 logger.error(package_formset.errors)
@@ -450,8 +464,6 @@ def shipment_delete_product(request):
             logger.debug(original_product.quantity)
             logger.debug(original_product.quantity_partial)
             shipment.total_products -= product.quantity
-            http_response, cost = _shipment_calculate(shipment.total_products, request.user.id)
-            shipment.cost = cost
             original_product.quantity += product.quantity
             original_product.quantity_partial += product.quantity
             deleted = product.delete()
@@ -461,6 +473,11 @@ def shipment_delete_product(request):
             if shipment.total_products == 0:
                 shipment.delete()
                 return HttpResponse(json.dumps({'redirect': reverse('shipment')}), content_type='application/json')
+            products = shipment.product_set.all()
+            logger.debug('@@@@@@@@@@@@ SHIPMENT PRODUCTS @@@@@@@@@@@@@@')
+            logger.debug(products)
+            http_response, cost = _shipment_calculate(products, request.user.id)
+            shipment.cost = cost
             shipment.save(update_fields=['total_products', 'cost'])
     except (Product.DoesNotExist, Shipment.DoesNotExist) as err:
         logger.error(err)
@@ -552,7 +569,7 @@ def shipment_add(request):
                         original_product.quantity_partial -= product.quantity
                         original_product.save()
                         shipment.total_products += product.quantity
-                    x_response, cost = _shipment_calculate(shipment.total_products, request.user.id)
+                    x_response, cost = _shipment_calculate(products, request.user.id)
                     if cost > 0:
                         shipment.cost = cost
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
@@ -563,7 +580,7 @@ def shipment_add(request):
                     product_formset.save()
                     warehouses = warehouse_formset.save()
                     logger.debug('@@@@@@@@@@@@ SEND PDF 1 EMAIL @@@@@@@@@@@@@@')
-                    send_email_shipment_add(shipment, products, warehouses)
+                    send_email_shipment_add(request, shipment, products, warehouses)
             return HttpResponseRedirect('%s?s=1' % reverse('shipment_add'))
         else:
             logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
@@ -588,28 +605,55 @@ def shipment_add(request):
 def shipment_calculate(request):
     if has_shipment_perm(request.user, 'add_shipment') is False:
         return HttpResponseForbidden()
-    http_response, cost = _shipment_calculate(request.GET.get('items'), request.user.id)
+    try:
+        items = json.loads(request.GET.get('items'))
+    except ValueError as e:
+        logger.error(e)
+        return HttpResponseBadRequest()
+    products = []
+    logger.debug('@@@@@@@@@@@@ CALCULATE @@@@@@@@@@@@@@')
+    logger.debug(items)
+    for item in items:
+        logger.debug(item)
+        product = Product()
+        try:
+            product.product = OriginalProduct.objects.get(pk=item['p'], user=request.user)
+        except OriginalProduct.DoesNotExist as e:
+            logger.error(e)
+            return HttpResponseBadRequest()
+        product.quantity = item['q']
+        products.append(product)
+    http_response, cost = _shipment_calculate(products, request.user.id)
     return http_response
 
 
-def _shipment_calculate(items, user_id):
+def _shipment_calculate(products, user_id):
+    if len(products) == 0:
+        return HttpResponseBadRequest(), 0
     user_model = get_user_model()
     try:
         current_user = user_model.objects.select_related('partner').get(pk=user_id)
         partner = current_user.partner
     except user_model.DoesNotExist:
         partner = None
+    cost = 0
+    quantity = 0
     try:
         cost_formula = CostFormula.objects.first()
-        formula = helper.resolve_formula(cost_formula.formula, partner)
-        logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        logger.debug(formula)
-        cost = helper.Calculate().evaluate(formula, variables={'x': items})
+        for product in products:
+            formula = helper.resolve_formula(cost_formula.formula, partner, product.product.receive_date)
+            logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            logger.debug(formula)
+            cost += helper.Calculate().evaluate(formula, variables={'x': product.quantity})
+            quantity += product.quantity
     except CostFormula.DoesNotExist:
-        cost = items * (settings.DEFAULT_REDIRECT_FACTOR + helper.resolve_partner_value(partner))
+        for product in products:
+            cost += product.quantity * (helper.resolve_price_value(product.product.receive_date) +
+                                        helper.resolve_partner_value(partner))
+            quantity += product.quantity
     return HttpResponse(json.dumps({'cost': force_text(formats.number_format(cost, use_l10n=True,
                                                                              decimal_pos=2)),
-                                    'items': items}),
+                                    'items': quantity}),
                         content_type='application/json'), cost
 
 
@@ -621,14 +665,16 @@ def shipment_download_pdf(request, pdf=None, pid=None):
             shipment = Shipment.objects.get(pk=pid)
             pdf_field = shipment.pdf_1
             user = shipment.user
-        except Shipment.DoesNotExist:
+        except Shipment.DoesNotExist as e:
+            logger.error(e)
             return HttpResponseBadRequest()
     else:
         try:
             package = Package.objects.get(pk=pid)
             pdf_field = package.pdf_2
             user = package.shipment.user
-        except Package.DoesNotExist:
+        except Package.DoesNotExist as e:
+            logger.error(e)
             return HttpResponseBadRequest()
     if user == request.user or request.user.groups.filter(name='admins').exists():
         content_type = magic.from_file(os.path.sep.join([settings.MEDIA_ROOT, pdf_field.name]), mime=True)
@@ -659,17 +705,17 @@ def shipment_paypal_notification(user_id, shipment_id, ipn_obj):
     return _shipment_details, None
 
 
-def shipment_paypal_notification_success(_shipment_details, ipn_obj, paypal_status_message):
+def shipment_paypal_notification_success(request, _shipment_details, ipn_obj, paypal_status_message):
     _shipment_details.status = 3
     _shipment_details.save(update_fields=['status'])
     email_title = _('Pagamento confirmado pelo PayPal para o %(item)s') % {'item': ipn_obj.item_name}
     email_message = paypal_status_message
-    helper.send_email_basic_template_bcc_admins(_shipment_details.user.first_name, [_shipment_details.user.email],
-                                                email_title, email_message)
-    send_email_shipment_pdf_2(_shipment_details, Warehouse.objects.filter(shipment=_shipment_details).count())
+    helper.send_email_basic_template_bcc_admins(request, _shipment_details.user.first_name,
+                                                [_shipment_details.user.email], email_title, email_message)
+    send_email_shipment_pdf_2(request, _shipment_details, Warehouse.objects.filter(shipment=_shipment_details).count())
 
 
-def send_email_shipment_add(shipment, products, warehouses):
+def send_email_shipment_add(request, shipment, products, warehouses):
     email_title = _('Cadastro de Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 3 +
@@ -701,14 +747,14 @@ def send_email_shipment_add(shipment, products, warehouses):
                                                                             "SHORT_DATE_FORMAT")}),)
         else:
             texts += ('',)
-    texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment')]), _('Clique aqui'),
+    texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment')]), _('Clique aqui'),
               _('para acessar sua lista de envios.'))
     email_body = format_html(html_format, *texts)
-    helper.send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title,
+    helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
                                                 email_body)
 
 
-def send_email_shipment_add_package(shipment, packages):
+def send_email_shipment_add_package(request, shipment, packages):
     email_title = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">Warehouse: {} / {}: {} {} / '
@@ -723,28 +769,28 @@ def send_email_shipment_add_package(shipment, packages):
                   package.height, unit_length_display(3, abbreviate=True))
     texts += (_('Realize o pagamento para dar continuidade com o seu envio %(id)s.') % {'id': shipment.id},
               _('Valor total'), force_text(formats.localize(shipment.cost, use_l10n=True)),
-              ''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
+              ''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), _('para acessar seu envio e efetuar o pagamento.'),)
     email_body = format_html(html_format, *texts)
-    helper.send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title,
+    helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
                                                 email_body)
 
 
-def send_email_shipment_pdf_2(shipment, warehouse_qty):
+def send_email_shipment_pdf_2(request, shipment, warehouse_qty):
     texts = (ungettext('Obrigado, agora faça o upload da etiqueta da caixa para dar continuidade com o seu envio '
                        '%(id)s.', 'Obrigado, agora faça o upload das etiquetas das caixas para dar continuidade com o '
                                   'seu envio %(id)s.', warehouse_qty) % {'id': shipment.id},)
-    send_email_shipment_status_change(shipment, _('para acessar seu envio e efetuar o upload.'), *texts)
+    send_email_shipment_status_change(request, shipment, _('para acessar seu envio e efetuar o upload.'), *texts)
 
 
-def send_email_shipment_add_pdf_2(shipment):
+def send_email_shipment_add_pdf_2(request, shipment):
     texts = (_('Obrigado novamente, agora é só aguardar que, assim que fizermos as checagens finais e tudo estiver ok, '
                'iremos enviar um novo e-mail para avisar da conclusão do processo do seu envio %(id)s.')
              % {'id': shipment.id},)
-    send_email_shipment_status_change(shipment, _('para acessar seu envio.'), *texts)
+    send_email_shipment_status_change(request, shipment, _('para acessar seu envio.'), *texts)
 
 
-def send_email_shipment_sent(shipment, packages):
+def send_email_shipment_sent(request, shipment, packages):
     packages_qty = len(packages)
     email_title = _('Seu envio %(number)s foi concluído') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
@@ -763,15 +809,15 @@ def send_email_shipment_sent(shipment, packages):
                                 % {'warehouse': package.warehouse, 'code': package.shipment_tracking})]
     texts += [mark_safe(_('No caso de qualquer dúvida é só nos enviar uma mensagem através do '
                           '<a href="%(url)s">fale conosco</a>.')
-                        % {'url': ''.join(['https://', Site.objects.get_current().domain, '/#contact'])})]
-    texts += [''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
+                        % {'url': ''.join(['https://', request.CURRENT_DOMAIN, '/#contact'])})]
+    texts += [''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), _('para acessar seu envio.')]
     email_body = format_html(html_format, *tuple(texts))
-    helper.send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title,
+    helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
                                                 email_body)
 
 
-def send_email_shipment_change_shipment(shipment, packages):
+def send_email_shipment_change_shipment(request, shipment, packages):
     packages_qty = len(packages)
     email_title = _('Código de postagem do envio %(number)s atualizado') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
@@ -782,21 +828,21 @@ def send_email_shipment_change_shipment(shipment, packages):
     for package in packages:
         texts += (mark_safe(_('Warehouse: <strong>%(warehouse)s</strong> / Código: <strong>%(code)s</strong>.')
                             % {'warehouse': package.warehouse, 'code': package.shipment_tracking}),)
-    texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
+    texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
              _('Clique aqui'), _('para acessar seu envio.'))
     email_body = format_html(html_format, *texts)
-    helper.send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title,
+    helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
                                                 email_body)
 
 
-def send_email_shipment_status_change(shipment, link_text, *texts):
+def send_email_shipment_status_change(request, shipment, link_text, *texts):
     email_title = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           (['<p style="color:#858585;font:13px/120% \'Helvetica\'">'
                            '<strong>{}:</strong> U$ {}</p>'] if len(texts) == 3 else ['']) +
                           ['<p><a href="{}">{}</a> {}</p>'])
-    texts += (''.join(['https://', Site.objects.get_current().domain, reverse('shipment_details', args=[shipment.id])]),
+    texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), link_text,)
     email_body = format_html(html_format, *texts)
-    helper.send_email_basic_template_bcc_admins(shipment.user.first_name, [shipment.user.email], email_title,
+    helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
                                                 email_body)

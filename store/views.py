@@ -11,7 +11,6 @@ from django.db.models import Q
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from django.urls import reverse
-from django.contrib.sites.models import Site
 from paypal.standard.models import ST_PP_COMPLETED, ST_PP_PENDING, ST_PP_VOIDED
 from django.utils import formats
 from django.utils.encoding import force_text
@@ -71,38 +70,45 @@ def store_lot_details(request, pid=None):
                                                 'SELECT 1 FROM store_lot_groups WHERE store_lot.id = '
                                                 'store_lot_groups.lot_id)'], params=[request.user.id]).\
             prefetch_related('product_set').get(pk=pid)
-    except Lot.DoesNotExist:
+    except Lot.DoesNotExist as e:
+        logger.error(e)
         return HttpResponseBadRequest()
     is_sandbox = (request.user.email in settings.PAYPAL_SANDBOX_USERS)
     if settings.PAYPAL_TEST or is_sandbox:
         import time
         current_milli_time = lambda: int(round(time.time() * 1000))
         invoice_id = '_'.join(['B', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
-        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
-        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
+        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if _('pt') == 'pt' else \
+            settings.PAYPAL_BUSINESS_EN_SANDBOX
+        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX if _('pt') == 'pt' else \
+            settings.PAYPAL_CERT_ID_EN_SANDBOX
         paypal_cert = settings.PAYPAL_CERT_SANDBOX
     else:
         invoice_id = '_'.join(['B', str(request.user.id), str(pid)])
-        paypal_business = settings.PAYPAL_BUSINESS
-        paypal_cert_id = settings.PAYPAL_CERT_ID
+        paypal_business = settings.PAYPAL_BUSINESS if _('pt') == 'pt' else settings.PAYPAL_BUSINESS_EN
+        paypal_cert_id = settings.PAYPAL_CERT_ID if _('pt') == 'pt' else settings.PAYPAL_CERT_ID_EN
         paypal_cert = settings.PAYPAL_CERT
+    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT if _('pt') == 'pt' else settings.PAYPAL_PRIVATE_CERT_EN
+    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT if _('pt') == 'pt' else settings.PAYPAL_PUBLIC_CERT_EN
     paypal_dict = {
         'business': paypal_business,
         'amount': 5.00,
         'item_name': _lot_details.name,
         'invoice': invoice_id,
         'paymentaction': 'authorization',
-        'notify_url': 'https://' + Site.objects.get_current().domain + reverse('paypal-ipn'),
-        'return_url': 'https://' + Site.objects.get_current().domain +
+        'notify_url': 'https://' + request.CURRENT_DOMAIN + reverse('paypal-ipn'),
+        'return_url': 'https://' + request.CURRENT_DOMAIN +
                       '%s?p=1' % reverse('store_lot_details', args=[pid]),
-        'cancel_return': 'https://' + Site.objects.get_current().domain + reverse('store_lot_details',
+        'cancel_return': 'https://' + request.CURRENT_DOMAIN + reverse('store_lot_details',
                                                                                   args=[pid]),
         # 'custom': 'Custom command!',  # Custom command to correlate to some function later (optional)
     }
     paypal_form = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
                                                             initial=paypal_dict,
                                                             paypal_cert=paypal_cert,
-                                                            cert_id=paypal_cert_id)
+                                                            cert_id=paypal_cert_id,
+                                                            private_cert=paypal_private_cert,
+                                                            public_cert=paypal_public_cert)
     return render(request, 'store_lot_details.html', {'title': _('Loja'), 'lot': _lot_details,
                                                       'paypal_form': paypal_form})
 
@@ -158,28 +164,29 @@ def store_paypal_notification_success(_lot_details, user_id, ipn_obj):
     #     Tracking.objects.create(track_number=product.identifier, product=p)
     # email_title = _('Pagamento confirmado pelo PayPal para o %(item)s') % {'item': ipn_obj.item_name}
     # email_message = paypal_status_message
-    # helper.send_email_basic_template_bcc_admins(_lot_details.user.first_name, [_lot_details.user.email],
+    # helper.send_email_basic_template_bcc_admins(request, _lot_details.user.first_name, [_lot_details.user.email],
     #                                             email_title, email_message)
 
 
-def store_paypal_notification_post_transaction(_lot_details, ipn_obj, paypal_status_message):
+def store_paypal_notification_post_transaction(request, _lot_details, ipn_obj, paypal_status_message):
     if ipn_obj.payment_status == ST_PP_PENDING:
         ipn_obj.complete_authorization()
         email_title = _('Pagamento PENDENTE pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
         texts = (_('Foi enviada solicitação para o PayPal completar este pagamento, caso um e-mail de confirmação não'
                    ' chegue nos próximos minutos verifique se ocorreu algo de errado.'),)
         email_message = _(helper._html_format(*texts)) + paypal_status_message
-        helper.send_email_basic_template_bcc_admins(_('Administrador'), None, email_title, email_message)
+        helper.send_email_basic_template_bcc_admins(request, _('Administrador'), None, email_title, email_message)
     elif ipn_obj.payment_status == ST_PP_COMPLETED:
         email_title = _('Pagamento CONFIRMADO pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
         texts = (_('Faça agora mesmo a transferência do restante do valor para a seguinte conta abaixo.'),
                  _('Banco: %(bank)s') % {'bank': 'Banco do Brasil'},
                  _('Valor: U$ %(value)s') % {'value': _lot_details.lot_cost - ipn_obj.mc_gross},)
         email_message = _(helper._html_format(*texts)) + paypal_status_message
-        helper.send_email_basic_template_bcc_admins(_lot_details.user.first_name, [_lot_details.user.email],
+        helper.send_email_basic_template_bcc_admins(request, _lot_details.user.first_name, [_lot_details.user.email],
                                                     email_title, email_message)
     elif ipn_obj.payment_status == ST_PP_VOIDED:
-        email_title = _('CANCELAMENTO do pagamento confirmado pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
+        email_title = _('CANCELAMENTO do pagamento confirmado pelo PayPal para o item '
+                        '\'%(item)s\'') % {'item': ipn_obj.item_name}
         email_message = paypal_status_message
-        helper.send_email_basic_template_bcc_admins(_lot_details.user.first_name, [_lot_details.user.email],
+        helper.send_email_basic_template_bcc_admins(request, _lot_details.user.first_name, [_lot_details.user.email],
                                                     email_title, email_message)

@@ -236,6 +236,10 @@
                 var count = i + 1;
                 $(this).html($(this).html().replace(/(#\d+)/g, "#" + count));
             });
+            if(window.removedInlineRow)
+            {
+                window.removedInlineRow(row, options);
+            }
         };
 
         var reinitDateTimeShortCuts = function()

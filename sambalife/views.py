@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from sambalife.forms import UserRegistrationForm, UserLoginForm, UserForgotPasswordForm, UserResetPasswordForm
 from utils.helper import send_email, send_email_basic_template_bcc_admins
 from django.utils.translation import string_concat, ugettext as _
@@ -10,14 +11,14 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
 from django.template import loader, Context
-from django.contrib.sites.models import Site
 from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponse
 from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.utils.html import format_html
 from partner.models import Partner
+import json
 import logging
 
 logger = logging.getLogger('django')
@@ -69,7 +70,7 @@ def user_forgot_password(request):
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 message = loader.get_template('email/forgot-password.html').render(
                     Context({'user_name': user.first_name, 'uid': uid, 'token': token,
-                             'protocol': 'https', 'domain': Site.objects.get_current().domain}))
+                             'protocol': 'https', 'domain': request.CURRENT_DOMAIN}))
                 str1 = _('Esqueci Senha')
                 str2 = _('Vendedor Online Internacional')
                 send_email(string_concat(str1, ' - ', str2), message, [user.email])
@@ -92,7 +93,8 @@ def user_reset_password(request, uidb64=None, token=None):
             user = user_model.objects.get(pk=uid)
             if token is not None and default_token_generator.check_token(user, token):
                 if request.method == 'GET':
-                    return render(request, 'user_reset_password.html', {'success': True, 'uidb64': uidb64, 'token': token})
+                    return render(request, 'user_reset_password.html', {'success': True, 'uidb64': uidb64,
+                                                                        'token': token})
                 else:
                     form = UserResetPasswordForm(request.POST)
                     if form.is_valid() and user.email == form.cleaned_data['email']:
@@ -143,6 +145,7 @@ def user_registration(request, pid=None):
                     user.partner = Partner.objects.get(identity=pid)
                 except Partner.DoesNotExist:
                     pass
+            user.terms_conditions = True
             user.save()
             all_users_group = Group.objects.get(name='all_users')
             all_users_group.user_set.add(user)
@@ -161,7 +164,7 @@ def user_registration(request, pid=None):
 
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-            send_validation_email(user, uidb64, token)
+            send_validation_email(request, user, uidb64, token)
             if pid:
                 return HttpResponseRedirect('%s?s=1' % reverse('user_registration_partner', args=[pid]))
             else:
@@ -185,7 +188,7 @@ def user_validation(request, uidb64=None, token=None):
                 user.is_verified = True
                 user.is_active = True
                 user.save(update_fields=['is_verified', 'is_active'])
-                # send_email_user_registration(user)
+                # send_email_user_registration(request, user)
             return render(request, 'user_validation.html', {'success': True, 'expiry': None,
                                                             'is_active': user.is_active})
         else:
@@ -198,12 +201,12 @@ def user_validation(request, uidb64=None, token=None):
 def user_validation_resend(request, uidb64=None):
     if uidb64 is not None:
         uid = urlsafe_base64_decode(uidb64)
+        user_model = get_user_model()
         try:
-            user_model = get_user_model()
             user = user_model.objects.get(pk=uid)
             if user.is_verified is False:
                 token = default_token_generator.make_token(user)
-                send_validation_email(user, uidb64, token)
+                send_validation_email(request, user, uidb64, token)
             return render(request, 'user_validation.html', {'success': True,
                                                             'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS})
         except user_model.DoesNotExist:
@@ -212,26 +215,40 @@ def user_validation_resend(request, uidb64=None):
     return render(request, 'user_validation.html', {'success': False, 'expiry': None, 'uidb64': None})
 
 
-def send_validation_email(user, uid, token):
+def send_validation_email(request, user, uid, token):
     message = loader.get_template('email/registration-validation.html').render(
         Context({'user_name': user.first_name, 'user_validation_url': 'user_validation', 'uid': uid, 'token': token,
-                 'protocol': 'https', 'domain': Site.objects.get_current().domain}))
+                 'protocol': 'https', 'domain': request.CURRENT_DOMAIN}))
     str1 = _('Cadastro')
     str2 = _('Vendedor Online Internacional')
     send_email(string_concat(str1, ' - ', str2), message, [user.email])
 
 
-def send_email_user_registration(user):
+def send_email_user_registration(request, user):
     email_title = _('Novo cadastro no sistema')
     html_format = '<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>' \
                   '<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}: <strong>{}</strong></p>' \
                   '<p><a href="{}">{}</a> {}</p>'
     texts = (_('Existe um novo cadastro no sistema pendente de ativação.'),
              _('E-mail'), user.email,
-             ''.join(['https://', Site.objects.get_current().domain, reverse('admin:myauth_myuser_changelist')]),
+             ''.join(['https://', request.CURRENT_DOMAIN, reverse('admin:myauth_myuser_changelist')]),
              _('Clique aqui'), _('para acessar a administração de usuários.'))
     email_body = format_html(html_format, *texts)
-    send_email_basic_template_bcc_admins(_('Administrador'), None, email_title, email_body)
+    send_email_basic_template_bcc_admins(request, _('Administrador'), None, email_title, email_body)
+
+
+@login_required
+@require_http_methods(["POST"])
+def accept_terms_conditions(request):
+    user_model = get_user_model()
+    try:
+        current_user = user_model.objects.get(pk=request.user.id)
+        current_user.terms_conditions = True
+        current_user.save(update_fields=['terms_conditions'])
+        return HttpResponse(json.dumps({'ok': True}), content_type='application/json')
+    except user_model.DoesNotExist as e:
+        logger.error(e)
+        return HttpResponseBadRequest()
 
 
 def cadastroLote(request):

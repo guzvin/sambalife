@@ -18,6 +18,12 @@ class UserRegistrationForm(forms.Form):
     # city = forms.CharField(label=_('Cidade'), max_length=60)
     password = forms.CharField(max_length=30, widget=forms.PasswordInput)
     password_confirmation = forms.CharField(max_length=30, widget=forms.PasswordInput)
+    terms = forms.BooleanField()
+
+    def __init__(self, *args, **kwargs):
+        super(UserRegistrationForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.error_messages = {'required': _('Campo obrigatório.')}
 
     def clean(self):
         password = self.cleaned_data.get('password')

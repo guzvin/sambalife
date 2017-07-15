@@ -42,7 +42,14 @@
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span> {% trans "Menu" %} <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand page-scroll" href="#page-top"><img src="/static/img/logo_sup.png" /><img width="175px" src="/static/img/logo_bottom.png" /></a>
+                <a class="navbar-brand page-scroll" href="#page-top">
+                    {% if LANGUAGE_CODE == 'pt-br' %}
+                    <img src="/static/img/logo_sup.png" />
+                    <img width="175px" src="/static/img/logo_bottom.png" />
+                    {% else %}
+                    <img src="/static/img/logo-en.png" style="width: 275px;" />
+                    {% endif %}
+                </a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
@@ -429,10 +436,13 @@
 
                   <!-- Termos -->
                   <div class="form-group terms-cond">
-                    <label for="termos">
-                        <input type="checkbox" class="form-control" id="termos" name="termos" />
-                        {% trans "Aceito os termos e condições de uso" %}
+                    <label for="terms" id="terms-conditions-check">
+                        <input type="checkbox" class="form-control" id="terms" name="terms" value="1" {% if form and form.terms.value %}checked="checked"{% endif %} />
+                        {% trans "Li e aceito os termos e condições de uso" %}
                     </label>
+                    {% for error in form.terms.errors %}
+                    <label id="terms-error" class="error" for="terms">{{ error|escape }}</label>
+                    {% endfor %}
                   </div>
 
                   <button type="submit" id="send-btn" class="btn btn-primary">{% trans "Enviar" %}</button><br><br>

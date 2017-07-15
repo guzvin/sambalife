@@ -94,16 +94,31 @@ function addQuantityEvent(element, prefix)
 function calculateTotalProducts(prefix)
 {
     var total = 0;
+    var items = [];
     $('#' + prefix + '-group .inline-related .quantity_validate').each(function()
     {
-        total += Number($(this).val());
+        if($(this).attr('id').indexOf('__prefix__') < 0)
+        {
+            items.push(
+            {
+                p: $(this).closest('.inline-related').find('.inline-row-key').val(),
+                q: Number($(this).val())
+            });
+            total += Number($(this).val());
+        }
     });
+    $('#totalCost').data('items', JSON.stringify(items));
     var previousValue = $('#totalProducts')[0].innerHTML;
     $('#totalProducts')[0].innerHTML = total;
     if(previousValue !== ''+total)
     {
         $('#totalCost')[0].innerHTML = '-';
     }
+}
+
+function removedInlineRow(row, options)
+{
+    calculateTotalProducts(options.prefix);
 }
 
 function formInitialized(options)
@@ -122,7 +137,7 @@ function formInitialized(options)
             {
                 method: 'GET',
                 url: '/shipment/calculate/',
-                data: 'items=' + $('#totalProducts')[0].innerHTML
+                data: 'items=' + $('#totalCost').data('items')
             })
             .done(function( obj )
             {

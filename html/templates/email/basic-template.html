@@ -8,12 +8,19 @@
 <body>
 
 <div id="template-email" style="background: #fff; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
-     <a href="http://{{ domain }}/"><img width="75" src="{{ protocol}}://{{ domain }}/static/img/logo_sup.png"><img width="200" src="{{ protocol}}://{{ domain }}/static/img/logo_bottom.png"></a>
+     <a href="{{ protocol}}://{{ domain }}/">
+        {% if LANGUAGE_CODE == 'pt-br' %}
+        <img width="75" src="{{ protocol}}://{{ domain }}/static/img/logo_sup.png">
+        <img width="200" src="{{ protocol}}://{{ domain }}/static/img/logo_bottom.png">
+        {% else %}
+        <img src="{{ protocol}}://{{ domain }}/static/img/logo-en.png">
+        {% endif %}
+     </a>
     <div style="background: #eee; padding: 10px 20px 20px 20px;">
         <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Prezado(a)" %} {{ user_name }}</p>
         {{ email_body|safe }}
     </div>
-    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Caso você não reconheça esta ação nos avise através do e-mail" %} <a href="mailto:contato@vendedorinternacional.online">contato@vendedorinternacional.online</a>.</small>
+    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Caso você não reconheça esta ação nos avise através do e-mail" %} <a href="mailto:{% trans 'contato@vendedorinternacional.online' %}">{% trans "contato@vendedorinternacional.online" %}</a>.</small>
     <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Este é um e-mail automático disparado pelo sistema. Favor não respondê-lo, pois esta conta não é monitorada." %}</small>
 </div>
 
