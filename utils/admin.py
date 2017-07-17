@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from utils.models import Params, Accounting, AccountingPartner
+from partner.models import Partner
 import logging
 
 logger = logging.getLogger('django')
@@ -56,11 +57,21 @@ admin.site.register(Params, ParamsAdmin)
 
 class AccountingPartnerInline(admin.TabularInline):
     model = AccountingPartner
-    readonly_fields = ('partner', 'value', 'total_products',)
+    readonly_fields = ('partner_lookup_name', 'value', 'total_products',)
+    exclude = ('partner',)
     can_delete = False
     max_num = 0
     verbose_name = _('Fechamento por Parceiro')
     verbose_name_plural = _('Fechamento por Parceiro')
+
+    def partner_lookup_name(self, obj):
+        try:
+            partner = Partner.objects.get(identity=obj.partner)
+            return partner.name
+        except Partner.DoesNotExist:
+            return 'Fábio/Gustavo/Roberto'
+
+    partner_lookup_name.short_description = _('Parceiro')
 
 
 class AccountingAdmin(admin.ModelAdmin):
