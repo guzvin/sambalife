@@ -65,7 +65,7 @@ class ObjectView(object):
 def send_email_basic_template_bcc_admins(request, user_name, user_email, email_title, email_body):
     message = loader.get_template('email/basic-template.html').render(
         Context({'user_name': user_name, 'protocol': 'https',
-                 'domain': request.CURRENT_DOMAIN, 'email_body': email_body}))
+                 'domain': request.CURRENT_DOMAIN, 'email_body': email_body, 'LANGUAGE_CODE': settings.LANGUAGE_CODE}))
     str2 = _('Vendedor Online Internacional')
     send_email(string_concat(email_title, ' - ', str2), message, user_email, bcc_admins=True)
 

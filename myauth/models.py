@@ -108,7 +108,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         Site.objects.clear_cache()
         message = loader.get_template(template_name).render(
             Context({'user_name': self.first_name, 'protocol': 'https',
-                     'domain': Site.objects.get_current().domain}))
+                     'domain': Site.objects.get_current().domain, 'LANGUAGE_CODE': settings.LANGUAGE_CODE}))
         str1 = _('Cadastro')
         str2 = _('Vendedor Online Internacional')
         send_email(string_concat(str1, ' - ', str2), message, [self.email])

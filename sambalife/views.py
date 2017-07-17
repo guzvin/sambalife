@@ -70,7 +70,8 @@ def user_forgot_password(request):
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 message = loader.get_template('email/forgot-password.html').render(
                     Context({'user_name': user.first_name, 'uid': uid, 'token': token,
-                             'protocol': 'https', 'domain': request.CURRENT_DOMAIN}))
+                             'protocol': 'https', 'domain': request.CURRENT_DOMAIN,
+                             'LANGUAGE_CODE': settings.LANGUAGE_CODE}))
                 str1 = _('Esqueci Senha')
                 str2 = _('Vendedor Online Internacional')
                 send_email(string_concat(str1, ' - ', str2), message, [user.email])
@@ -218,7 +219,7 @@ def user_validation_resend(request, uidb64=None):
 def send_validation_email(request, user, uid, token):
     message = loader.get_template('email/registration-validation.html').render(
         Context({'user_name': user.first_name, 'user_validation_url': 'user_validation', 'uid': uid, 'token': token,
-                 'protocol': 'https', 'domain': request.CURRENT_DOMAIN}))
+                 'protocol': 'https', 'domain': request.CURRENT_DOMAIN, 'LANGUAGE_CODE': settings.LANGUAGE_CODE}))
     str1 = _('Cadastro')
     str2 = _('Vendedor Online Internacional')
     send_email(string_concat(str1, ' - ', str2), message, [user.email])
