@@ -13,7 +13,7 @@ class ParamsAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': [
-                'amazon_fee', 'shipping_cost', 'partner_cost'
+                'amazon_fee', 'shipping_cost', 'fgr_cost', 'partner_cost'
             ]
         }),
         (_('Redirecionamento'), {

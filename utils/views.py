@@ -3,9 +3,10 @@ from django.views.decorators.http import require_http_methods
 from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from shipment.models import Shipment
-from utils.models import Accounting, AccountingPartner
+from utils.models import Accounting, AccountingPartner, Params
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.conf import settings
 import logging
 
 logger = logging.getLogger('django')
@@ -21,6 +22,13 @@ def close_accounting(request):
     accounting.user = request.user
     accounting.ipaddress = request.META.get('REMOTE_ADDR', '')
     accounting.save()
+    try:
+        params = Params.objects.first()
+        fgr_cost = float(params.fgr_cost)
+        partner_cost = float(params.partner_cost)
+    except Params.DoesNotExist:
+        fgr_cost = float(settings.DEFAULT_FGR_COST)
+        partner_cost = float(settings.DEFAULT_PARTNER_COST)
     for shipment in shipments:
         shipment.accounting = accounting
         shipment.save()
@@ -30,7 +38,7 @@ def close_accounting(request):
         else:
             accounting_partner = AccountingPartner()
             accounting_partner.partner = 'fgr'
-            accounting_partner.value = 0.29  # TODO deixar parametrizavel
+            accounting_partner.value = fgr_cost
             accounting_partner.total_products = shipment.total_products
             accounting_partner.accounting = accounting
             partners.append(accounting_partner)
@@ -47,7 +55,7 @@ def close_accounting(request):
             else:
                 accounting_partner = AccountingPartner()
                 accounting_partner.partner = partner.identity
-                accounting_partner.value = 0.20  # TODO deixar parametrizavel
+                accounting_partner.value = partner_cost
                 accounting_partner.total_products = shipment.total_products
                 accounting_partner.accounting = accounting
                 partners.append(accounting_partner)

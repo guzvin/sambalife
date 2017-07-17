@@ -96,6 +96,16 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             DJANGO_DEBUG = (key_value_pair[1] == '1')
         elif key_value_pair[0] == 'log_level':
             LOG_LEVEL = key_value_pair[1]
+        elif key_value_pair[0] == 'default_redirect_factor':
+            DEFAULT_REDIRECT_FACTOR = key_value_pair[1]
+        elif key_value_pair[0] == 'default_amazon_fee':
+            DEFAULT_AMAZON_FEE = key_value_pair[1]
+        elif key_value_pair[0] == 'default_amazon_shipping_cost':
+            DEFAULT_AMAZON_SHIPPING_COST = key_value_pair[1]
+        elif key_value_pair[0] == 'default_fgr_cost':
+            DEFAULT_FGR_COST = key_value_pair[1]
+        elif key_value_pair[0] == 'default_partner_cost':
+            DEFAULT_PARTNER_COST = key_value_pair[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
@@ -325,7 +335,3 @@ CRONJOBS = [
     ('0 0 1 * *', 'utils.cron.archive_shipped_shipments'),
     # ('0   4 * * *', 'django.core.management.call_command', ['clearsessions']),
 ]
-
-DEFAULT_REDIRECT_FACTOR = 1.29
-DEFAULT_AMAZON_FEE = 0.99
-DEFAULT_AMAZON_SHIPPING_COST = 0.30
