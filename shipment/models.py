@@ -9,6 +9,7 @@ from shipment.validators import validate_file_extension
 from datetime import datetime
 from product.models import Product as OriginalProduct
 from utils import helper
+from utils.models import Accounting
 from pyparsing import ParseException
 import logging
 
@@ -44,6 +45,8 @@ class Shipment(models.Model):
                              validators=[validate_file_extension])
     is_archived = models.BooleanField(_('Arquivado'), default=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    accounting = models.ForeignKey(Accounting, verbose_name=_('Fechamento'), on_delete=models.SET_NULL, null=True,
+                                   blank=True)
 
     class Meta:
         verbose_name = _('Envio')

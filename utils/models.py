@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import ValidationError, MinValueValidator
+from django.conf import settings
+from django.utils import formats
+from django.utils.encoding import force_text
 import logging
 
 logger = logging.getLogger('django')
@@ -90,3 +93,33 @@ class Params(models.Model):
                                             self.redirect_factor
         return ValidationError(_('Informe um valor maior ou igual a %(price)s.') % {'price': price},
                                code='invalid_redirect_factor_three')
+
+
+class Accounting(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    date = models.DateTimeField(_('Data do Fechamento'), auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name=_('Usuário'))
+    ipaddress = models.GenericIPAddressField(_('Endereço IP'), blank=True, null=True)
+
+    class Meta:
+        verbose_name = _('Fechamento')
+        verbose_name_plural = _('Fechamentos')
+
+    def __str__(self):
+        return force_text(formats.localize(self.date, use_l10n=True))
+
+
+class AccountingPartner(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    partner = models.CharField(_('Sigla Parceiro'), max_length=4)
+    value = models.DecimalField(_('Valor USD'), max_digits=12, decimal_places=2)
+    paid = models.BooleanField(_('Pago?'), default=False)
+    total_products = models.PositiveIntegerField(_('Total de produtos'))
+    accounting = models.ForeignKey(Accounting, verbose_name=_('Fechamento'), on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = _('Parceiro')
+        verbose_name_plural = _('Parceiro')
+
+    def __str__(self):
+        return str(_('Parceiro'))

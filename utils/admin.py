@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
-from utils.models import Params
+from utils.models import Params, Accounting, AccountingPartner
 import logging
 
 logger = logging.getLogger('django')
@@ -52,3 +52,42 @@ class ParamsAdmin(admin.ModelAdmin):
         return False
 
 admin.site.register(Params, ParamsAdmin)
+
+
+class AccountingPartnerInline(admin.TabularInline):
+    model = AccountingPartner
+    readonly_fields = ('partner', 'value', 'total_products',)
+    can_delete = False
+    max_num = 0
+    verbose_name = _('Fechamento por Parceiro')
+    verbose_name_plural = _('Fechamento por Parceiro')
+
+
+class AccountingAdmin(admin.ModelAdmin):
+    list_display = ('date',)
+    readonly_fields = ('date', 'user', 'ipaddress',)
+
+    inlines = [
+        AccountingPartnerInline,
+    ]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_module_permission(self, request):
+        if request.user.is_authenticated and request.user.first_name == 'Administrador':
+            return super(AccountingAdmin, self).has_module_permission(request)
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_authenticated and request.user.first_name == 'Administrador':
+            return super(AccountingAdmin, self).has_delete_permission(request, obj)
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.is_authenticated and request.user.first_name == 'Administrador':
+            return super(AccountingAdmin, self).has_change_permission(request, obj)
+        return False
+
+
+admin.site.register(Accounting, AccountingAdmin)

@@ -22,6 +22,7 @@ from product.views import *
 from shipment.views import *
 from payment.views import *
 from store.views import *
+from utils.views import *
 from myauth.views import *
 
 urlpatterns = i18n_patterns(
@@ -62,6 +63,7 @@ urlpatterns = i18n_patterns(
     # url(r'^envios-brasil', enviosBrasil, name='enviosBrasil'),
     # url(r'^envio-brasil/cadastro', envioBrasilCadastro, name='envioBrasilCadastro'),
     # url(r'^envio-brasil/detalhe', envioBrasilDetalhe, name='envioBrasilDetalhe'),
+    url(r'^admin/close_accounting/$', close_accounting, name='close_accounting'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     prefix_default_language=False,
 )

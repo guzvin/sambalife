@@ -8,7 +8,7 @@ logger = logging.getLogger('django')
 
 class Partner(models.Model):
     id = BigAutoField(primary_key=True)
-    identity = models.CharField(_('Sigla'), max_length=4)
+    identity = models.CharField(_('Sigla'), max_length=4, unique=True)
     name = models.CharField(_('Nome'), max_length=100)
     cost = models.DecimalField(_('Valor do Parceiro'), max_digits=12, decimal_places=2, null=True, blank=True)
 
