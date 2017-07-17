@@ -15,7 +15,7 @@ logger = logging.getLogger('django')
 @require_http_methods(["GET"])
 @transaction.atomic
 def close_accounting(request):
-    shipments = Shipment.objects.select_for_update().select_related('user').filter(status=5, accounting=None, id__lt=146)
+    shipments = Shipment.objects.select_for_update().select_related('user').filter(status=5, accounting=None)
     partners = []
     accounting = Accounting()
     accounting.user = request.user
