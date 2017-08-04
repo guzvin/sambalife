@@ -643,7 +643,7 @@ section#contact .text-danger {
   color: #e74c3c;
 }
 footer {
-  padding: 25px 0;
+  padding: 5px 0;
   text-align: center;
 }
 footer span.copyright {
@@ -1424,6 +1424,22 @@ footer{
 footer.fixed-footer{
     position: absolute;
     bottom: 0;
+}
+
+.box-fail{
+    width: 330px;
+    height: 270px;
+}
+
+.box-fail i.saad{
+    display: block;
+    margin-top: 30px;
+}
+
+.box-fail a{
+    display: block;
+    width: 100px;
+    margin: 0 auto;
 }
 
 .cadastro-usuario .terms-cond label#terms-conditions-check{
