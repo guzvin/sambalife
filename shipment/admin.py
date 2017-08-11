@@ -2,6 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from shipment.models import CostFormula
+from utils.sites import admin_site
 import logging
 
 logger = logging.getLogger('django')
@@ -50,4 +51,4 @@ class CostFormulaAdmin(admin.ModelAdmin):
                 return super(CostFormulaAdmin, self).has_add_permission(request)
         return False
 
-admin.site.register(CostFormula, CostFormulaAdmin)
+admin_site.register(CostFormula, CostFormulaAdmin)

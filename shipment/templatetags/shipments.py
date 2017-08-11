@@ -33,3 +33,8 @@ def unit_weight_display(unit, **kwargs):
 def unit_length_display(unit, **kwargs):
     k, v, a = Package.UNITS_LENGTH_CHOICES[unit - 1]
     return a if 'abbreviate' in kwargs and kwargs['abbreviate'] else v
+
+
+@register.simple_tag
+def render_payment_button(paypal_form, data):
+    return paypal_form.render_button(data=data)

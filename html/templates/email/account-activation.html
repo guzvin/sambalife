@@ -8,12 +8,12 @@
 <body>
 
 <div id="template-email" style="background: #fff; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
-    <a href="{{ protocol}}://{{ domain }}/">
+    <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/">
         {% if LANGUAGE_CODE == 'pt-br' %}
-        <img width="75" src="{{ protocol}}://{{ domain }}/static/img/logo_sup.png">
-        <img width="200" src="{{ protocol}}://{{ domain }}/static/img/logo_bottom.png">
+        <img width="75" src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_sup.png">
+        <img width="200" src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_bottom.png">
         {% else %}
-        <img src="{{ protocol}}://{{ domain }}/static/img/logo-en.png">
+        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo-en.png">
         {% endif %}
     </a>
     <div style="background: #eee; padding: 10px 20px 20px 20px;">
@@ -21,7 +21,7 @@
         <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Sua conta foi ativada, clique abaixo para acessá-la." %}</p>
         <p>
             {% url 'login' as my_url %}
-            <a href="{{ protocol}}://{{ domain }}{{ my_url }}" style="font: 13px/120% 'Helvetica';display: block; background: #337ab7;width: 210px;color: #fff; height: 32px; margin: 0 auto;text-align: center;padding-top: 9px;font-size: 20px;text-decoration: none;font-weight: bold;border-radius: 10px;">{% trans "LOGIN" %}</a>
+            <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}{{ my_url }}" style="font: 13px/120% 'Helvetica';display: block; background: #337ab7;width: 210px;color: #fff; height: 32px; margin: 0 auto;text-align: center;padding-top: 9px;font-size: 20px;text-decoration: none;font-weight: bold;border-radius: 10px;">{% trans "LOGIN" %}</a>
         </p>
     </div>
     <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Caso você não tenha feito esta solicitação nos avise através do e-mail" %} <a href="mailto:{% trans 'contato@vendedorinternacional.online' %}">{% trans "contato@vendedorinternacional.online" %}</a>.</small>

@@ -229,14 +229,14 @@
     $.fn.stackedFormset = function(options)
     {
         var $rows = $(this);
-        var updateInlineLabel = function(row)
+        var updateInlineLabel = function(row, type)
         {
             $($rows.selector).find(".inline_label").each(function(i)
             {
                 var count = i + 1;
                 $(this).html($(this).html().replace(/(#\d+)/g, "#" + count));
             });
-            if(window.removedInlineRow)
+            if(window.removedInlineRow && !type)
             {
                 window.removedInlineRow(row, options);
             }
@@ -312,7 +312,7 @@
                 initPrepopulatedFields(row);
                 reinitDateTimeShortCuts();
                 updateSelectFilter();
-                updateInlineLabel(row);
+                updateInlineLabel(row, 'add');
                 customOperations(row);
             }
         });

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from utils.models import Params, Accounting, AccountingPartner
+from utils.sites import admin_site
 from partner.models import Partner
 import logging
 
@@ -52,7 +53,7 @@ class ParamsAdmin(admin.ModelAdmin):
                 return super(ParamsAdmin, self).has_add_permission(request)
         return False
 
-admin.site.register(Params, ParamsAdmin)
+admin_site.register(Params, ParamsAdmin)
 
 
 class AccountingPartnerInline(admin.TabularInline):
@@ -101,4 +102,4 @@ class AccountingAdmin(admin.ModelAdmin):
         return False
 
 
-admin.site.register(Accounting, AccountingAdmin)
+admin_site.register(Accounting, AccountingAdmin)

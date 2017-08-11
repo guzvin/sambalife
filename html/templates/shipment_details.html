@@ -80,7 +80,7 @@
                  <label>{% trans "ID" %}: </label> {{ shipment.user.id }} <br>
                  <label>{% trans "Nome" %}: </label> {{ shipment.user.first_name }} {{ shipment.user.last_name }}<br>
                  <label>{% trans "Email" %}: </label> {{ shipment.user.email }}<br>
-                <br> <p><a href="{%url 'admin:myauth_myuser_change' shipment.user.id %}" class="btn btn-default"><i class="fa fa-external-link"></i> Acessar cadastro do usuário</a></p>
+                <br> <p><a href="{%url 'admin:myauth_myuser_change' shipment.user.id %}" class="btn btn-default"><i class="fa fa-external-link"></i> {% trans "Acessar cadastro do usuário" %}</a></p>
             </div>
           </div>
 
@@ -111,7 +111,7 @@
             <div class="col-md-4">
                 <label><i class="fa fa-fw fa-bar-chart"></i> {% trans "Valores" %}:</label><br><br>
                 <p><strong><i class="fa fa-fw fa-list-ol"></i> {% trans "Total de Produtos" %}: </strong><span id="totalProducts">{{ shipment.total_products }}</span> </p>
-                <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">{{ shipment.cost|localize }}</span></p>
+                <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">{{ shipment.cost|floatformat:2|localize }}</span></p>
             </div>
             <div class="col-md-4">
                 <p><strong><i class="fa fa-fw fa-calendar"></i> {% trans "Data de Envio" %}: </strong></p>
@@ -140,7 +140,7 @@
                 <h4><i class="fa fa-fw fa-archive"></i> {% trans "Informações dos pacote(s)" %}:</h4><br><br>
                 <form action="" method="post" id="form-upload-file" enctype="multipart/form-data">
                   {% csrf_token %}
-                  {% if shipment.status == 3 %}
+                  {% if shipment.status == 2 %}
                   <input type="hidden" name="add_package_file" value="1">
                   {% elif shipment.status > 3 and user|has_shipment_perm:'add_package' %}
                   <input type="hidden" name="add_package_tracking" value="1">
@@ -176,8 +176,6 @@
                     <div class="col-md-3">
                         <label><i class="fa fa-fw fa-file"></i> {{package.pdf_2.label}}:</label><br><br>
                         {% if shipment.status == 2 %}
-                        <p>{% trans "Upload não autorizado" %}</p>
-                        {% elif shipment.status == 3 %}
                           {% if user == shipment.user or user|has_group:'admins' %}
                         <p>
                             {{ package.pdf_2 }}
@@ -232,10 +230,10 @@
                         <label><i class="fa fa-2x fa-fw fa-plus-square"></i><br>{% trans "Preparando para Envio" %}</label>
                    </div>
                    <div class="col-md-3 center">
-                        <label><i class="fa fa-2x fa-shopping-cart"></i><br>{% trans "Pagamento Autorizado" %}</label>
+                        <label><i class="fa fa-2x fa-file-pdf-o"></i><br>{% trans "Upload Etiqueta Caixa Autorizado" %}</label>
                    </div>
                    <div class="col-md-3 center">
-                        <label><i class="fa fa-2x fa-file-pdf-o"></i><br>{% trans "Upload Etiqueta Caixa Autorizado" %}</label>
+                        <label><i class="fa fa-2x fa-shopping-cart"></i><br>{% trans "Pagamento Autorizado" %}</label>
                    </div>
                    <div class="col-md-2 center">
                         <label><i class="fa fa-2x fa-list-alt"></i><br>{% trans "Checagens Finais" %}</label>
@@ -317,16 +315,17 @@
               </form>
            </div><hr />
            {% endif %}
-           {% if shipment.status == 2 and shipment.is_archived is False %}
+           {% if shipment.status == 3 and shipment.is_archived is False %}
             {% if user == shipment.user or user|has_group:'admins' %}
-             {{ paypal_form.render }}
+             {% render_payment_button paypal_form shipment.id %}
              <br><br>
             {% endif %}
            {% endif %}
              <div class="row">
+                 {% if shipment.is_canceled is False %}
                  {% if shipment.is_archived %}
                  <!-- Botao arquivar -->
-                 <a class="btn btn-primary filtar-btn alterar-status" id="archive-btn" href="#">
+                 <a class="btn btn-primary filtar-btn alterar-status" id="restore-btn" href="#">
                     <i class="fa fa-fw fa-edit"></i> {% trans "Reativar Envio" %}
                  </a>
                  {% else %}
@@ -342,7 +341,7 @@
                 </a>
                 <br><br>
                 {% endif %}
-                {% if shipment.status == 3 %}
+                {% if shipment.status == 2 %}
                  {% if user == shipment.user or user|has_group:'admins' or user|has_shipment_perm:'add_package' %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-3" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
@@ -350,7 +349,7 @@
                 <br><br>
                  {% endif %}
                 {% endif %}
-                {% if shipment.status == 5 or shipment.status == 2 %}
+                {% if shipment.status == 5 or shipment.status == 3 %}
                  {% if user|has_shipment_perm:'add_package' %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-5" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
@@ -364,12 +363,17 @@
                  </a>
                  {% endif %}
                  <br><br>
-                 <form action="{% url 'shipment_archive' shipment.id %}" method="post" id="form-archive-shipment">
+                 <form action="{% if shipment.is_archived %}{% url 'shipment_archive' shipment.id '1' %}{% else %}{% url 'shipment_archive' shipment.id '2' %}{% endif %}" method="post" id="form-archive-shipment">
                     {% csrf_token %}
                     <input type="hidden" name="archive_shipment" value="1">
                  </form>
                  <!-- botao arquivar -->
-
+                 <!-- Botao cancelar -->
+                 <a class="btn btn-danger filtar-btn alterar-status" id="cancel-btn" href="#">
+                    <i class="fa fa-fw fa-remove"></i> {% trans "Cancelar Envio" %}
+                 </a>
+                 <br><br>
+                {% endif %}
                 <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a>
                 <br><br><br><br>
              </div>
@@ -397,5 +401,29 @@
             </div>
         </div>
     </div>
+    {% endif %}
+    {% if shipment.is_canceled is False %}
+     <form action="{% url 'shipment_cancel' shipment.id %}" method="post" id="form-cancel-shipment">
+        {% csrf_token %}
+        <input type="hidden" name="cancel_shipment" value="1">
+        <div id="confirmacao-exclusao" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">{% trans "Excluir" %}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>{% trans "Confirma o cancelamento deste envio?" %}</p>
+                        <p>{% trans "Esta ação não poderá ser desfeita." %}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">{% trans "Sim" %}</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </form>
     {% endif %}
 {% endblock %}

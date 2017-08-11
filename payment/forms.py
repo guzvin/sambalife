@@ -4,6 +4,7 @@ from paypal.standard.forms import PayPalEncryptedPaymentsForm
 from payment.models import MyPayPalIPN
 from utils import helper
 from django.conf import settings
+from django.utils.html import format_html
 import logging
 
 logger = logging.getLogger('django')
@@ -23,8 +24,11 @@ class MyPayPalIPNForm(PayPalStandardBaseForm):
 
 
 class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, button_type='buy', *args, **kwargs):
         self.is_sandbox = kwargs.pop('is_sandbox', False)
+        if kwargs.pop('is_render_button', False):
+            self.button_type = button_type
+            return
         super(MyPayPalSharedSecretEncryptedPaymentsForm, self).__init__(*args, **kwargs)
         # @@@ Attach the secret parameter in a way that is safe for other query params.
         secret_param = "?secret=%s" % helper.my_make_secret(self)
@@ -60,6 +64,11 @@ class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
         logger.debug('@@@@@@@@@@@@ CIPHERTEXT @@@@@@@@@@@@@@')
         logger.debug(ciphertext)
         return ciphertext
+
+    def render_button(self, data=None):
+        return format_html('<input type="image" src="{0}" id="payment_button" border="0" name="submit" '
+                           'alt="Buy it Now" data-generic="{1}" />',
+                           self.get_image(), data if data else '')
 
     def test_mode(self):
         logger.debug('@@@@@@@@@@@@ IS SANDBOX @@@@@@@@@@@@@@')

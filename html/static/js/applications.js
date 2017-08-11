@@ -573,11 +573,22 @@
 
     if($('#form-archive-shipment')[0])
     {
-        $('#archive-btn').click(function()
+        if($('#archive-btn')[0])
         {
-            $('.loading').show();
-            $('#form-archive-shipment').submit();
-        });
+            $('#archive-btn').click(function()
+            {
+                $('.loading').show();
+                $('#form-archive-shipment').submit();
+            });
+        }
+        else if($('#restore-btn')[0])
+        {
+            $('#restore-btn').click(function()
+            {
+                $('.loading').show();
+                $('#form-archive-shipment').submit();
+            });
+        }
     }
 
     $('.privatebtn').click(function()
@@ -603,6 +614,10 @@
             if(shipmentProducts['p' + $(this).val()])
             {
                 this.checked = true;
+            }
+            else
+            {
+                this.checked = false;
             }
         });
 
@@ -635,14 +650,14 @@
             }
             else
             {
-                sessionStorage.removeItem('shipment_products');
+//                sessionStorage.removeItem('shipment_products');
                 shipmentForm.submit();
             }
         });
     }
     else
     {
-        sessionStorage.removeItem('shipment_products');
+//        sessionStorage.removeItem('shipment_products');
     }
 
     if($('form#form-save-shipment')[0])
@@ -662,6 +677,7 @@
             submitHandler: function(form)
             {
                 $('.loading').show();
+                sessionStorage.removeItem('shipment_products');
                 form.submit()
             },
             invalidHandler: function(event, validator)
@@ -893,6 +909,51 @@
         }
     }
 
+    if($('input#payment_button')[0])
+    {
+        $('input#payment_button').click(function(e)
+        {
+            e.preventDefault();
+            var $this = $(this);
+            $.ajax(
+            {
+                method: 'GET',
+                url: '/shipment/pay/' + $this.data('generic'),
+                statusCode:
+                {
+                    400: function(jqXHR, textStatus, errorThrown)
+                    {
+                        if(jqXHR.responseText)
+                        {
+                            $('html')[0].innerHTML = jqXHR.responseText;
+                            return;
+                        }
+                        var body = gettext('Sorry, but there seems to be some inconsistencies. Please reload the page and try again.');
+                        assembleModal(gettext('Error'), body);
+                    },
+                    403: function()
+                    {
+                        var body = gettext('Access denied');
+                        assembleModal(gettext('Error'), body);
+                    },
+                    500: function()
+                    {
+                        var body = gettext('Sorry, we are unable to process your operation. Please reload the page and try again.');
+                        assembleModal(gettext('Error'), body);
+                    }
+                }
+            })
+            .done(function( obj )
+            {
+                var paymentFormArea = $('<span id="payment-form-area"></span>').append($(obj));
+                paymentFormArea.insertAfter($this);
+                var paymentFormArea = $('span#payment-form-area');
+                paymentFormArea.find('form').submit();
+                paymentFormArea.remove();
+            });
+        });
+    }
+
     if($('a#send-btn-final')[0])
     {
         $('a#send-btn-final').on('click', function (e)
@@ -971,6 +1032,11 @@
                 return false;
             });
         }
+    }
+
+    if($('#product_delete_error')[0])
+    {
+        $('#product_delete_error').modal('show');
     }
 
     $('.add-pro').click(function()

@@ -7,6 +7,7 @@ from utils.models import Accounting, AccountingPartner, Params
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.conf import settings
+from utils.helper import resolve_price_value
 import logging
 
 logger = logging.getLogger('django')
@@ -16,7 +17,7 @@ logger = logging.getLogger('django')
 @require_http_methods(["GET"])
 @transaction.atomic
 def close_accounting(request):
-    shipments = Shipment.objects.select_for_update().select_related('user').filter(status=5, accounting=None)
+    shipments = Shipment.objects.select_related('user').filter(status=5, accounting=None)
     partners = []
     accounting = Accounting()
     accounting.user = request.user
@@ -26,19 +27,25 @@ def close_accounting(request):
         params = Params.objects.first()
         fgr_cost = float(params.fgr_cost)
         partner_cost = float(params.partner_cost)
+        base_price = float(params.redirect_factor)
     except Params.DoesNotExist:
         fgr_cost = float(settings.DEFAULT_FGR_COST)
         partner_cost = float(settings.DEFAULT_PARTNER_COST)
+        base_price = float(settings.DEFAULT_REDIRECT_FACTOR)
     for shipment in shipments:
         shipment.accounting = accounting
         shipment.save()
         accounting_partner = next((p for p in partners if p.partner == 'fgr'), None)
         if accounting_partner:
+            accounting_partner.value = round(accounting_partner.value +
+                                             _shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost),
+                                             2)
             accounting_partner.total_products += shipment.total_products
         else:
             accounting_partner = AccountingPartner()
             accounting_partner.partner = 'fgr'
-            accounting_partner.value = fgr_cost
+            accounting_partner.value = round(_shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost),
+                                             2)
             accounting_partner.total_products = shipment.total_products
             accounting_partner.accounting = accounting
             partners.append(accounting_partner)
@@ -51,15 +58,23 @@ def close_accounting(request):
         if partner:
             accounting_partner = next((p for p in partners if p.partner == partner.identity), None)
             if accounting_partner:
+                accounting_partner.value = round(accounting_partner.value + partner_cost * shipment.total_products, 2)
                 accounting_partner.total_products += shipment.total_products
             else:
                 accounting_partner = AccountingPartner()
                 accounting_partner.partner = partner.identity
-                accounting_partner.value = partner_cost
+                accounting_partner.value = round(partner_cost * shipment.total_products, 2)
                 accounting_partner.total_products = shipment.total_products
                 accounting_partner.accounting = accounting
                 partners.append(accounting_partner)
     for accounting_partner in partners:
-        accounting_partner.value *= accounting_partner.total_products
         accounting_partner.save()
     return HttpResponseRedirect(reverse('admin:utils_accounting_change', args=[accounting.id]))
+
+
+def _shipment_products_cost(products, base_price, base_cost):
+    cost = 0
+    for product in products:
+        price = resolve_price_value(product.receive_date)
+        cost += (base_cost + ((price - base_price) / 2)) * product.quantity
+    return cost

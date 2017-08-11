@@ -123,8 +123,17 @@
               {% if user|has_product_perm:'change_product' %}
               <a href="{% url 'product_edit' product.id %}" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
               {% endif %}
-              {% if user|has_product_perm:'delete_product' %}
+              {% if user|has_product_perm:'delete_product' and shipments == 0 %}
               <a href="#" class="btn btn-danger send-btn-delete"><i class="fa fa-fw fa-trash"></i> {% trans "Excluir" %}</a>
+              {% elif shipments > 0 %}
+              <br><br>
+              <span>
+                {% blocktrans count i=shipments %}
+                Exclusão não permitida, pois este produto encontra-se associado ao seguinte envio, ID: {{ shipments_id }}
+                {% plural %}
+                Exclusão não permitida, pois este produto encontra-se associado aos seguintes envios, IDs: {{ shipments_id }}
+                {% endblocktrans %}
+              </span>
               {% endif %}
               <br><br>
               <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
@@ -135,7 +144,7 @@
         {% endif %}
       </div>
     </div>
-    {% if user|has_product_perm:'delete_product' %}
+    {% if user|has_product_perm:'delete_product' and shipments == 0 %}
     <form action="{% url 'product_delete' %}" method="post" class="form-delete-product" id="form-delete-product">
     {% csrf_token %}
         <input type="hidden" name="pid" value="{{ product.id }}">
@@ -157,5 +166,28 @@
         </div>
     </div>
     </form>
+    {% elif show_error %}
+    <div id="product_delete_error" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Excluir" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                    {% blocktrans count i=shipments %}
+                    Exclusão não permitida, pois este produto encontra-se associado ao seguinte envio, ID: {{ shipments_id }}
+                    {% plural %}
+                    Exclusão não permitida, pois este produto encontra-se associado aos seguintes envios, IDs: {{ shipments_id }}
+                    {% endblocktrans %}
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endif %}
 {% endblock %}

@@ -1,9 +1,10 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.http import HttpResponse, QueryDict
+from django.http import HttpResponse, HttpResponseServerError, QueryDict
 from paypal.standard.models import DEFAULT_ENCODING
 from payment.models import MyPayPalIPN
 from payment.forms import MyPayPalIPNForm
+from utils.helper import PaymentException
 import logging
 
 logger = logging.getLogger('django')
@@ -84,7 +85,12 @@ def payment_ipn(request):
             ipn_obj.verify()
 
     ipn_obj.save()
-    ipn_obj.send_signals()
+    try:
+        ipn_obj.send_signals()
+    except PaymentException:
+        logger.debug('==================== ERROR 500 =========================')
+        ipn_obj.set_flag('Problem when processing payment.')
+        ipn_obj.save(update_fields=['flag', 'flag_info', 'flag_code'])
 
     if encoding_missing:
         # Wait until we have an ID to log warning

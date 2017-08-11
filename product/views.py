@@ -262,7 +262,12 @@ def product_edit_status(request, pid=None, output=None):
                 fields_to_update.append('condition_comments')
             if len(fields_to_update) == 0:
                 raise Product.DoesNotExist
-            product.save(update_fields=fields_to_update)
+            with transaction.atomic():
+                product.save(update_fields=fields_to_update)
+                shipment_products = product.product_set.all()
+                for shipment_product in shipment_products:
+                    shipment_product.receive_date = product.receive_date
+                    shipment_product.save(update_fields=['receive_date'])
             send_email_product_info(request, product, product_status_display, product_actual_condition_display)
             if output and output == 'json':
                 product_json = {
@@ -304,12 +309,15 @@ def product_details(request, pid=None):
             product = Product.objects.get(query)
         else:
             product = Product.objects.select_related('user').get(query)
-        product_tracking = Tracking.objects.filter(product=product)
-        return render(request, 'product_details.html', {'title': _('Produto'), 'product': product,
-                                                        'product_tracking': product_tracking})
+        shipment_products = product.product_set.all()
+        shipments = ', '.join([str(shipment_product.shipment_id) for shipment_product in shipment_products])
+        return render(request, 'product_details.html', {'title': _('Produto'), 'shipments': len(shipment_products),
+                                                        'shipments_id': shipments,
+                                                        'product': product,
+                                                        'product_tracking': product.tracking_set.all()})
     except Product.DoesNotExist:
         pass
-    return render(request, 'product_details.html', {'title': _('Produto')})
+    return render(request, 'product_details.html', {'title': _('Produto'), 'shipments': 0})
 
 
 @login_required
@@ -321,7 +329,18 @@ def product_delete(request):
     query = Q(pk=request.DELETE.get('pid'))
     if has_user_perm(request.user, 'view_users') is False:
         query &= Q(user=request.user)
-    Product.objects.filter(query).delete()
+    try:
+        product = Product.objects.get(query)
+        shipment_products = product.product_set.all()
+        if len(shipment_products) > 0:
+            shipments = ', '.join([str(shipment_product.shipment_id) for shipment_product in shipment_products])
+            return render(request, 'product_details.html', {'title': _('Produto'), 'shipments': len(shipment_products),
+                                                            'shipments_id': shipments, 'show_error': True,
+                                                            'product': product,
+                                                            'product_tracking': product.tracking_set.all()})
+        product.delete()
+    except Product.DoesNotExist:
+        pass
     return HttpResponseRedirect(reverse('product_stock'))
 
 

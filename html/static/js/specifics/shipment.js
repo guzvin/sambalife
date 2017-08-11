@@ -118,7 +118,10 @@ function calculateTotalProducts(prefix)
 
 function removedInlineRow(row, options)
 {
-    calculateTotalProducts(options.prefix);
+    if(options.prefix === 'product_set')
+    {
+        calculateTotalProducts(options.prefix);
+    }
 }
 
 function formInitialized(options)
@@ -143,13 +146,6 @@ function formInitialized(options)
             {
                 $('#totalCost')[0].innerHTML = obj.cost;
             });
-        });
-    }
-    else if(options.prefix === 'warehouse_set')
-    {
-        $('#' + options.prefix + '-group .inline-related .warehouse_name_validate').each(function()
-        {
-            addQuantityEvent($(this), options.prefix);
         });
     }
 }

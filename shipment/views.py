@@ -5,6 +5,7 @@ from shipment.templatetags.shipments import has_shipment_perm
 from myauth.templatetags.users import has_user_perm
 from myauth.templatetags.permissions import has_group
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
+from django.utils import translation
 from django.utils.translation import ugettext as _, ungettext
 from product.models import Product as OriginalProduct
 from shipment.models import Shipment, Product, Warehouse, Package, CostFormula
@@ -18,12 +19,14 @@ from django.utils.encoding import force_text
 from django.conf import settings
 from django.urls import reverse
 from utils import helper
-from django.db.models import Q
+from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from shipment.templatetags.shipments import unit_weight_display, unit_length_display
 from django.contrib.auth import get_user_model
+from django.template import loader, TemplateDoesNotExist
+import time
 import magic
 import json
 import os
@@ -152,8 +155,14 @@ def shipment_details(request, pid=None):
             _shipment_details = Shipment.objects.select_related('user').get(query)
         except Shipment.DoesNotExist as e:
             logger.error(e)
-            return HttpResponseBadRequest()
+            try:
+                error_400_template = loader.get_template('error/400_shipment.html')
+            except TemplateDoesNotExist:
+                return HttpResponseBadRequest()
+            return HttpResponseBadRequest(error_400_template.render())
         _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
+        ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id)
+        _shipment_details.cost = cost
         _shipment_warehouses = Warehouse.objects.filter(shipment=_shipment_details).order_by('id')
         title = ' '.join([str(_('Envio')), str(_shipment_details.id)])
         context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products,
@@ -171,7 +180,8 @@ def shipment_details(request, pid=None):
                                                    attrs={'class': 'form-control pdf_2-validate'})})
         if _shipment_details.status == 1:
             # Preparando para Envio
-            if request.method == 'POST' and request.POST.get('add_shipment_package'):
+            if _shipment_details.is_archived is False and request.method == 'POST' \
+                    and request.POST.get('add_shipment_package'):
                 if has_shipment_perm(request.user, 'add_package'):
                     add_package_response = shipment_add_package(request, PackageFormSet, pid)
                     if isinstance(add_package_response, HttpResponse):
@@ -193,26 +203,28 @@ def shipment_details(request, pid=None):
             PackageFormSet.extra = 0
             PackageFormSet.max_num = 1
             novalidate_fields = []
-            if _shipment_details.status != 3:
+            if _shipment_details.status != 2:
                 novalidate_fields.append('pdf_2')
             package_kwargs = {'renderEmptyForm': False, 'noValidateFields': novalidate_fields}
             package_formset = None
-            if _shipment_details.status == 2:
+            if _shipment_details.status == 3:
                 # Pagamento Autorizado
-                if has_shipment_perm(request.user, 'add_package'):
+                if request.user == _shipment_details.user or has_group(request.user, 'admins') \
+                        or has_shipment_perm(request.user, 'add_package'):
                     if request.method == 'GET':
-                        package_formset = PackageFormSet(
-                            queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
-                            instance=_shipment_details, prefix='package_set', **package_kwargs)
                         if request.GET.get('s') == '1':
+                            package_formset = PackageFormSet(
+                                queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
+                                instance=_shipment_details, prefix='package_set', **package_kwargs)
                             context_data['success'] = True
-                            context_data['success_message'] = ungettext('Pacote inserido com sucesso.',
-                                                                        'Pacotes inseridos com sucesso.',
+                            context_data['success_message'] = ungettext('Upload realizado com sucesso.',
+                                                                        'Uploads realizados com sucesso.',
                                                                         len(package_formset))
                         elif request.GET.get('s') == '2':
                             context_data['success'] = True
                             context_data['success_message'] = _('Alteração salva com sucesso.')
-                    elif request.method == 'POST':
+                    elif _shipment_details.is_archived is False and request.method == 'POST' \
+                            and has_shipment_perm(request.user, 'add_package'):
                         package_formset = PackageFormSet(request.POST, instance=_shipment_details, prefix='package_set',
                                                          **package_kwargs)
                         if package_formset.is_valid():
@@ -226,52 +238,26 @@ def shipment_details(request, pid=None):
                                 return HttpResponseBadRequest()
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
                     is_sandbox = (request.user.email in settings.PAYPAL_SANDBOX_USERS)
-                    if settings.PAYPAL_TEST or is_sandbox:
-                        import time
-                        current_milli_time = lambda: int(round(time.time() * 1000))
-                        invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
-                        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if _('pt') == 'pt' else \
-                            settings.PAYPAL_BUSINESS_EN_SANDBOX
-                        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX if _('pt') == 'pt' else \
-                            settings.PAYPAL_CERT_ID_EN_SANDBOX
-                        paypal_cert = settings.PAYPAL_CERT_SANDBOX
-                    else:
-                        invoice_id = '_'.join(['A', str(request.user.id), str(pid)])
-                        paypal_business = settings.PAYPAL_BUSINESS if _('pt') == 'pt' else settings.PAYPAL_BUSINESS_EN
-                        paypal_cert_id = settings.PAYPAL_CERT_ID if _('pt') == 'pt' else settings.PAYPAL_CERT_ID_EN
-                        paypal_cert = settings.PAYPAL_CERT
-                    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT if _('pt') == 'pt' else \
-                        settings.PAYPAL_PRIVATE_CERT_EN
-                    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT if _('pt') == 'pt' else \
-                        settings.PAYPAL_PUBLIC_CERT_EN
-                    paypal_dict = {
-                        'business': paypal_business,
-                        'amount': _shipment_details.cost,
-                        'item_name': _('Envio %(number)s') % {'number': pid},
-                        'invoice': invoice_id,
-                        'notify_url': 'https://' + request.CURRENT_DOMAIN + reverse('paypal-ipn'),
-                        'return_url': 'https://' + request.CURRENT_DOMAIN +
-                                      '%s?p=1' % reverse('shipment_details', args=[pid]),
-                        'cancel_return': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details',
-                                                                                                  args=[pid]),
-                        # 'custom': 'Custom command!',  # Custom command to correlate to some function later (optional)
-                    }
                     context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
-                                                                                            initial=paypal_dict,
-                                                                                            paypal_cert=paypal_cert,
-                                                                                            cert_id=paypal_cert_id,
-                                                                                            private_cert=
-                                                                                            paypal_private_cert,
-                                                                                            public_cert=
-                                                                                            paypal_public_cert)
-            elif _shipment_details.status == 3:
+                                                                                            is_render_button=True)
+            elif _shipment_details.status == 2:
                 # Upload PDF 2 Autorizado
                 if request.user == _shipment_details.user or has_group(request.user, 'admins') \
                         or has_shipment_perm(request.user, 'add_package'):
-                    if request.method == 'GET' and request.GET.get('s') == '1':
+                    if request.method == 'GET':
+                        if request.GET.get('s') == '1':
+                            package_formset = PackageFormSet(
+                                    queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
+                                    instance=_shipment_details, prefix='package_set', **package_kwargs)
+                            context_data['success'] = True
+                            context_data['success_message'] = ungettext('Pacote inserido com sucesso.',
+                                                                        'Pacotes inseridos com sucesso.',
+                                                                        len(package_formset))
+                        elif request.GET.get('s') == '2':
                             context_data['success'] = True
                             context_data['success_message'] = _('Alteração salva com sucesso.')
-                    elif request.method == 'POST' and request.POST.get('add_package_file'):
+                    elif _shipment_details.is_archived is False and request.method == 'POST' \
+                            and request.POST.get('add_package_file'):
                         package_formset = PackageFormSet(request.POST, request.FILES, instance=_shipment_details,
                                                          prefix='package_set', **package_kwargs)
                         logger.debug('@@@@@@@@@@@@@@@ PDF 2 IS VALID @@@@@@@@@@@@@@@@@')
@@ -280,6 +266,10 @@ def shipment_details(request, pid=None):
                                                            or has_group(request.user, 'admins')):
                             try:
                                 with transaction.atomic():
+                                    updated_rows = Shipment.objects.select_for_update().filter(query).update(status=3)
+                                    if updated_rows == 0:
+                                        logger.error('Zero rows updated.')
+                                        raise Shipment.DoesNotExist('Zero rows updated.')
                                     for package_form in package_formset:
                                         package = package_form.save(commit=False)
                                         package_shipment_id = package.shipment.id
@@ -293,12 +283,10 @@ def shipment_details(request, pid=None):
                                             package.save(update_fields=['warehouse', 'pdf_2'])
                                         else:
                                             package.save(update_fields=['pdf_2'])
-                                    _shipment_details.status = 4
-                                    _shipment_details.save(update_fields=['status'])
                             except Shipment.DoesNotExist as e:
                                 logger.error(e)
                                 return HttpResponseBadRequest()
-                            send_email_shipment_add_pdf_2(request, _shipment_details)
+                            send_email_shipment_payment(request, _shipment_details)
                             return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
                         elif has_shipment_perm(request.user, 'add_package'):
                             novalidate_fields.append('pdf_2')
@@ -306,7 +294,7 @@ def shipment_details(request, pid=None):
                                                              prefix='package_set', **package_kwargs)
                             try:
                                 if edit_warehouse(package_formset, pid):
-                                    return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
+                                    return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
                                 else:
                                     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
                             except Shipment.DoesNotExist as e:
@@ -315,15 +303,7 @@ def shipment_details(request, pid=None):
             elif _shipment_details.status == 4 or _shipment_details.status == 5:
                 # Checagens Finais ou Enviado
                 if request.method == 'GET':
-                    package_formset = PackageFormSet(
-                        queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
-                        instance=_shipment_details, prefix='package_set', **package_kwargs)
-                    if _shipment_details.status == 4 and request.GET.get('s') == '1':
-                        context_data['success'] = True
-                        context_data['success_message'] = ungettext('Upload realizado com sucesso.',
-                                                                    'Uploads realizados com sucesso.',
-                                                                    len(package_formset))
-                    elif _shipment_details.status == 5:
+                    if _shipment_details.status == 5:
                         if has_group(request.user, 'admins') and request.GET.get('s') == '1':
                             context_data['success'] = True
                             context_data['success_message'] = _('Envio concluído com sucesso.')
@@ -331,7 +311,8 @@ def shipment_details(request, pid=None):
                             context_data['success'] = True
                             context_data['success_message'] = _('Código(s) de postagem salvo(s) com sucesso.')
                 if has_group(request.user, 'admins') or has_shipment_perm(request.user, 'add_package'):
-                    if request.method == 'POST' and request.POST.get('add_package_tracking'):
+                    if _shipment_details.is_archived is False and request.method == 'POST' \
+                            and request.POST.get('add_package_tracking'):
                         package_formset = PackageFormSet(request.POST, instance=_shipment_details, prefix='package_set',
                                                          **package_kwargs)
                         if package_formset.is_valid():
@@ -394,6 +375,72 @@ def shipment_details(request, pid=None):
     return HttpResponseForbidden()
 
 
+def current_milli_time(): return int(round(time.time() * 1000))
+
+
+@login_required
+@require_http_methods(["GET"])
+def shipment_pay_form(request, pid=None):
+    if has_shipment_perm(request.user, 'view_shipments'):
+        is_user_perm = has_user_perm(request.user, 'view_users')
+        query = Q(pk=pid) & Q(status=3)
+        try:
+            with transaction.atomic():
+                if is_user_perm is False:
+                    query &= Q(user=request.user)
+                _shipment_details = Shipment.objects.select_for_update().select_related('user').get(query)
+                _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').\
+                    order_by('id')
+                ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id)
+                _shipment_details.cost = cost
+                if request.user == _shipment_details.user or has_group(request.user, 'admins'):
+                    is_sandbox = (request.user.email in settings.PAYPAL_SANDBOX_USERS)
+                    if settings.PAYPAL_TEST or is_sandbox:
+                        invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
+                        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if translation.get_language() == 'pt-br' \
+                            else settings.PAYPAL_BUSINESS_EN_SANDBOX
+                        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX if translation.get_language() == 'pt-br' \
+                            else settings.PAYPAL_CERT_ID_EN_SANDBOX
+                        paypal_cert = settings.PAYPAL_CERT_SANDBOX
+                    else:
+                        invoice_id = '_'.join(['A', str(request.user.id), str(pid)])
+                        paypal_business = settings.PAYPAL_BUSINESS if translation.get_language() == 'pt-br' \
+                            else settings.PAYPAL_BUSINESS_EN
+                        paypal_cert_id = settings.PAYPAL_CERT_ID if translation.get_language() == 'pt-br' \
+                            else settings.PAYPAL_CERT_ID_EN
+                        paypal_cert = settings.PAYPAL_CERT
+                    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT if translation.get_language() == 'pt-br' \
+                        else settings.PAYPAL_PRIVATE_CERT_EN
+                    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT if translation.get_language() == 'pt-br' \
+                        else settings.PAYPAL_PUBLIC_CERT_EN
+                    _shipment_details.save(update_fields=['cost'])
+                    paypal_dict = {
+                        'business': paypal_business,
+                        'amount': _shipment_details.cost,
+                        'item_name': _('Envio %(number)s') % {'number': pid},
+                        'invoice': invoice_id,
+                        'notify_url': 'https://' + request.CURRENT_DOMAIN + reverse('paypal-ipn'),
+                        'return_url': 'https://' + request.CURRENT_DOMAIN +
+                                      '%s?p=1' % reverse('shipment_details', args=[pid]),
+                        'cancel_return': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details', args=[pid]),
+                        # 'custom': 'Custom command!',  # Custom command to correlate to some function later (optional)
+                    }
+                    paypal_form = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox, initial=paypal_dict,
+                                                                            paypal_cert=paypal_cert,
+                                                                            cert_id=paypal_cert_id,
+                                                                            private_cert=paypal_private_cert,
+                                                                            public_cert=paypal_public_cert)
+                    return HttpResponse(paypal_form.render())
+        except Shipment.DoesNotExist as e:
+            logger.error(e)
+            try:
+                error_400_template = loader.get_template('error/400_shipment.html')
+            except TemplateDoesNotExist:
+                return HttpResponseBadRequest()
+            return HttpResponseBadRequest(error_400_template.render())
+    return HttpResponseForbidden()
+
+
 def edit_warehouse(package_formset, pid):
     logger.debug('@@@@@@@@@@@@@@@ EDIT WAREHOUSE @@@@@@@@@@@@@@@@@')
     form_has_changed = False
@@ -448,35 +495,32 @@ def shipment_add_package(request, PackageFormSet, pid=None):
 
 @login_required
 @require_http_methods(["DELETE"])
-def shipment_delete_product(request):
+def shipment_delete_product(request, output=None):
     if has_shipment_perm(request.user, 'change_shipment') is False:
         return HttpResponseForbidden()
     request.DELETE = QueryDict(request.body)
     logger.debug('@@@@@@@@@@@@ DELETE PRODUCT @@@@@@@@@@@@@@')
     try:
         with transaction.atomic():
-            shipment = Shipment.objects.select_for_update().get(pk=request.DELETE.get('delete_product_shipment_id'),
-                                                                status=1)
-            product = Product.objects.get(pk=request.DELETE.get('delete_product_product_id'),
-                                          shipment=shipment)
-            original_product = product.product
+            shipment = Shipment.objects.select_for_update().select_related('user').\
+                get(pk=request.DELETE.get('delete_product_shipment_id'), status=1)
+            product = Product.objects.select_for_update().get(pk=request.DELETE.get('delete_product_product_id'),
+                                                              shipment=shipment)
             logger.debug(product.quantity)
-            logger.debug(original_product.quantity)
-            logger.debug(original_product.quantity_partial)
             shipment.total_products -= product.quantity
-            original_product.quantity += product.quantity
-            original_product.quantity_partial += product.quantity
+            OriginalProduct.objects.filter(pk=product.product_id).update(quantity=F('quantity') + product.quantity,
+                                                                         quantity_partial=
+                                                                         F('quantity_partial') + product.quantity)
             deleted = product.delete()
             if deleted[0] == 0:
                 raise Product.DoesNotExist('Delete did not affect any row.')
-            original_product.save(update_fields=['quantity', 'quantity_partial'])
             if shipment.total_products == 0:
                 shipment.delete()
                 return HttpResponse(json.dumps({'redirect': reverse('shipment')}), content_type='application/json')
             products = shipment.product_set.all()
             logger.debug('@@@@@@@@@@@@ SHIPMENT PRODUCTS @@@@@@@@@@@@@@')
             logger.debug(products)
-            http_response, cost = _shipment_calculate(products, request.user.id)
+            http_response, cost = calculate_shipment(products, shipment.user.id)
             shipment.cost = cost
             shipment.save(update_fields=['total_products', 'cost'])
     except (Product.DoesNotExist, Shipment.DoesNotExist) as err:
@@ -487,25 +531,86 @@ def shipment_delete_product(request):
 
 @login_required
 @require_http_methods(["POST"])
-def shipment_archive(request, pid=None):
+def shipment_archive(request, pid=None, op='0'):
     try:
-        if request.POST.get('archive_shipment') is None:
-            raise Shipment.DoesNotExist('archive_shipment parameter not found in request.')
-        _shipment_details = Shipment.objects.get(pk=pid)
-        if request.user != _shipment_details.user and has_group(request.user, 'admins') is False:
-            raise Shipment.DoesNotExist('Shipment from another user and user is not from admins group.')
+        with transaction.atomic():
+            if request.POST.get('archive_shipment') is None:
+                raise Shipment.DoesNotExist('archive_shipment parameter not found in request.')
+            _shipment_details = Shipment.objects.select_for_update().get(pk=pid)
+            if request.user != _shipment_details.user and has_group(request.user, 'admins') is False:
+                raise Shipment.DoesNotExist('Shipment from another user and user is not from admins group.')
+            if op == '1':
+                updated_rows = Shipment.objects.filter(pk=pid, is_archived=True).update(is_archived=False)
+                if updated_rows == 0:
+                    raise Shipment.DoesNotExist('Zero rows updated.')
+                if _shipment_details.status == 5:
+                    return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
+                products = _shipment_details.product_set.select_for_update().all()
+                fields_to_update = []
+                for product in products:
+                    original_product = OriginalProduct.objects.select_for_update().get(pk=product.product_id)
+                    new_quantity_partial = original_product.quantity_partial - product.quantity
+                    if new_quantity_partial < 0:
+                        if 'total_products' not in fields_to_update:
+                            fields_to_update.append('total_products')
+                        _shipment_details.total_products -= product.quantity
+                        product.quantity += new_quantity_partial
+                        if product.quantity < 1:
+                            product.delete()
+                            continue
+                        product.save(fields_to_update=['quantity'])
+                        _shipment_details.total_products += product.quantity
+                        new_quantity_partial = 0
+                    new_quantity = original_product.quantity - product.quantity
+                    OriginalProduct.objects.filter(pk=product.product_id).\
+                        update(quantity=new_quantity, quantity_partial=new_quantity_partial)
+                if _shipment_details.total_products < 1:
+                    _shipment_details.delete()
+                    return HttpResponseRedirect(reverse('shipment'))
+                if fields_to_update:
+                    _shipment_details.save(fields_to_update=fields_to_update)
+                return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
+            elif op == '2':
+                updated_rows = Shipment.objects.filter(pk=pid, is_archived=False).update(is_archived=True)
+                if updated_rows == 0:
+                    raise Shipment.DoesNotExist('Zero rows updated.')
+                if _shipment_details.status == 5:
+                    return HttpResponseRedirect(reverse('shipment'))
+                products = _shipment_details.product_set.select_for_update().all()
+                for product in products:
+                    OriginalProduct.objects.select_for_update().filter(pk=product.product_id).\
+                        update(quantity=F('quantity') + product.quantity,
+                               quantity_partial=F('quantity_partial') + product.quantity)
     except Shipment.DoesNotExist as err:
         logger.error(err)
-        logger.exception(err)
-        return HttpResponseBadRequest()
-    if _shipment_details.is_archived:
-        _shipment_details.is_archived = False
-        _shipment_details.save(update_fields=['is_archived'])
-        return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
-    else:
-        _shipment_details.is_archived = True
-        _shipment_details.save(update_fields=['is_archived'])
-        return HttpResponseRedirect(reverse('shipment'))
+    except OriginalProduct.DoesNotExist as err:
+        logger.error(err)
+    return HttpResponseRedirect(reverse('shipment'))
+
+
+@login_required
+@require_http_methods(["POST"])
+def shipment_cancel(request, pid=None):
+    try:
+        with transaction.atomic():
+            if request.POST.get('cancel_shipment') is None:
+                raise Shipment.DoesNotExist('cancel_shipment parameter not found in request.')
+            _shipment_details = Shipment.objects.select_for_update().get(pk=pid)
+            if request.user != _shipment_details.user and has_group(request.user, 'admins') is False:
+                raise Shipment.DoesNotExist('Shipment from another user and user is not from admins group.')
+            updated_rows = Shipment.objects.filter(pk=pid).update(is_canceled=True)
+            if updated_rows == 0:
+                raise Shipment.DoesNotExist('Zero rows updated.')
+            products = _shipment_details.product_set.select_for_update().all()
+            for product in products:
+                OriginalProduct.objects.select_for_update().filter(pk=product.product_id).\
+                    update(quantity=F('quantity') + product.quantity,
+                           quantity_partial=F('quantity_partial') + product.quantity)
+    except Shipment.DoesNotExist as err:
+        logger.error(err)
+    except OriginalProduct.DoesNotExist as err:
+        logger.error(err)
+    return HttpResponseRedirect(reverse('shipment'))
 
 
 @login_required
@@ -564,12 +669,15 @@ def shipment_add(request):
                     shipment.total_products = 0
                     products = product_formset.save(commit=False)
                     for product in products:
-                        original_product = OriginalProduct.objects.get(pk=product.product.id)
-                        original_product.quantity -= product.quantity
-                        original_product.quantity_partial -= product.quantity
-                        original_product.save()
+                        OriginalProduct.objects.filter(pk=product.product_id).update(quantity=
+                                                                                     F('quantity') - product.quantity,
+                                                                                     quantity_partial=
+                                                                                     F('quantity_partial') -
+                                                                                     product.quantity)
+                        original_product = OriginalProduct.objects.get(pk=product.product_id)
+                        product.receive_date = original_product.receive_date
                         shipment.total_products += product.quantity
-                    x_response, cost = _shipment_calculate(products, request.user.id)
+                    ignored_response, cost = calculate_shipment(products, request.user.id)
                     if cost > 0:
                         shipment.cost = cost
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
@@ -618,16 +726,17 @@ def shipment_calculate(request):
         product = Product()
         try:
             product.product = OriginalProduct.objects.get(pk=item['p'], user=request.user)
+            product.receive_date = product.product.receive_date
         except OriginalProduct.DoesNotExist as e:
             logger.error(e)
             return HttpResponseBadRequest()
         product.quantity = item['q']
         products.append(product)
-    http_response, cost = _shipment_calculate(products, request.user.id)
+    http_response, cost = calculate_shipment(products, request.user.id)
     return http_response
 
 
-def _shipment_calculate(products, user_id):
+def calculate_shipment(products, user_id):
     if len(products) == 0:
         return HttpResponseBadRequest(), 0
     user_model = get_user_model()
@@ -641,14 +750,14 @@ def _shipment_calculate(products, user_id):
     try:
         cost_formula = CostFormula.objects.first()
         for product in products:
-            formula = helper.resolve_formula(cost_formula.formula, partner, product.product.receive_date)
+            formula = helper.resolve_formula(cost_formula.formula, partner, product.receive_date)
             logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
             logger.debug(formula)
             cost += helper.Calculate().evaluate(formula, variables={'x': product.quantity})
             quantity += product.quantity
     except CostFormula.DoesNotExist:
         for product in products:
-            cost += product.quantity * (helper.resolve_price_value(product.product.receive_date) +
+            cost += product.quantity * (helper.resolve_price_value(product.receive_date) +
                                         helper.resolve_partner_value(partner))
             quantity += product.quantity
     return HttpResponse(json.dumps({'cost': force_text(formats.number_format(cost, use_l10n=True,
@@ -706,13 +815,15 @@ def shipment_paypal_notification(user_id, shipment_id, ipn_obj):
 
 
 def shipment_paypal_notification_success(request, _shipment_details, ipn_obj, paypal_status_message):
-    _shipment_details.status = 3
-    _shipment_details.save(update_fields=['status'])
+    updated_rows = Shipment.objects.filter(pk=_shipment_details.id, status=3).update(status=4)
+    if updated_rows == 0:
+        logger.error('Zero rows updated.')
+        raise helper.PaymentException()
     email_title = _('Pagamento confirmado pelo PayPal para o %(item)s') % {'item': ipn_obj.item_name}
     email_message = paypal_status_message
     helper.send_email_basic_template_bcc_admins(request, _shipment_details.user.first_name,
-                                                [_shipment_details.user.email], email_title, email_message)
-    send_email_shipment_pdf_2(request, _shipment_details, Warehouse.objects.filter(shipment=_shipment_details).count())
+                                                [_shipment_details.user.email], email_title, email_message, async=True)
+    send_email_shipment_paid(request, _shipment_details, async=True)
 
 
 def send_email_shipment_add(request, shipment, products, warehouses):
@@ -760,34 +871,34 @@ def send_email_shipment_add_package(request, shipment, packages):
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">Warehouse: {} / {}: {} {} / '
                            'L: {}{} x W: {}{} x H: {}{}</p>'] * len(packages) +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}</strong></p>',
-                           '<p style="color:#858585;font:13px/120% \'Helvetica\'">'
-                           '<strong>{}:</strong> U$ {}</p><p><a href="{}">{}</a> {}</p>'])
+                           '<p><a href="{}">{}</a> {}</p>'])
     texts = (_('Os seguintes pacotes foram cadastrado para o seu envio:'),)
     for package in packages:
         texts += (package.warehouse, _('Peso'), package.weight, unit_weight_display(1, abbreviate=True), package.length,
                   unit_length_display(3, abbreviate=True), package.width, unit_length_display(3, abbreviate=True),
                   package.height, unit_length_display(3, abbreviate=True))
-    texts += (_('Realize o pagamento para dar continuidade com o seu envio %(id)s.') % {'id': shipment.id},
-              _('Valor total'), force_text(formats.localize(shipment.cost, use_l10n=True)),
+    texts += (ungettext('Agora faça o upload da etiqueta da caixa para dar continuidade com o seu envio '
+                        '%(id)s.', 'Agora faça o upload das etiquetas das caixas para dar continuidade com o '
+                                   'seu envio %(id)s.', len(packages)) % {'id': shipment.id},
               ''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
-              _('Clique aqui'), _('para acessar seu envio e efetuar o pagamento.'),)
+              _('Clique aqui'), _('para acessar seu envio e efetuar o upload.'),)
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
                                                 email_body)
 
 
-def send_email_shipment_pdf_2(request, shipment, warehouse_qty):
-    texts = (ungettext('Obrigado, agora faça o upload da etiqueta da caixa para dar continuidade com o seu envio '
-                       '%(id)s.', 'Obrigado, agora faça o upload das etiquetas das caixas para dar continuidade com o '
-                                  'seu envio %(id)s.', warehouse_qty) % {'id': shipment.id},)
-    send_email_shipment_status_change(request, shipment, _('para acessar seu envio e efetuar o upload.'), *texts)
+def send_email_shipment_payment(request, shipment):
+    texts = (_('Obrigado, agora realize o pagamento para dar continuidade com o seu '
+               'envio %(id)s.') % {'id': shipment.id}, _('Valor total'),
+             force_text(formats.localize(shipment.cost, use_l10n=True)))
+    send_email_shipment_status_change(request, shipment, _('para acessar seu envio e efetuar o pagamento.'), *texts)
 
 
-def send_email_shipment_add_pdf_2(request, shipment):
+def send_email_shipment_paid(request, shipment, async=False):
     texts = (_('Obrigado novamente, agora é só aguardar que, assim que fizermos as checagens finais e tudo estiver ok, '
                'iremos enviar um novo e-mail para avisar da conclusão do processo do seu envio %(id)s.')
              % {'id': shipment.id},)
-    send_email_shipment_status_change(request, shipment, _('para acessar seu envio.'), *texts)
+    send_email_shipment_status_change(request, shipment, _('para acessar seu envio.'), *texts, async=async)
 
 
 def send_email_shipment_sent(request, shipment, packages):
@@ -829,13 +940,13 @@ def send_email_shipment_change_shipment(request, shipment, packages):
         texts += (mark_safe(_('Warehouse: <strong>%(warehouse)s</strong> / Código: <strong>%(code)s</strong>.')
                             % {'warehouse': package.warehouse, 'code': package.shipment_tracking}),)
     texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
-             _('Clique aqui'), _('para acessar seu envio.'))
+              _('Clique aqui'), _('para acessar seu envio.'))
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
                                                 email_body)
 
 
-def send_email_shipment_status_change(request, shipment, link_text, *texts):
+def send_email_shipment_status_change(request, shipment, link_text, *texts, async=False):
     email_title = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           (['<p style="color:#858585;font:13px/120% \'Helvetica\'">'
@@ -845,4 +956,4 @@ def send_email_shipment_status_change(request, shipment, link_text, *texts):
               _('Clique aqui'), link_text,)
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
-                                                email_body)
+                                                email_body, async=async)

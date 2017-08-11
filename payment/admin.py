@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from payment.models import MyPayPalIPN
 from payment.forms import MyPayPalIPNForm
 from paypal.standard.ipn.models import PayPalIPN
+from utils.sites import admin_site
 import logging
 
 logger = logging.getLogger('django')
@@ -111,5 +112,4 @@ class PaymentAdmin(admin.ModelAdmin):
                        'ipaddress', 'flag', 'flag_code', 'flag_info', 'query', 'response', 'created_at', 'updated_at',
                        'from_view')
 
-admin.site.register(MyPayPalIPN, PaymentAdmin)
-admin.site.unregister(PayPalIPN)
+admin_site.register(MyPayPalIPN, PaymentAdmin)

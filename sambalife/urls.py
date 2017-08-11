@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from django.contrib import admin
+from utils.sites import admin_site
 from django.views.i18n import JavaScriptCatalog
 from django.conf.urls.i18n import i18n_patterns
 from sambalife.views import *
@@ -25,8 +25,8 @@ from store.views import *
 from utils.views import *
 from myauth.views import *
 
-urlpatterns = i18n_patterns(
-    url(r'^admin/', include(admin.site.urls)),
+urlpatterns = [
+    url(r'^admin/', include(admin_site.urls)),
     url(r'^login[/]$', user_login, name='login'),
     url(r'^logout[/]$', user_logout, name='logout'),
     url(r'^user/password/forgot[/]$', user_forgot_password, name='user_forgot_password'),
@@ -50,12 +50,14 @@ urlpatterns = i18n_patterns(
     url(r'^product/autocomplete[/]$', product_autocomplete, name='product_autocomplete'),
     url(r'^shipment/list[/]$', shipment_list, name='shipment'),
     url(r'^shipment/details/(?P<pid>[0-9]+)[/]$', shipment_details, name='shipment_details'),
+    url(r'^shipment/pay/(?P<pid>[0-9]+)[/]$', shipment_pay_form, name='shipment_pay_form'),
     url(r'^shipment/add[/]$', shipment_add, name='shipment_add'),
     url(r'^shipment/calculate[/]$', shipment_calculate, name='shipment_calculate'),
     url(r'^shipment/(?P<pdf>pdf_1)/(?P<pid>[0-9]+)[/]$', shipment_download_pdf, name='shipment_pdf_1'),
     url(r'^shipment/(?P<pdf>pdf_2)/(?P<pid>[0-9]+)[/]$', shipment_download_pdf, name='shipment_pdf_2'),
     url(r'^shipment/delete/product.(?P<output>json)[/]$', shipment_delete_product, name='shipment_delete_product'),
-    url(r'^shipment/archive/(?P<pid>[0-9]+)[/]$', shipment_archive, name='shipment_archive'),
+    url(r'^shipment/archive/(?P<pid>[0-9]+)/(?P<op>(1|2)+)[/]$', shipment_archive, name='shipment_archive'),
+    url(r'^shipment/cancel/(?P<pid>[0-9]+)[/]$', shipment_cancel, name='shipment_cancel'),
     url(r'^paypal/$', payment_ipn, name='paypal-ipn'),
     # url(r'^store/list[/]$', store_list, name='store'),
     # url(r'^store/lot/details/(?P<pid>[0-9]+)[/]$', store_lot_details, name='store_lot_details'),
@@ -64,6 +66,5 @@ urlpatterns = i18n_patterns(
     # url(r'^envio-brasil/cadastro', envioBrasilCadastro, name='envioBrasilCadastro'),
     # url(r'^envio-brasil/detalhe', envioBrasilDetalhe, name='envioBrasilDetalhe'),
     url(r'^admin/close_accounting/$', close_accounting, name='close_accounting'),
-    url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
-    prefix_default_language=False,
-)
+    url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog')
+]

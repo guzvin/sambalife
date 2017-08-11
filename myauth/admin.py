@@ -11,6 +11,7 @@ from django.contrib.admin import utils
 from django.core.exceptions import ObjectDoesNotExist
 from myauth.models import MyUser, UserAddress
 from django.db.models.fields import BLANK_CHOICE_DASH
+from utils.sites import admin_site
 import logging
 
 logger = logging.getLogger('django')
@@ -63,7 +64,8 @@ class UserCreationForm(forms.ModelForm):
     def save(self, commit=True):
         # Save the provided password in hashed format
         user = super(UserCreationForm, self).save(commit=False)
-        user.set_password(self.cleaned_data["password1"])
+        user.set_password(self.cleaned_data['password1'])
+        user.username_internal = ''.join([self.cleaned_data['email'], '-', self.cleaned_data['language_code']])
         user.save()
         user.groups = self.cleaned_data['groups']
         if commit:
@@ -124,11 +126,12 @@ class UserChangeForm(forms.ModelForm):
     def save(self, *args, **kwargs):
         # Default save but no commit.
         instance = super(UserChangeForm, self).save(commit=False)
-        password = self.cleaned_data["password1"]
+        password = self.cleaned_data['password1']
         if password and password != '':
             instance.set_password(password)
         # Add the users to the Group.
         instance.groups = self.cleaned_data['groups']
+        instance.username_internal = ''.join([self.cleaned_data['email'], '-', self.cleaned_data['language_code']])
         # Call save.
         instance.save()
         return instance
@@ -209,12 +212,12 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('id', 'email', 'is_superuser', 'is_active', 'is_verified', 'partner')
+    list_display = ('id', 'email', 'is_superuser', 'is_active', 'is_verified', 'partner', 'language_code')
     list_display_links = ('id', 'email',)
-    list_filter = ('is_superuser', 'is_active', 'is_verified', 'partner')
+    list_filter = ('is_superuser', 'is_active', 'is_verified', 'partner', 'language_code')
     # readonly_fields = ('partner',)
     fieldsets = (
-        (None, {'fields': ('email', 'partner', 'password', 'is_verified', 'is_active', 'password1', 'password2')}),
+        (None, {'fields': ('email', 'language_code', 'partner', 'password', 'is_verified', 'is_active', 'password1', 'password2')}),
         (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
         (_('Permissões'), {'fields': ('is_superuser',)}),
         (_('Grupos'), {'fields': ('groups',)}),
@@ -224,7 +227,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone', 'is_verified',
+            'fields': ('email', 'language_code', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone', 'is_verified',
                        'is_active', 'is_superuser', 'password1', 'password2', 'groups')}
          ),
     )
@@ -265,7 +268,7 @@ class UserAdmin(BaseUserAdmin):
 
 # admin.site.unregister(MyUser)
 # Now register the new UserAdmin...
-admin.site.register(MyUser, UserAdmin)
+admin_site.register(MyUser, UserAdmin)
 
 
 User = get_user_model()
@@ -308,9 +311,6 @@ class GroupAdminForm(forms.ModelForm):
         # Call save.
         instance.save()
         return instance
-
-# Unregister the original Group admin.
-admin.site.unregister(Group)
 
 
 class GroupAdmin(admin.ModelAdmin):
@@ -370,7 +370,7 @@ class GroupAdmin(admin.ModelAdmin):
                                                    extra_context=this_extra_context)
 
 # Register the new Group ModelAdmin.
-admin.site.register(Group, GroupAdmin)
+admin_site.register(Group, GroupAdmin)
 
 native_lookup_field = utils.lookup_field
 

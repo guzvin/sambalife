@@ -25,6 +25,6 @@ class DomainLocaleMiddleware(MiddlewareMixin):
         logger.debug(lang_code)
         if lang_code:
             translation.activate(lang_code)
-            request.LANGUAGE_CODE = lang_code
-            settings.LANGUAGE_CODE = lang_code
+            request.LANGUAGE_CODE = translation.get_language()
         logger.debug(request.CURRENT_DOMAIN)
+        request.CURRENT_DOMAIN = '66692cd2.ngrok.io'

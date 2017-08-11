@@ -3,12 +3,12 @@ from django.db.models.fields import BigAutoField
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
-from django.utils.translation import string_concat
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext
 from myauth.my_user_manager import MyUserManager
 from django.conf import settings
 from django.template import loader, Context
 from django.contrib.sites.models import Site
+from django.http import HttpRequest
 from utils.helper import send_email
 from smtplib import SMTPException
 from partner.models import Partner
@@ -22,7 +22,8 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     id = BigAutoField(primary_key=True)
     first_name = models.CharField(_('Nome'), max_length=50)
     last_name = models.CharField(_('Sobrenome'), max_length=50)
-    email = models.CharField(_('E-mail'), max_length=150, unique=True)
+    email = models.CharField(_('E-mail'), max_length=150)
+    username_internal = models.CharField(_('username'), max_length=156, unique=True, null=True)
     doc_number = models.CharField(_('CPF'), max_length=25, null=True)
     cell_phone = models.CharField(_('Telefone 1'), max_length=25)
     phone = models.CharField(_('Telefone 2'), max_length=25, null=True)
@@ -31,6 +32,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(_('Verificado'), default=False)
     partner = models.ForeignKey(Partner, verbose_name=_('Parceiro'), on_delete=models.SET_NULL, null=True, blank=True)
     terms_conditions = models.BooleanField(_('Termos e Condições'), default=False)
+    language_code = models.CharField(_('Idioma'), choices=settings.LANGUAGES, max_length=5, default='pt-br')
 
     def __iter__(self):
         yield 'id', self.id
@@ -45,10 +47,11 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         yield 'is_verified', self.is_verified
         yield 'partner', self.partner
         yield 'terms_conditions', self.terms_conditions
+        yield 'language_code', self.language_code
 
     objects = MyUserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username_internal'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'cell_phone']
 
     class Meta:
@@ -105,13 +108,13 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
 
     def _send_email(self, template_name):
+        ctx = Context({'user_name': self.first_name, 'protocol': 'https'})
+        request = HttpRequest()
         Site.objects.clear_cache()
-        message = loader.get_template(template_name).render(
-            Context({'user_name': self.first_name, 'protocol': 'https',
-                     'domain': Site.objects.get_current().domain, 'LANGUAGE_CODE': settings.LANGUAGE_CODE}))
-        str1 = _('Cadastro')
-        str2 = _('Vendedor Online Internacional')
-        send_email(string_concat(str1, ' - ', str2), message, [self.email])
+        request.CURRENT_DOMAIN = Site.objects.get_current().domain
+        message = loader.get_template(template_name).render(ctx, request)
+        send_email(' - '.join([str(ugettext('Cadastro')), str(ugettext('Vendedor Online Internacional'))]), message,
+                   [self.email], async=True)
 
 
 class UserAddress(models.Model):

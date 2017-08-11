@@ -35,8 +35,8 @@ class Shipment(models.Model):
     send_date = models.DateField(_('Data de Envio'))
     STATUS_CHOICES = (
         (1, _('Preparando para Envio')),  # Preparing for Shipment
-        (2, _('Pagamento Autorizado')),  # Payment Authorized
-        (3, _('Upload Etiqueta Caixa Autorizado')),  # Upload Box Label Authorized
+        (2, _('Upload Etiqueta Caixa Autorizado')),  # Upload Box Label Authorized
+        (3, _('Pagamento Autorizado')),  # Payment Authorized
         (4, _('Checagens Finais')),  # Final Checkings
         (5, _('Enviado')),  # Shipped
     )
@@ -44,6 +44,7 @@ class Shipment(models.Model):
     pdf_1 = models.FileField(_('Etiqueta do(s) Produto(s)'), upload_to=user_directory_path,
                              validators=[validate_file_extension])
     is_archived = models.BooleanField(_('Arquivado'), default=False)
+    is_canceled = models.BooleanField(_('Cancelado'), default=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     accounting = models.ForeignKey(Accounting, verbose_name=_('Fechamento'), on_delete=models.SET_NULL, null=True,
                                    blank=True)
@@ -82,7 +83,8 @@ def save_file(sender, instance, created, **kwargs):
 class Product(models.Model):
     id = BigAutoField(primary_key=True)
     quantity = models.PositiveIntegerField(_('Quantidade'))
-    product = models.ForeignKey(OriginalProduct, on_delete=models.CASCADE)
+    product = models.ForeignKey('product.Product')
+    receive_date = models.DateTimeField(_('Data de Recebimento'), null=True)
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)
 
     class Meta:

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from utils.sites import admin_site
 from .models import Partner
 
 
@@ -7,4 +8,4 @@ class PartnerAdmin(admin.ModelAdmin):
         (None, {'fields': ('identity', 'name')}),
     )
 
-admin.site.register(Partner, PartnerAdmin)
+admin_site.register(Partner, PartnerAdmin)

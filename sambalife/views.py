@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from sambalife.forms import UserRegistrationForm, UserLoginForm, UserForgotPasswordForm, UserResetPasswordForm
 from utils.helper import send_email, send_email_basic_template_bcc_admins
+from django.utils import translation
 from django.utils.translation import string_concat, ugettext as _
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
@@ -34,8 +35,12 @@ def user_login(request):
     if request.method == 'POST':
         form = UserLoginForm(request.POST)
         if form.is_valid():
-            username = request.POST['login']
+            username = request.POST['login'].lower()
             password = request.POST['password']
+            if username == settings.SYS_SU_USER:
+                username = ''.join([username, '-pt-br'])
+            else:
+                username = ''.join([username, '-', translation.get_language()])
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -64,14 +69,13 @@ def user_forgot_password(request):
         user_model = get_user_model()
         email = form.cleaned_data['login']
         try:
-            user = user_model.objects.get(email=email)
+            user = user_model.objects.get(username_internal=''.join([email, '-', translation.get_language()]))
             if user.is_active:
                 token = default_token_generator.make_token(user)
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 message = loader.get_template('email/forgot-password.html').render(
                     Context({'user_name': user.first_name, 'uid': uid, 'token': token,
-                             'protocol': 'https', 'domain': request.CURRENT_DOMAIN,
-                             'LANGUAGE_CODE': settings.LANGUAGE_CODE}))
+                             'protocol': 'https'}), request)
                 str1 = _('Esqueci Senha')
                 str2 = _('Vendedor Online Internacional')
                 send_email(string_concat(str1, ' - ', str2), message, [user.email])
@@ -123,7 +127,7 @@ def user_registration(request, pid=None):
             user_model = get_user_model()
             email = form.cleaned_data['email']
             try:
-                user = user_model.objects.get(email=email)
+                user = user_model.objects.get(username_internal=''.join([email, '-', translation.get_language()]))
                 if not user.is_active:
                     form.add_error(None, _('E-mail já cadastrado, porém o usuário ainda não foi liberado para acesso '
                                            'ao sistema. Em caso de dúvida <a href=\'/#contact\'>fale conosco</a>.'))
@@ -137,7 +141,7 @@ def user_registration(request, pid=None):
             user = user_model()
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
-            user.email = form.cleaned_data['email']
+            user.email = form.cleaned_data['email'].lower()
             user.phone = form.cleaned_data['phone']
             user.cell_phone = form.cleaned_data['cell_phone']
             user.set_password(form.cleaned_data['password'])
@@ -147,6 +151,8 @@ def user_registration(request, pid=None):
                 except Partner.DoesNotExist:
                     pass
             user.terms_conditions = True
+            user.language_code = translation.get_language()
+            user.username_internal = ''.join([user.email, '-', user.language_code])
             user.save()
             all_users_group = Group.objects.get(name='all_users')
             all_users_group.user_set.add(user)
@@ -217,12 +223,12 @@ def user_validation_resend(request, uidb64=None):
 
 
 def send_validation_email(request, user, uid, token):
-    message = loader.get_template('email/registration-validation.html').render(
-        Context({'user_name': user.first_name, 'user_validation_url': 'user_validation', 'uid': uid, 'token': token,
-                 'protocol': 'https', 'domain': request.CURRENT_DOMAIN, 'LANGUAGE_CODE': settings.LANGUAGE_CODE}))
+    ctx = Context({'user_name': user.first_name, 'user_validation_url': 'user_validation', 'uid': uid,
+                   'token': token, 'protocol': 'https'})
+    message = loader.get_template('email/registration-validation.html').render(ctx, request)
     str1 = _('Cadastro')
     str2 = _('Vendedor Online Internacional')
-    send_email(string_concat(str1, ' - ', str2), message, [user.email])
+    send_email(string_concat(str1, ' - ', str2), message, [user.email], async=True)
 
 
 def send_email_user_registration(request, user):

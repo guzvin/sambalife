@@ -1,3 +1,4 @@
+from django.utils import translation
 from django.utils.translation import string_concat
 from django.utils.translation import ugettext as _
 from django.core.mail import EmailMessage, get_connection
@@ -11,6 +12,7 @@ from pyparsing import Word, alphas, Literal, CaselessLiteral, Combine, Optional,
 from django.utils.encoding import smart_str
 from django.contrib.auth import get_user_model
 from django.template import loader
+from django.http import HttpRequest
 from smtplib import SMTPException
 from paypal.standard.models import ST_PP_COMPLETED, ST_PP_PENDING, ST_PP_VOIDED
 from paypal.standard.ipn.signals import valid_ipn_received
@@ -25,6 +27,7 @@ from store.views import store_paypal_notification, store_paypal_notification_suc
 from django.template import Context, Template
 from django.template.base import VariableNode
 from utils.models import Params
+import threading
 import socket
 import hashlib
 import re
@@ -62,12 +65,11 @@ class ObjectView(object):
         self.__dict__ = d
 
 
-def send_email_basic_template_bcc_admins(request, user_name, user_email, email_title, email_body):
-    message = loader.get_template('email/basic-template.html').render(
-        Context({'user_name': user_name, 'protocol': 'https',
-                 'domain': request.CURRENT_DOMAIN, 'email_body': email_body, 'LANGUAGE_CODE': settings.LANGUAGE_CODE}))
+def send_email_basic_template_bcc_admins(request, user_name, user_email, email_title, email_body, async=False):
+    ctx = Context({'user_name': user_name, 'protocol': 'https', 'email_body': email_body})
+    message = loader.get_template('email/basic-template.html').render(ctx, request)
     str2 = _('Vendedor Online Internacional')
-    send_email(string_concat(email_title, ' - ', str2), message, user_email, bcc_admins=True)
+    send_email(string_concat(email_title, ' - ', str2), message, user_email, bcc_admins=True, async=async)
 
 
 def get_admins_emails():
@@ -81,7 +83,43 @@ def get_admins_emails():
     return admins_email
 
 
-def send_email(title, body, email_to=None, email_from=None, bcc_admins=False):
+class EmailThread(threading.Thread):
+    def __init__(self, title, body, email_from, email_to, bcc, connection):
+        self.title = title
+        self.body = body
+        self.email_from = email_from
+        self.email_to = email_to
+        self.bcc = bcc
+        self.connection = connection
+        threading.Thread.__init__(self)
+
+    def run(self):
+        msg = EmailMessage(
+            self.title,
+            self.body,
+            from_email=self.email_from,
+            to=self.email_to,
+            bcc=self.bcc,
+            connection=self.connection
+        )
+        msg.content_subtype = 'html'
+        logger.info('@@@@@@@@@@@@ EMAIL MESSAGE @@@@@@@@@@@@@@')
+        logger.debug(self.email_from)
+        logger.info(self.body)
+        try:
+            msg.send(fail_silently=False)
+        except SMTPException as e:
+            try:
+                for recipient in e.recipients:
+                    logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
+            except AttributeError:
+                pass
+            logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(e))
+        except socket.error as err:
+            logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
+
+
+def send_email(title, body, email_to=None, email_from=None, bcc_admins=False, async=False):
     if email_from is None:
         email_from = string_concat(_('Vendedor Online Internacional'), ' ',
                                    _('<no-reply@vendedorinternacional.online>'))
@@ -90,36 +128,25 @@ def send_email(title, body, email_to=None, email_from=None, bcc_admins=False):
         bcc = get_admins_emails()
 
     connection = None
-    if _('pt') == 'en':
+    if translation.get_language() == 'en-us':
         connection = get_connection()
         connection.password = settings.EMAIL_HOST_PASSWORD_EN
         connection.username = settings.EMAIL_HOST_USER_EN
         connection.host = settings.EMAIL_HOST_EN
         connection.port = settings.EMAIL_PORT
         connection.use_tls = settings.EMAIL_USE_TLS
-    msg = EmailMessage(
+    email = EmailThread(
         title,
         body,
-        from_email=email_from,
-        to=email_to,
-        bcc=bcc,
-        connection=connection
+        email_from,
+        email_to,
+        bcc,
+        connection
     )
-    msg.content_subtype = 'html'
-    logger.info('@@@@@@@@@@@@ EMAIL MESSAGE @@@@@@@@@@@@@@')
-    logger.debug(email_from)
-    logger.info(body)
-    try:
-        msg.send(fail_silently=False)
-    except SMTPException as e:
-        try:
-            for recipient in e.recipients:
-                logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
-        except AttributeError:
-            pass
-        logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(e))
-    except socket.error as err:
-        logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
+    if async:
+        email.start()
+    else:
+        email.run()
 
 
 def resolve_formula(formula, partner=None, reference_date=None):
@@ -375,10 +402,11 @@ def paypal_notification(sender, **kwargs):
     logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')
     logger.debug(ipn_obj)
     if ipn_obj.test_ipn:
-        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if _('pt') == 'pt' else \
-            settings.PAYPAL_BUSINESS_EN_SANDBOX
+        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if translation.get_language() == 'pt-br' \
+            else settings.PAYPAL_BUSINESS_EN_SANDBOX
     else:
-        paypal_business = settings.PAYPAL_BUSINESS if _('pt') == 'pt' else settings.PAYPAL_BUSINESS_EN
+        paypal_business = settings.PAYPAL_BUSINESS if translation.get_language() == 'pt-br' \
+            else settings.PAYPAL_BUSINESS_EN
     if ipn_obj.receiver_email != paypal_business:
         # Not a valid payment
         texts = (_('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'),
@@ -392,7 +420,8 @@ def paypal_notification(sender, **kwargs):
                  _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice if ipn_obj.invoice is not None
                  else _('<em branco>')})
         invalid_data.append(_html_format(*texts))
-    request = ObjectView({'CURRENT_DOMAIN': sender.current_domain})
+    request = HttpRequest()
+    request.CURRENT_DOMAIN = sender.current_domain
     try:
         if invalid_data:
             raise PaymentException()
@@ -412,11 +441,11 @@ def paypal_notification(sender, **kwargs):
                     store_paypal_notification_success(entity, invoice[1], ipn_obj)
             else:
                 logger.info('@@@@@@@@@@@@ PAYMENT STATUS @@@@@@@@@@@@@@')
-                invalid_data.append(paypal_status_message(ipn_obj))
                 raise PaymentException()
         if invoice[0] == 'B':
             store_paypal_notification_post_transaction(request, entity, ipn_obj, _(paypal_status_message(ipn_obj)))
     except PaymentException:
+        invalid_data.append(paypal_status_message(ipn_obj))
         admin_url = format_html('<p>{}</p>',
                                 mark_safe(_('Para mais informações consulte a área <a href="%(url)s">administrativa'
                                             ' de pagamentos</a>.')
@@ -427,7 +456,8 @@ def paypal_notification(sender, **kwargs):
         email_title = _('Informações sobre o pagamento do item \'%(item)s\', recibo %(invoice)s') % \
             {'item': ipn_obj.item_name, 'invoice': ipn_obj.invoice if ipn_obj.invoice is not None else _('<em branco>')}
         email_message = ''.join(invalid_data)
-        send_email_basic_template_bcc_admins(request, _('Administrador'), None, email_title, email_message)
+        send_email_basic_template_bcc_admins(request, _('Administrador'), None, email_title, email_message, async=True)
+        raise PaymentException()
     except VoidPaymentException:
         ipn_obj.void_authorization()
         email_title = _('\'%(item)s\' indisponível') % {'item': ipn_obj.item_name}
@@ -435,7 +465,8 @@ def paypal_notification(sender, **kwargs):
                    'conta.'),)
         email_message = _(_html_format(*texts))
         send_email_basic_template_bcc_admins(request, entity.user.first_name, [entity.user.email], email_title,
-                                             email_message)
+                                             email_message,  async=True)
+        raise PaymentException()
 
 
 def paypal_status_message(ipn_obj):

@@ -7,12 +7,12 @@
 <body>
 
 <div id="template-email" style="background: #fff; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
-    <a href="{{ protocol}}://{{ domain }}/">
+    <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/">
         {% if LANGUAGE_CODE == 'pt-br' %}
-        <img width="75" src="{{ protocol}}://{{ domain }}/static/img/logo_sup.png">
-        <img width="200" src="{{ protocol}}://{{ domain }}/static/img/logo_bottom.png">
+        <img width="75" src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_sup.png">
+        <img width="200" src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_bottom.png">
         {% else %}
-        <img src="{{ protocol}}://{{ domain }}/static/img/logo-en.png">
+        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo-en.png">
         {% endif %}
     </a>
     <div style="background: #eee; padding: 10px 20px 20px 20px;">

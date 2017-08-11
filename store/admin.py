@@ -13,6 +13,7 @@ from store.models import Lot, Product
 from django.db.models.fields import BLANK_CHOICE_DASH
 from utils.helper import RequiredBaseInlineFormSet
 from utils.models import Params
+from utils.sites import admin_site
 import logging
 
 logger = logging.getLogger('django')
@@ -148,4 +149,4 @@ class LotAdmin(admin.ModelAdmin):
             lot.redirect_cost = redirect_cost
             lot.save()
 
-admin.site.register(Lot, LotAdmin)
+admin_site.register(Lot, LotAdmin)
