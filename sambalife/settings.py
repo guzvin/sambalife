@@ -105,7 +105,7 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
         elif key_value_pair[0] == 'default_fgr_cost':
             DEFAULT_FGR_COST = key_value_pair[1]
         elif key_value_pair[0] == 'default_english_version_cost':
-            DEFAULT_PARTNER_COST = key_value_pair[1]
+            DEFAULT_ENGLISH_VERSION_COST = key_value_pair[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG

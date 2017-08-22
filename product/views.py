@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.db import transaction
 from product.models import Product, Tracking
+from shipment.models import Product as ShipmentProduct
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.http import require_http_methods
@@ -222,7 +223,11 @@ def product_edit_status(request, pid=None, output=None):
             if error_msg:
                 return HttpResponse(json.dumps({'success': False, 'error': (_(' ; ').join(error_msg))}),
                                     content_type='application/json', status=400)
-            if product.quantity_partial == 0:
+            if product.quantity == product.quantity_partial and product.quantity == 0 and \
+                    ShipmentProduct.objects.filter(Q(product__id=product.id) &
+                                                   ~Q(shipment__status=5) &
+                                                   Q(shipment__is_archived=False) &
+                                                   Q(shipment__is_canceled=False)).exists() is False:
                 product_status = '99'  # Archived
             else:
                 product_status = request.PUT.get('product_status')

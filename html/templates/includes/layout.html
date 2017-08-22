@@ -220,6 +220,8 @@
         {% if form and form.non_field_errors %}
             $('#confirmacao').modal('show');
         {% endif %}
+    {% elif custom_modal %}
+        $('#confirmacao').modal('show');
     {% endif %}
     });
     </script>
@@ -241,6 +243,8 @@
                         {% else %}
                             <p>{% trans "Não foi possível concluir sua ação." %}</p>
                         {% endif %}
+                    {% elif custom_modal %}
+                        <p>{{ modal_message }}</p>
                     {% endif %}
                 </div>
                 <div class="modal-footer">

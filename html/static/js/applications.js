@@ -566,7 +566,7 @@
         return false;
     });
 
-    $('.send-btn-delete').click(function()
+    $('.send-btn-delete, #cancel-btn').click(function()
     {
         $('#confirmacao-exclusao').modal('show');
     });

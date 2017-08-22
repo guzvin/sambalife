@@ -12,5 +12,7 @@ def has_product_perm(user, perm):
 
 @register.filter
 def exists_shipment_associated(product):
-    products = Product.objects.filter(Q(product__id=product.id) & ~Q(shipment__status=5)).order_by('shipment_id')
+    products = Product.objects.filter(Q(product__id=product.id) & ~Q(shipment__status=5) &
+                                      Q(shipment__is_archived=False) &
+                                      Q(shipment__is_canceled=False)).order_by('shipment_id')
     return ', '.join([str(product.shipment_id) for product in products])

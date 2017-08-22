@@ -16,7 +16,6 @@ Including another URLconf
 from django.conf.urls import url, include
 from utils.sites import admin_site
 from django.views.i18n import JavaScriptCatalog
-from django.conf.urls.i18n import i18n_patterns
 from sambalife.views import *
 from product.views import *
 from shipment.views import *
@@ -27,6 +26,8 @@ from myauth.views import *
 
 urlpatterns = [
     url(r'^admin/', include(admin_site.urls)),
+    url(r'^admin/close_accounting/$', close_accounting, name='close_accounting'),
+    url(r'^admin/simulate_accounting/$', simulate_accounting, name='simulate_accounting'),
     url(r'^login[/]$', user_login, name='login'),
     url(r'^logout[/]$', user_logout, name='logout'),
     url(r'^user/password/forgot[/]$', user_forgot_password, name='user_forgot_password'),
@@ -65,6 +66,5 @@ urlpatterns = [
     # url(r'^envios-brasil', enviosBrasil, name='enviosBrasil'),
     # url(r'^envio-brasil/cadastro', envioBrasilCadastro, name='envioBrasilCadastro'),
     # url(r'^envio-brasil/detalhe', envioBrasilDetalhe, name='envioBrasilDetalhe'),
-    url(r'^admin/close_accounting/$', close_accounting, name='close_accounting'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog')
 ]

@@ -1,10 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from django.utils.translation import ugettext as _
-from django.forms import modelformset_factory, inlineformset_factory
+from django.forms import modelformset_factory
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden
 
 import logging
 

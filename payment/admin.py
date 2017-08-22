@@ -1,8 +1,6 @@
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
 from payment.models import MyPayPalIPN
 from payment.forms import MyPayPalIPNForm
-from paypal.standard.ipn.models import PayPalIPN
 from utils.sites import admin_site
 import logging
 

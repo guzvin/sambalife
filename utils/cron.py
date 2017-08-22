@@ -5,7 +5,7 @@ from django.utils import translation
 from django.utils.translation import ugettext as _
 from django.http import HttpRequest
 from shipment.models import Shipment
-from shipment.views import calculate_shipment
+from shipment.views import cancel_shipment
 from product.models import Product
 from utils.models import Params
 from utils import helper
@@ -28,7 +28,8 @@ def price_warning():
                                                 'ON shipment_product.shipment_id = shipment_shipment.id '
                                                 'WHERE product_product.id = shipment_product.product_id '
                                                 'AND shipment_shipment.status < 4 '
-                                                'AND shipment_shipment.is_archived = false) '
+                                                'AND shipment_shipment.is_archived = false '
+                                                'AND shipment_shipment.is_canceled = false) '
                                                 'OR NOT EXISTS (SELECT 1 FROM shipment_product '
                                                 'WHERE product_product.id = shipment_product.product_id)']).\
         select_related('user').filter(status=2).order_by('user')
@@ -107,35 +108,38 @@ def price_warning():
                         products_tier_abandoned.append([product, elapsed])
                         update_fields = ['status', 'user']
                         shipment_products = product.product_set.filter(shipment__status__lt=4,
-                                                                       shipment__is_archived=False)
+                                                                       shipment__is_archived=False,
+                                                                       shipment__is_canceled=False)
                         for shipment_product in shipment_products:
                             with transaction.atomic():
                                 try:
                                     shipment = Shipment.objects.select_for_update().get(pk=shipment_product.shipment_id,
-                                                                                        status__lt=4, is_archived=False)
+                                                                                        status__lt=4, is_archived=False,
+                                                                                        is_canceled=False)
+                                    cancel_shipment(shipment)
                                 except Shipment.DoesNotExist:
                                     continue
-                                logger.debug('===== product quantity before delete =====')
-                                logger.debug(product.quantity)
-                                logger.debug(product.quantity_partial)
-                                product.quantity += shipment_product.quantity
-                                product.quantity_partial += shipment_product.quantity
-                                if 'quantity' not in update_fields:
-                                    update_fields.append('quantity')
-                                    update_fields.append('quantity_partial')
-                                logger.debug('===== product quantity after delete =====')
-                                logger.debug(product.quantity)
-                                logger.debug(product.quantity_partial)
-                                shipment_product.delete()
-                                if shipment.total_products == 0:
-                                    shipment.delete()
-                                else:
-                                    products = shipment.product_set.all()
-                                    logger.debug('@@@@@@@@@@@@ SHIPMENT PRODUCTS @@@@@@@@@@@@@@')
-                                    logger.debug(products)
-                                    ignored_response, cost = calculate_shipment(products, shipment.user_id)
-                                    shipment.cost = cost
-                                    shipment.save(update_fields=['total_products', 'cost'])
+                                # logger.debug('===== product quantity before delete =====')
+                                # logger.debug(product.quantity)
+                                # logger.debug(product.quantity_partial)
+                                # product.quantity += shipment_product.quantity
+                                # product.quantity_partial += shipment_product.quantity
+                                # if 'quantity' not in update_fields:
+                                #     update_fields.append('quantity')
+                                #     update_fields.append('quantity_partial')
+                                # logger.debug('===== product quantity after delete =====')
+                                # logger.debug(product.quantity)
+                                # logger.debug(product.quantity_partial)
+                                # shipment_product.delete()
+                                # if shipment.total_products == 0:
+                                #     shipment.delete()
+                                # else:
+                                #     products = shipment.product_set.all()
+                                #     logger.debug('@@@@@@@@@@@@ SHIPMENT PRODUCTS @@@@@@@@@@@@@@')
+                                #     logger.debug(products)
+                                #     ignored_response, cost = calculate_shipment(products, shipment.user_id)
+                                #     shipment.cost = cost
+                                #     shipment.save(update_fields=['total_products', 'cost'])
                             product.status = 100
                             product.user = None
                             product.save(update_fields=update_fields)

@@ -41,8 +41,8 @@
                     <select class="form-control" id="filtro-status" name="status">
                       <option value="">{{ status }}</option>
                       <option value="1" {{ preparing_filter_status }}>{% trans "Preparando para Envio" %}</option>
-                      <option value="2" {{ payed_filter_status }}>{% trans "Pagamento Autorizado" %}</option>
-                      <option value="3" {{ upload_filter_status }}>{% trans "Upload PDF 2 Autorizado" %}</option>
+                      <option value="2" {{ upload_filter_status }}>{% trans "Upload PDF 2 Autorizado" %}</option>
+                      <option value="3" {{ payed_filter_status }}>{% trans "Pagamento Autorizado" %}</option>
                       <option value="4" {{ checkings_filter_status }}>{% trans "Checagens Finais" %}</option>
                       <option value="5" {{ sent_filter_status }}>{% trans "Enviado" %}</option>
                     </select>
@@ -55,6 +55,11 @@
                 <div class="col-md-12">
                   <label for="filtro-arquivado">
                     <input type="checkbox" class="" id="filtro-arquivado" name="archived" {{ filter_values.archived }}> {% trans "Exibir envios arquivados" %}
+                  </label>
+                </div>
+                <div class="col-md-12">
+                  <label for="filtro-cancelado">
+                    <input type="checkbox" class="" id="filtro-cancelado" name="canceled" {{ filter_values.canceled }}> {% trans "Exibir envios cancelados" %}
                   </label>
                 </div>
                 <div class="form-group col-md-2">
@@ -101,8 +106,8 @@
               </thead>
               <tbody>
               {% for shipment in shipments %}
-                <tr {% if shipment.is_archived %}style="color: gray;"{% endif %}>
-                  <td>{{ shipment.id }}{% if shipment.is_archived %} ({% trans "Arquivado" %}){% endif %}</td>
+                <tr {% if shipment.is_archived or shipment.is_canceled %}style="color: gray;"{% endif %}>
+                  <td>{{ shipment.id }}{% if shipment.is_canceled %} ({% trans "Cancelado" %}){% elif shipment.is_archived %} ({% trans "Arquivado" %}){% endif %}</td>
                   {% if user|has_user_perm:'view_users' %}
                   <!-- somente admin visualiza -->
                   <td class="center">{{ shipment.user.first_name }}<br>({{ shipment.user.email }})</td>

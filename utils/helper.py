@@ -1,6 +1,5 @@
 from django.utils import translation
-from django.utils.translation import string_concat
-from django.utils.translation import ugettext as _
+from django.utils.translation import string_concat, ugettext as _
 from django.core.mail import EmailMessage, get_connection
 from django.conf import settings
 from django.forms.models import BaseInlineFormSet
@@ -149,7 +148,7 @@ def send_email(title, body, email_to=None, email_from=None, bcc_admins=False, as
         email.run()
 
 
-def resolve_formula(formula, partner=None, reference_date=None):
+def resolve_formula(formula, language, partner=None, product=None, save_product_price=False):
     template = Template(formula)
     context_var = {}
     for var in template:
@@ -158,27 +157,32 @@ def resolve_formula(formula, partner=None, reference_date=None):
             if var == 'partner':
                 context_var[var] = str(resolve_partner_value(partner))
             elif var == 'price':
-                context_var[var] = str(resolve_price_value(reference_date))
+                reference_date = product.receive_date if product else None
+                price = resolve_price_value(reference_date, language)
+                if save_product_price and product:
+                    product.cost = price
+                    product.save(update_fields=['cost'])
+                context_var[var] = str(price)
     logger.debug(context_var)
     return template.render(Context(context_var))
 
 
 def resolve_partner_value(partner):
-    if partner:
-        if partner.cost:
-            return float(partner.cost)
-        try:
-            return float(Params.objects.first().partner_cost)
-        except Params.DoesNotExist:
-            pass
+    if partner and partner.cost:
+        return partner.cost
     return 0
 
 
-def resolve_price_value(reference_date):
+def resolve_price_value(reference_date, language):
+    extra_cost = 0
     try:
         params = Params.objects.first()
+        if language == 'en-us':
+            extra_cost = params.english_version_cost
     except Params.DoesNotExist:
-        return settings.DEFAULT_REDIRECT_FACTOR
+        if language == 'en-us':
+            extra_cost = settings.DEFAULT_ENGLISH_VERSION_COST
+        return extra_cost + settings.DEFAULT_REDIRECT_FACTOR
     logger.debug('@@@@@@@@@@@@ REFERENCE_DATE @@@@@@@@@@@@@@')
     logger.debug(datetime.datetime.now())
     logger.debug(reference_date)
@@ -190,12 +194,12 @@ def resolve_price_value(reference_date):
         logger.debug(elapsed)
         if time_period_one:
             if elapsed <= time_period_one:
-                return float(params.redirect_factor)
+                return extra_cost + params.redirect_factor
         if time_period_two:
             if elapsed <= time_period_one + time_period_two:
-                return float(params.redirect_factor_two)
-            return float(params.redirect_factor_three)
-    return float(params.redirect_factor)
+                return extra_cost + params.redirect_factor_two
+            return extra_cost + params.redirect_factor_three
+    return extra_cost + params.redirect_factor
 
 
 class RequiredBaseInlineFormSet(BaseInlineFormSet):
@@ -401,24 +405,30 @@ def paypal_notification(sender, **kwargs):
     ipn_obj, invalid_data, entity, texts, invoice = sender, [], None, None, None
     logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')
     logger.debug(ipn_obj)
-    if ipn_obj.test_ipn:
-        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if translation.get_language() == 'pt-br' \
-            else settings.PAYPAL_BUSINESS_EN_SANDBOX
-    else:
-        paypal_business = settings.PAYPAL_BUSINESS if translation.get_language() == 'pt-br' \
-            else settings.PAYPAL_BUSINESS_EN
-    if ipn_obj.receiver_email != paypal_business:
-        # Not a valid payment
-        texts = (_('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'),
-                 _('E-mail recebido pelo paypal: %(paypal)s') % {'paypal': ipn_obj.receiver_email},
-                 _('E-mail configurado no sistema: %(system)s') % {'system': paypal_business})
-        invalid_data.append(_html_format(*texts))
     invoice = ipn_obj.invoice.split('_')
     if ipn_obj.invoice is None or (len(invoice) != 3 and len(invoice) != 5) or (invoice[0] != 'A'
                                                                                 and invoice[0] != 'B'):
         texts = (_('Valor do campo \'recibo\' (invoice) não está no formato esperado.'),
                  _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice if ipn_obj.invoice is not None
                  else _('<em branco>')})
+        invalid_data.append(_html_format(*texts))
+    user_model = get_user_model()
+    try:
+        current_user = user_model.objects.get(pk=invoice[1])
+        if ipn_obj.test_ipn:
+            paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if current_user.language_code == 'pt-br' \
+                else settings.PAYPAL_BUSINESS_EN_SANDBOX
+        else:
+            paypal_business = settings.PAYPAL_BUSINESS if current_user.language_code == 'pt-br' \
+                else settings.PAYPAL_BUSINESS_EN
+        if ipn_obj.receiver_email != paypal_business:
+            # Not a valid payment
+            texts = (_('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'),
+                     _('E-mail recebido pelo paypal: %(paypal)s') % {'paypal': ipn_obj.receiver_email},
+                     _('E-mail configurado no sistema: %(system)s') % {'system': paypal_business})
+            invalid_data.append(_html_format(*texts))
+    except user_model.DoesNotExist:
+        texts = (_('Usuário inválido, ID: %(user_id).') % {'user_id': invoice[1]},)
         invalid_data.append(_html_format(*texts))
     request = HttpRequest()
     request.CURRENT_DOMAIN = sender.current_domain

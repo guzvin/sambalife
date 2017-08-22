@@ -86,6 +86,7 @@ class Product(models.Model):
     product = models.ForeignKey('product.Product')
     receive_date = models.DateTimeField(_('Data de Recebimento'), null=True)
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)
+    cost = models.DecimalField(_('Valor de Pagamento'), max_digits=12, decimal_places=2, null=True)
 
     class Meta:
         verbose_name = _('Produto')
@@ -189,7 +190,8 @@ class CostFormula(models.Model):
 
     def clean(self):
         try:
-            helper.Calculate().parse(helper.resolve_formula(self.formula))
+            for lang in settings.LANGUAGES:
+                helper.Calculate().parse(helper.resolve_formula(self.formula, lang[0]))
         except ParseException as err:
             logger.error(str(err))
             raise ValidationError(_('Fórmula inválida.'), code='invalid_formula')

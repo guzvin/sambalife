@@ -1,0 +1,12 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls admin_modify %}
+
+{% block submit_buttons_bottom %}
+    {% if original.simulation is False %}
+{% submit_row %}
+    {% else %}
+<div class="submit-row">
+    <input type="button" value="{% trans 'Voltar' %}" class="default" name="_back" onclick="location.href='{%url 'admin:utils_accounting_changelist' %}'" />
+</div>
+    {% endif %}
+{% endblock %}
