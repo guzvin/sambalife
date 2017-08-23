@@ -183,7 +183,7 @@ def shipment_details(request, pid=None):
         PackageFormSet = inlineformset_factory(Shipment, Package, formset=helper.MyBaseInlineFormSet,
                                                fields=('warehouse', 'weight', 'height', 'width', 'length', 'pdf_2',
                                                        'shipment_tracking'),
-                                               extra=1,
+                                               extra=render_extra_package(_shipment_details),
                                                error_messages={'weight': custom_error_messages,
                                                                'height': custom_error_messages,
                                                                'width': custom_error_messages,
@@ -383,11 +383,15 @@ def shipment_details(request, pid=None):
                 package_formset = PackageFormSet(
                     queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
                     instance=_shipment_details, prefix='package_set', **package_kwargs)
-            if package_formset:
-                context_data['packages'] = package_formset
+        if package_formset and 'packages' not in context_data:
+            context_data['packages'] = package_formset
         logger.debug(context_data)
         return render(request, 'shipment_details.html', context_data)
     return HttpResponseForbidden()
+
+
+def render_extra_package(_shipment_details):
+    return 1 if Package.objects.filter(shipment=_shipment_details).exists is False else 0
 
 
 def current_milli_time(): return int(round(time.time() * 1000))
@@ -543,6 +547,20 @@ def shipment_delete_product(request, output=None):
         logger.error(err)
         return HttpResponseBadRequest()
     return http_response
+
+
+@login_required
+@require_http_methods(["GET"])
+@transaction.atomic
+def shipment_status(request, pid=None, op=None):
+    if has_group(request.user, 'admins'):
+        shipment = Shipment.objects.select_for_update().filter(pk=pid, is_archived=False, is_canceled=False)
+        if shipment:
+            if op == 'forward' and shipment[0].status < 5:
+                shipment.update(status=F('status') + 1)
+            elif op == 'backward' and shipment[0].status > 1:
+                shipment.update(status=F('status') - 1)
+    return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
 
 
 @login_required
@@ -889,7 +907,7 @@ def send_email_shipment_add(request, shipment, products, warehouses):
                                                 email_body)
 
 
-def send_email_shipment_add_package(request, shipment, packages):
+def send_email_shipment_add_package(request, shipment, packages, async=True):
     email_title = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">Warehouse: {} / {}: {} {} / '
@@ -908,7 +926,7 @@ def send_email_shipment_add_package(request, shipment, packages):
               _('Clique aqui'), _('para acessar seu envio e efetuar o upload.'),)
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
-                                                email_body)
+                                                email_body, async)
 
 
 def send_email_shipment_payment(request, shipment):
