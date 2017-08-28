@@ -110,7 +110,7 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net', 'fbaprepmaster.com', '66692cd2.ngrok.io']
+ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net', 'fbaprepmaster.com']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -268,8 +268,6 @@ LANGUAGES = [
 LANGUAGES_DOMAINS = {
     'vendedorinternacional.net': 'pt-br',
     'fbaprepmaster.com': 'en-us',
-    'localhost:9083': 'en-us',
-    '66692cd2.ngrok.io': 'en-us'
 }
 
 # Static files (CSS, JavaScript, Images)

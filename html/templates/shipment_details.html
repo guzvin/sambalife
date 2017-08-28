@@ -360,13 +360,13 @@
                 {% endif %}
                {% endif %}
                {% if user|has_group:'admins' %}
-                {% if shipment.status < 5 %}
+                {% if shipment.status < 4 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="change-btn-status-forward" href="{% url 'shipment_status' shipment.id 'forward' %}">
                     <i class="fa fa-fw fa-forward"></i> {% trans "Avançar status" %}
                 </a>
                 <br><br>
                 {% endif %}
-                {% if shipment.status > 1 %}
+                {% if shipment.status > 1 and shipment.status < 5 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="change-btn-status-backward" href="{% url 'shipment_status' shipment.id 'backward' %}">
                     <i class="fa fa-fw fa-backward"></i> {% trans "Voltar status" %}
                 </a>

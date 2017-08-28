@@ -343,25 +343,7 @@ def shipment_details(request, pid=None):
                                     if _shipment_details.status == 4 and has_group(request.user, 'admins'):
                                         _shipment_details.status = 5
                                         _shipment_details.save(update_fields=['status'])
-                                        products = _shipment_details.product_set.all()
-                                        original_products_to_update = []
-                                        for product in products:
-                                            if Product.objects.filter(Q(product__id=product.product_id) &
-                                                                      ~Q(shipment__id=_shipment_details.id) &
-                                                                      ~Q(shipment__status=5) &
-                                                                      Q(shipment__is_archived=False) &
-                                                                      Q(shipment__is_canceled=False)).exists() is True:
-                                                continue
-                                            try:
-                                                original_product = OriginalProduct.objects.get(pk=product.product_id)
-                                                if original_product.quantity == original_product.quantity_partial and \
-                                                   original_product.quantity == 0:
-                                                    original_products_to_update.append(product.product_id)
-                                            except OriginalProduct.DoesNotExist:
-                                                pass
-                                        if original_products_to_update:
-                                            OriginalProduct.objects.filter(id__in=original_products_to_update)\
-                                                .update(status=99)
+                                        complete_shipment(_shipment_details)
                             except Shipment.DoesNotExist as e:
                                 logger.error(e)
                                 return HttpResponseBadRequest()
@@ -390,8 +372,33 @@ def shipment_details(request, pid=None):
     return HttpResponseForbidden()
 
 
+def complete_shipment(_shipment_details):
+    original_products_to_update = []
+    products = _shipment_details.product_set.all()
+    for product in products:
+        if Product.objects.filter(Q(product__id=product.product_id) &
+                                  ~Q(shipment__id=_shipment_details.id) &
+                                  ~Q(shipment__status=5) &
+                                  Q(shipment__is_archived=False) &
+                                  Q(shipment__is_canceled=False)).exists() is True:
+            continue
+        try:
+            original_product = OriginalProduct.objects.get(pk=product.product_id)
+            if original_product.quantity == original_product.quantity_partial and original_product.quantity == 0:
+                original_products_to_update.append(product.product_id)
+        except OriginalProduct.DoesNotExist:
+            pass
+    if original_products_to_update:
+        OriginalProduct.objects.filter(id__in=original_products_to_update).update(status=99)
+
+
 def render_extra_package(_shipment_details):
-    return 1 if Package.objects.filter(shipment=_shipment_details).exists is False else 0
+    logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@ render extra package')
+    package_exists = Package.objects.filter(shipment=_shipment_details).exists()
+    logger.debug(package_exists)
+    extra_package = 1 if package_exists is False else 0
+    logger.debug(extra_package)
+    return extra_package
 
 
 def current_milli_time(): return int(round(time.time() * 1000))
@@ -440,8 +447,7 @@ def shipment_pay_form(request, pid=None):
                         'item_name': _('Envio %(number)s') % {'number': pid},
                         'invoice': invoice_id,
                         'notify_url': 'https://' + request.CURRENT_DOMAIN + reverse('paypal-ipn'),
-                        'return_url': 'https://' + request.CURRENT_DOMAIN +
-                                      '%s?p=1' % reverse('shipment_details', args=[pid]),
+                        'return_url': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details', args=[pid]),
                         'cancel_return': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details', args=[pid]),
                         # 'custom': 'Custom command!',  # Custom command to correlate to some function later (optional)
                     }
@@ -556,8 +562,13 @@ def shipment_status(request, pid=None, op=None):
     if has_group(request.user, 'admins'):
         shipment = Shipment.objects.select_for_update().filter(pk=pid, is_archived=False, is_canceled=False)
         if shipment:
-            if op == 'forward' and shipment[0].status < 5:
-                shipment.update(status=F('status') + 1)
+            if op == 'forward' and shipment[0].status < 4:
+                if shipment[0].status == 3:
+                    products = shipment[0].product_set.all()
+                    ignored_response, cost = calculate_shipment(products, shipment[0].user_id, save_product_price=True)
+                    shipment.update(status=F('status') + 1, cost=cost)
+                else:
+                    shipment.update(status=F('status') + 1)
             elif op == 'backward' and shipment[0].status > 1:
                 shipment.update(status=F('status') - 1)
     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
@@ -904,7 +915,7 @@ def send_email_shipment_add(request, shipment, products, warehouses):
               _('para acessar sua lista de envios.'))
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
-                                                email_body)
+                                                email_body, async=True)
 
 
 def send_email_shipment_add_package(request, shipment, packages, async=True):
@@ -933,7 +944,8 @@ def send_email_shipment_payment(request, shipment):
     texts = (_('Obrigado, agora realize o pagamento para dar continuidade com o seu '
                'envio %(id)s.') % {'id': shipment.id}, _('Valor total'),
              force_text(formats.localize(shipment.cost, use_l10n=True)))
-    send_email_shipment_status_change(request, shipment, _('para acessar seu envio e efetuar o pagamento.'), *texts)
+    send_email_shipment_status_change(request, shipment, _('para acessar seu envio e efetuar o pagamento.'), *texts,
+                                      True)
 
 
 def send_email_shipment_paid(request, shipment, async=False):
@@ -967,7 +979,7 @@ def send_email_shipment_sent(request, shipment, packages):
               _('Clique aqui'), _('para acessar seu envio.')]
     email_body = format_html(html_format, *tuple(texts))
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
-                                                email_body)
+                                                email_body, async=True)
 
 
 def send_email_shipment_change_shipment(request, shipment, packages):
@@ -985,7 +997,7 @@ def send_email_shipment_change_shipment(request, shipment, packages):
               _('Clique aqui'), _('para acessar seu envio.'))
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
-                                                email_body)
+                                                email_body, async=True)
 
 
 def send_email_shipment_status_change(request, shipment, link_text, *texts, async=False):

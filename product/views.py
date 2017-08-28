@@ -396,4 +396,4 @@ def send_email_product_info(request, product, product_status_display, product_ac
               _('para acessar sua lista de produtos.')]
     email_body = format_html(html_format, *tuple(texts))
     send_email_basic_template_bcc_admins(request, product.user.first_name, [product.user.email], email_title,
-                                         email_body)
+                                         email_body, async=True)
