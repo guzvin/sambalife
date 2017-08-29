@@ -107,6 +107,8 @@ def _shipment_products_cost(products, base_price, base_cost, user, english_versi
         price += subtract
         logger.info(price)
         logger.info(cost)
+        logger.info(product.id)
+        logger.info(product.quantity)
         cost += (base_cost + ((price - base_price) / 2)) * product.quantity
         logger.info(cost)
     return cost
