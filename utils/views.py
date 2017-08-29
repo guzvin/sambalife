@@ -51,12 +51,18 @@ def close_accounting(request, simulate=False):
                                        _shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost,
                                                                shipment.user, english_version_cost)
             accounting_partner.total_products += shipment.total_products
+            logger.info('calculation 3 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            logger.info(accounting_partner.value)
+            logger.info(accounting_partner.total_products)
         else:
             accounting_partner = AccountingPartner()
             accounting_partner.partner = 'fgr'
             accounting_partner.value = _shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost,
                                                                shipment.user, english_version_cost)
             accounting_partner.total_products = shipment.total_products
+            logger.info('calculation 2 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            logger.info(accounting_partner.value)
+            logger.info(accounting_partner.total_products)
             accounting_partner.accounting = accounting
             partners.append(accounting_partner)
         if shipment.user.partner:
@@ -95,13 +101,4 @@ def _shipment_products_cost(products, base_price, base_cost, user, english_versi
         price = product.cost
         price += subtract
         cost += (base_cost + ((price - base_price) / 2)) * product.quantity
-        logger.info('calculation $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-        logger.info(base_cost)
-        logger.info(price)
-        logger.info(subtract)
-        logger.info(base_price)
-        logger.info(product.quantity)
-        logger.info(cost)
-        if cost == 0:
-            logger.info('ZZZZZZZZZZZZEEEEEEEEEEEEEEEEEEEEERRRRRRRRRRRRRRRRRRRRRRROOOOOOOOOOOOOOO')
     return cost
