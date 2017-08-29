@@ -47,15 +47,15 @@ def close_accounting(request, simulate=False):
             shipment.save()
         accounting_partner = next((p for p in partners if p.partner == 'fgr'), None)
         if accounting_partner:
-            accounting_partner.value = round(accounting_partner.value +
-                                             _shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost,
-                                                                     shipment.user, english_version_cost), 2)
+            accounting_partner.value = accounting_partner.value + \
+                                       _shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost,
+                                                               shipment.user, english_version_cost)
             accounting_partner.total_products += shipment.total_products
         else:
             accounting_partner = AccountingPartner()
             accounting_partner.partner = 'fgr'
-            accounting_partner.value = round(_shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost,
-                                                                     shipment.user, english_version_cost), 2)
+            accounting_partner.value = _shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost,
+                                                               shipment.user, english_version_cost)
             accounting_partner.total_products = shipment.total_products
             accounting_partner.accounting = accounting
             partners.append(accounting_partner)
@@ -67,18 +67,20 @@ def close_accounting(request, simulate=False):
                 cost += shipment.user.partner.cost
             accounting_partner = next((p for p in partners if p.partner == shipment.user.partner.identity), None)
             if accounting_partner:
-                accounting_partner.value = round(accounting_partner.value + cost * shipment.total_products, 2)
+                accounting_partner.value = accounting_partner.value + cost * shipment.total_products
                 accounting_partner.total_products += shipment.total_products
             else:
                 accounting_partner = AccountingPartner()
                 accounting_partner.partner = shipment.user.partner.identity
-                accounting_partner.value = round(cost * shipment.total_products, 2)
+                accounting_partner.value = cost * shipment.total_products
                 accounting_partner.total_products = shipment.total_products
                 accounting_partner.accounting = accounting
                 partners.append(accounting_partner)
-    if simulate is False:
-        for accounting_partner in partners:
+    for accounting_partner in partners:
+        accounting_partner.value = round(accounting_partner.value, 2)
+        if simulate is False:
             accounting_partner.save()
+    if simulate is False:
         return HttpResponseRedirect(reverse('admin:utils_accounting_change', args=[accounting.id]))
     return accounting, partners
 
