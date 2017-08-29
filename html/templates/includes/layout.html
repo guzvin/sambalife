@@ -77,6 +77,11 @@
             </div>
             <nav class="collapse navbar-collapse" id="bs-navbar">
                 <ul class="nav navbar-nav navbar-right">
+                    {% if request.session.impersonated is not None %}
+                    <li class="dropdown">
+                        <a href="{%url 'user_end_impersonate' %}" class="dropdown-toggle logo-marca-link operacional-conf"><span class="glyphicon glyphicon-cog "></span> {% trans "Encerrar acessar como" %} </a>
+                    </li>
+                    {% endif %}
                     {% if user|can_view_admin %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span> {% trans "Administrativo" %} <b class="caret"></b></a>
@@ -94,6 +99,15 @@
                                 <a href="{%url 'admin:store_lot_changelist' %}"><i class="fa fa-fw fa-th"></i> {% trans "Lotes" %}</a>
                             </li>
 {% endcomment %}
+                            {% if request.user.is_superuser %}
+                            <li class="divider"></li>
+                            <li>
+                                <form action="{%url 'user_impersonate' %}" id="impersonate_form" method="post">
+                                    {% csrf_token %}
+                                    {% trans "Acessar como" %}: <input class="form-control" type="text" name="impersonate_id" onkeydown="var key = event.which || event.keyCode || 0; if(key === 13){ document.getElementById('impersonate_form').submit(); }" />
+                                </form>
+                            </li>
+                            {% endif %}
                         </ul>
                     </li>
                     {% endif %}
