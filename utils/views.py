@@ -47,25 +47,17 @@ def close_accounting(request, simulate=False):
             shipment.save()
         accounting_partner = next((p for p in partners if p.partner == 'fgr'), None)
         if accounting_partner:
-            if accounting_partner.total_products == 98:
-                logger.info(shipment.total_products)
             accounting_partner.value = accounting_partner.value + _shipment_products_cost(shipment.product_set.all(),
                                                                                           base_price, fgr_cost,
                                                                                           shipment.user,
                                                                                           english_version_cost)
             accounting_partner.total_products += shipment.total_products
-            logger.info('calculation 3 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-            logger.info(accounting_partner.value)
-            logger.info(accounting_partner.total_products)
         else:
             accounting_partner = AccountingPartner()
             accounting_partner.partner = 'fgr'
             accounting_partner.value = _shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost,
                                                                shipment.user, english_version_cost)
             accounting_partner.total_products = shipment.total_products
-            logger.info('calculation 2 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-            logger.info(accounting_partner.value)
-            logger.info(accounting_partner.total_products)
             accounting_partner.accounting = accounting
             partners.append(accounting_partner)
         if shipment.user.partner:
@@ -99,16 +91,8 @@ def _shipment_products_cost(products, base_price, base_cost, user, english_versi
     subtract = 0
     if user.language_code == 'en-us' and user.partner:
         subtract = english_version_cost * -1
-    logger.info('product cost $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
     for product in products:
-        # price = resolve_price_value(product.receive_date, user.language_code)
         price = product.cost
-        logger.info(price)
         price += subtract
-        logger.info(price)
-        logger.info(cost)
-        logger.info(product.id)
-        logger.info(product.quantity)
         cost += (base_cost + ((price - base_price) / 2)) * product.quantity
-        logger.info(cost)
     return cost

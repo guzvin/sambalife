@@ -211,7 +211,7 @@ def product_edit_status(request, pid=None, output=None):
             product_best_before = request.PUT.get('product_best_before')
             if product_best_before:
                 try:
-                    product_best_before = datetime.datetime.strptime(product_best_before, '%d/%m/%Y')
+                    product_best_before = datetime.datetime.strptime(product_best_before, str(_('%d/%m/%Y')))
                     if product.best_before is None or product.best_before.date() != product_best_before.date():
                         product.best_before = product_best_before
                         fields_to_update.append('best_before')

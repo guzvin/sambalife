@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-23 17:34-0300\n"
+"POT-Creation-Date: 2017-08-29 00:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -152,7 +152,7 @@ msgstr ""
 
 #: html/templates/includes/layout-footer.html:120
 #: html/templates/includes/layout.html:119 html/templates/product_stock.html:14
-#: product/views.py:102 shipment/views.py:147
+#: product/views.py:102 shipment/views.py:148
 msgid "Estoque"
 msgstr ""
 
@@ -392,7 +392,7 @@ msgstr ""
 msgid "Digite a quantidade parcial"
 msgstr ""
 
-#: html/templates/product_add_edit.html:67 shipment/views.py:887
+#: html/templates/product_add_edit.html:67 shipment/views.py:904
 msgid "Data de envio"
 msgstr ""
 
@@ -482,7 +482,7 @@ msgstr ""
 #: html/templates/shipment_add.html:58 html/templates/shipment_details.html:29
 #: html/templates/shipment_list.html:98
 #: html/templates/store_lot_details.html:47 product/models.py:17
-#: shipment/models.py:85 shipment/views.py:894 store/models.py:55
+#: shipment/models.py:85 shipment/views.py:911 store/models.py:55
 msgid "Quantidade"
 msgstr ""
 
@@ -648,8 +648,8 @@ msgstr ""
 
 #: html/templates/product_stock.html:115
 #: html/templates/shipment_details.html:20 shipment/apps.py:7
-#: shipment/models.py:53 shipment/views.py:179 shipment/views.py:687
-#: shipment/views.py:747 shipment/views.py:886
+#: shipment/models.py:53 shipment/views.py:180 shipment/views.py:704
+#: shipment/views.py:764 shipment/views.py:903
 msgid "Envio"
 msgstr ""
 
@@ -666,7 +666,7 @@ msgid ""
 msgstr ""
 
 #: html/templates/product_stock.html:139 html/templates/shipment_add.html:57
-#: html/templates/shipment_details.html:28 shipment/views.py:898
+#: html/templates/shipment_details.html:28 shipment/views.py:915
 msgid "Validade"
 msgstr ""
 
@@ -729,7 +729,7 @@ msgstr ""
 msgid "Local de envio dos produtos..."
 msgstr ""
 
-#: html/templates/shipment_add.html:153 shipment/views.py:683
+#: html/templates/shipment_add.html:153 shipment/views.py:700
 msgid "Adicionar warehouse"
 msgstr ""
 
@@ -755,7 +755,7 @@ msgid "Etiqueta do produto"
 msgstr ""
 
 #: html/templates/shipment_details.html:132 shipment/models.py:131
-#: shipment/views.py:919
+#: shipment/views.py:936
 msgid "Peso"
 msgstr ""
 
@@ -1162,8 +1162,8 @@ msgstr ""
 
 #: html/templates/user_reset_password.html:69
 #: html/templates/user_validation.html:80 product/views.py:395
-#: sambalife/views.py:242 shipment/views.py:903 shipment/views.py:926
-#: shipment/views.py:967 shipment/views.py:985 shipment/views.py:998
+#: sambalife/views.py:242 shipment/views.py:920 shipment/views.py:943
+#: shipment/views.py:985 shipment/views.py:1003 shipment/views.py:1016
 #: utils/cron.py:196 utils/cron.py:209
 msgid "Clique aqui"
 msgstr ""
@@ -1465,7 +1465,7 @@ msgid "Data de Recebimento"
 msgstr ""
 
 #: product/models.py:45 product/views.py:319 product/views.py:325
-#: product/views.py:342 shipment/models.py:92 shipment/views.py:894
+#: product/views.py:342 shipment/models.py:92 shipment/views.py:911
 #: store/admin.py:98 store/models.py:70
 msgid "Produto"
 msgstr ""
@@ -1489,7 +1489,7 @@ msgstr ""
 
 #: product/models.py:64 product/models.py:67 shipment/models.py:99
 #: shipment/models.py:172 shipment/models.py:174 shipment/models.py:176
-#: shipment/models.py:178 shipment/views.py:182
+#: shipment/models.py:178 shipment/views.py:183
 msgid "Informe um número maior que zero."
 msgstr ""
 
@@ -1515,6 +1515,10 @@ msgstr ""
 
 #: product/views.py:206
 msgid "Quantidade deve ser maior ou igual a zero."
+msgstr ""
+
+#: product/views.py:214
+msgid "%d/%m/%Y"
 msgstr ""
 
 #: product/views.py:219
@@ -1559,7 +1563,7 @@ msgstr ""
 msgid "para acessar sua lista de produtos."
 msgstr ""
 
-#: sambalife/forms.py:26 shipment/views.py:182
+#: sambalife/forms.py:26 shipment/views.py:183
 msgid "Campo obrigatório."
 msgstr ""
 
@@ -1665,7 +1669,7 @@ msgstr ""
 msgid "Problema para validar o produto selecionado."
 msgstr ""
 
-#: shipment/models.py:123 shipment/models.py:130 shipment/views.py:892
+#: shipment/models.py:123 shipment/models.py:130 shipment/views.py:909
 msgid "Warehouse"
 msgstr ""
 
@@ -1725,129 +1729,129 @@ msgstr ""
 msgid "Fórmula de Envio"
 msgstr ""
 
-#: shipment/views.py:150
+#: shipment/views.py:151
 msgid "Mensagem importante!"
 msgstr ""
 
-#: shipment/views.py:151
+#: shipment/views.py:152
 msgid ""
 "O envio foi removido, pois seus produtos não estavam mais disponíveis em "
 "estoque."
 msgstr ""
 
-#: shipment/views.py:228
+#: shipment/views.py:229
 msgid "Upload realizado com sucesso."
 msgid_plural "Uploads realizados com sucesso."
 msgstr[0] ""
 msgstr[1] ""
 
-#: shipment/views.py:233 shipment/views.py:265
+#: shipment/views.py:234 shipment/views.py:266
 msgid "Alteração salva com sucesso."
 msgstr ""
 
-#: shipment/views.py:260
+#: shipment/views.py:261
 msgid "Pacote inserido com sucesso."
 msgid_plural "Pacotes inseridos com sucesso."
 msgstr[0] ""
 msgstr[1] ""
 
-#: shipment/views.py:315
+#: shipment/views.py:316
 msgid "Envio concluído com sucesso."
 msgstr ""
 
-#: shipment/views.py:318
+#: shipment/views.py:319
 msgid "Código(s) de postagem salvo(s) com sucesso."
 msgstr ""
 
-#: shipment/views.py:377 shipment/views.py:488
+#: shipment/views.py:360 shipment/views.py:500
 msgid "Adicionar pacote"
 msgstr ""
 
-#: shipment/views.py:377 shipment/views.py:488
+#: shipment/views.py:360 shipment/views.py:500
 msgid "Remover pacote"
 msgstr ""
 
-#: shipment/views.py:440
+#: shipment/views.py:453
 #, python-format
 msgid "Envio %(number)s"
 msgstr ""
 
-#: shipment/views.py:682
+#: shipment/views.py:699
 msgid "Adicionar produto"
 msgstr ""
 
-#: shipment/views.py:682
+#: shipment/views.py:699
 msgid "Remover produto"
 msgstr ""
 
-#: shipment/views.py:683
+#: shipment/views.py:700
 msgid "Remover warehouse"
 msgstr ""
 
-#: shipment/views.py:688
+#: shipment/views.py:705
 msgid "Envio inserido com sucesso."
 msgstr ""
 
-#: shipment/views.py:848 store/views.py:137
+#: shipment/views.py:865 store/views.py:137
 msgid "Valor do pagamento não confere com o valor cobrado."
 msgstr ""
 
-#: shipment/views.py:849 shipment/views.py:854 store/views.py:138
+#: shipment/views.py:866 shipment/views.py:871 store/views.py:138
 #: store/views.py:143 utils/helper.py:412 utils/helper.py:485
 #, python-format
 msgid "Recibo: %(invoice)s"
 msgstr ""
 
-#: shipment/views.py:850 store/views.py:139
+#: shipment/views.py:867 store/views.py:139
 #, python-format
 msgid "Valor pago: %(paid)s"
 msgstr ""
 
-#: shipment/views.py:851 store/views.py:140
+#: shipment/views.py:868 store/views.py:140
 #, python-format
 msgid "Valor cobrado: %(charged)s"
 msgstr ""
 
-#: shipment/views.py:854 store/views.py:143
+#: shipment/views.py:871 store/views.py:143
 msgid "Dados do recibo são inválidos."
 msgstr ""
 
-#: shipment/views.py:864
+#: shipment/views.py:881
 #, python-format
 msgid "Pagamento confirmado pelo PayPal para o %(item)s"
 msgstr ""
 
-#: shipment/views.py:872
+#: shipment/views.py:889
 #, python-format
 msgid "Cadastro de Envio %(number)s"
 msgstr ""
 
-#: shipment/views.py:885
+#: shipment/views.py:902
 msgid "Seu envio foi cadastrado com sucesso. Seguem abaixo os dados do envio:"
 msgstr ""
 
-#: shipment/views.py:888
+#: shipment/views.py:905
 msgid "Quantidade de produtos"
 msgstr ""
 
-#: shipment/views.py:889 shipment/views.py:934
+#: shipment/views.py:906 shipment/views.py:951
 msgid "Valor total"
 msgstr ""
 
-#: shipment/views.py:904
+#: shipment/views.py:921
 msgid "para acessar sua lista de envios."
 msgstr ""
 
-#: shipment/views.py:911 shipment/views.py:992
+#: shipment/views.py:928 shipment/views.py:1010
 #, python-format
 msgid "Notificação de mudança de status do Envio %(number)s"
 msgstr ""
 
-#: shipment/views.py:917
+#: shipment/views.py:934
 msgid "Os seguintes pacotes foram cadastrado para o seu envio:"
 msgstr ""
 
-#: shipment/views.py:922
+#: shipment/views.py:939
 #, python-format
 msgid ""
 "Agora faça o upload da etiqueta da caixa para dar continuidade com o seu "
@@ -1858,22 +1862,22 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: shipment/views.py:926
+#: shipment/views.py:943
 msgid "para acessar seu envio e efetuar o upload."
 msgstr ""
 
-#: shipment/views.py:933
+#: shipment/views.py:950
 #, python-format
 msgid ""
 "Obrigado, agora realize o pagamento para dar continuidade com o seu envio "
 "%(id)s."
 msgstr ""
 
-#: shipment/views.py:936
+#: shipment/views.py:953
 msgid "para acessar seu envio e efetuar o pagamento."
 msgstr ""
 
-#: shipment/views.py:940
+#: shipment/views.py:958
 #, python-format
 msgid ""
 "Obrigado novamente, agora é só aguardar que, assim que fizermos as checagens "
@@ -1881,41 +1885,41 @@ msgid ""
 "conclusão do processo do seu envio %(id)s."
 msgstr ""
 
-#: shipment/views.py:943 shipment/views.py:967 shipment/views.py:985
+#: shipment/views.py:961 shipment/views.py:985 shipment/views.py:1003
 msgid "para acessar seu envio."
 msgstr ""
 
-#: shipment/views.py:948
+#: shipment/views.py:966
 #, python-format
 msgid "Seu envio %(number)s foi concluído"
 msgstr ""
 
-#: shipment/views.py:955
+#: shipment/views.py:973
 #, python-format
 msgid "Seu envio %(id)s foi concluído com sucesso, obrigado."
 msgstr ""
 
-#: shipment/views.py:957 shipment/views.py:979
+#: shipment/views.py:975 shipment/views.py:997
 msgid "Segue o código de postagem do seu envio:"
 msgid_plural "Seguem os códigos de postagem do seu envio:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: shipment/views.py:961 shipment/views.py:982
+#: shipment/views.py:979 shipment/views.py:1000
 #, python-format
 msgid ""
 "Warehouse: <strong>%(warehouse)s</strong> / Código: <strong>%(code)s</"
 "strong>."
 msgstr ""
 
-#: shipment/views.py:963
+#: shipment/views.py:981
 #, python-format
 msgid ""
 "No caso de qualquer dúvida é só nos enviar uma mensagem através do <a href="
 "\"%(url)s\">fale conosco</a>."
 msgstr ""
 
-#: shipment/views.py:975
+#: shipment/views.py:993
 #, python-format
 msgid "Código de postagem do envio %(number)s atualizado"
 msgstr ""
