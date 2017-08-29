@@ -950,8 +950,11 @@ def send_email_shipment_payment(request, shipment):
     texts = (_('Obrigado, agora realize o pagamento para dar continuidade com o seu '
                'envio %(id)s.') % {'id': shipment.id}, _('Valor total'),
              force_text(formats.localize(shipment.cost, use_l10n=True)),)
+    logger.info('@@@@@@ EMAIL @@@@@')
+    logger.info(len(texts))
+    logger.info(texts)
     send_email_shipment_status_change(request, shipment, _('para acessar seu envio e efetuar o pagamento.'), *texts,
-                                      True)
+                                      async=True)
 
 
 def send_email_shipment_paid(request, shipment, async=False):
@@ -1007,11 +1010,15 @@ def send_email_shipment_change_shipment(request, shipment, packages):
 
 
 def send_email_shipment_status_change(request, shipment, link_text, *texts, async=False):
+    logger.info('@@@@@@ EMAIL parte 2 @@@@@')
+    logger.info(len(texts))
+    logger.info(texts)
     email_title = _('Notificação de mudança de status do Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           (['<p style="color:#858585;font:13px/120% \'Helvetica\'">'
                            '<strong>{}:</strong> U$ {}</p>'] if len(texts) == 3 else ['']) +
                           ['<p><a href="{}">{}</a> {}</p>'])
+    logger.info(html_format)
     texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), link_text,)
     email_body = format_html(html_format, *texts)
