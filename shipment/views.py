@@ -25,6 +25,7 @@ from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from shipment.templatetags.shipments import unit_weight_display, unit_length_display
 from django.contrib.auth import get_user_model
 from django.template import loader, TemplateDoesNotExist
+from django.utils import translation
 import time
 import magic
 import json
@@ -244,7 +245,7 @@ def shipment_details(request, pid=None):
                                 logger.error(e)
                                 return HttpResponseBadRequest()
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
-                    is_sandbox = (request.user.email in settings.PAYPAL_SANDBOX_USERS)
+                    is_sandbox = paypal_mode(request)
                     context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
                                                                                             is_render_button=True)
             elif _shipment_details.status == 2:
@@ -372,6 +373,11 @@ def shipment_details(request, pid=None):
     return HttpResponseForbidden()
 
 
+def paypal_mode(request):
+    is_sandbox = (request.user.email in settings.PAYPAL_SANDBOX_USERS) or translation.get_language() == 'en-us'
+    return is_sandbox
+
+
 def complete_shipment(_shipment_details):
     original_products_to_update = []
     products = _shipment_details.product_set.all()
@@ -421,7 +427,7 @@ def shipment_pay_form(request, pid=None):
                                                             save_product_price=True)
                 _shipment_details.cost = cost
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
-                    is_sandbox = (request.user.email in settings.PAYPAL_SANDBOX_USERS)
+                    is_sandbox = paypal_mode(request)
                     if settings.PAYPAL_TEST or is_sandbox:
                         invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
                         paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if \
