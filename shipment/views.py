@@ -949,7 +949,7 @@ def send_email_shipment_add_package(request, shipment, packages, async=True):
 def send_email_shipment_payment(request, shipment):
     texts = (_('Obrigado, agora realize o pagamento para dar continuidade com o seu '
                'envio %(id)s.') % {'id': shipment.id}, _('Valor total'),
-             force_text(formats.localize(shipment.cost, use_l10n=True)))
+             force_text(formats.localize(shipment.cost, use_l10n=True)),)
     send_email_shipment_status_change(request, shipment, _('para acessar seu envio e efetuar o pagamento.'), *texts,
                                       True)
 
