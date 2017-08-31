@@ -125,7 +125,7 @@ class AccountingAdmin(admin.ModelAdmin):
     def get_inline_formsets(self, request, formsets, inline_instances, obj=None):
         inline_admin_formsets = super(AccountingAdmin, self).get_inline_formsets(request, formsets, inline_instances,
                                                                                  obj)
-        if self.simulate_obj:
+        if obj and obj.simulation:
             for inline_admin_formset in inline_admin_formsets:
                 for form, data in zip(inline_admin_formset.formset.forms, self.simulate_inlines):
                     form.instance = data

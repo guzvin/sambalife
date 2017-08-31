@@ -820,7 +820,8 @@ def calculate_shipment(products, user_id, save_product_price=False):
             cost += product.quantity * (helper.resolve_price_value(product.receive_date, current_user.language_code) +
                                         helper.resolve_partner_value(partner))
             quantity += product.quantity
-    return HttpResponse(json.dumps({'cost': force_text(formats.localize(round(cost, 2), use_l10n=True)),
+    return HttpResponse(json.dumps({'cost': force_text(formats.number_format(round(cost, 2), use_l10n=True,
+                                                                             decimal_pos=2)),
                                     'items': quantity}),
                         content_type='application/json'), float(Decimal(round(cost, 2)))
 
@@ -903,7 +904,7 @@ def send_email_shipment_add(request, shipment, products, warehouses):
              _('Envio'), shipment.id,
              _('Data de envio'), force_text(formats.localize(shipment.send_date, use_l10n=True)),
              _('Quantidade de produtos'), shipment.total_products,
-             _('Valor total'), force_text(formats.localize(shipment.cost, use_l10n=True)),)
+             _('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
 
     for warehouse in warehouses:
         texts += (_('Warehouse'), warehouse.name)
@@ -949,7 +950,7 @@ def send_email_shipment_add_package(request, shipment, packages, async=True):
 def send_email_shipment_payment(request, shipment):
     texts = (_('Obrigado, agora realize o pagamento para dar continuidade com o seu '
                'envio %(id)s.') % {'id': shipment.id}, _('Valor total'),
-             force_text(formats.localize(shipment.cost, use_l10n=True)),)
+             force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
     send_email_shipment_status_change(request, shipment, _('para acessar seu envio e efetuar o pagamento.'), *texts,
                                       async=True)
 
