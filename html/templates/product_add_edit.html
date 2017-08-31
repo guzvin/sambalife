@@ -30,6 +30,14 @@
                   {% endfor %}
                 </div><br>
                 <div class="form-group col-md-12">
+                  <label for="{{ form.asin.id_for_label }}">{{ form.asin.label }}</label>
+                    {% blocktrans asvar asin with asin_label=form.asin.label %}Digite o {{ asin_label }}{% endblocktrans %}
+                  <input type="text" class="form-control" id="{{ form.asin.id_for_label }}" aria-describedby="asin" name="{{ form.asin.html_name }}" placeholder="{{ asin }}..." value="{% if form.asin.value %}{{ form.asin.value }}{% endif %}">
+                  {% for error in form.asin.errors %}
+                    <label id="asin-error" class="error" for="{{ form.asin.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                <div class="form-group col-md-12">
                   <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
                     {% trans "Descrição do produto" as description %}
                   <textarea class="form-control" id="{{ form.description.id_for_label }}" name="{{ form.description.html_name }}" placeholder="{{ description }}...">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
@@ -64,12 +72,22 @@
 {% endcomment %}
                 <div class="form-group col-md-12">
                   <label for="{{ form.send_date.id_for_label }}">{{ form.send_date.label }}*</label>
-                    {% trans "Data de envio" as send_date %}
+                    {% trans "Data da compra" as send_date %}
                   {% with formatted_date=form.send_date.value|date:'SHORT_DATE_FORMAT' %}
                   <input type="text" class="form-control menor datepicker send_date_validate" id="{{ form.send_date.id_for_label }}" name="{{ form.send_date.html_name }}" placeholder="{{ send_date }}..." value="{% if formatted_date %}{{ formatted_date }}{% elif form.send_date.value %}{{ form.send_date.value }}{% endif %}">
                   {% endwith %}
                   {% for error in form.send_date.errors %}
                     <label id="send_date-error" class="error" for="{{ form.send_date.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                <div class="form-group col-md-12">
+                  <label for="{{ form.edd_date.id_for_label }}">{{ form.edd_date.label }}</label>
+                    {% trans "Previsão de entrega" as edd_date %}
+                  {% with formatted_edd_date=form.edd_date.value|date:'SHORT_DATE_FORMAT' %}
+                  <input type="text" class="form-control menor datepicker edd_date_validate" id="{{ form.edd_date.id_for_label }}" name="{{ form.edd_date.html_name }}" placeholder="{{ edd_date }}..." value="{% if formatted_edd_date %}{{ formatted_edd_date }}{% elif form.edd_date.value %}{{ form.edd_date.value }}{% endif %}">
+                  {% endwith %}
+                  {% for error in form.edd_date.errors %}
+                    <label id="edd_date-error" class="error" for="{{ form.edd_date.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
                 {% if user|has_product_perm:'change_product_status' %}
@@ -171,7 +189,7 @@
               </div><br><br>
               <div class="form-group col-md-12"><br><br>
                   <button type="submit" id="send-btn" class="btn btn-primary">{% trans "Salvar" %}</button><br><br>
-                  <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
+                  <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
               </div>
             </form>
         </div>

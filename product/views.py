@@ -12,6 +12,7 @@ from django.utils import formats, timezone
 from django.forms import modelformset_factory, inlineformset_factory
 from django.urls import reverse
 from utils.helper import MyBaseInlineFormSet, ObjectView, send_email_basic_template_bcc_admins
+from utils.models import Params
 from product.templatetags.products import has_product_perm
 from myauth.templatetags.users import has_user_perm
 from django.utils.html import format_html, mark_safe
@@ -37,6 +38,8 @@ def product_stock(request):
         logger.debug(str(filter_id))
         filter_name = request.GET.get('name')
         logger.debug(str(filter_name))
+        filter_asin = request.GET.get('asin')
+        logger.debug(str(filter_asin))
         filter_user = request.GET.get('user')
         logger.debug(str(filter_user))
         filter_status = request.GET.get('status')
@@ -54,6 +57,9 @@ def product_stock(request):
         if filter_name:
             queries.append(Q(name__icontains=filter_name))
             filter_values['name'] = filter_name
+        if filter_asin:
+            queries.append(Q(asin=filter_asin))
+            filter_values['asin'] = filter_asin
         if is_user_perm and filter_user:
             queries.append(Q(user__first_name__icontains=filter_user) | Q(user__last_name__icontains=filter_user) |
                            Q(user__email__icontains=filter_user))
@@ -99,8 +105,15 @@ def product_stock(request):
         products = paginator.page(1)
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
+    max_time_period = None
+    try:
+        params = Params.objects.first()
+        max_time_period = params.time_period_one + params.time_period_two + params.time_period_three
+    except Params.DoesNotExist:
+        pass
     return render(request, 'product_stock.html', {'title': _('Estoque'), 'products': products,
-                                                  'filter_values': ObjectView(filter_values)})
+                                                  'filter_values': ObjectView(filter_values),
+                                                  'max_time_period': max_time_period if max_time_period else 0})
 
 
 @login_required
@@ -110,9 +123,9 @@ def product_add_edit(request, pid=None):
         return HttpResponseForbidden()
     elif pid is not None and has_product_perm(request.user, 'change_product') is False:
         return HttpResponseForbidden()
-    ProductFormSet = modelformset_factory(Product, fields=('name', 'description', 'quantity', 'quantity_partial',
-                                                           'send_date', 'best_before', 'condition', 'actual_condition',
-                                                           'condition_comments'),
+    ProductFormSet = modelformset_factory(Product, fields=('name', 'asin', 'description', 'quantity',
+                                                           'quantity_partial', 'send_date', 'edd_date', 'best_before',
+                                                           'condition', 'actual_condition', 'condition_comments'),
                                           localized_fields=('send_date',), min_num=1, max_num=1)
     TrackingFormSet = inlineformset_factory(Product, Tracking, formset=MyBaseInlineFormSet, fields=('track_number',),
                                             extra=1)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-02 17:55-0300\n"
+"POT-Creation-Date: 2017-08-30 18:18-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -266,66 +266,76 @@ msgid ""
 "for this warehouse and then click to add another warehouse..."
 msgstr ""
 
-#: html/static/js/applications.js:118
+#: html/static/js/applications.js:120
 msgid "en-US"
 msgstr ""
 
-#: html/static/js/applications.js:170 html/static/js/applications.js:187
+#: html/static/js/applications.js:172 html/static/js/applications.js:189
+#: html/static/js/applications.js:206 html/static/js/applications.js:209
 msgid "mm/dd/yy"
 msgstr ""
 
-#: html/static/js/applications.js:200
+#: html/static/js/applications.js:221
+msgid "Please enter a date greater than {1}."
+msgstr ""
+
+#: html/static/js/applications.js:227
 msgid "Required field."
 msgstr ""
 
-#: html/static/js/applications.js:201
+#: html/static/js/applications.js:228
 msgid "Please enter at least 6 characters."
 msgstr ""
 
-#: html/static/js/applications.js:202
+#: html/static/js/applications.js:229
 msgid "Please enter the same value again."
 msgstr ""
 
-#: html/static/js/applications.js:203
+#: html/static/js/applications.js:230
 msgid "See instructions for valid format."
 msgstr ""
 
-#: html/static/js/applications.js:204
+#: html/static/js/applications.js:231
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: html/static/js/applications.js:205
+#: html/static/js/applications.js:232
 msgid "Please enter a valid date."
 msgstr ""
 
-#: html/static/js/applications.js:206
+#: html/static/js/applications.js:233
 msgid "Please enter a date less than or equal to today."
 msgstr ""
 
-#: html/static/js/applications.js:207
+#: html/static/js/applications.js:234
 msgid "Please enter a number greater than zero."
 msgstr ""
 
-#: html/static/js/applications.js:522 html/static/js/applications.js:526
+#: html/static/js/applications.js:473
+msgid "Purchase date"
+msgstr ""
+
+#: html/static/js/applications.js:567 html/static/js/applications.js:571
 msgid "Expiration date"
 msgstr ""
 
-#: html/static/js/applications.js:775
+#: html/static/js/applications.js:875 html/static/js/applications.js:964
 msgid ""
 "Sorry, but there seems to be some inconsistencies. Please reload the page "
 "and try again."
 msgstr ""
 
-#: html/static/js/applications.js:776 html/static/js/applications.js:781
-#: html/static/js/applications.js:786
+#: html/static/js/applications.js:876 html/static/js/applications.js:881
+#: html/static/js/applications.js:886 html/static/js/applications.js:965
+#: html/static/js/applications.js:970 html/static/js/applications.js:975
 msgid "Error"
 msgstr ""
 
-#: html/static/js/applications.js:780
+#: html/static/js/applications.js:880 html/static/js/applications.js:969
 msgid "Access denied"
 msgstr ""
 
-#: html/static/js/applications.js:785
+#: html/static/js/applications.js:885 html/static/js/applications.js:974
 msgid ""
 "Sorry, we are unable to process your operation. Please reload the page and "
 "try again."

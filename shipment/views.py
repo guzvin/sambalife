@@ -26,6 +26,7 @@ from shipment.templatetags.shipments import unit_weight_display, unit_length_dis
 from django.contrib.auth import get_user_model
 from django.template import loader, TemplateDoesNotExist
 from django.utils import translation
+from decimal import Decimal
 import time
 import magic
 import json
@@ -819,10 +820,9 @@ def calculate_shipment(products, user_id, save_product_price=False):
             cost += product.quantity * (helper.resolve_price_value(product.receive_date, current_user.language_code) +
                                         helper.resolve_partner_value(partner))
             quantity += product.quantity
-    return HttpResponse(json.dumps({'cost': force_text(formats.number_format(cost, use_l10n=True,
-                                                                             decimal_pos=2)),
+    return HttpResponse(json.dumps({'cost': force_text(formats.localize(round(cost, 2), use_l10n=True)),
                                     'items': quantity}),
-                        content_type='application/json'), cost
+                        content_type='application/json'), float(Decimal(round(cost, 2)))
 
 
 @login_required
@@ -903,7 +903,7 @@ def send_email_shipment_add(request, shipment, products, warehouses):
              _('Envio'), shipment.id,
              _('Data de envio'), force_text(formats.localize(shipment.send_date, use_l10n=True)),
              _('Quantidade de produtos'), shipment.total_products,
-             _('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)))
+             _('Valor total'), force_text(formats.localize(shipment.cost, use_l10n=True)),)
 
     for warehouse in warehouses:
         texts += (_('Warehouse'), warehouse.name)

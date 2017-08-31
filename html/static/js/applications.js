@@ -194,6 +194,35 @@
                 }
                 return valid;
             });
+            $.validator.addMethod('dateGreaterThan', function (value, element, params)
+            {
+                if (this.optional(element))
+                {
+                    return true;
+                }
+                var valid = true;
+                try
+                {
+                    var dateToCompare = $.datepicker.parseDate(gettext('mm/dd/yy'), $(params[0]).val());
+                    if(!dateToCompare)
+                    {
+                        throw 'null';
+                    }
+                    try
+                    {
+                        return $.datepicker.parseDate(gettext('mm/dd/yy'), value) > dateToCompare;
+                    }
+                    catch (err)
+                    {
+                        valid = false;
+                    }
+                }
+                catch (err)
+                {
+                    valid = false;
+                }
+                return valid;
+            }, $.validator.format(gettext('Please enter a date greater than {1}.')));
         }
 
         $.extend(
@@ -438,6 +467,14 @@
                 required: true,
                 date: true,
                 dateLessThanOrEqualNow: true,
+            });
+        });
+        $('.edd_date_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                date: true,
+                dateGreaterThan: ['.send_date_validate', gettext('Purchase date')],
             });
         });
         $('.best_before_validate').each(function ()

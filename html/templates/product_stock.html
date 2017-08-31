@@ -26,7 +26,11 @@
                         <label for="filtro-nome">{{ name }}</label>
                         <input type="text" class="form-control" id="filtro-nome" name="name" placeholder="{{ name }}..." value="{{ filter_values.name }}">
                     </div>
-
+                    <div class="form-group col-md-2">
+                        {% trans "ASIN" as asin %}
+                        <label for="filtro-asin">{{ asin }}</label>
+                        <input type="text" class="form-control" id="filtro-asin" name="asin" placeholder="{{ asin }}..." value="{{ filter_values.asin }}">
+                    </div>
                     {% if user|has_user_perm:'view_users' %}
                     <!-- somente o admin visualiza esse filtro -->
                     <div class="form-group col-md-2">
@@ -93,7 +97,7 @@
                       {% trans "Ordenar pelo nome" as order_name %}
                       <a title="{{ order_name }}" href="javascript:void(0);">{{ name }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
-                  <th>{% trans "Data de Envio" %}</th>
+                  <th>{% trans "ASIN" %}</th>
                   <th class="center">
                       {% trans "Ordenar pela quantidade" as order_qty %}
                       <a title="{{ order_qty }}" href="javascript:void(0);">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
@@ -121,7 +125,7 @@
                 <tr>
                   <td>{{ product.id }}</td>
                   <td class="limit-field">{{ product.name }}</td>
-                  <td>{{ product.send_date }}</td>
+                  <td>{% if product.asin %}{{ product.asin }}{% endif %}</td>
                   <td class="center row-quantity" data-current-qty="{{ product.quantity }}">
                       <span class="row-quantity-display">
                       {{ product.quantity }}{% if product.quantity_partial is not None and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}
@@ -158,6 +162,12 @@
                       <!-- fim botao -->
                       {% endif %}
                       <span id="product-status-display-{{ product.id }}">{% if product.status %}{{ product.get_status_display  }}{% endif %}</span>
+                      {% if max_time_period > 0 and product.status == 2 %}
+                      {% with days_in_voi_stock=product|days_in_stock:max_time_period %}
+                      <br>
+                      <center>({{ days_in_voi_stock }} {% trans "dias" %})</center>
+                      {% endwith %}
+                      {% endif %}
                       {% if user|has_product_perm:'change_product_status' %}
                       <!-- somente admin visualiza -->
 

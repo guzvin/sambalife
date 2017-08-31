@@ -24,6 +24,12 @@
                     </div>
                 </div>
               <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "ASIN" %}:</label>
+                    <div class="col-xs-9">
+                        <p>{% if product.asin %}{{ product.asin }}{% endif %}</p>
+                    </div>
+                </div>
+              <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Descrição" %}:</label>
                     <div class="col-xs-9">
                         <p>{{ product.description }}</p>
@@ -36,9 +42,15 @@
                     </div>
               </div>
               <div class="form-group">
-                    <label class="control-label col-xs-3">{% trans "Data de Envio" %}:</label>
+                    <label class="control-label col-xs-3">{% trans "Data da Compra" %}:</label>
                     <div class="col-xs-9">
                         <p>{{ product.send_date|date:'SHORT_DATE_FORMAT' }}</p>
+                    </div>
+              </div>
+              <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "Previsão de Entrega" %}:</label>
+                    <div class="col-xs-9">
+                        <p>{{ product.edd_date|date:'SHORT_DATE_FORMAT' }}</p>
                     </div>
               </div>
               <div class="form-group">
@@ -136,7 +148,7 @@
               </span>
               {% endif %}
               <br><br>
-              <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
+              <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
             </div>
         </div>
         <div class="col-md-3 sidebar">

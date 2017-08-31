@@ -13,10 +13,11 @@ logger = logging.getLogger('django')
 class Product(models.Model):
     id = BigAutoField(primary_key=True)
     name = models.CharField(_('Nome'), max_length=150)
+    asin = models.CharField(_('ASIN'), max_length=50, null=True, blank=True)
     description = models.TextField(_('Descrição'), null=True, blank=True)
     quantity = models.PositiveIntegerField(_('Quantidade'))
     quantity_partial = models.PositiveIntegerField(_('Quantidade Parcial'), null=True, blank=True)
-    send_date = models.DateField(_('Data de Envio'))
+    send_date = models.DateField(_('Data da Compra'))
     STATUS_CHOICES = (
         (1, _('Encaminhado VOI')),
         (2, _('Em Estoque VOI')),
@@ -39,6 +40,7 @@ class Product(models.Model):
     best_before = models.DateTimeField(_('Data de Validade'), null=True, blank=True)
     create_date = models.DateTimeField(_('Data de Cadastro'), auto_now_add=True, null=True)
     receive_date = models.DateTimeField(_('Data de Recebimento'), null=True, blank=True)
+    edd_date = models.DateField(_('Previsão de Entrega'), null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
     class Meta:
@@ -59,6 +61,10 @@ class Product(models.Model):
         logger.debug(timezone.now())
         if self.send_date and self.send_date > datetime.now().date():
             errors['send_date'] = ValidationError(_('Informe uma data menor ou igual a de hoje.'), code='invalid_date')
+        if (self.send_date and self.edd_date and self.edd_date <= self.send_date) \
+                or (self.send_date is None and self.edd_date):
+            errors['edd_date'] = ValidationError(_('Informe uma data maior que a Data da compra.'),
+                                                 code='invalid_edd_date')
         if self.quantity:
             if self.quantity < 0:
                 errors['quantity'] = ValidationError(_('Informe um número maior que zero.'), code='invalid_quantity')
