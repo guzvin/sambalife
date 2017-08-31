@@ -165,7 +165,7 @@
                       {% if max_time_period > 0 and product.status == 2 %}
                       {% with days_in_voi_stock=product|days_in_stock:max_time_period %}
                       <br>
-                      <center>({{ days_in_voi_stock }} {% trans "dias" %})</center>
+                      ({{ days_in_voi_stock }} {% trans "dias" %})
                       {% endwith %}
                       {% endif %}
                       {% if user|has_product_perm:'change_product_status' %}
