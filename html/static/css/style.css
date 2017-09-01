@@ -223,6 +223,11 @@ fieldset[disabled] .btn-xl.active {
         width: 1195px;
    }
 
+  .sistema #box-adress .modal-dialog{
+        width: 470px;
+  }
+
+
    .btn-menor{
         padding: 7px 19px;
         float: left;
@@ -1401,6 +1406,15 @@ form small{
     margin-bottom: 15px;
     font-weight: bold;
     color: #3C3E77;
+}
+
+.nav > li.tutorial.adress{
+    top: 110px;
+    background: #286090;
+}
+
+.nav > li.tutorial.adress a{
+    padding: 8px 6px;
 }
 
 .en footer {

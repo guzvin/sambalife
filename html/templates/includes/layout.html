@@ -128,6 +128,11 @@
                     <li class="tutorial">
                         <a href="/ajuda.html" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
                     </li>
+
+                    <li class="tutorial adress">
+                        <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fa fa-map-marker"></i> {% trans "Ver Endereço VOI" %}</a>
+                    </li>
+
                     {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Estoque" %} <b class="caret"></b></a>
@@ -267,6 +272,26 @@
             </div>
         </div>
     </div>
+
+        <div id="box-adress" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Endereço VOI" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p><strong>{% trans "Veja abaixo o nosso endereço para o qual você deve enviar seus produtos antes que eles sejam enviados para Amazon/Ebay." %}</strong></p>
+                    <br>
+                    <p class="center">201 Main St<br />West Newbury<br />MA 01985</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% if user.terms_conditions is False %}
    <!-- Modal termos -->
     <div id="terms_conditions" class="modal fade">

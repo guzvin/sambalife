@@ -608,6 +608,11 @@
         $('#confirmacao-exclusao').modal('show');
     });
 
+    $('.open-adress').click(function()
+    {
+        $('#box-adress').modal('show');
+    });
+
     if($('#form-archive-shipment')[0])
     {
         if($('#archive-btn')[0])
