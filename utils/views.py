@@ -14,17 +14,8 @@ logger = logging.getLogger('django')
 
 @login_required
 @require_http_methods(["GET"])
-def simulate_accounting(request):
-    obj = close_accounting(request, True)
-    return TemplateResponse(request, [
-        "admin/utils/accounting/simulation.html",
-    ], obj)
-
-
-@login_required
-@require_http_methods(["GET"])
 @transaction.atomic
-def close_accounting(request, simulate=False):
+def close_accounting(request, simulate=False, sandbox=False):
     try:
         params = Params.objects.first()
         fgr_cost = params.fgr_cost
@@ -34,7 +25,8 @@ def close_accounting(request, simulate=False):
         fgr_cost = settings.DEFAULT_FGR_COST
         english_version_cost = settings.DEFAULT_ENGLISH_VERSION_COST
         base_price = settings.DEFAULT_REDIRECT_FACTOR
-    shipments = Shipment.objects.select_related('user', 'user__partner').filter(status=5, accounting=None)
+    shipments = Shipment.objects.select_related('user', 'user__partner').filter(status=5, is_sandbox=sandbox,
+                                                                                accounting=None)
     partners = []
     accounting = Accounting()
     accounting.user = request.user

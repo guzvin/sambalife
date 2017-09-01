@@ -48,6 +48,7 @@ class Shipment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     accounting = models.ForeignKey(Accounting, verbose_name=_('Fechamento'), on_delete=models.SET_NULL, null=True,
                                    blank=True)
+    is_sandbox = models.BooleanField(_('Sandbox'), default=False)
 
     class Meta:
         verbose_name = _('Envio')

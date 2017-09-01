@@ -246,7 +246,7 @@ def shipment_details(request, pid=None):
                                 logger.error(e)
                                 return HttpResponseBadRequest()
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
-                    is_sandbox = paypal_mode(request)
+                    is_sandbox = settings.PAYPAL_TEST or paypal_mode(_shipment_details.user)
                     context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
                                                                                             is_render_button=True)
             elif _shipment_details.status == 2:
@@ -374,8 +374,8 @@ def shipment_details(request, pid=None):
     return HttpResponseForbidden()
 
 
-def paypal_mode(request):
-    is_sandbox = (request.user.email in settings.PAYPAL_SANDBOX_USERS) or translation.get_language() == 'en-us'
+def paypal_mode(user):
+    is_sandbox = (user.email in settings.PAYPAL_SANDBOX_USERS) or translation.get_language() == 'en-us'
     return is_sandbox
 
 
@@ -422,14 +422,9 @@ def shipment_pay_form(request, pid=None):
                 if is_user_perm is False:
                     query &= Q(user=request.user)
                 _shipment_details = Shipment.objects.select_for_update().select_related('user').get(query)
-                _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').\
-                    order_by('id')
-                ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id,
-                                                            save_product_price=True)
-                _shipment_details.cost = cost
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
-                    is_sandbox = paypal_mode(request)
-                    if settings.PAYPAL_TEST or is_sandbox:
+                    is_sandbox = settings.PAYPAL_TEST or paypal_mode(_shipment_details.user)
+                    if is_sandbox:
                         invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
                         paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if \
                             _shipment_details.user.language_code == 'pt-br' else settings.PAYPAL_BUSINESS_EN_SANDBOX
@@ -443,11 +438,19 @@ def shipment_pay_form(request, pid=None):
                         paypal_cert_id = settings.PAYPAL_CERT_ID if \
                             _shipment_details.user.language_code == 'pt-br' else settings.PAYPAL_CERT_ID_EN
                         paypal_cert = settings.PAYPAL_CERT
+
                     paypal_private_cert = settings.PAYPAL_PRIVATE_CERT if \
                         _shipment_details.user.language_code == 'pt-br' else settings.PAYPAL_PRIVATE_CERT_EN
                     paypal_public_cert = settings.PAYPAL_PUBLIC_CERT if \
                         _shipment_details.user.language_code == 'pt-br' else settings.PAYPAL_PUBLIC_CERT_EN
-                    _shipment_details.save(update_fields=['cost'])
+
+                    _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').\
+                        order_by('id')
+                    ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id,
+                                                                save_product_price=True)
+                    _shipment_details.cost = cost
+                    _shipment_details.is_sandbox = is_sandbox
+                    _shipment_details.save(update_fields=['cost', 'is_sandbox'])
                     paypal_dict = {
                         'business': paypal_business,
                         'amount': _shipment_details.cost,
@@ -573,7 +576,8 @@ def shipment_status(request, pid=None, op=None):
                 if shipment[0].status == 3:
                     products = shipment[0].product_set.all()
                     ignored_response, cost = calculate_shipment(products, shipment[0].user_id, save_product_price=True)
-                    shipment.update(status=F('status') + 1, cost=cost)
+                    is_sandbox = settings.PAYPAL_TEST or paypal_mode(shipment[0].user)
+                    shipment.update(status=F('status') + 1, cost=cost, is_sandbox=is_sandbox)
                 else:
                     shipment.update(status=F('status') + 1)
             elif op == 'backward' and shipment[0].status > 1:

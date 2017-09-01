@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _, ugettext
 from myauth.my_user_manager import MyUserManager
 from django.conf import settings
 from django.template import loader, Context
-from django.contrib.sites.models import Site
+from django.utils import translation
 from django.http import HttpRequest
 from utils.helper import send_email
 from smtplib import SMTPException
@@ -89,6 +89,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         return self.is_superuser or self.has_perm('myauth.view_admin')
 
     def save(self, *args, **kwargs):
+        current_language = translation.get_language()
         try:
             if self.pk is not None:
                 orig = MyUser.objects.get(pk=self.pk)
@@ -105,13 +106,15 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
             logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(e))
         except socket.error as err:
             logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
+        translation.activate(current_language)
         super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
 
     def _send_email(self, template_name):
         ctx = Context({'user_name': self.first_name, 'protocol': 'https'})
+        translation.activate(self.language_code)
         request = HttpRequest()
-        Site.objects.clear_cache()
-        request.CURRENT_DOMAIN = Site.objects.get_current().domain
+        request.LANGUAGE_CODE = translation.get_language()
+        request.CURRENT_DOMAIN = _('vendedorinternacional.net')
         message = loader.get_template(template_name).render(ctx, request)
         send_email(' - '.join([str(ugettext('Cadastro')), str(ugettext('Vendedor Online Internacional'))]), message,
                    [self.email], async=True)

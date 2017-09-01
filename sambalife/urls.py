@@ -27,7 +27,6 @@ from myauth.views import *
 urlpatterns = [
     url(r'^admin/', include(admin_site.urls)),
     url(r'^admin/close_accounting/$', close_accounting, name='close_accounting'),
-    url(r'^admin/simulate_accounting/$', simulate_accounting, name='simulate_accounting'),
     url(r'^login[/]$', user_login, name='login'),
     url(r'^logout[/]$', user_logout, name='logout'),
     url(r'^user/password/forgot[/]$', user_forgot_password, name='user_forgot_password'),

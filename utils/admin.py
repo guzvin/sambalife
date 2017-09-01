@@ -106,8 +106,8 @@ class AccountingAdmin(admin.ModelAdmin):
         return False
 
     def get_object(self, request, object_id, from_field=None):
-        if object_id == 'simulate':
-            self.simulate_obj, self.simulate_inlines = close_accounting(request, True)
+        if object_id == 'simulate' or object_id == 'simulate_sandbox':
+            self.simulate_obj, self.simulate_inlines = close_accounting(request, True, object_id == 'simulate_sandbox')
             self.simulate_obj.simulation = True
             return self.simulate_obj
         else:
