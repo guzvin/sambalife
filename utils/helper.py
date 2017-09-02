@@ -106,7 +106,9 @@ class EmailThread(threading.Thread):
         logger.debug(self.email_from)
         logger.info(self.body)
         try:
+            logger.info('SERA ENVIADO EMAIL PARA: %s' % self.email_to)
             msg.send(fail_silently=False)
+            logger.info('EMAIL ENVIADO PARA: %s' % self.email_to)
         except SMTPException as e:
             try:
                 for recipient in e.recipients:
