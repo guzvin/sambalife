@@ -466,7 +466,10 @@ def shipment_pay_form(request, pid=None):
                                                                             cert_id=paypal_cert_id,
                                                                             private_cert=paypal_private_cert,
                                                                             public_cert=paypal_public_cert)
-                    return HttpResponse(paypal_form.render())
+                    rendered_response = paypal_form.render()
+                    logger.info(paypal_dict)
+                    logger.info(rendered_response)
+                    return HttpResponse(rendered_response)
         except Shipment.DoesNotExist as e:
             logger.error(e)
             try:
