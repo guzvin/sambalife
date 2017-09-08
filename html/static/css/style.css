@@ -1470,6 +1470,16 @@ footer.fixed-footer{
     padding: 0;
 }
 
+.contact-us-success{
+    background-color: green;
+    color: white;
+}
+
+.contact-us-failure{
+    background-color: red;
+    color: white;
+}
+
 @media (max-width: 767px){
     .navbar-brand img:last-child {
         display: none;

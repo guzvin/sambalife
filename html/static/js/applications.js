@@ -1081,6 +1081,47 @@
         $('#product_delete_error').modal('show');
     }
 
+    if($('#contactus-form')[0])
+    {
+        var form = $('form#contactForm');
+        $('#contactus-form').click(function (e)
+        {
+            var $this = $(this);
+            if($this.hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $this.addClass('nosubmit');
+            $('#contact-us-feedback').prop('class', '');
+            $('#contact-us-feedback')[0].innerHTML = '';
+            $('.loading').show();
+
+            $.ajax(
+            {
+                method: 'POST',
+                url: '/contactus/',
+                data: form.serialize()
+            })
+            .done(function( obj )
+            {
+                form[0].reset();
+                $('#contact-us-feedback').prop('class', 'contact-us-success');
+                $('#contact-us-feedback')[0].innerHTML = gettext('Your message has been sent. Thank you for your contact.');
+            })
+            .fail(function(jqXHR, textStatus, errorThrown)
+            {
+                $('#contact-us-feedback').prop('class', 'contact-us-failure');
+                $('#contact-us-feedback')[0].innerHTML = gettext('Sorry but we couldn\'t send your message, try again in a moment.');
+            })
+            .always(function()
+            {
+                $('.loading').hide();
+                $this.removeClass('nosubmit');
+            });
+        });
+    }
+
     $('.add-pro').click(function()
     {
         var numeroProduto = Number($('.lista-produtos .produto:last-child .num-produto').text()) + 1;

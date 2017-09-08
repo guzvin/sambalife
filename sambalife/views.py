@@ -12,17 +12,40 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
 from django.template import loader, Context
-from django.views.decorators.http import require_http_methods, require_POST
+from django.views.decorators.http import require_http_methods, require_POST, require_GET
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.utils.html import format_html
 from partner.models import Partner
+from smtplib import SMTPException
+import socket
 import json
 import logging
 
 logger = logging.getLogger('django')
+
+
+@require_GET
+def help_page(request):
+    return render(request, 'ajuda.html')
+
+
+@require_POST
+def contact_us(request):
+    name = request.POST['name']
+    email = request.POST['email']
+    tel = request.POST['tel']
+    message = request.POST['message']
+    if name and email and message:
+        try:
+            send_email_contact_us(request, name, email, tel, message)
+        except (SMTPException, socket.error):
+            return HttpResponseServerError()
+    else:
+        return HttpResponseBadRequest()
+    return HttpResponse(json.dumps({'success': True}), content_type='application/json')
 
 
 @require_http_methods(["GET", "POST"])
@@ -273,14 +296,31 @@ def lotesAdmin(request):
 def detalheLote(request):
     return render(request, 'detalhe_lote.html')
 
+
 def minhasCompras(request):
     return render(request, 'minhas_compras.html')
+
 
 def enviosBrasil(request):
     return render(request, 'lista_envio_brasil.html')
 
+
 def envioBrasilCadastro(request):
     return render(request, 'envio_brasil_cadastro.html')
 
+
 def envioBrasilDetalhe(request):
     return render(request, 'detalhe_envio_brasil.html')
+
+
+def send_email_contact_us(request, name, email, tel, message, async=False):
+    email_title = _('Fale conosco %(user_name)s - Vendedor Online Internacional') % {'user_name': name}
+    html_format = '<p>{}: <strong>{}</strong></p>' \
+                  '<p>{}: <strong>{}</strong></p>' \
+                  '<p>{}: <strong>{}</strong></p>' \
+                  '<p>{}: <strong>{}</strong></p>'
+    texts = (_('Nome'), name, _('E-mail'), email, _('Telefone'), tel, _('Mensagem'), message)
+    email_body = format_html(html_format, *texts)
+    ctx = Context({'protocol': 'https', 'email_body': email_body})
+    message = loader.get_template('email/contact-us.html').render(ctx, request)
+    send_email(email_title, message, bcc_admins=True, async=async, raise_exception=True)

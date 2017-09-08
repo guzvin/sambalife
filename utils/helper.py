@@ -83,13 +83,14 @@ def get_admins_emails():
 
 
 class EmailThread(threading.Thread):
-    def __init__(self, title, body, email_from, email_to, bcc, connection):
+    def __init__(self, title, body, email_from, email_to, bcc, connection, raise_exception):
         self.title = title
         self.body = body
         self.email_from = email_from
         self.email_to = email_to
         self.bcc = bcc
         self.connection = connection
+        self.raise_exception = raise_exception
         threading.Thread.__init__(self)
 
     def run(self):
@@ -112,15 +113,19 @@ class EmailThread(threading.Thread):
         except SMTPException as e:
             try:
                 for recipient in e.recipients:
-                    logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(recipient))
+                    logger.warning('PROBLEMA NO ENVIO DE EMAIL %s:: %s' % (self.email_to, str(recipient),))
             except AttributeError:
                 pass
-            logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(e))
+            logger.warning('PROBLEMA NO ENVIO DE EMAIL  %s:: %s' % (self.email_to, str(e),))
+            if self.raise_exception:
+                raise e
         except socket.error as err:
-            logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
+            logger.warning('PROBLEMA NO ENVIO DE EMAIL  %s:: %s' % (self.email_to, str(err),))
+            if self.raise_exception:
+                raise err
 
 
-def send_email(title, body, email_to=None, email_from=None, bcc_admins=False, async=False):
+def send_email(title, body, email_to=None, email_from=None, bcc_admins=False, async=False, raise_exception=False):
     if email_from is None:
         email_from = string_concat(_('Vendedor Online Internacional'), ' ',
                                    _('<no-reply@vendedorinternacional.online>'))
@@ -142,7 +147,8 @@ def send_email(title, body, email_to=None, email_from=None, bcc_admins=False, as
         email_from,
         email_to,
         bcc,
-        connection
+        connection,
+        raise_exception
     )
     if async:
         email.start()

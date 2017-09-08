@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% load i18n l10n %}
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Vendedor Online Internacional" %}</title>
+</head>
+<body>
+
+<div id="template-email" style="background: #fff; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
+     <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/">
+        {% if LANGUAGE_CODE == 'pt-br' %}
+        <img width="75" src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_sup.png">
+        <img width="200" src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_bottom.png">
+        {% else %}
+        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo-en.png">
+        {% endif %}
+     </a>
+    <div style="background: #eee; padding: 10px 20px 20px 20px;">
+        {{ email_body|safe }}
+    </div>
+</div>
+
+</body>
+</html>
