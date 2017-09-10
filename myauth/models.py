@@ -107,6 +107,8 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         except socket.error as err:
             logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
         translation.activate(current_language)
+        self.email = self.email.lower()
+        self.username_internal = self.username_internal.lower()
         super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
 
     def _send_email(self, template_name):

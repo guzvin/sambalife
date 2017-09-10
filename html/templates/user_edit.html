@@ -11,7 +11,7 @@
 
         </div>
         <div class="col-md-6 main">
-          <h1 class="page-header"><i class="fa fa-plus-square"></i> {{ title }}</h1>
+          <h1 class="page-header"><i class="fa fa-edit"></i> {% trans "Editar cadastro" %}</h1>
 
             <form action="" method="post" class="form-edit-user" id="form-edit-user">
               {% csrf_token %}
@@ -21,17 +21,26 @@
                 <div class="form-group col-md-12">
                   <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}*</label>
                     {% blocktrans asvar name with name_label=form.first_name.label|lower %}Digite o {{ name_label }}{% endblocktrans %}
-                  <input type="text" class="form-control name_validate" id="{{ form.first_name.id_for_label }}" aria-describedby="name" name="{{ form.first_name.html_name }}" placeholder="{{ name }}..." value="{% if form.first_name.value %}{{ form.first_name.value }}{% endif %}">
+                  <input type="text" class="form-control name_validate" id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" placeholder="{{ name }}..." value="{% if form.first_name.value %}{{ form.first_name.value }}{% endif %}">
                   {% for error in form.name.errors %}
                     <label id="first_name-error" class="error" for="{{ form.first_name.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
                 <div class="form-group col-md-12">
                   <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}*</label>
-                    {% blocktrans asvar lastname with name_label=form.last_name.label|lower %}Digite o {{ name_label }}{% endblocktrans %}
-                  <input type="text" class="form-control lastname_validate" id="{{ form.last_name.id_for_label }}" aria-describedby="name" name="{{ form.last_name.html_name }}" placeholder="{{ lastname }}..." value="{% if form.last_name.value %}{{ form.last_name.value }}{% endif %}">
-                  {% for error in form.name.errors %}
+                    {% blocktrans asvar lastname with last_name_label=form.last_name.label|lower %}Digite o {{ last_name_label }}{% endblocktrans %}
+                  <input type="text" class="form-control lastname_validate" id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" placeholder="{{ lastname }}..." value="{% if form.last_name.value %}{{ form.last_name.value }}{% endif %}">
+                  {% for error in form.last_name.errors %}
                     <label id="last_name-error" class="error" for="{{ form.last_name.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+
+                <div class="form-group col-md-12">
+                  <label for="{{ form.email.id_for_label }}">{{ form.email.label }}*</label>
+                    {% blocktrans asvar email with email_label=form.email.label|lower %}Digite o {{ email_label }}{% endblocktrans %}
+                  <input type="email" class="form-control email_validate" id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" placeholder="{{ email }}..." value="{% if form.email.value %}{{ form.email.value }}{% endif %}">
+                  {% for error in form.email.errors %}
+                    <label id="email-error" class="error" for="{{ form.email.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
                 <!--  AJUSTAR ABAIXO  -->

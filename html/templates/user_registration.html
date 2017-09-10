@@ -505,8 +505,13 @@
                 </div>
                 <div class="modal-body">
                     {% if success %}
+                        {% url 'login' as login_url %}
+                        <p>{% trans "Cadastro realizado com sucesso." %}</p>
+                        <p>{% blocktrans %}Comece a usar a plataforma agora mesmo clicando <a class="download" href="{{ login_url }}">aqui.</a>{% endblocktrans %}</p>
+{% comment %}
                         <p>{% trans "Informações enviadas com sucesso." %}</p>
                         <p>{% blocktrans %}Enviamos um e-mail para você validar seu cadastro. Este e-mail é válido por {{ expiry }} dias.{% endblocktrans %}</p>
+{% endcomment %}
                     {% elif status_code and status_code == 400 %}
                         {% if form and form.non_field_errors %}
                             {% for error in form.non_field_errors %}

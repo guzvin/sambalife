@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-08 17:19-0300\n"
+"POT-Creation-Date: 2017-09-09 22:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,8 +53,8 @@ msgstr "You don't have permission to edit anything."
 #: html/templates/includes/layout.html:13 html/templates/login.html:13
 #: html/templates/user_registration.html:13
 #: html/templates/user_reset_password.html:13
-#: html/templates/user_validation.html:13 myauth/models.py:119
-#: sambalife/views.py:103 sambalife/views.py:253 utils/helper.py:70
+#: html/templates/user_validation.html:13 myauth/models.py:121
+#: sambalife/views.py:103 sambalife/views.py:254 utils/helper.py:70
 #: utils/helper.py:130
 msgid "Vendedor Online Internacional"
 msgstr "FBA PREP MASTER"
@@ -129,7 +129,7 @@ msgstr "Shipment not found!"
 #: html/templates/product_add_edit.html:192
 #: html/templates/product_details.html:151 html/templates/shipment_add.html:159
 #: html/templates/shipment_details.html:393
-#: html/templates/store_lot_details.html:94 html/templates/user_edit.html:58
+#: html/templates/store_lot_details.html:94 html/templates/user_edit.html:67
 #: html/templates/user_registration.html:455
 #: utils/templates/admin/utils/accounting/change_form.html:9
 msgid "Voltar"
@@ -191,22 +191,22 @@ msgstr "New Shipment"
 #: html/templates/includes/layout-footer.html:175
 #: html/templates/includes/layout-footer.html:263
 #: html/templates/includes/layout.html:193
-#: html/templates/includes/layout.html:305
+#: html/templates/includes/layout.html:309
 msgid "Olá"
 msgstr "Hi"
 
 #: html/templates/includes/layout-footer.html:178
-#: html/templates/includes/layout.html:196
+#: html/templates/user_edit.html:14
 msgid "Editar cadastro"
 msgstr "Edit Profile"
 
 #: html/templates/includes/layout-footer.html:182
-#: html/templates/includes/layout.html:200
+#: html/templates/includes/layout.html:204
 msgid "sair"
 msgstr "Exit"
 
 #: html/templates/includes/layout-footer.html:197
-#: html/templates/includes/layout.html:215
+#: html/templates/includes/layout.html:219
 #: html/templates/user_registration.html:463
 #: html/templates/user_reset_password.html:113
 #: html/templates/user_validation.html:91
@@ -214,7 +214,7 @@ msgid "Copyright &copy; Vendedor Online 2017"
 msgstr "Copyright &copy; FBA Prep Master 2017"
 
 #: html/templates/includes/layout-footer.html:205
-#: html/templates/includes/layout.html:223
+#: html/templates/includes/layout.html:227
 #: html/templates/user_registration.html:478
 #: html/templates/user_reset_password.html:128
 #: html/templates/user_validation.html:106
@@ -222,46 +222,46 @@ msgid "<a href='/termos-e-condicoes-de-uso.html'>Termos e Condições de Uso"
 msgstr "<a href='/terms-and-conditions.html'>Terms and Conditions"
 
 #: html/templates/includes/layout-footer.html:217
-#: html/templates/includes/layout.html:235 html/templates/login.html:73
+#: html/templates/includes/layout.html:239 html/templates/login.html:73
 #: html/templates/user_registration.html:490
 msgid "Sucesso"
 msgstr "Success"
 
 #: html/templates/includes/layout-footer.html:220
-#: html/templates/includes/layout.html:238 html/templates/login.html:76
+#: html/templates/includes/layout.html:242 html/templates/login.html:76
 #: html/templates/user_registration.html:493
 #: html/templates/user_reset_password.html:140
 msgid "Erro"
 msgstr "Error"
 
 #: html/templates/includes/layout-footer.html:243
-#: html/templates/includes/layout.html:263
+#: html/templates/includes/layout.html:267
 msgid "Não foi possível concluir sua ação."
 msgstr "Unable to process your request."
 
 #: html/templates/includes/layout-footer.html:248
 #: html/templates/includes/layout-footer.html:277
-#: html/templates/includes/layout.html:270
-#: html/templates/includes/layout.html:289
-#: html/templates/includes/layout.html:319 html/templates/login.html:105
+#: html/templates/includes/layout.html:274
+#: html/templates/includes/layout.html:293
+#: html/templates/includes/layout.html:323 html/templates/login.html:105
 #: html/templates/product_details.html:175
 #: html/templates/product_details.html:199
 #: html/templates/product_stock.html:222
 #: html/templates/shipment_details.html:415
 #: html/templates/shipment_details.html:438
 #: html/templates/store_lot_details.html:116
-#: html/templates/user_registration.html:522
+#: html/templates/user_registration.html:527
 #: html/templates/user_reset_password.html:158
 msgid "Fechar"
 msgstr "Close"
 
 #: html/templates/includes/layout-footer.html:260
-#: html/templates/includes/layout.html:302
+#: html/templates/includes/layout.html:306
 msgid "Importante!"
 msgstr "Important!"
 
 #: html/templates/includes/layout-footer.html:264
-#: html/templates/includes/layout.html:306
+#: html/templates/includes/layout.html:310
 msgid ""
 "Os termos e condições de uso da nossa plataforma foram atualizados. <a "
 "href='/termos-e-condicoes-de-uso.html' class='download' "
@@ -273,12 +273,12 @@ msgstr ""
 "two important info for you."
 
 #: html/templates/includes/layout-footer.html:265
-#: html/templates/includes/layout.html:307
+#: html/templates/includes/layout.html:311
 msgid "Primeiro"
 msgstr "First"
 
 #: html/templates/includes/layout-footer.html:265
-#: html/templates/includes/layout.html:307
+#: html/templates/includes/layout.html:311
 msgid ""
 "Para uma maior agilidade e transparência no atendimento aos nossos usuários, "
 "a partir do dia 15/07/2017 os valores dos envios são calculados de acordo "
@@ -288,29 +288,29 @@ msgstr ""
 "shipment is calculated based on the time the product is in our stock."
 
 #: html/templates/includes/layout-footer.html:265
-#: html/templates/includes/layout.html:307
+#: html/templates/includes/layout.html:311
 msgid "Seguem os valores"
 msgstr "Here are the prices"
 
 #: html/templates/includes/layout-footer.html:266
-#: html/templates/includes/layout.html:308
+#: html/templates/includes/layout.html:312
 msgid "Produto no estoque VOI até 45 dias: USD 1,29 por produto"
 msgstr "Product in FBA PREP MASTER's stock for 45 days: $1.49 per product"
 
 #: html/templates/includes/layout-footer.html:267
-#: html/templates/includes/layout.html:309
+#: html/templates/includes/layout.html:313
 msgid "Produto no estoque VOI de 46 até 75 dias: USD 1,49 por produto"
 msgstr ""
 "Product in FBA PREP MASTER's stock for 46 to 75 days: $1.69 per product"
 
 #: html/templates/includes/layout-footer.html:268
-#: html/templates/includes/layout.html:310
+#: html/templates/includes/layout.html:314
 msgid "Produto no estoque VOI de 76 até 90 dias: USD 1,99 por produto"
 msgstr ""
 "Product in FBA PREP MASTER's stock for 76 to 90 days: $2.19 per product"
 
 #: html/templates/includes/layout-footer.html:269
-#: html/templates/includes/layout.html:311
+#: html/templates/includes/layout.html:315
 msgid ""
 "A partir do dia 91, o produto será considerado abandonado e retirado da "
 "lista do usuário."
@@ -319,12 +319,12 @@ msgstr ""
 "from the user's list."
 
 #: html/templates/includes/layout-footer.html:271
-#: html/templates/includes/layout.html:313
+#: html/templates/includes/layout.html:317
 msgid "Segundo"
 msgstr "Second"
 
 #: html/templates/includes/layout-footer.html:272
-#: html/templates/includes/layout.html:314
+#: html/templates/includes/layout.html:318
 msgid ""
 "Para sua segurança e conforto, se você ainda não aceitou nossos termos, pode "
 "fazê-lo agora clicando no botão abaixo"
@@ -337,7 +337,7 @@ msgid "Aceito os termos e condições de uso"
 msgstr "I have read and accept the terms and conditions"
 
 #: html/templates/includes/layout-footer.html:274
-#: html/templates/includes/layout.html:316
+#: html/templates/includes/layout.html:320
 msgid ""
 "É necessário aceitar os termos para poder continuar a utilizar a plataforma."
 msgstr ""
@@ -345,8 +345,8 @@ msgstr ""
 "platform."
 
 #: html/templates/includes/layout-footer.html:285
-#: html/templates/includes/layout.html:327 html/templates/login.html:112
-#: html/templates/user_registration.html:529
+#: html/templates/includes/layout.html:331 html/templates/login.html:112
+#: html/templates/user_registration.html:534
 #: html/templates/user_reset_password.html:165
 msgid "Carregando"
 msgstr "Loading"
@@ -363,17 +363,17 @@ msgstr "Impersonate"
 msgid "Ver Endereço VOI"
 msgstr "Check FBA PREP MASTER address"
 
-#: html/templates/includes/layout.html:281
+#: html/templates/includes/layout.html:285
 msgid "Endereço VOI"
 msgstr "FBA PREP MASTER address"
 
-#: html/templates/includes/layout.html:284
+#: html/templates/includes/layout.html:288
 msgid ""
 "Veja abaixo o nosso endereço para o qual você deve enviar seus produtos "
 "antes que eles sejam enviados para Amazon/Ebay."
 msgstr "Address to send your products to before they are sent to Amazon/Ebay."
 
-#: html/templates/includes/layout.html:315
+#: html/templates/includes/layout.html:319
 #: html/templates/user_registration.html:442
 msgid "Li e aceito os termos e condições de uso"
 msgstr "I have read and accept the terms and conditions"
@@ -419,7 +419,6 @@ msgstr ""
 "later."
 
 #: html/templates/product_add_edit.html:26 html/templates/user_edit.html:23
-#: html/templates/user_edit.html:31
 #, python-format
 msgid "Digite o %(name_label)s"
 msgstr "%(name_label)s"
@@ -520,7 +519,7 @@ msgstr "ID"
 #: html/templates/store_lot_details.html:38
 #: html/templates/user_registration.html:80 myauth/admin.py:330
 #: myauth/models.py:23 partner/models.py:12 product/models.py:15
-#: sambalife/forms.py:8 sambalife/views.py:322 store/models.py:13
+#: sambalife/forms.py:8 sambalife/views.py:323 store/models.py:13
 #: store/models.py:50
 msgid "Nome"
 msgstr "Name"
@@ -1142,32 +1141,40 @@ msgstr "ROI"
 msgid "Confirma a exclusão do lote?"
 msgstr "Delete lot?"
 
-#: html/templates/user_edit.html:40 html/templates/user_registration.html:104
+#: html/templates/user_edit.html:31
+msgid "Digite o %(last_name_label)s"
+msgstr "%(last_name_label)s"
+
+#: html/templates/user_edit.html:40
+msgid "Digite o %(email_label)s"
+msgstr "%(email_label)s"
+
+#: html/templates/user_edit.html:49 html/templates/user_registration.html:104
 #: myauth/models.py:28 sambalife/forms.py:11
 msgid "Telefone 1"
 msgstr "Phone number 1"
 
-#: html/templates/user_edit.html:41 html/templates/user_registration.html:105
+#: html/templates/user_edit.html:50 html/templates/user_registration.html:105
 msgid "Digite o telefone, celular de preferência"
 msgstr "Phone number 1"
 
-#: html/templates/user_edit.html:48 html/templates/user_registration.html:112
+#: html/templates/user_edit.html:57 html/templates/user_registration.html:112
 #: myauth/models.py:29 sambalife/forms.py:12
 msgid "Telefone 2"
 msgstr "Phone number 2"
 
-#: html/templates/user_edit.html:49 html/templates/user_registration.html:113
+#: html/templates/user_edit.html:58 html/templates/user_registration.html:113
 msgid "Digite o telefone"
 msgstr "Phone number 2"
 
-#: html/templates/user_edit.html:57 html/templates/user_registration.html:449
+#: html/templates/user_edit.html:66 html/templates/user_registration.html:449
 #: html/templates/user_reset_password.html:99
 msgid "Enviar"
 msgstr "Send"
 
 #: html/templates/user_registration.html:13
-#: html/templates/user_validation.html:13 myauth/models.py:119
-#: sambalife/views.py:252
+#: html/templates/user_validation.html:13 myauth/models.py:121
+#: sambalife/views.py:253
 msgid "Cadastro"
 msgstr "Registration"
 
@@ -1213,8 +1220,8 @@ msgid "Digite o sobrenome"
 msgstr "Last name"
 
 #: html/templates/user_registration.html:96 myauth/models.py:25
-#: sambalife/forms.py:10 sambalife/forms.py:51 sambalife/views.py:263
-#: sambalife/views.py:322
+#: sambalife/forms.py:10 sambalife/forms.py:51 sambalife/views.py:264
+#: sambalife/views.py:323
 msgid "E-mail"
 msgstr "Email"
 
@@ -1240,21 +1247,20 @@ msgstr "Confirm password"
 msgid "Confirmar a senha"
 msgstr "Confirm password"
 
-#: html/templates/user_registration.html:509
-msgid "Informações enviadas com sucesso."
-msgstr "Informations successfully sent."
-
 #: html/templates/user_registration.html:510
-#: html/templates/user_validation.html:74
+msgid "Cadastro realizado com sucesso."
+msgstr "Success."
+
+#: html/templates/user_registration.html:511
 #, python-format
 msgid ""
-"Enviamos um e-mail para você validar seu cadastro. Este e-mail é válido por "
-"%(expiry)s dias."
+"Comece a usar a plataforma agora mesmo clicando <a class=\"download\" href="
+"\"%(login_url)s\">aqui.</a>"
 msgstr ""
-"We have sent you an email to validate you registration. This email is valid "
-"for %(expiry)s days."
+"Start using the platform right away by clicking <a class=\"download\" href="
+"\"%(login_url)s\">here.</a>"
 
-#: html/templates/user_registration.html:517
+#: html/templates/user_registration.html:522
 msgid "Não foi possível efetuar o seu cadastro."
 msgstr "We were unable to complete your registration. Please try again later."
 
@@ -1268,7 +1274,7 @@ msgstr "Password successfully changed."
 
 #: html/templates/user_reset_password.html:69
 #: html/templates/user_validation.html:80 product/views.py:408
-#: sambalife/views.py:265 shipment/views.py:928 shipment/views.py:951
+#: sambalife/views.py:266 shipment/views.py:928 shipment/views.py:951
 #: shipment/views.py:993 shipment/views.py:1011 shipment/views.py:1024
 #: utils/cron.py:196 utils/cron.py:209
 msgid "Clique aqui"
@@ -1323,6 +1329,15 @@ msgstr "Your account is now valid."
 #: html/templates/user_validation.html:72
 msgid "Obrigado e sucesso!"
 msgstr "Thank you and best of luck with your sales!"
+
+#: html/templates/user_validation.html:74
+#, python-format
+msgid ""
+"Enviamos um e-mail para você validar seu cadastro. Este e-mail é válido por "
+"%(expiry)s dias."
+msgstr ""
+"We have sent you an email to validate you registration. This email is valid "
+"for %(expiry)s days."
 
 #: html/templates/user_validation.html:77
 msgid "Código de validação inválido."
@@ -1406,7 +1421,7 @@ msgstr "City*"
 msgid "Tipo*"
 msgstr "Type*"
 
-#: myauth/admin.py:162 myauth/models.py:127
+#: myauth/admin.py:162 myauth/models.py:129
 msgid "Endereço"
 msgstr "Street address"
 
@@ -1435,7 +1450,7 @@ msgstr "Profile"
 msgid "Permissões"
 msgstr "Permissions"
 
-#: myauth/admin.py:258 sambalife/views.py:267 store/views.py:182
+#: myauth/admin.py:258 sambalife/views.py:268 store/views.py:182
 #: utils/helper.py:477
 msgid "Administrador"
 msgstr "Admin"
@@ -1497,47 +1512,47 @@ msgstr "Can change"
 msgid "Can delete"
 msgstr "Can delete"
 
-#: myauth/models.py:117 utils/cron.py:52 utils/cron.py:151
+#: myauth/models.py:119 utils/cron.py:52 utils/cron.py:151
 msgid "vendedorinternacional.net"
 msgstr "fbaprepmaster.com"
 
-#: myauth/models.py:126
+#: myauth/models.py:128
 msgid "País"
 msgstr "Country"
 
-#: myauth/models.py:128
+#: myauth/models.py:130
 msgid "Complemento"
 msgstr "Address 2"
 
-#: myauth/models.py:129
+#: myauth/models.py:131
 msgid "CEP"
 msgstr "Zip code"
 
-#: myauth/models.py:130
+#: myauth/models.py:132
 msgid "Estado"
 msgstr "State / Province / Region"
 
-#: myauth/models.py:131
+#: myauth/models.py:133
 msgid "Cidade"
 msgstr "City"
 
-#: myauth/models.py:133
+#: myauth/models.py:135
 msgid "Entrega"
 msgstr "Delivery"
 
-#: myauth/models.py:134
+#: myauth/models.py:136
 msgid "Cobrança"
 msgstr "Billing"
 
-#: myauth/models.py:135
+#: myauth/models.py:137
 msgid "Entrega e Cobrança"
 msgstr "Delivery and Billing"
 
-#: myauth/models.py:137
+#: myauth/models.py:139
 msgid "Tipo"
 msgstr "Type"
 
-#: myauth/models.py:138
+#: myauth/models.py:140
 msgid "Padrão"
 msgstr "Default"
 
@@ -1741,27 +1756,28 @@ msgstr ""
 "Email on file, <a href='/login'>login</a> or <a href='/#'>click here</a> in "
 "case you forgot your password."
 
-#: sambalife/views.py:258
+#: sambalife/views.py:259
 msgid "Novo cadastro no sistema"
 msgstr "New registration"
 
-#: sambalife/views.py:262
+#: sambalife/views.py:263
 msgid "Existe um novo cadastro no sistema pendente de ativação."
 msgstr "There is a new registration waiting for activation."
 
-#: sambalife/views.py:265
+#: sambalife/views.py:266
 msgid "para acessar a administração de usuários."
 msgstr "to access users admin."
 
-#: sambalife/views.py:317
+#: sambalife/views.py:318
+#, python-format
 msgid "Fale conosco %(user_name)s - Vendedor Online Internacional"
 msgstr "Contact us - %(user_name)s - FBA PREP MASTER"
 
-#: sambalife/views.py:322
+#: sambalife/views.py:323
 msgid "Telefone"
 msgstr "Phone"
 
-#: sambalife/views.py:322
+#: sambalife/views.py:323
 msgid "Mensagem"
 msgstr "Message"
 
@@ -2500,6 +2516,9 @@ msgstr "Simulate accounting"
 #: utils/templates/admin/utils/accounting/change_list.html:18
 msgid "(Sandbox) Simular fechamento"
 msgstr "(Sandbox) Simulate accounting"
+
+#~ msgid "Informações enviadas com sucesso."
+#~ msgstr "Informations successfully sent."
 
 #~ msgid "Upload PDF 2 Autorizado"
 #~ msgstr "Upload PDF 2 Authorized"

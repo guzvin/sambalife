@@ -164,7 +164,7 @@ def user_registration(request, pid=None):
             user = user_model()
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
-            user.email = form.cleaned_data['email'].lower()
+            user.email = form.cleaned_data['email']
             user.phone = form.cleaned_data['phone']
             user.cell_phone = form.cleaned_data['cell_phone']
             user.set_password(form.cleaned_data['password'])
@@ -176,6 +176,7 @@ def user_registration(request, pid=None):
             user.terms_conditions = True
             user.language_code = translation.get_language()
             user.username_internal = ''.join([user.email, '-', user.language_code])
+            user.is_active = True
             user.save()
             all_users_group = Group.objects.get(name='all_users')
             all_users_group.user_set.add(user)
@@ -194,7 +195,7 @@ def user_registration(request, pid=None):
 
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-            send_validation_email(request, user, uidb64, token)
+            # send_validation_email(request, user, uidb64, token)
             if pid:
                 return HttpResponseRedirect('%s?s=1' % reverse('user_registration_partner', args=[pid]))
             else:
