@@ -56,8 +56,7 @@
         olark.identify('3914-306-10-7635');
     </script>
     <!-- end olark code -->
-
-
+    <script src="../static/jsi18n/pt-br/djangojs.js"></script>
 </head>
 
 <body id="page-top" class="index index-home">
@@ -458,28 +457,28 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" placeholder="Digite aqui seu nome *" id="name" required data-validation-required-message="Campo obrigatório">
+                                    <input type="text" class="form-control" name="name" placeholder="Digite aqui seu nome *" id="name" required data-validation-required-message="Campo obrigatório">
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" class="form-control" placeholder="Digite aqui seu email *" id="email" required data-validation-required-message="Campo obrigatório">
+                                    <input type="email" class="form-control" name="email" placeholder="Digite aqui seu email *" id="email" required data-validation-required-message="Campo obrigatório">
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="form-group">
-                                    <input type="tel" class="form-control" placeholder="Digite aqui seu telefone de contato *" id="phone" required data-validation-required-message="Campo obrigatório">
+                                    <input type="tel" class="form-control" name="tel" placeholder="Digite aqui seu telefone de contato *" id="phone" required data-validation-required-message="Campo obrigatório">
                                     <p class="help-block text-danger"></p>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <textarea class="form-control" placeholder="Escreva sua mensagem *" id="message" required data-validation-required-message="Campo obrigatório"></textarea>
+                                    <textarea class="form-control" name="message" placeholder="Escreva sua mensagem *" id="message" required data-validation-required-message="Campo obrigatório"></textarea>
                                     <p class="help-block text-danger"></p>
                                 </div>
                             </div>
                             <div class="clearfix"></div>
                             <div class="col-lg-12 text-center">
-                                <div id="success"></div>
-                                <button type="submit" class="btn btn-xl">Enviar</button>
+                                <div id="contact-us-feedback"></div>
+                                <button type="button" class="btn btn-xl" id="contactus-form">Enviar</button>
                             </div>
                         </div>
                     </form>

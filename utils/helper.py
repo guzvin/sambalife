@@ -73,7 +73,7 @@ def build_basic_template_email_tuple(request, user_name, user_email, email_title
     ctx = Context({'user_name': user_name, 'protocol': 'https', 'email_body': email_body})
     message = loader.get_template('email/basic-template.html').render(ctx, request)
     str2 = _('Vendedor Online Internacional')
-    email_tuple = (string_concat(email_title, ' - ', str2), message, [user_email])
+    email_tuple = (string_concat(email_title, ' - ', str2), message, user_email)
     return email_tuple
 
 
