@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
 from django.contrib.auth import login
+from django.utils.translation import ugettext as _
 
 import logging
 
@@ -20,8 +21,19 @@ def user_edit(request):
     user_model = get_user_model()
     UserFormSet = modelformset_factory(user_model, fields=('first_name', 'last_name', 'email', 'phone',
                                                            'cell_phone'), min_num=1, max_num=1)
-    user_formset = UserFormSet(queryset=user_model.objects.filter(pk=request.user.pk))
-    return render(request, 'user_edit.html', {'user_formset': user_formset})
+    context_data = {}
+    if request.method == 'GET':
+        user_formset = UserFormSet(queryset=user_model.objects.filter(pk=request.user.pk))
+        if request.GET.get('s') == '1':
+            context_data['success'] = True
+            context_data['success_message'] = _('Alteração salva com sucesso.')
+    else:
+        user_formset = UserFormSet(request.POST)
+        if user_formset.is_valid():
+            user_formset.save()
+            return HttpResponseRedirect('%s?s=1' % reverse('user_edit'))
+    context_data['user_formset'] = user_formset
+    return render(request, 'user_edit.html', context_data)
 
 
 @login_required

@@ -34,7 +34,6 @@
                     <label id="last_name-error" class="error" for="{{ form.last_name.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
-
                 <div class="form-group col-md-12">
                   <label for="{{ form.email.id_for_label }}">{{ form.email.label }}*</label>
                     {% blocktrans asvar email with email_label=form.email.label|lower %}Digite o {{ email_label }}{% endblocktrans %}
@@ -43,27 +42,24 @@
                     <label id="email-error" class="error" for="{{ form.email.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
-                <!--  AJUSTAR ABAIXO  -->
-                {% comment "MODIFICAR" %}
-              <div class="form-group">
-                <label for="celular">{% trans "Telefone 1" %}*</label>
-                  {% trans "Digite o telefone, celular de preferência" as cell_phone %}
-                <input type="number" class="form-control" id="celular" name="cell_phone" placeholder="{{ cell_phone }}..." value="{% if form %}{{ form.cell_phone.value }}{% endif %}">
-                {% for error in form.cell_phone.errors %}
-                  <label id="celular-error" class="error" for="celular">{{ error|escape }}</label>
-                {% endfor %}
-              </div>
-              <div class="form-group">
-                <label for="telefone">{% trans "Telefone 2" %}</label>
-                  {% trans "Digite o telefone" as phone %}
-                <input type="number" class="form-control" id="telefone" name="phone" placeholder="{{ phone }}..." value="{% if form %}{{ form.phone.value }}{% endif %}">
-                {% for error in form.phone.errors %}
-                  <label id="telefone-error" class="error" for="telefone">{{ error|escape }}</label>
-                {% endfor %}
-              </div>
-                {% endcomment %}
+                <div class="form-group col-md-12">
+                  <label for="{{ form.cell_phone.id_for_label }}">{{ form.cell_phone.label }}*</label>
+                    {% trans "Digite o telefone, celular de preferência" as cell_phone %}
+                  <input type="number" class="form-control cell_phone_validate" id="{{ form.cell_phone.id_for_label }}" name="{{ form.cell_phone.html_name }}" placeholder="{{ cell_phone }}..." value="{% if form.cell_phone.value %}{{ form.cell_phone.value }}{% endif %}">
+                  {% for error in form.cell_phone.errors %}
+                    <label id="cell_phone-error" class="error" for="{{ form.cell_phone.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                <div class="form-group col-md-12">
+                  <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                    {% trans "Digite o telefone" as phone %}
+                  <input type="number" class="form-control phone_validate" id="{{ form.phone.id_for_label }}" name="{{ form.phone.html_name }}" placeholder="{{ phone }}..." value="{% if form.phone.value %}{{ form.phone.value }}{% endif %}">
+                  {% for error in form.phone.errors %}
+                    <label id="phone-error" class="error" for="{{ form.phone.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
               {% endfor %}
-              <button type="submit" id="send-btn" class="btn btn-primary">{% trans "Enviar" %}</button><br><br>
+              <button type="submit" id="send-btn" class="btn btn-primary" onclick="$('.loading').show();">{% trans "Enviar" %}</button><br><br>
               <a href="/"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
             </form>
 

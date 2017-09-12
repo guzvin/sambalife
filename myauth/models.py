@@ -26,7 +26,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     username_internal = models.CharField(_('username'), max_length=156, unique=True, null=True)
     doc_number = models.CharField(_('CPF'), max_length=25, null=True)
     cell_phone = models.CharField(_('Telefone 1'), max_length=25)
-    phone = models.CharField(_('Telefone 2'), max_length=25, null=True)
+    phone = models.CharField(_('Telefone 2'), max_length=25, null=True, blank=True)
     date_joined = models.DateTimeField(_('Data de criação'), auto_now_add=True)
     is_active = models.BooleanField(_('Ativo'), default=False)
     is_verified = models.BooleanField(_('Verificado'), default=False)
@@ -108,7 +108,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
             logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
         translation.activate(current_language)
         self.email = self.email.lower()
-        self.username_internal = self.username_internal.lower()
+        self.username_internal = ''.join([self.email, '-', self.language_code])
         super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
 
     def _send_email(self, template_name):
