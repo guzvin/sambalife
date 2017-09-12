@@ -101,7 +101,8 @@ def user_forgot_password(request):
                              'protocol': 'https'}), request)
                 str1 = _('Esqueci Senha')
                 str2 = _('Vendedor Online Internacional')
-                send_email(string_concat(str1, ' - ', str2), message, [user.email])
+                email_tuple = (string_concat(str1, ' - ', str2), message, [user.email])
+                send_email((email_tuple,), async=True)
                 return render(request, 'login.html', {'success': True, 'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS})
             else:
                 form.add_error(None, _('Conta cadastrada, porém o usuário ainda não foi liberado para acesso '
@@ -252,7 +253,8 @@ def send_validation_email(request, user, uid, token):
     message = loader.get_template('email/registration-validation.html').render(ctx, request)
     str1 = _('Cadastro')
     str2 = _('Vendedor Online Internacional')
-    send_email(string_concat(str1, ' - ', str2), message, [user.email], async=True)
+    email_tuple = (string_concat(str1, ' - ', str2), message, [user.email])
+    send_email((email_tuple,), async=True)
 
 
 def send_email_user_registration(request, user):
@@ -324,4 +326,5 @@ def send_email_contact_us(request, name, email, tel, message, async=False):
     email_body = format_html(html_format, *texts)
     ctx = Context({'protocol': 'https', 'email_body': email_body})
     message = loader.get_template('email/contact-us.html').render(ctx, request)
-    send_email(email_title, message, bcc_admins=True, async=async, raise_exception=True)
+    email_tuple = (email_title, message, None)
+    send_email((email_tuple,), bcc_admins=True, async=async, raise_exception=True)

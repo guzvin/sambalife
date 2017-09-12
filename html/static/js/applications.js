@@ -387,8 +387,6 @@
                 password:
                 {
                     required: true,
-                    minlength: 6,
-                    passwordFormat: true
                 },
                 password_confirmation:
                 {

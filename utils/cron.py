@@ -43,6 +43,7 @@ def price_warning():
     products_tier_three_warning = None
     products_tier_three = None
     products_tier_abandoned = None
+    emails = ()
     for product in all_products:
         if product.user != current_user:
             if current_user is not None:
@@ -57,24 +58,24 @@ def price_warning():
                     tier_three_price += params.partner_cost
                 for tier_product in products_tier_one_warning:
                     texts = (_warning_message(tier_product[1], time_period_one, tier_two_price),)
-                    _send_email_warning(request, tier_product[0], current_user, *texts)
+                    emails += (_send_email_warning(request, tier_product[0], current_user, *texts),)
                 for tier_product in products_tier_two_warning:
                     texts = (_warning_message(tier_product[1], (time_period_one + time_period_two), tier_three_price),)
-                    _send_email_warning(request, tier_product[0], current_user, *texts)
+                    emails += (_send_email_warning(request, tier_product[0], current_user, *texts),)
                 for tier_product in products_tier_two:
                     texts = (_price_change_message(tier_two_price, tier_product[1], time_period_two),)
-                    _send_email_warning(request, tier_product[0], current_user, *texts)
+                    emails += (_send_email_warning(request, tier_product[0], current_user, *texts),)
                 for tier_product in products_tier_three_warning:
                     texts = (_('Seu produto encontra-se há %(days)s dias no estoque VOI. Fique atento, pois se passar '
                                'do período de %(period)s dias ele será considerado abandonado.')
                              % {'days': tier_product[1],
                                 'period': (time_period_one + time_period_two + time_period_three)},)
-                    _send_email_warning(request, tier_product[0], current_user, *texts)
+                    emails += (_send_email_warning(request, tier_product[0], current_user, *texts),)
                 for tier_product in products_tier_three:
                     texts = (_price_change_message(tier_three_price, tier_product[1], time_period_three),)
-                    _send_email_warning(request, tier_product[0], current_user, *texts)
+                    emails += (_send_email_warning(request, tier_product[0], current_user, *texts),)
                 for tier_product in products_tier_abandoned:
-                    _send_email_abandoned(request, tier_product[0], tier_product[1], current_user)
+                    emails += (_send_email_abandoned(request, tier_product[0], tier_product[1], current_user),)
             current_user = product.user
             products_tier_one_warning = []
             products_tier_two_warning = []
@@ -119,27 +120,6 @@ def price_warning():
                                     cancel_shipment(shipment)
                                 except Shipment.DoesNotExist:
                                     continue
-                                # logger.debug('===== product quantity before delete =====')
-                                # logger.debug(product.quantity)
-                                # logger.debug(product.quantity_partial)
-                                # product.quantity += shipment_product.quantity
-                                # product.quantity_partial += shipment_product.quantity
-                                # if 'quantity' not in update_fields:
-                                #     update_fields.append('quantity')
-                                #     update_fields.append('quantity_partial')
-                                # logger.debug('===== product quantity after delete =====')
-                                # logger.debug(product.quantity)
-                                # logger.debug(product.quantity_partial)
-                                # shipment_product.delete()
-                                # if shipment.total_products == 0:
-                                #     shipment.delete()
-                                # else:
-                                #     products = shipment.product_set.all()
-                                #     logger.debug('@@@@@@@@@@@@ SHIPMENT PRODUCTS @@@@@@@@@@@@@@')
-                                #     logger.debug(products)
-                                #     ignored_response, cost = calculate_shipment(products, shipment.user_id)
-                                #     shipment.cost = cost
-                                #     shipment.save(update_fields=['total_products', 'cost'])
                             product.status = 100
                             product.user = None
                             product.save(update_fields=update_fields)
@@ -156,24 +136,26 @@ def price_warning():
             tier_three_price += params.partner_cost
         for tier_product in products_tier_one_warning:
             texts = (_warning_message(tier_product[1], time_period_one, tier_two_price),)
-            _send_email_warning(request, tier_product[0], current_user, *texts)
+            emails += (_send_email_warning(request, tier_product[0], current_user, *texts),)
         for tier_product in products_tier_two_warning:
             texts = (_warning_message(tier_product[1], (time_period_one + time_period_two), tier_three_price),)
-            _send_email_warning(request, tier_product[0], current_user, *texts)
+            emails += (_send_email_warning(request, tier_product[0], current_user, *texts),)
         for tier_product in products_tier_two:
             texts = (_price_change_message(tier_two_price, tier_product[1], time_period_two),)
-            _send_email_warning(request, tier_product[0], current_user, *texts)
+            emails += (_send_email_warning(request, tier_product[0], current_user, *texts),)
         for tier_product in products_tier_three_warning:
             texts = (_('Seu produto encontra-se há %(days)s dias no estoque VOI. Fique atento, pois se passar '
                        'do período de %(period)s dias ele será considerado abandonado.')
                      % {'days': tier_product[1],
                         'period': (time_period_one + time_period_two + time_period_three)},)
-            _send_email_warning(request, tier_product[0], current_user, *texts)
+            emails += (_send_email_warning(request, tier_product[0], current_user, *texts),)
         for tier_product in products_tier_three:
             texts = (_price_change_message(tier_three_price, tier_product[1], time_period_three),)
-            _send_email_warning(request, tier_product[0], current_user, *texts)
+            emails += (_send_email_warning(request, tier_product[0], current_user, *texts),)
         for tier_product in products_tier_abandoned:
-            _send_email_abandoned(request, tier_product[0], tier_product[1], current_user)
+            emails += (_send_email_abandoned(request, tier_product[0], tier_product[1], current_user),)
+    if emails:
+        helper.send_email(emails, bcc_admins=True, async=True)
 
 
 def _warning_message(days, period, value):
@@ -195,8 +177,7 @@ def _send_email_warning(request, product, user, *texts):
     texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('product_stock')]),
               _('Clique aqui'), _('para acessar sua lista de produtos e criar seus envios agora mesmo!'),)
     email_body = format_html(html_format, *texts)
-    helper.send_email_basic_template_bcc_admins(request, user.first_name, [user.email], email_title,
-                                                email_body, async=True)
+    return helper.build_basic_template_email_tuple(request, user.first_name, [user.email], email_title, email_body)
 
 
 def _send_email_abandoned(request, product, days, user):
@@ -208,5 +189,4 @@ def _send_email_abandoned(request, product, days, user):
     texts += (''.join(['https://', request.CURRENT_DOMAIN, '/', _('termos-e-condicoes-de-uso.html')]),
               _('Clique aqui'), _('para acessar nossos termos e condições de uso.'),)
     email_body = format_html(html_format, *texts)
-    helper.send_email_basic_template_bcc_admins(request, user.first_name, [user.email], email_title,
-                                                email_body, async=True)
+    return helper.build_basic_template_email_tuple(request, user.first_name, [user.email], email_title, email_body)

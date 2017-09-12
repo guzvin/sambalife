@@ -65,10 +65,16 @@ class ObjectView(object):
 
 
 def send_email_basic_template_bcc_admins(request, user_name, user_email, email_title, email_body, async=False):
+    email_tuple = build_basic_template_email_tuple(request, user_name, user_email, email_title, email_body)
+    send_email((email_tuple,), bcc_admins=True, async=async)
+
+
+def build_basic_template_email_tuple(request, user_name, user_email, email_title, email_body):
     ctx = Context({'user_name': user_name, 'protocol': 'https', 'email_body': email_body})
     message = loader.get_template('email/basic-template.html').render(ctx, request)
     str2 = _('Vendedor Online Internacional')
-    send_email(string_concat(email_title, ' - ', str2), message, user_email, bcc_admins=True, async=async)
+    email_tuple = (string_concat(email_title, ' - ', str2), message, [user_email])
+    return email_tuple
 
 
 def get_admins_emails():
@@ -83,69 +89,69 @@ def get_admins_emails():
 
 
 class EmailThread(threading.Thread):
-    def __init__(self, title, body, email_from, email_to, bcc, connection, raise_exception):
-        self.title = title
-        self.body = body
+    def __init__(self, email_data_tuple, email_from, bcc, connection, raise_exception):
+        self.email_data_tuple = email_data_tuple
         self.email_from = email_from
-        self.email_to = email_to
         self.bcc = bcc
         self.connection = connection
         self.raise_exception = raise_exception
         threading.Thread.__init__(self)
 
     def run(self):
-        msg = EmailMessage(
-            self.title,
-            self.body,
-            from_email=self.email_from,
-            to=self.email_to,
-            bcc=self.bcc,
-            connection=self.connection
-        )
-        msg.content_subtype = 'html'
         logger.info('@@@@@@@@@@@@ EMAIL MESSAGE @@@@@@@@@@@@@@')
         logger.debug(self.email_from)
-        logger.info(self.body)
+        logger.debug(self.email_data_tuple)
+        messages = []
+        recipients = []
+        for subject, message, recipient in self.email_data_tuple:
+            msg = EmailMessage(subject,
+                               message,
+                               from_email=self.email_from,
+                               to=recipient,
+                               bcc=self.bcc,
+                               connection=self.connection)
+            msg.content_subtype = 'html'
+            messages.append(msg)
+            recipients.append(recipient)
+            logger.info(recipient)
+            logger.info(message)
         try:
-            logger.info('SERA ENVIADO EMAIL PARA: %s' % self.email_to)
-            msg.send(fail_silently=False)
-            logger.info('EMAIL ENVIADO PARA: %s' % self.email_to)
+            logger.info('SERA ENVIADO EMAIL PARA: %s' % recipients)
+            self.connection.send_messages(messages)
+            logger.info('EMAIL ENVIADO PARA: %s' % recipients)
         except SMTPException as e:
             try:
                 for recipient in e.recipients:
-                    logger.warning('PROBLEMA NO ENVIO DE EMAIL %s:: %s' % (self.email_to, str(recipient),))
+                    logger.warning('PROBLEMA NO ENVIO DE EMAIL %s:: %s' % (recipients, str(recipient),))
             except AttributeError:
                 pass
-            logger.warning('PROBLEMA NO ENVIO DE EMAIL  %s:: %s' % (self.email_to, str(e),))
+            logger.warning('PROBLEMA NO ENVIO DE EMAIL  %s:: %s' % (recipients, str(e),))
             if self.raise_exception:
                 raise e
         except socket.error as err:
-            logger.warning('PROBLEMA NO ENVIO DE EMAIL  %s:: %s' % (self.email_to, str(err),))
+            logger.warning('PROBLEMA NO ENVIO DE EMAIL  %s:: %s' % (recipients, str(err),))
             if self.raise_exception:
                 raise err
 
 
-def send_email(title, body, email_to=None, email_from=None, bcc_admins=False, async=False, raise_exception=False):
+def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False, raise_exception=False):
     if email_from is None:
         email_from = string_concat(_('Vendedor Online Internacional'), ' ',
-                                   _('<no-reply@vendedorinternacional.online>'))
+                                   _('<no-reply@vendedorinternacional.net>'))
     bcc = None
     if bcc_admins:
         bcc = get_admins_emails()
 
-    connection = None
+    connection = get_connection(fail_silently=False)
     if translation.get_language() == 'en-us':
-        connection = get_connection()
         connection.password = settings.EMAIL_HOST_PASSWORD_EN
         connection.username = settings.EMAIL_HOST_USER_EN
         connection.host = settings.EMAIL_HOST_EN
         connection.port = settings.EMAIL_PORT
         connection.use_tls = settings.EMAIL_USE_TLS
     email = EmailThread(
-        title,
-        body,
+        email_data_tuple,
         email_from,
-        email_to,
         bcc,
         connection,
         raise_exception

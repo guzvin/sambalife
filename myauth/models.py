@@ -118,8 +118,10 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         request.LANGUAGE_CODE = translation.get_language()
         request.CURRENT_DOMAIN = _('vendedorinternacional.net')
         message = loader.get_template(template_name).render(ctx, request)
-        send_email(' - '.join([str(ugettext('Cadastro')), str(ugettext('Vendedor Online Internacional'))]), message,
-                   [self.email], async=True)
+        email_tuple = (' - '.join([str(ugettext('Cadastro')), str(ugettext('Vendedor Online Internacional'))]),
+                       message,
+                       [self.email])
+        send_email((email_tuple,), async=True)
 
 
 class UserAddress(models.Model):
