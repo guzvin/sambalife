@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^admin/close_accounting/$', close_accounting, name='close_accounting'),
     url(r'^login[/]$', user_login, name='login'),
     url(r'^logout[/]$', user_logout, name='logout'),
-    url(r'^ajuda.html$', help_page, name='help'),
+    url(r'^touch/$', touch, name='touch'),
     url(r'^contactus/$', contact_us, name='contactus'),
     url(r'^user/password/forgot[/]$', user_forgot_password, name='user_forgot_password'),
     url(r'^user/password/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})[/]$',

@@ -1097,23 +1097,38 @@
 
             $.ajax(
             {
-                method: 'POST',
-                url: '/contactus/',
-                data: form.serialize()
-            })
-            .done(function( obj )
+                method: 'GET',
+                url: '/touch/'
+            }).done(function( obj )
             {
-                form[0].reset();
-                $('#contact-us-feedback').prop('class', 'contact-us-success');
-                $('#contact-us-feedback')[0].innerHTML = gettext('Your message has been sent. Thank you for your contact.');
+                console.log('done');
+                $.ajax(
+                {
+                    method: 'POST',
+                    url: '/contactus/',
+                    data: form.serialize()
+                })
+                .done(function( obj )
+                {
+                    form[0].reset();
+                    $('#contact-us-feedback').prop('class', 'contact-us-success');
+                    $('#contact-us-feedback')[0].innerHTML = gettext('Your message has been sent. Thank you for your contact.');
+                })
+                .fail(function(jqXHR, textStatus, errorThrown)
+                {
+                    $('#contact-us-feedback').prop('class', 'contact-us-failure');
+                    $('#contact-us-feedback')[0].innerHTML = gettext('Sorry but we couldn\'t send your message, try again in a moment.');
+                })
+                .always(function()
+                {
+                    $('.loading').hide();
+                    $this.removeClass('nosubmit');
+                });
             })
             .fail(function(jqXHR, textStatus, errorThrown)
             {
                 $('#contact-us-feedback').prop('class', 'contact-us-failure');
                 $('#contact-us-feedback')[0].innerHTML = gettext('Sorry but we couldn\'t send your message, try again in a moment.');
-            })
-            .always(function()
-            {
                 $('.loading').hide();
                 $this.removeClass('nosubmit');
             });

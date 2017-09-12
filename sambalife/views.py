@@ -13,6 +13,7 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
 from django.template import loader, Context
 from django.views.decorators.http import require_http_methods, require_POST, require_GET
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.contrib.auth.models import Group
@@ -28,8 +29,9 @@ logger = logging.getLogger('django')
 
 
 @require_GET
-def help_page(request):
-    return render(request, 'ajuda.html')
+@ensure_csrf_cookie
+def touch(request):
+    return HttpResponse(status=204)
 
 
 @require_POST
