@@ -10,7 +10,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>{% trans "Vendedor Online Internacional" %} - {{ title }}</title>
+    <title>{% trans "Maquina de Vendas USA - Redirecionamento" %} {{ title }}</title>
 
     <!-- Bootstrap -->
     <link href="/static/externo/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -46,13 +46,13 @@
 
     {% block specific_scripts %}{% endblock %}
 
-    <!-- begin olark code -->
+    <!-- begin olark code
     <script type="text/javascript" async>
         ;(function(o,l,a,r,k,y){if(o.olark)return; r="script";y=l.createElement(r);r=l.getElementsByTagName(r)[0]; 	y.async=1;y.src="//"+a;r.parentNode.insertBefore(y,r); y=o.olark=function(){k.s.push(arguments);k.t.push(+new 	Date)}; y.extend=function(i,j){y("extend",i,j)}; y.identify=function(i){y("identify",k.i=i)}; 	y.configure=function(i,j){y("configure",i,j);k.c[i]=j}; k=y._={s:[],t:[+new Date],c:{},l:a}; })	(window,document,"static.olark.com/jsclient/loader.js");
         /* custom configuration goes here (www.olark.com/documentation) */
         olark.identify('3914-306-10-7635');
     </script>
-    <!-- end olark code -->
+     end olark code -->
 
 </head>
 
@@ -68,8 +68,7 @@
                 </button>
                 <a href="/" class="navbar-brand page-scroll">
                     {% if LANGUAGE_CODE == 'pt-br' %}
-                    <img src="/static/img/logo_sup.png" />
-                    <img src="/static/img/logo_bottom.png" width="175" />
+                        <img class="logo-img-plataforma" src="/static/img/logo-maquina-vendas.png" />
                     {% else %}
                     <img src="/static/img/logo-en.png" style="width: 275px;" />
                     {% endif %}
@@ -130,7 +129,7 @@
                     </li>
 
                     <li class="tutorial adress">
-                        <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fa fa-map-marker"></i> {% trans "Ver Endereço VOI" %}</a>
+                        <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fa fa-map-marker"></i> {% trans "Ver Endereço Maquina de Vendas" %}</a>
                     </li>
 
                     {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
@@ -155,7 +154,7 @@
                     {% endif %}
                     {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
                     <li class="dropdown ">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envios EUA" %} <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envios" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             {% if user|has_shipment_perm:'view_shipments' %}
                             <li class="{% block listashipment %}{% endblock %}">
@@ -214,7 +213,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <span class="copyright">{% trans "Copyright &copy; Vendedor Online 2017" %}</span>
+                    <span class="copyright">{% trans "Copyright &copy; Maquina de Vendas USA 2017" %}</span>
                 </div>
                 <div class="col-md-3">
 
@@ -280,7 +279,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">{% trans "Endereço VOI" %}</h4>
+                    <h4 class="modal-title">{% trans "Endereço Maquina de Vendas USA" %}</h4>
                 </div>
                 <div class="modal-body">
                     <p><strong>{% trans "Veja abaixo o nosso endereço para o qual você deve enviar seus produtos antes que eles sejam enviados para Amazon/Ebay." %}</strong></p>
