@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from sambalife.forms import UserRegistrationForm, UserLoginForm, UserForgotPasswordForm, UserResetPasswordForm
 from utils.helper import send_email, send_email_basic_template_bcc_admins
+from utils.models import Params
 from django.utils import translation
 from django.utils.translation import string_concat, ugettext as _
 from django.conf import settings
@@ -328,5 +329,14 @@ def send_email_contact_us(request, name, email, tel, message, async=False):
     email_body = format_html(html_format, *texts)
     ctx = Context({'protocol': 'https', 'email_body': email_body})
     message = loader.get_template('email/contact-us.html').render(ctx, request)
-    email_tuple = (email_title, message, None)
+    try:
+        params = Params.objects.first()
+        if params.contact_us_mail_to:
+            mail_to = [params.contact_us_mail_to]
+        else:
+            raise Params.DoesNotExist()
+    except Params.DoesNotExist:
+        mail_to = None
+    logger.debug(mail_to)
+    email_tuple = (email_title, message, mail_to)
     send_email((email_tuple,), bcc_admins=True, async=async, raise_exception=True)
