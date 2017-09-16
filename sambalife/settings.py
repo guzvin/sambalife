@@ -110,7 +110,7 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net', 'fbaprepmaster.com']
+ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net', 'fbaprepmaster.com', '.maquinadevendasusa.com']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -268,6 +268,7 @@ LANGUAGES = [
 LANGUAGES_DOMAINS = {
     'vendedorinternacional.net': 'pt-br',
     'fbaprepmaster.com': 'en-us',
+    'redirecionamento.maquinadevendasusa.com': 'pt-br',
 }
 
 # Static files (CSS, JavaScript, Images)
@@ -287,6 +288,7 @@ CSRF_TRUSTED_ORIGINS = (
     'localhost',
     'vendedorinternacional.net',
     'fbaprepmaster.com',
+    '.maquinadevendasusa.com',
 )
 
 PASSWORD_RESET_TIMEOUT_DAYS = 2

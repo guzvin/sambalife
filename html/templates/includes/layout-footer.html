@@ -46,14 +46,6 @@
 
     {% block specific_scripts %}{% endblock %}
 
-    <!-- begin olark code -->
-    <script type="text/javascript" async>
-        ;(function(o,l,a,r,k,y){if(o.olark)return; r="script";y=l.createElement(r);r=l.getElementsByTagName(r)[0]; 	y.async=1;y.src="//"+a;r.parentNode.insertBefore(y,r); y=o.olark=function(){k.s.push(arguments);k.t.push(+new 	Date)}; y.extend=function(i,j){y("extend",i,j)}; y.identify=function(i){y("identify",k.i=i)}; 	y.configure=function(i,j){y("configure",i,j);k.c[i]=j}; k=y._={s:[],t:[+new Date],c:{},l:a}; })	(window,document,"static.olark.com/jsclient/loader.js");
-        /* custom configuration goes here (www.olark.com/documentation) */
-        olark.identify('3914-306-10-7635');
-    </script>
-    <!-- end olark code -->
-
 </head>
 
 <body id="page-top" class="lista-usuarios sistema">
@@ -69,8 +61,7 @@
                 </button>
                 <a href="/" class="navbar-brand page-scroll">
                     {% if LANGUAGE_CODE == 'pt-br' %}
-                    <img src="/static/img/logo_sup.png" />
-                    <img src="/static/img/logo_bottom.png" width="175" />
+                    <img src="/static/img/logo-maquina-vendas.png" />
                     {% else %}
                     <img src="/static/img/logo-en.png" style="width: 275px;" />
                     {% endif %}
@@ -137,7 +128,7 @@
                     {% endif %}
                     {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
                     <li class="dropdown ">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envios EUA" %} <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envios" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             {% if user|has_shipment_perm:'view_shipments' %}
                             <li class="{% block listashipment %}{% endblock %}">

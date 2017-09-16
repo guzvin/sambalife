@@ -49,8 +49,8 @@
                         {% select_status filter_values '99' as archived_filter_status %}
                         <select class="form-control" id="filtro-status" name="status">
                           <option value="">{{ status }}</option>
-                          <option value="1" {{ sent_filter_status }}>{% trans "Encaminhado MVUSA" %}</option>
-                          <option value="2" {{ in_stock_filter_status }}>{% trans "Em Estoque MVUSA" %}</option>
+                          <option value="1" {{ sent_filter_status }}>{% trans "Encaminhado VOI" %}</option>
+                          <option value="2" {{ in_stock_filter_status }}>{% trans "Em Estoque VOI" %}</option>
                           <option value="99" {{ archived_filter_status }}>{% trans "Arquivado" %}</option>
                         </select>
                     </div>
@@ -181,8 +181,8 @@
                         {% check_status product '99' as archived_status %}
                         <div class="coluna-form-status col-md-12">
                             <label class="label-status"><i class="fa fa-pencil"></i> {% trans "Alterar Status" %}:</label><br><br>
-                            <label><input type="radio" name="product_status" value="1" data-current-status="{{ product.status }}" {{ sent_status }} /> {% trans "Encaminhado MVUSA" %}</label><br>
-                            <label><input type="radio" name="product_status" value="2" data-current-status="{{ product.status }}" {{ in_stock_status }} /> {% trans "Em Estoque MVUSA" %}</label><br>
+                            <label><input type="radio" name="product_status" value="1" data-current-status="{{ product.status }}" {{ sent_status }} /> {% trans "Encaminhado VOI" %}</label><br>
+                            <label><input type="radio" name="product_status" value="2" data-current-status="{{ product.status }}" {{ in_stock_status }} /> {% trans "Em Estoque VOI" %}</label><br>
                             <label><input type="radio" name="product_status" value="99" data-current-status="{{ product.status }}" {{ archived_status }} /> {% trans "Arquivado" %}</label><br>
                         </div>
                         <div class="coluna-form-status col-md-12">
