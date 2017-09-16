@@ -332,7 +332,7 @@ def send_email_contact_us(request, name, email, tel, message, async=False):
     try:
         params = Params.objects.first()
         if params.contact_us_mail_to:
-            mail_to = [params.contact_us_mail_to]
+            mail_to = params.contact_us_mail_to.split(';')
         else:
             raise Params.DoesNotExist()
     except Params.DoesNotExist:
