@@ -11,8 +11,8 @@ logger = logging.getLogger('django')
 
 class Params(models.Model):
     id = models.AutoField(primary_key=True)
-    contact_us_mail_to = models.EmailField(_('E-mail fale conosco'), null=True, blank=True,
-                                           help_text=_('Separado por ponto e vírgula.'))
+    contact_us_mail_to = models.CharField(_('E-mail fale conosco'), null=True, blank=True, max_length=500,
+                                          help_text=_('Separado por ponto e vírgula.'))
     amazon_fee = models.DecimalField(_('Tarifa Amazon'), max_digits=12, decimal_places=2, default=0.99)
     shipping_cost = models.DecimalField(_('Custo de Envio para Amazon'), max_digits=12, decimal_places=2, default=0.30)
     fgr_cost = models.DecimalField(_('Valor Fábio/Gustavo/Roberto'), max_digits=12, decimal_places=2, default=0.29)
