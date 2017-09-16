@@ -212,12 +212,13 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('id', 'email', 'is_superuser', 'is_active', 'is_verified', 'partner', 'language_code')
+    list_display = ('id', 'email', 'date_joined', 'is_superuser', 'is_active', 'is_verified', 'partner', 'language_code')
     list_display_links = ('id', 'email',)
     list_filter = ('is_superuser', 'is_active', 'is_verified', 'partner', 'language_code')
-    # readonly_fields = ('partner',)
+    readonly_fields = ('date_joined',)
     fieldsets = (
-        (None, {'fields': ('email', 'language_code', 'partner', 'password', 'is_verified', 'is_active', 'password1', 'password2')}),
+        (None, {'fields': ('date_joined', 'email', 'language_code', 'partner', 'password', 'is_verified', 'is_active',
+                           'password1', 'password2')}),
         (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
         (_('Permissões'), {'fields': ('is_superuser',)}),
         (_('Grupos'), {'fields': ('groups',)}),
@@ -227,8 +228,8 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'language_code', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone', 'is_verified',
-                       'is_active', 'is_superuser', 'password1', 'password2', 'groups')}
+            'fields': ('email', 'language_code', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
+                       'is_verified', 'is_active', 'is_superuser', 'password1', 'password2', 'groups')}
          ),
     )
 
