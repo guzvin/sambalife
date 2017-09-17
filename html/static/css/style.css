@@ -852,7 +852,7 @@ body {
     margin: auto;
     padding: 10px 30px 0px;
     box-shadow: 3px 3px 20px 0px #000;
-    height: 500px;
+    height: 560px;
 }
 
 #login-box img{
@@ -905,7 +905,13 @@ label.error {
     text-align: center;
     padding: 10px 0;
     margin-top: 20px;
-    width: 93%;
+    width: 100%;
+}
+
+.bottom-login{
+    border-top: 1px solid #cecece;
+    padding-top: 12px;
+    margin-top: 20px;
 }
 
 body.login{
