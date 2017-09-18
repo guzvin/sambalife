@@ -150,7 +150,7 @@
                     {% endif %}
                     {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
                     <li class="dropdown ">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envios" %} <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envios Amazon" %} <b class="caret"></b> <span title="Novos envios cadastrados" class="suspenso">29</span></a>
                         <ul class="dropdown-menu">
                             {% if user|has_shipment_perm:'view_shipments' %}
                             <li class="{% block listashipment %}{% endblock %}">
@@ -168,6 +168,21 @@
                         </ul>
                     </li>
                     {% endif %}
+
+                    <!-- Novo item de menu Merchant -->
+                    <li class="dropdown ">
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Envios Merchant" %} <b class="caret"></b><span title="Novos envios cadastrados" class="suspenso">29</span> </a>
+                        <ul class="dropdown-menu">
+                            <li class="{% block listashipmentmerchant %}{% endblock %}">
+                                <a href="#"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista de Envios" %}</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="{% block criarshipmentmerchant %}{% endblock %}">
+                                <a href="#"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>
+                            </li>
+                        </ul>
+                    </li>
+
 {% comment %}
                     <!-- Menu envio Brasil-->
 

@@ -111,12 +111,24 @@
             <div class="col-md-4">
                 <label><i class="fa fa-fw fa-bar-chart"></i> {% trans "Valores" %}:</label><br><br>
                 <p><strong><i class="fa fa-fw fa-list-ol"></i> {% trans "Total de Produtos" %}: </strong><span id="totalProducts">{{ shipment.total_products }}</span> </p>
+
+                <!-- Campo desconto visao usuario -->
+                <p><strong><i class="fa fa-fw fa-minus-square"></i> {% trans "Desconto" %}: </strong> U$ <span id="DescCost">5,99</span></p>
+
                 <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">{{ shipment.cost|floatformat:2|localize }}</span></p>
             </div>
             <div class="col-md-4">
                 <p><strong><i class="fa fa-fw fa-calendar"></i> {% trans "Data de Envio" %}: </strong></p>
                 <div class="form-group">
                     {{ shipment.send_date }}
+                </div>
+
+                <!-- Campo cadastro de desconto visao admin -->
+                <br>
+                <p><strong><i class="fa fa-fw fa-minus-square"></i> {% trans "Cadastro de Desconto" %}: </strong></p>
+                <div class="form-group">
+                    <input placeholder="Valor desconto..." name="Desconto" class="form-control menor" id="Desconto" value="" aria-required="true" type="text">
+                    <a href="#" class="btn btn-success"><i class="fa fa-fw fa-retweet"></i></a>
                 </div>
             </div>
             <div class="col-md-3">
