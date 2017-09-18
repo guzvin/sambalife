@@ -855,6 +855,12 @@ body {
     height: 560px;
 }
 
+.previsao{
+    color: #777;
+    font-size: 12px;
+    font-weight: normal;
+}
+
 #login-box img{
     margin: 20px auto 35px auto;
     display: block;
