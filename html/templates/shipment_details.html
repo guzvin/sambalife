@@ -179,7 +179,7 @@
                     </div>
                     <div class="col-md-5">
                         <label><i class="fa fa-fw fa-info-circle"></i> {% trans "Informações do pacote" %}:</label><br><br>
-                        <p>{{ weight }}: {{ package.weight.value|unlocalize }} {% unit_weight_display 1 abbreviate=True %} / {{ length }}: {{ package.length.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ width }}: {{ package.width.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ height }}: {{ package.height.value|unlocalize }}{% unit_length_display 3 abbreviate=True %}</p>
+                        <p><strong>{{ weight }}:</strong> {{ package.weight.value|unlocalize }} {% unit_weight_display 1 abbreviate=True %} / <strong>{% trans "Dimensões" %} - </strong> {{ length }}: {{ package.length.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ width }}: {{ package.width.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ height }}: {{ package.height.value|unlocalize }}{% unit_length_display 3 abbreviate=True %}</p>
                         <input type="hidden" name="{{ package.weight.html_name }}" value="{{ package.weight.value|unlocalize }}">
                         <input type="hidden" name="{{ package.length.html_name }}" value="{{ package.length.value|unlocalize }}">
                         <input type="hidden" name="{{ package.width.html_name }}" value="{{ package.width.value|unlocalize }}">
@@ -297,27 +297,35 @@
                             {% endfor %}
                             <span class="badge">{% trans "em" %} {% unit_weight_display 1 %}</span>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <input type="text" placeholder="{{ package_form.length.label }}..." name="{{ package_form.length.html_name }}" class="form-control required-number-validate" id="{{ package_form.length.id_for_label }}" value="{% if package_form.length.value %}{{ package_form.length.value|unlocalize }}{% endif %}" />
                             {% for error in package_form.length.errors %}
                               <label id="{{ package_form.length.id_for_label }}-error" class="error" for="{{ package_form.length.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
                             <span class="badge profun">{% trans "em" %} {% unit_length_display 3 %}</span><br><br>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <input type="text" placeholder="{{ package_form.width.label }}..." name="{{ package_form.width.html_name }}" class="form-control required-number-validate" id="{{ package_form.width.id_for_label }}" value="{% if package_form.width.value %}{{ package_form.width.value|unlocalize }}{% endif %}" />
                             {% for error in package_form.width.errors %}
                               <label id="{{ package_form.width.id_for_label }}-error" class="error" for="{{ package_form.width.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
                             <span class="badge largura">{% trans "em" %} {% unit_length_display 3 %}</span>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <input type="text" placeholder="{{ package_form.height.label }}..." name="{{ package_form.height.html_name }}" class="form-control required-number-validate" id="{{ package_form.height.id_for_label }}" value="{% if package_form.height.value %}{{ package_form.height.value|unlocalize }}{% endif %}" />
                             {% for error in package_form.height.errors %}
                               <label id="{{ package_form.height.id_for_label }}-error" class="error" for="{{ package_form.height.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
                             <span class="badge altura">{% trans "em" %} {% unit_length_display 3 %}</span>
                         </div>
+
+                        <!-- Campo localizacao adm -->
+
+                        <div class="col-md-3">
+                            <input placeholder="Localização..." name="local" class="form-control" id="local" value="" aria-required="true" type="text">
+                            <span class="badge altura">Localização na warehouse</span>
+                        </div>
+
                         {% if forloop.first is False %}
                         <div class="col-md-2">
                             <a class="rem-track btn btn-danger rem-pacote-shipment inline-deletelink" title="{{ packages.deleteText }}" href="#"><i class="fa fa-fw fa-times"></i></a>
