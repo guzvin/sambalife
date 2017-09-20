@@ -901,6 +901,10 @@ body {
     font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+.send-btn-async{
+    margin-left: 15px;
+}
+
 #login-box input[type="submit"]{
     background: #DC3438;
     color: #fff;
@@ -1155,12 +1159,12 @@ label.titulo-pct span{
 .status{
     background: #ddd;
     border-radius: 15px;
-    width: 409px;
+    width: 475px;
     height: 414px;
     position: absolute;
     padding: 20px;
-    top: -459px;
-    right: -31px;
+    top: -470px;
+    right: 2px;
     text-align: left;
 }
 .status:after{
