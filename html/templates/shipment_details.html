@@ -180,6 +180,11 @@
                     <div class="col-md-5">
                         <label><i class="fa fa-fw fa-info-circle"></i> {% trans "Informações do pacote" %}:</label><br><br>
                         <p><strong>{{ weight }}:</strong> {{ package.weight.value|unlocalize }} {% unit_weight_display 1 abbreviate=True %} / <strong>{% trans "Dimensões" %} - </strong> {{ length }}: {{ package.length.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ width }}: {{ package.width.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ height }}: {{ package.height.value|unlocalize }}{% unit_length_display 3 abbreviate=True %}</p>
+
+                        <!-- info localizacao visao usuario -->
+
+                        <p><strong>{% trans "Localização na warehouse" %}: </strong> Prateleira A32</p>
+
                         <input type="hidden" name="{{ package.weight.html_name }}" value="{{ package.weight.value|unlocalize }}">
                         <input type="hidden" name="{{ package.length.html_name }}" value="{{ package.length.value|unlocalize }}">
                         <input type="hidden" name="{{ package.width.html_name }}" value="{{ package.width.value|unlocalize }}">
