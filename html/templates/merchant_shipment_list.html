@@ -1,0 +1,7 @@
+{% extends 'base_shipment_list.html' %}
+{% load i18n permissions users shipments commons %}
+{% block merchant_shipment %}active{% endblock %}
+
+{% block list_title %}<h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Lista de Envios Merchant" %}</h1>{% endblock %}
+
+{% block add_button %}<a class="btn btn-default" href="{% url 'merchant_shipment_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>{% endblock %}

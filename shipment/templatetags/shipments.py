@@ -1,5 +1,6 @@
 from django import template
-from shipment.models import Package
+from shipment.models import Package, Estimates
+from datetime import timedelta
 
 register = template.Library()
 
@@ -38,3 +39,20 @@ def unit_length_display(unit, **kwargs):
 @register.simple_tag
 def render_payment_button(paypal_form, data):
     return paypal_form.render_button(data=data)
+
+
+@register.simple_tag
+def etc(initial_date, **kwargs):
+    if initial_date is None or 'estimate' not in kwargs:
+        return None
+    try:
+        estimates = Estimates.objects.first()
+        if kwargs['estimate'] == 'preparation':
+            delta_t = estimates.preparation
+        elif kwargs['estimate'] == 'shipment':
+            delta_t = estimates.shipment
+        else:
+            return None
+        return initial_date + timedelta(hours=delta_t)
+    except Estimates.DoesNotExist:
+        return None

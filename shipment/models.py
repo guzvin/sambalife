@@ -42,13 +42,22 @@ class Shipment(models.Model):
     )
     status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES)
     pdf_1 = models.FileField(_('Etiqueta do(s) Produto(s)'), upload_to=user_directory_path,
-                             validators=[validate_file_extension])
+                             validators=[validate_file_extension], null=True)
     is_archived = models.BooleanField(_('Arquivado'), default=False)
     is_canceled = models.BooleanField(_('Cancelado'), default=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     accounting = models.ForeignKey(Accounting, verbose_name=_('Fechamento'), on_delete=models.SET_NULL, null=True,
                                    blank=True)
     is_sandbox = models.BooleanField(_('Sandbox'), default=False)
+    TYPE_CHOICES = (
+        (1, _('MF Amazon')),
+        (2, _('MF eBay')),
+        (3, _('Outro')),
+    )
+    type = models.SmallIntegerField(_('Tipo'), choices=TYPE_CHOICES, null=True)
+    created_date = models.DateTimeField(_('Data de criação'), auto_now_add=True, null=True)
+    information = models.TextField(_('Observação'), null=True, blank=True)
+    payment_date = models.DateTimeField(_('Data de pagamento'), null=True)
 
     class Meta:
         verbose_name = _('Envio')
@@ -199,3 +208,16 @@ class CostFormula(models.Model):
 
     def __str__(self):
         return str(_('Fórmula de Envio'))
+
+
+class Estimates(models.Model):
+    id = models.AutoField(primary_key=True)
+    preparation = models.IntegerField(_('Preparação para Envio'), help_text=_('Valor em horas'), default=48)
+    shipment = models.IntegerField(_('Envio'), help_text=_('Valor em horas'), default=24)
+
+    class Meta:
+        verbose_name = _('Estimativa')
+        verbose_name_plural = _('Estimativas')
+
+    def __str__(self):
+        return str(_('Estimativas'))

@@ -42,6 +42,8 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             EMAIL_HOST_PASSWORD = key_value_pair[1]
         elif key_value_pair[0] == 'email_host_en':
             EMAIL_HOST_EN = key_value_pair[1]
+        elif key_value_pair[0] == 'email_port_en':
+            EMAIL_PORT_EN = key_value_pair[1]
         elif key_value_pair[0] == 'email_user_en':
             EMAIL_HOST_USER_EN = key_value_pair[1]
         elif key_value_pair[0] == 'email_password_en':
@@ -110,7 +112,7 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net', 'fbaprepmaster.com', '.maquinadevendasusa.com']
+ALLOWED_HOSTS = ['localhost', 'vendedorinternacional.net', 'prepshiptool.com', '.maquinadevendasusa.com']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -267,7 +269,7 @@ LANGUAGES = [
 
 LANGUAGES_DOMAINS = {
     'vendedorinternacional.net': 'pt-br',
-    'fbaprepmaster.com': 'en-us',
+    'prepshiptool.com': 'en-us',
     'redirecionamento.maquinadevendasusa.com': 'pt-br',
 }
 
@@ -287,7 +289,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CSRF_TRUSTED_ORIGINS = (
     'localhost',
     'vendedorinternacional.net',
-    'fbaprepmaster.com',
+    'prepshiptool.com',
     '.maquinadevendasusa.com',
 )
 

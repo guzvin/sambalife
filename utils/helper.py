@@ -147,8 +147,8 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         connection.password = settings.EMAIL_HOST_PASSWORD_EN
         connection.username = settings.EMAIL_HOST_USER_EN
         connection.host = settings.EMAIL_HOST_EN
-        connection.port = settings.EMAIL_PORT
-        connection.use_tls = settings.EMAIL_USE_TLS
+        connection.port = settings.EMAIL_PORT_EN
+        connection.use_ssl = True
     email = EmailThread(
         email_data_tuple,
         email_from,

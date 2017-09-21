@@ -76,8 +76,8 @@ def user_login(request):
                     return HttpResponseRedirect('/product/stock/')
             else:
                 form.add_error(None, _('Não foi possível realizar seu login. Caso tenha esquecido sua senha, '
-                                       'clique na opção Esqueci Minha Senha. Em caso de dúvida <a href=\'/#contact\'>'
-                                       'fale conosco</a>.'))
+                                       'clique na opção Esqueci Minha Senha. Em caso de dúvida '
+                                       '<a href=\'/ajuda.html#contact\'>fale conosco</a>.'))
         return render(request, 'login.html', {'form': form, 'success': False, 'status_code': 400},
                       status=400)
 
@@ -109,7 +109,8 @@ def user_forgot_password(request):
                 return render(request, 'login.html', {'success': True, 'expiry': settings.PASSWORD_RESET_TIMEOUT_DAYS})
             else:
                 form.add_error(None, _('Conta cadastrada, porém o usuário ainda não foi liberado para acesso '
-                                       'ao sistema. Em caso de dúvida <a href=\'/#contact\'>fale conosco</a>.'))
+                                       'ao sistema. Em caso de dúvida '
+                                       '<a href=\'/ajuda.html#contact\'>fale conosco</a>.'))
         except user_model.DoesNotExist:
             form.add_error(None, _('Não foi encontrada conta ativa para este login.'))
     return render(request, 'login.html', {'form': form, 'success': False, 'status_code': 400},
@@ -157,7 +158,8 @@ def user_registration(request, pid=None):
                 user = user_model.objects.get(username_internal=''.join([email, '-', translation.get_language()]))
                 if not user.is_active:
                     form.add_error(None, _('E-mail já cadastrado, porém o usuário ainda não foi liberado para acesso '
-                                           'ao sistema. Em caso de dúvida <a href=\'/#contact\'>fale conosco</a>.'))
+                                           'ao sistema. Em caso de dúvida '
+                                           '<a href=\'/ajuda.html#contact\'>fale conosco</a>.'))
                 else:
                     form.add_error(None, _('E-mail já cadastrado, faça o <a href=\'/login\'>login</a> ou, caso '
                                            'tenha esquecido sua senha, <a href=\'/#\'>clique aqui</a>.'))

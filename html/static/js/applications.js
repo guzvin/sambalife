@@ -674,7 +674,7 @@
             }
             sessionStorage.setItem('shipment_products', JSON.stringify(shipmentProducts));
         });
-        $('#btn-add-shipment').click(function()
+        $('#btn-add-shipment, #btn-add-merchant-shipment').click(function()
         {
             var get = true;
             for(var shipmentProduct in shipmentProducts)
@@ -686,11 +686,12 @@
             }
             if(get)
             {
-                window.location.href = shipmentForm.attr('action');
+                window.location.href = $(this).data('action-url');
             }
             else
             {
 //                sessionStorage.removeItem('shipment_products');
+                shipmentForm.attr('action', $(this).data('action-url'));
                 shipmentForm.submit();
             }
         });
@@ -1131,6 +1132,66 @@
                 $('#contact-us-feedback')[0].innerHTML = gettext('Sorry but we couldn\'t send your message, try again in a moment.');
                 $('.loading').hide();
                 $this.removeClass('nosubmit');
+            });
+        });
+    }
+
+    if($('form#form-save-merchant-shipment')[0])
+    {
+        $('button#send-btn').on('click', function (e)
+        {
+            if($(this).hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $(this).addClass('nosubmit');
+        });
+
+        $('form#form-save-merchant-shipment').validate(
+        {
+            submitHandler: function(form)
+            {
+                $('.loading').show();
+                sessionStorage.removeItem('shipment_products');
+                form.submit()
+            },
+            invalidHandler: function(event, validator)
+            {
+                $('button#send-btn').removeClass('nosubmit');
+            },
+            onfocusout: false,
+            onkeyup: false,
+            onclick: false
+        });
+
+        window.addRule = function(element, rules)
+        {
+            element.rules('add', rules);
+        }
+
+        $('.quantity_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+                positiveNumber: true,
+            });
+        });
+        $('.send_date_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+                date: true,
+                dateLessThanOrEqualNow: true,
+            });
+        });
+        $('.type_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
             });
         });
     }

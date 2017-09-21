@@ -15,6 +15,7 @@ from django.forms.utils import flatatt
 from django.db import transaction
 from django.utils import formats
 from django.utils.encoding import force_text
+from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
 from utils import helper
@@ -75,6 +76,16 @@ def my_formfield_callback(f, **kwargs):
 @login_required
 @require_http_methods(["GET"])
 def shipment_list(request):
+    return list_shipment(request, 'shipment_list.html')
+
+
+@login_required
+@require_http_methods(["GET"])
+def merchant_shipment_list(request):
+    return list_shipment(request, 'merchant_shipment_list.html')
+
+
+def list_shipment(request, template_name):
     if has_shipment_perm(request.user, 'view_shipments'):
         is_user_perm = has_user_perm(request.user, 'view_users')
         queries = []
@@ -121,6 +132,10 @@ def shipment_list(request):
         logger.debug(str(len(queries)))
         if is_user_perm is False:
             queries.append(Q(user=request.user))
+        if template_name == 'shipment_list.html':
+            queries.append(Q(type=None))
+        else:
+            queries.append(~Q(type=None))
         is_filtered = len(queries) > 0
         if is_filtered:
             query = queries.pop()
@@ -151,8 +166,8 @@ def shipment_list(request):
         context_data['custom_modal'] = True
         context_data['modal_title'] = _('Mensagem importante!')
         context_data['modal_message'] = _('O envio foi removido, pois seus produtos não estavam mais disponíveis em '
-                                            'estoque.')
-    return render(request, 'shipment_list.html', context_data)
+                                          'estoque.')
+    return render(request, template_name, context_data)
 
 
 @login_required
@@ -198,7 +213,9 @@ def shipment_details(request, pid=None):
             # Preparando para Envio
             if request.method == 'POST' and request.POST.get('add_shipment_package'):
                 if has_shipment_perm(request.user, 'add_package'):
-                    package_formset = shipment_add_package(request, PackageFormSet, pid)
+                    _shipment_details.information = request.POST.get('shipment_extra_info')
+                    package_formset = shipment_add_status_one_data(request, PackageFormSet,
+                                                                   _shipment_details.information, pid)
                     if isinstance(package_formset, HttpResponse):
                         return package_formset
                     context_data['packages'] = package_formset
@@ -216,6 +233,8 @@ def shipment_details(request, pid=None):
             novalidate_fields = []
             if _shipment_details.status != 2:
                 novalidate_fields.append('pdf_2')
+            if _shipment_details.type:
+                novalidate_fields.append('warehouse')
             package_kwargs = {'renderEmptyForm': False, 'noValidateFields': novalidate_fields}
             if _shipment_details.status == 3:
                 # Pagamento Autorizado
@@ -370,7 +389,10 @@ def shipment_details(request, pid=None):
         if package_formset and 'packages' not in context_data:
             context_data['packages'] = package_formset
         logger.debug(context_data)
-        return render(request, 'shipment_details.html', context_data)
+        if _shipment_details.type:
+            return render(request, 'merchant_shipment_details.html', context_data)
+        else:
+            return render(request, 'shipment_details.html', context_data)
     return HttpResponseForbidden()
 
 
@@ -499,19 +521,18 @@ def edit_warehouse(package_formset, pid):
     return form_has_changed
 
 
-def shipment_add_package(request, PackageFormSet, pid=None):
+def shipment_add_status_one_data(request, PackageFormSet, shipment_extra_info, pid=None):
     if has_shipment_perm(request.user, 'view_shipments') is False or \
                     has_shipment_perm(request.user, 'add_package') is False:
         return HttpResponseForbidden()
     logger.debug('@@@@@@@@@@@@ ADD PACKAGE @@@@@@@@@@@@@@')
-    kwargs = {'addText': _('Adicionar pacote'), 'deleteText': _('Remover pacote'), 'allowEmptyForm': False,
-              'noValidateFields': ['pdf_2']}
     try:
         with transaction.atomic():
             shipment = Shipment.objects.select_for_update().select_related('user').get(pk=pid, status=1)
+            kwargs = {'addText': _('Adicionar pacote'), 'deleteText': _('Remover pacote'), 'allowEmptyForm': False,
+                      'noValidateFields': ['pdf_2'] if shipment.type is None else ['pdf_2', 'warehouse']}
             package_formset = PackageFormSet(request.POST, instance=shipment, prefix='package_set', **kwargs)
             if package_formset.is_valid():
-                shipment.status = 2
                 shipment_products = Product.objects.filter(shipment=shipment)
                 session_products = request.session.pop('shipment_products', '[]')
                 session_products = json.loads(session_products)
@@ -519,7 +540,12 @@ def shipment_add_package(request, PackageFormSet, pid=None):
                 logger.debug(str(len(session_products)))
                 if len(shipment_products) != len(session_products):
                     raise Product.DoesNotExist('Inconsistent data.')
-                shipment.save(update_fields=['status'])
+                shipment.status = 2
+                if shipment_extra_info:
+                    shipment.information = shipment_extra_info
+                    shipment.save(update_fields=['status', 'information'])
+                else:
+                    shipment.save(update_fields=['status'])
                 packages = package_formset.save()
                 send_email_shipment_add_package(request, shipment, packages)
                 return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
@@ -580,11 +606,15 @@ def shipment_status(request, pid=None, op=None):
                     products = shipment[0].product_set.all()
                     ignored_response, cost = calculate_shipment(products, shipment[0].user_id, save_product_price=True)
                     is_sandbox = settings.PAYPAL_TEST or paypal_mode(shipment[0].user)
-                    shipment.update(status=F('status') + 1, cost=cost, is_sandbox=is_sandbox)
+                    shipment.update(status=F('status') + 1, cost=cost, is_sandbox=is_sandbox,
+                                    payment_date=timezone.now())
                 else:
                     shipment.update(status=F('status') + 1)
             elif op == 'backward' and shipment[0].status > 1:
-                shipment.update(status=F('status') - 1)
+                if shipment[0].status == 4:
+                    shipment.update(status=F('status') - 1, payment_date=None)
+                else:
+                    shipment.update(status=F('status') - 1)
     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
 
 
@@ -775,6 +805,89 @@ def shipment_add(request):
 
 
 @login_required
+@require_http_methods(["GET", "POST"])
+def merchant_shipment_add(request):
+    if has_shipment_perm(request.user, 'add_shipment') is False:
+        return HttpResponseForbidden()
+    if request.method == 'POST':
+        if request.POST.get('save_shipment') is None:
+            preselected_products = request.POST.getlist('shipment_product')
+            original_products = OriginalProduct.objects.filter(user=request.user, status=2, quantity__gt=0,
+                                                               pk__in=preselected_products).order_by('id')
+        else:
+            original_products = OriginalProduct.objects.none()
+    else:
+        original_products = OriginalProduct.objects.none()
+    ShipmentFormSet = modelformset_factory(Shipment, fields=('send_date', 'type',), localized_fields=('send_date',),
+                                           min_num=1, max_num=1)
+    ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
+                                                                                                          'product'),
+                                           field_classes={'product': Field},
+                                           widgets={'product': InlineProductWidget},
+                                           formfield_callback=my_formfield_callback,
+                                           extra=original_products.count())
+    kwargs_p = {'addText': _('Adicionar produto'), 'deleteText': _('Remover produto')}
+    logger.debug('@@@@@@@@@@@@ REQUEST METHOD @@@@@@@@@@@@@@')
+    logger.debug(request.method)
+    if request.method == 'GET' and request.GET.get('s') == '1':
+        return render(request, 'merchant_shipment_add.html', {'title': _('Envio Merchant'), 'success': True,
+                                                              'success_message': _('Envio inserido com sucesso.'),
+                                                              'shipment_formset':
+                                                                  ShipmentFormSet(queryset=Shipment.objects.none()),
+                                                              'product_formset':
+                                                                  ProductFormSet(prefix='product_set', **kwargs_p)})
+    logger.debug(str(request.method == 'POST' and request.POST.get('save_shipment')))
+    if request.method == 'POST' and request.POST.get('save_shipment'):
+        shipment_formset = ShipmentFormSet(request.POST, request.FILES, queryset=Shipment.objects.none())
+        product_formset = ProductFormSet(request.POST, prefix='product_set', **kwargs_p)
+        shipment_formset_is_valid = shipment_formset.is_valid()
+        product_formset_is_valid = product_formset.is_valid()
+        if shipment_formset_is_valid and product_formset_is_valid:
+            with transaction.atomic():
+                for shipment_form in shipment_formset:
+                    logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE PROCESS @@@@@@@@@@@@@@')
+                    shipment = shipment_form.save(commit=False)
+                    shipment.user = request.user
+                    shipment.status = 1  # Preparing for Shipment
+                    shipment.total_products = 0
+                    products = product_formset.save(commit=False)
+                    for product in products:
+                        OriginalProduct.objects.filter(pk=product.product_id).update(quantity=
+                                                                                     F('quantity') - product.quantity,
+                                                                                     quantity_partial=
+                                                                                     F('quantity_partial') -
+                                                                                     product.quantity)
+                        original_product = OriginalProduct.objects.get(pk=product.product_id)
+                        product.receive_date = original_product.receive_date
+                        shipment.total_products += product.quantity
+                    ignored_response, cost = calculate_shipment(products, request.user.id)
+                    if cost > 0:
+                        shipment.cost = cost
+                    logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
+                    shipment.save()
+                    product_formset.instance = shipment
+                    logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
+                    product_formset.save()
+                    send_email_merchant_shipment_add(request, shipment, products)
+            return HttpResponseRedirect('%s?s=1' % reverse('merchant_shipment_add'))
+        else:
+            logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
+            logger.warning(shipment_formset.errors)
+            logger.warning(product_formset.errors)
+    else:
+        shipment_formset = ShipmentFormSet(queryset=Shipment.objects.none())
+        product_formset = ProductFormSet(prefix='product_set', **kwargs_p)
+        for subform, data in zip(product_formset.forms, original_products):
+            subform.initial = {
+                'quantity': data.quantity_partial,
+                'product': data
+            }
+    return render(request, 'merchant_shipment_add.html', {'title': _('Envio Merchant'),
+                                                          'shipment_formset': shipment_formset,
+                                                          'product_formset': product_formset})
+
+
+@login_required
 @require_http_methods(["GET"])
 def shipment_calculate(request):
     if has_shipment_perm(request.user, 'add_shipment') is False:
@@ -882,7 +995,8 @@ def shipment_paypal_notification(user_id, shipment_id, ipn_obj):
 
 
 def shipment_paypal_notification_success(request, _shipment_details, ipn_obj, paypal_status_message):
-    updated_rows = Shipment.objects.filter(pk=_shipment_details.id, status=3).update(status=4)
+    updated_rows = Shipment.objects.filter(pk=_shipment_details.id, status=3).update(status=4,
+                                                                                     payment_date=timezone.now())
     if updated_rows == 0:
         logger.error('Zero rows updated.')
         raise helper.PaymentException()
@@ -927,6 +1041,40 @@ def send_email_shipment_add(request, shipment, products, warehouses):
             texts += ('',)
     texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment')]), _('Clique aqui'),
               _('para acessar sua lista de envios.'))
+    email_body = format_html(html_format, *texts)
+    helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
+                                                email_body, async=True)
+
+
+def send_email_merchant_shipment_add(request, shipment, products):
+    email_title = _('Cadastro de Envio Merchant %(number)s') % {'number': shipment.id}
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 3 +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> U$ {}</p>'] +
+                          ['<br>'] +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
+                           '<strong>{}:</strong> {}</p>'
+                           '<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
+                           '<strong>{}:</strong> {}</p>{}'] * len(products) +
+                          ['<p><a href="{}">{}</a> {}</p>'])
+    texts = (_('Seu envio foi cadastrado com sucesso. Seguem abaixo os dados do envio:'),
+             _('Envio'), shipment.id,
+             _('Data de envio'), force_text(formats.localize(shipment.send_date, use_l10n=True)),
+             _('Quantidade de produtos'), shipment.total_products,
+             _('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
+
+    for product in products:
+        texts += (_('Produto'), product.product.name, _('Quantidade'), product.quantity)
+        if product.product.best_before:
+            texts += (mark_safe('<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>%(best_before_label)s:'
+                                '</strong> %(best_before_value)s</p>'
+                                % {'best_before_label': _('Validade'),
+                                   'best_before_value': formats.date_format(product.product.best_before,
+                                                                            "SHORT_DATE_FORMAT")}),)
+        else:
+            texts += ('',)
+    texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('merchant_shipment')]), _('Clique aqui'),
+              _('para acessar sua lista de envios merchant.'))
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
                                                 email_body, async=True)

@@ -167,22 +167,25 @@
                             {% endif %}
                         </ul>
                     </li>
-                    {% endif %}
-
-                    <!-- Novo item de menu Merchant -->
                     <li class="dropdown ">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Envios Merchant" %} <b class="caret"></b><span title="Novos envios cadastrados" class="suspenso">29</span> </a>
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envios Merchant" %} <b class="caret"></b><span title="Novos envios cadastrados" class="suspenso">29</span> </a>
                         <ul class="dropdown-menu">
-                            <li class="{% block listashipmentmerchant %}{% endblock %}">
-                                <a href="#"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista de Envios" %}</a>
+                            {% if user|has_shipment_perm:'view_shipments' %}
+                            <li class="{% block merchant_shipment %}{% endblock %}">
+                                <a href="{% url 'merchant_shipment' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista de Envios" %}</a>
                             </li>
+                            {% endif %}
+                            {% if user|has_shipment_perm:'view_shipments' and user|has_shipment_perm:'add_shipment' %}
                             <li class="divider"></li>
-                            <li class="{% block criarshipmentmerchant %}{% endblock %}">
-                                <a href="#"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>
+                            {% endif %}
+                            {% if user|has_shipment_perm:'add_shipment' %}
+                            <li class="{% block merchant_shipment_add %}{% endblock %}">
+                                <a href="{% url 'merchant_shipment_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>
                             </li>
+                            {% endif %}
                         </ul>
                     </li>
-
+                    {% endif %}
 {% comment %}
                     <!-- Menu envio Brasil-->
 

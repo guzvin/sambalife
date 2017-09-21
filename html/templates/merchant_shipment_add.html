@@ -1,6 +1,6 @@
 {% extends 'includes/layout.html' %}
 {% load i18n l10n shipments %}
-{% block criarshipment %}active{% endblock %}
+{% block merchant_shipment_add %}active{% endblock %}
 
 {% block specific_styles %}
 <link href="/static/css/inlines.css" rel="stylesheet">
@@ -38,7 +38,7 @@
           <br>
           {% endif %}
           <br>
-        <form action="" method="post" id="form-save-shipment" enctype="multipart/form-data">
+        <form action="" method="post" id="form-save-merchant-shipment">
           {% csrf_token %}
             <input type="hidden" name="save_shipment" value="1">
             {{ shipment_formset.management_form }}
@@ -89,13 +89,25 @@
           {% for shipment_form in shipment_formset %}
             {{ shipment_form.id }}
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-12">
+                <label for="{{ shipment_form.type.id_for_label }}"><i class="fa fa-fw fa-ship"></i> {% trans "Canal de venda" %}:</label><br><br>
+                <fieldset id="{{ shipment_form.type.id_for_label }}">
+                    <input type="radio" name="{{ shipment_form.type.html_name }}" value="1"> {% trans "Amazon" %}
+                    <input type="radio" name="{{ shipment_form.type.html_name }}" value="2"> {% trans "eBay" %}
+                    <input type="radio" name="{{ shipment_form.type.html_name }}" value="3" class="type_validate"> {% trans "Outro" %}
+                </fieldset>
+                {% for error in shipment_form.type.errors %}
+                <label id="{{ shipment_form.type.id_for_label }}-error" class="error" for="{{ shipment_form.type.id_for_label }}">{{ error|escape }}</label>
+                {% endfor %}
+                <br><br>
+            </div>
+            <div class="col-md-6">
                 <label><i class="fa fa-fw fa-bar-chart"></i> {% trans "Valores" %}:</label><br><br>
                 <a class="btn btn-default" href="#" id="btn-calculate-shipment"><i class="fa fa-fw fa-calculator"></i> {% trans "Calcular valor do Envio" %}</a><br><br>
                 <p><strong><i class="fa fa-fw fa-list-ol"></i> {% trans "Total de Produtos" %}: </strong><span id="totalProducts">-</span> </p>
                 <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">-</span></p>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <p><strong><i class="fa fa-fw fa-calendar"></i> {{ shipment_form.send_date.label }}: </strong></p>
                 <div class="form-group">
                     {% with formatted_date=shipment_form.send_date.value|date:'SHORT_DATE_FORMAT' %}
@@ -106,54 +118,8 @@
                       {% endfor %}
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Upload/Download Arquivos" %}:</label><br><br>
-                    <label>{{ shipment_form.pdf_1.label }}:</label>{{ shipment_form.pdf_1 }}
-                    {% for error in shipment_form.pdf_1.errors %}
-                        <label id="{{ shipment_form.pdf_1.id_for_label }}-error" class="error" for="{{ shipment_form.pdf_1.id_for_label }}">{{ error|escape }}</label>
-                    {% endfor %}
-                </div>
-            </div>
           </div>
           {% endfor %}
-          <hr />
-          <div class="row">
-            <div class="col-md-12">
-                <h4><i class="fa fa-fw fa-dropbox"></i> {% trans "Informações sobre destino dos produtos (Warehouses)" %}</h4><br>
-            </div>
-            <div class="lista-warehouses js-inline-admin-formset" id="{{ warehouse_formset.prefix }}-group"
-                data-inline-type="stacked"
-                data-inline-formset="{{ warehouse_formset.inline_formset_data }}">
-                {% for warehouse_form in warehouse_formset %}
-                {{ warehouse_form.id }}
-                <div class="warehouse col-md-6 inline-related {% if forloop.last %}empty-form{% endif %}"
-                    id="{{ warehouse_formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
-                    <label for="{{ warehouse_form.name.id_for_label }}" class="inline_label">
-                        {{ warehouse_form.name.label }} #{{ forloop.counter }}
-                    </label>
-                    {{ warehouse_form.shipment }}
-                    <input type="text" class="form-control warehouse_validate required-validate" id="{{ warehouse_form.name.id_for_label }}" name="{{ warehouse_form.name.html_name }}" value="{% if warehouse_form.name.value %}{{ warehouse_form.name.value }}{% endif %}" placeholder="{% trans 'Local de envio dos produtos...' %}" />
-                    {% for error in warehouse_form.name.errors %}
-                        <label id="{{ warehouse_form.name.id_for_label }}-error" class="error" for="{{ warehouse_form.name.id_for_label }}">{{ error|escape }}</label>
-                    {% endfor %}
-                    <br>
-                    <textarea class="form-control textarea-wh wh-ck" name="{{ warehouse_form.description.html_name }}" id="{{ warehouse_form.description.id_for_label }}" style="visibility: hidden; display: none;">{% if warehouse_form.description.value %}{{ warehouse_form.description.value }}{% endif %}</textarea>
-                    {% if user|has_shipment_perm:'delete_warehouse' and warehouse_formset.can_delete %}
-                        {% if forloop.first is False %}
-                        <div class="">
-                            <a class="rem-wh btn btn-danger inline-deletelink" title="{{ warehouse_formset.deleteText }}" href="#"><i class="fa fa-fw fa-times"></i> {{ warehouse_formset.deleteText }}</a>
-                        </div>
-                        {% endif %}
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-            <div class="col-md-12"><br>
-                <a class="add-wh btn btn-success {{ warehouse_formset.prefix }}-add-row add-row" title="{{ warehouse_formset.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i>{% trans "Adicionar warehouse" %}</a>
-            </div>
-            <br>
-          </div>
           <div class="row">
             <button class="btn btn-primary filtar-btn alterar-status" id="send-btn" type="submit"><i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}</button><br><br>
             <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br><br>
