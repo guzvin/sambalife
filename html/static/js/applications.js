@@ -223,6 +223,10 @@
                 }
                 return valid;
             }, $.validator.format(gettext('Please enter a date greater than {1}.')));
+            $.validator.addMethod('productsNotEmpty', function (value, element)
+            {
+                return $(element).val() === '1';
+            });
         }
 
         $.extend(
@@ -236,6 +240,7 @@
                 date: gettext('Please enter a valid date.'),
                 dateLessThanOrEqualNow: gettext('Please enter a date less than or equal to today.'),
                 positiveNumber: gettext('Please enter a number greater than zero.'),
+                productsNotEmpty: gettext('You must add products to this shipment.'),
             }
         );
     }
@@ -715,6 +720,7 @@
 
         $('form#form-save-shipment').validate(
         {
+            ignore: '#id_product_set-__prefix__-quantity, #id_warehouse_set-__prefix__-name',
             submitHandler: function(form)
             {
                 $('.loading').show();
@@ -724,6 +730,7 @@
             invalidHandler: function(event, validator)
             {
                 $('button#send-btn').removeClass('nosubmit');
+                $('<label id="send-btn-error" class="error" for="send-btn">' + gettext('Unable to save, fix errors above to continue.') + '</label>').insertAfter('button#send-btn');
             },
             onfocusout: false,
             onkeyup: false,
@@ -766,7 +773,13 @@
                 required: true,
             });
         });
-
+        $('.products_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                productsNotEmpty: true,
+            });
+        });
     }
 
     if($('form.form-filter')[0] && $('ul.pagination')[0])
@@ -1150,6 +1163,7 @@
 
         $('form#form-save-merchant-shipment').validate(
         {
+            ignore: '#id_product_set-__prefix__-quantity',
             submitHandler: function(form)
             {
                 $('.loading').show();
@@ -1159,6 +1173,7 @@
             invalidHandler: function(event, validator)
             {
                 $('button#send-btn').removeClass('nosubmit');
+                $('<label id="send-btn-error" class="error" for="send-btn">' + gettext('Unable to save, fix errors above to continue.') + '</label>').insertAfter('button#send-btn');
             },
             onfocusout: false,
             onkeyup: false,
@@ -1192,6 +1207,13 @@
             $(this).rules('add',
             {
                 required: true,
+            });
+        });
+        $('.products_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                productsNotEmpty: true,
             });
         });
     }

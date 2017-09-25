@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-24 21:22-0300\n"
+"POT-Creation-Date: 2017-09-25 12:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -146,20 +146,20 @@ msgid "Acessar cadastro do usuário"
 msgstr "Access user record"
 
 #: html/templates/base_shipment_details.html:100
-#: html/templates/merchant_shipment_add.html:105
-#: html/templates/shipment_add.html:93
+#: html/templates/merchant_shipment_add.html:106
+#: html/templates/shipment_add.html:94
 msgid "Valores"
 msgstr "Details"
 
 #: html/templates/base_shipment_details.html:101
-#: html/templates/merchant_shipment_add.html:107
-#: html/templates/shipment_add.html:95 shipment/models.py:33
+#: html/templates/merchant_shipment_add.html:108
+#: html/templates/shipment_add.html:96 shipment/models.py:33
 msgid "Total de Produtos"
 msgstr "Total Products"
 
 #: html/templates/base_shipment_details.html:106
-#: html/templates/merchant_shipment_add.html:108
-#: html/templates/shipment_add.html:96 shipment/models.py:34
+#: html/templates/merchant_shipment_add.html:109
+#: html/templates/shipment_add.html:97 shipment/models.py:34
 msgid "Valor Total"
 msgstr "Amount Due"
 
@@ -279,9 +279,9 @@ msgstr "Send and Complete Shipment"
 #: html/templates/base_shipment_details.html:348
 #: html/templates/base_shipment_details.html:355
 #: html/templates/base_shipment_details.html:364
-#: html/templates/merchant_shipment_add.html:124
+#: html/templates/merchant_shipment_add.html:125
 #: html/templates/product_add_edit.html:196
-#: html/templates/product_stock.html:222 html/templates/shipment_add.html:158
+#: html/templates/product_stock.html:222 html/templates/shipment_add.html:159
 msgid "Salvar"
 msgstr "Save"
 
@@ -303,9 +303,9 @@ msgstr "Cancel Shipment"
 
 #: html/templates/base_shipment_details.html:401
 #: html/templates/error/400_shipment.html:10
-#: html/templates/merchant_shipment_add.html:125
+#: html/templates/merchant_shipment_add.html:126
 #: html/templates/product_add_edit.html:197
-#: html/templates/product_details.html:154 html/templates/shipment_add.html:159
+#: html/templates/product_details.html:154 html/templates/shipment_add.html:160
 #: html/templates/store_lot_details.html:94 html/templates/user_edit.html:63
 #: html/templates/user_registration.html:454
 #: utils/templates/admin/utils/accounting/change_form.html:9
@@ -799,24 +799,24 @@ msgstr "Add more products to this shipment"
 msgid "Digite o nome do Produto"
 msgstr "Product's name"
 
-#: html/templates/merchant_shipment_add.html:93
+#: html/templates/merchant_shipment_add.html:94
 msgid "Canal de venda"
 msgstr "Retailer"
 
-#: html/templates/merchant_shipment_add.html:95
+#: html/templates/merchant_shipment_add.html:96
 msgid "Amazon"
 msgstr "Amazon"
 
-#: html/templates/merchant_shipment_add.html:96
+#: html/templates/merchant_shipment_add.html:97
 msgid "eBay"
 msgstr "eBay"
 
-#: html/templates/merchant_shipment_add.html:97 shipment/models.py:55
+#: html/templates/merchant_shipment_add.html:98 shipment/models.py:55
 msgid "Outro"
 msgstr "Other"
 
-#: html/templates/merchant_shipment_add.html:106
-#: html/templates/shipment_add.html:94
+#: html/templates/merchant_shipment_add.html:107
+#: html/templates/shipment_add.html:95
 msgid "Calcular valor do Envio"
 msgstr "Calculate shipment amount due"
 
@@ -1062,19 +1062,19 @@ msgstr "Received Quantity"
 msgid "Nenhum produto encontrado."
 msgstr "No products found."
 
-#: html/templates/shipment_add.html:111 html/templates/shipment_details.html:34
+#: html/templates/shipment_add.html:112 html/templates/shipment_details.html:34
 msgid "Upload/Download Arquivos"
 msgstr "Upload/Download Files"
 
-#: html/templates/shipment_add.html:123 html/templates/shipment_details.html:9
+#: html/templates/shipment_add.html:124 html/templates/shipment_details.html:9
 msgid "Informações sobre destino dos produtos (Warehouses)"
 msgstr "Informations about destination (Warehouses)"
 
-#: html/templates/shipment_add.html:136
+#: html/templates/shipment_add.html:137
 msgid "Local de envio dos produtos..."
 msgstr "Shipping destination..."
 
-#: html/templates/shipment_add.html:153 shipment/views.py:758
+#: html/templates/shipment_add.html:154 shipment/views.py:758
 msgid "Adicionar warehouse"
 msgstr "Add warehouse"
 
@@ -2067,7 +2067,7 @@ msgstr "Shipment successfully created."
 
 #: shipment/views.py:853 shipment/views.py:905
 msgid "Envio Merchant"
-msgstr ""
+msgstr "Merchant Shipment"
 
 #: shipment/views.py:1006 store/views.py:137
 msgid "Valor do pagamento não confere com o valor cobrado."

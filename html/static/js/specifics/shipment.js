@@ -114,6 +114,14 @@ function calculateTotalProducts(prefix)
     {
         $('#totalCost')[0].innerHTML = '-';
     }
+    if(total === 0)
+    {
+        $('#products_validate').val('');
+    }
+    else
+    {
+        $('#products_validate').val('1');
+    }
 }
 
 function removedInlineRow(row, options)

@@ -85,6 +85,7 @@
               {% endfor %}
               </tbody>
             </table>
+            <input type="hidden" class="products_validate" id="products_validate" name="products_validate" value="{% if product_formset %}1{% endif %}" />
           </div> <hr />
           {% for shipment_form in shipment_formset %}
             {{ shipment_form.id }}
