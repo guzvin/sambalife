@@ -1,7 +1,91 @@
-{% extends 'base_shipment_details.html' %}
+{% extends 'includes/layout.html' %}
 {% load i18n l10n permissions users shipments commons %}
+{% block listashipment %}active{% endblock %}
 
-{% block warehouses %}
+{% block specific_styles %}
+<link href="/static/css/inlines.css" rel="stylesheet">
+{% endblock %}
+
+{% block conteudo %}
+
+<!-- Passo 1 -->
+
+ <div class="container-fluid">
+      <div class="row">
+        {% if user|has_shipment_perm:'view_shipments' %}
+        <div class="col-md-1 sidebar">
+
+        </div>
+        <div class="col-md-10 main">
+          <h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Envio" %} {{ shipment.id }}{% if shipment.is_canceled %} ({% trans "Cancelado" %}){% elif shipment.is_archived %} ({% trans "Arquivado" %}){% endif %}</h1>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>{% trans "ID" %}</th>
+                  <th>{% trans "Nome" %}</th>
+                  <th>{% trans "Descrição" %}</th>
+                  <th>{% trans "Validade" %}</th>
+                  <th class="center">{% trans "Quantidade" %}</th>
+                  {% if user|has_user_perm:'view_users' %}
+                  <th>{% trans "Usuário" %}</th>
+                  {% endif %}
+                  {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False %}
+                  <th>{% trans "Retirar" %}</th>
+                  {% endif %}
+                </tr>
+              </thead>
+              <tbody>
+              {% for product in products %}
+                <tr>
+                  <td>{{ product.product.id }}</td>
+                  <td>{{ product.product.name }}</td>
+                  <td>{{ product.product.description }}</td>
+
+                  <td>
+                      {% with best_before_date=product.product.best_before|date:'SHORT_DATE_FORMAT' %}
+                      {% if best_before_date %}
+                          {{ best_before_date }}
+                      {% endif %}
+                      {% endwith %}
+                  </td>
+
+                  <td class="center">{{ product.quantity }}</td>
+                  {% if user|has_user_perm:'view_users' %}
+                  <td>{{ shipment.user.first_name }}</td>
+                  {% endif %}
+                  {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False %}
+                  {% trans "Excluir" as delete %}
+                  <td>
+                      <form method="delete">
+                          <input type="hidden" name="delete_product_shipment_id" value="{{ shipment.id }}">
+                          <input type="hidden" name="delete_product_product_id" value="{{ product.id }}">
+                          <a class="btn btn-danger delete-product-shipment" title="{{ delete }} {{ product.product.name }}" href="#"><i class="fa fa-fw fa-close"></i></a>
+                      </form>
+                  </td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% if user|has_user_perm:'view_users' %}
+          <!-- Bloco Informacoes do usuario -->
+
+          <div class="row">
+            <div class="col-md-12">
+                <h4><i class="fa fa-fw fa-user"></i> {% trans "Informações do usuário" %}</h4><br>
+            </div>
+            <div class="col-md-6">
+                 <label>{% trans "ID" %}: </label> {{ shipment.user.id }} <br>
+                 <label>{% trans "Nome" %}: </label> {{ shipment.user.first_name }} {{ shipment.user.last_name }}<br>
+                 <label>{% trans "Email" %}: </label> {{ shipment.user.email }}<br>
+                <br> <p><a href="{%url 'admin:myauth_myuser_change' shipment.user.id %}" class="btn btn-default"><i class="fa fa-external-link"></i> {% trans "Acessar cadastro do usuário" %}</a></p>
+            </div>
+          </div>
+
+          <!-- fim bloco informacoes do usuario -->
+          {% endif %}
           <!-- informacoes das warehouse - cadastro-->
           <hr>
           <div class="row">
@@ -22,13 +106,31 @@
             <!-- fim infos warehouses -->
             <br>
           </div>
-{% endblock %}
+          <hr />
+          <div class="row">
+            <div class="col-md-4">
+                <label><i class="fa fa-fw fa-bar-chart"></i> {% trans "Valores" %}:</label><br><br>
+                <p><strong><i class="fa fa-fw fa-list-ol"></i> {% trans "Total de Produtos" %}: </strong><span id="totalProducts">{{ shipment.total_products }}</span> </p>
 
-{% block info_values %}col-md-4{% endblock %}
-                
-{% block info_send_date %}col-md-4{% endblock %}
+                <!-- Campo desconto visao usuario -->
+                <p><strong><i class="fa fa-fw fa-minus-square"></i> {% trans "Desconto" %}: </strong> U$ <span id="DescCost">5,99</span></p>
 
-{% block info_pdf_1 %}
+                <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">{{ shipment.cost|floatformat:2|localize }}</span></p>
+            </div>
+            <div class="col-md-4">
+                <p><strong><i class="fa fa-fw fa-calendar"></i> {% trans "Data de Envio" %}: </strong></p>
+                <div class="form-group">
+                    {{ shipment.send_date }}
+                </div>
+
+                <!-- Campo cadastro de desconto visao admin -->
+                <br>
+                <p><strong><i class="fa fa-fw fa-minus-square"></i> {% trans "Cadastro de Desconto" %}: </strong></p>
+                <div class="form-group">
+                    <input placeholder="Valor desconto..." name="Desconto" class="form-control menor" id="Desconto" value="" aria-required="true" type="text">
+                    <a href="#" class="btn btn-success"><i class="fa fa-fw fa-retweet"></i></a>
+                </div>
+            </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Upload/Download Arquivos" %}:</label><br><br>
@@ -37,19 +139,35 @@
                     <br>
                 </div>
             </div>
-{% endblock %}
-
-{% block package_warehouse %}
-                        <!-- campo novo para inserir a warehouse para onde ira o pacote -->
-
-                        <div class="col-md-3">
-                            <input type="text" placeholder="{{ package_form.warehouse.label }}..." name="{{ package_form.warehouse.html_name }}" class="form-control required-validate" id="{{ package_form.warehouse.id_for_label }}" aria-required="true" value="{% if package_form.warehouse.value %}{{ package_form.warehouse.value }}{% endif %}"/>
-                        </div>
-
-                        <!-- fim campo novo -->
-{% endblock %}
-
-{% block package_warehouse_2 %}
+           </div>
+           <hr />
+           {% trans "Peso" as weight %}
+           {% trans "L" as length %}
+           {% trans "W" as width %}
+           {% trans "H" as height %}
+           {% if shipment.status != 1 %}
+           <div class="row">
+          <!-- lista das informacoes dos pacotes. fiz duas linhas com os possiveis campos -->
+             <div class="col-md-12">
+                <h4><i class="fa fa-fw fa-archive"></i> {% trans "Informações dos pacote(s)" %}:</h4><br><br>
+                <form action="" method="post" id="form-upload-file" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  {% if shipment.status == 2 %}
+                  <input type="hidden" name="add_package_file" value="1">
+                  {% elif shipment.status > 3 and user|has_shipment_perm:'add_package' %}
+                  <input type="hidden" name="add_package_tracking" value="1">
+                  {% endif %}
+                  {% if shipment.status <= 3 and user|has_shipment_perm:'add_package' %}
+                    <input type="hidden" name="edit_package_warehouse" value="1">
+                  {% endif %}
+                  {{ packages.management_form }}
+                {% for package in packages %}
+                    {{ package.id }}
+                <div class="form-group pacote-infos">
+                    <div class="col-md-12">
+                        <hr>
+                        <label class="titulo-pct"><span>{% trans "Pacote" %} {{ forloop.counter }}:</span></label>
+                    </div>
                     <div class="col-md-2">
                         <label><i class="fa fa-fw fa-truck"></i> {{ package.warehouse.label }}:</label><br><br>
                         {% if shipment.status <= 3 and user|has_shipment_perm:'add_package' %}
@@ -59,10 +177,300 @@
                         <input type="hidden" name="{{ package.warehouse.html_name }}" value="{{ package.warehouse.value }}">
                         {% endif %}
                     </div>
+                    <div class="col-md-5">
+                        <label><i class="fa fa-fw fa-info-circle"></i> {% trans "Informações do pacote" %}:</label><br><br>
+                        <p><strong>{{ weight }}:</strong> {{ package.weight.value|unlocalize }} {% unit_weight_display 1 abbreviate=True %} / <strong>{% trans "Dimensões" %} - </strong> {{ length }}: {{ package.length.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ width }}: {{ package.width.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ height }}: {{ package.height.value|unlocalize }}{% unit_length_display 3 abbreviate=True %}</p>
+
+                        <!-- info localizacao visao usuario -->
+
+                        <p><strong>{% trans "Localização na warehouse" %}: </strong> Prateleira A32</p>
+
+                        <input type="hidden" name="{{ package.weight.html_name }}" value="{{ package.weight.value|unlocalize }}">
+                        <input type="hidden" name="{{ package.length.html_name }}" value="{{ package.length.value|unlocalize }}">
+                        <input type="hidden" name="{{ package.width.html_name }}" value="{{ package.width.value|unlocalize }}">
+                        <input type="hidden" name="{{ package.height.html_name }}" value="{{ package.height.value|unlocalize }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label><i class="fa fa-fw fa-file"></i> {{package.pdf_2.label}}:</label><br><br>
+                        {% if shipment.status == 2 %}
+                          {% if user == shipment.user or user|has_group:'admins' %}
+                        <p>
+                            {{ package.pdf_2 }}
+                            {% for error in package.pdf_2.errors %}
+                            <label id="{{ package.pdf_2.id_for_label }}-error" class="error" for="{{ package.pdf_2.id_for_label }}">{{ error|escape }}</label>
+                            {% endfor %}
+                        </p>
+                          {% else %}
+                        <p>{% trans "Upload não permitido" %}</p>
+                          {% endif %}
+                        {% else %}
+                        <p><a href="{% url 'shipment_pdf_2' 'pdf_2' package.id.value %}" class="download" target="_blank">Download</a></p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="{{ package.shipment_tracking.id_for_label }}"><i class="fa fa-fw fa-file-pdf-o"></i> {{ package.shipment_tracking.label }}:</label><br><br>
+                            <p>
+                                {% if shipment.status > 3 and user|has_shipment_perm:'add_package' %}
+                                <input type="text" name="{{ package.shipment_tracking.html_name }}" class="form-control" id="{{ package.shipment_tracking.id_for_label }}" value="{% if package.shipment_tracking.value %}{{ package.shipment_tracking.value }}{% endif %}" />
+                                {% for error in package.shipment_tracking.errors %}
+                                <label id="{{ package.shipment_tracking.id_for_label }}-error" class="error" for="{{ package.shipment_tracking.id_for_label }}">{{ error|escape }}</label>
+                                {% endfor %}
+                                {% elif shipment.status == 5 and shipment.shipment != '' %}
+                                {% if package.shipment_tracking.value %}{{ package.shipment_tracking.value }}{% endif %}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% if not forloop.last %}
+
+                {% endif %}
+                {% endfor %}
+                </form>
+             </div>
+          <!-- fim lista pacotes -->
+           </div>
+           <br>
+           <hr />
+           {% endif %}
+           <div class="row">
+               <h4><i class="fa fa-fw fa-step-forward"></i> {% trans "Status" %}: </h4> {% trans "Acompanhe abaixo o status do envio" %}:<br><br><br>
+
+               <div class="progress">
+                  <div class="progress-bar progress-bar-success {% status_bar shipment %}" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                  </div>
+               </div>
+
+               <div class="col-md-12 itens-progress">
+                   <div class="col-md-3 center">
+                        <label>
+                            <i class="fa fa-2x fa-fw fa-plus-square"></i><br>{% trans "Preparando para Envio" %}<br>
+                            <span class="previsao">( {% trans "Previsão: Até" %} 28/09/17 )</span>
+                        </label>
+                   </div>
+                   <div class="col-md-3 center">
+                        <label><i class="fa fa-2x fa-file-pdf-o"></i><br>{% trans "Upload Etiqueta Caixa Autorizado" %}</label>
+                   </div>
+                   <div class="col-md-3 center">
+                        <label><i class="fa fa-2x fa-shopping-cart"></i><br>{% trans "Pagamento Autorizado" %}</label>
+                   </div>
+                   <div class="col-md-2 center">
+                        <label>
+                            <i class="fa fa-2x fa-list-alt"></i><br>{% trans "Checagens Finais" %}<br>
+                             <span class="previsao">( {% trans "Previsão: Até" %} 28/09/17 )</span>
+                        </label>
+                   </div>
+                   <div class="col-md-1 item-progress last">
+                        <label><i class="fa fa-2x fa-thumbs-up"></i><br>{% trans "Enviado" %}</label>
+                   </div>
+               </div>
+           </div><hr />
+           {% if shipment.status == 1 and user|has_shipment_perm:'add_package' %}
+           <div class="row">
+               <form action="{% url 'shipment_details' shipment.id %}" method="post" id="form-add-package">
+                   {% csrf_token %}
+               <input type="hidden" name="add_shipment_package" value="1">
+               <h4><i class="fa fa-fw fa-line-chart"></i> {% trans "Área Administrativa" %}</h4><br><br><br>
+               <div class="col-md-12 js-inline-admin-formset" id="{{ packages.prefix }}-group"
+               data-inline-type="stacked"
+               data-inline-formset="{{ packages.inline_formset_data }}">
+                   {{ packages.management_form }}
+                   <label>{% trans "Informações pacote(s)" %}:</label>
+                    <div class="lista-pacotes-cadastro">
+                   {% for package_form in packages %}
+                     <div class="form-group pacote-infos pacote-infos-item inline-related {% if forloop.last and not forloop.first %} empty-form{% endif %}"
+                         id="{{ packages.prefix }}-{% if not forloop.last or forloop.first %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+                       {{ package_form.id }}
+                       {{ package_form.shipment }}
+                        <div class="col-md-2">
+                            <label class="filtar-btn-m inline_label">{% trans "Pacote" %} #{{ forloop.counter }}: </label>
+                        </div>
+
+                        <!-- campo novo para inserir a warehouse para onde ira o pacote -->
+
+                        <div class="col-md-3">
+                            <input type="text" placeholder="{{ package_form.warehouse.label }}..." name="{{ package_form.warehouse.html_name }}" class="form-control required-validate" id="{{ package_form.warehouse.id_for_label }}" aria-required="true" value="{% if package_form.warehouse.value %}{{ package_form.warehouse.value }}{% endif %}"/>
+                        </div>
+
+                        <!-- fim campo novo -->
+
+                        <div class="col-md-1">
+                            <input type="text" placeholder="{{ package_form.weight.label }}..." name="{{ package_form.weight.html_name }}" class="form-control required-number-validate" id="{{ package_form.weight.id_for_label }}" value="{% if package_form.weight.value %}{{ package_form.weight.value|unlocalize }}{% endif %}" />
+                            {% for error in package_form.weight.errors %}
+                              <label id="{{ package_form.weight.id_for_label }}-error" class="error" for="{{ package_form.weight.id_for_label }}">{{ error|escape }}</label>
+                            {% endfor %}
+                            <span class="badge">{% trans "em" %} {% unit_weight_display 1 %}</span>
+                        </div>
+                        <div class="col-md-1">
+                            <input type="text" placeholder="{{ package_form.length.label }}..." name="{{ package_form.length.html_name }}" class="form-control required-number-validate" id="{{ package_form.length.id_for_label }}" value="{% if package_form.length.value %}{{ package_form.length.value|unlocalize }}{% endif %}" />
+                            {% for error in package_form.length.errors %}
+                              <label id="{{ package_form.length.id_for_label }}-error" class="error" for="{{ package_form.length.id_for_label }}">{{ error|escape }}</label>
+                            {% endfor %}
+                            <span class="badge profun">{% trans "em" %} {% unit_length_display 3 %}</span><br><br>
+                        </div>
+                        <div class="col-md-1">
+                            <input type="text" placeholder="{{ package_form.width.label }}..." name="{{ package_form.width.html_name }}" class="form-control required-number-validate" id="{{ package_form.width.id_for_label }}" value="{% if package_form.width.value %}{{ package_form.width.value|unlocalize }}{% endif %}" />
+                            {% for error in package_form.width.errors %}
+                              <label id="{{ package_form.width.id_for_label }}-error" class="error" for="{{ package_form.width.id_for_label }}">{{ error|escape }}</label>
+                            {% endfor %}
+                            <span class="badge largura">{% trans "em" %} {% unit_length_display 3 %}</span>
+                        </div>
+                        <div class="col-md-1">
+                            <input type="text" placeholder="{{ package_form.height.label }}..." name="{{ package_form.height.html_name }}" class="form-control required-number-validate" id="{{ package_form.height.id_for_label }}" value="{% if package_form.height.value %}{{ package_form.height.value|unlocalize }}{% endif %}" />
+                            {% for error in package_form.height.errors %}
+                              <label id="{{ package_form.height.id_for_label }}-error" class="error" for="{{ package_form.height.id_for_label }}">{{ error|escape }}</label>
+                            {% endfor %}
+                            <span class="badge altura">{% trans "em" %} {% unit_length_display 3 %}</span>
+                        </div>
+
+                        <!-- Campo localizacao adm -->
+
+                        <div class="col-md-3">
+                            <input placeholder="Localização..." name="local" class="form-control" id="local" value="" aria-required="true" type="text">
+                            <span class="badge altura">Localização na warehouse</span>
+                        </div>
+
+                        {% if forloop.first is False %}
+                        <div class="col-md-2">
+                            <a class="rem-track btn btn-danger rem-pacote-shipment inline-deletelink" title="{{ packages.deleteText }}" href="#"><i class="fa fa-fw fa-times"></i></a>
+                        </div>
+                        {% endif %}
+                     </div>
+                   {% endfor %}
+                   {% if shipment.is_archived is False and shipment.is_canceled is False %}
+                     <div class="col-md-12">
+                         <a class="add-track btn btn-success add-pacote-shipment {{ packages.prefix }}-add-row add-row" title="{{ packages.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i> {% trans "Adicionar Pacote ao Envio" %}</a>
+                     </div>
+                   {% endif %}
+                    </div>
+              </div>
+              </form>
+           </div><hr />
+           {% endif %}
+           {% if shipment.status == 3 and shipment.is_archived is False and shipment.is_canceled is False %}
+            {% if user == shipment.user or user|has_group:'admins' %}
+             {% render_payment_button paypal_form shipment.id %}
+             <br><br>
+            {% endif %}
+           {% endif %}
+             <div class="row">
+             {% if shipment.is_canceled is False %}
+              {% if shipment.is_archived %}
+                 <!-- Botao arquivar -->
+                 <a class="btn btn-primary filtar-btn alterar-status" id="restore-btn" href="#">
+                    <i class="fa fa-fw fa-edit"></i> {% trans "Reativar Envio" %}
+                 </a>
+              {% else %}
+               {% if shipment.status == 4 and user|has_group:'admins' %}
+                <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-final" href="#">
+                    <i class="fa fa-fw fa-paper-plane"></i> {% trans "Enviar e Finalizar Envio" %}
+                </a>
+                <br><br>
+               {% endif %}
+               {% if shipment.status == 1 and user|has_shipment_perm:'add_package' %}
+                <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-1" href="#">
+                    <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
+                </a>
+                <br><br>
+               {% endif %}
+               {% if shipment.status == 2 %}
+                {% if user == shipment.user or user|has_group:'admins' or user|has_shipment_perm:'add_package' %}
+                <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-3" href="#">
+                    <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
+                </a>
+                <br><br>
+                {% endif %}
+               {% endif %}
+               {% if shipment.status == 5 or shipment.status == 3 %}
+                {% if user|has_shipment_perm:'add_package' %}
+                <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-5" href="#">
+                    <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
+                </a>
+                <br><br>
+                {% endif %}
+               {% endif %}
+               {% if user|has_group:'admins' %}
+                {% if shipment.status < 4 %}
+                <a class="btn btn-primary filtar-btn alterar-status" id="change-btn-status-forward" href="{% url 'shipment_status' shipment.id 'forward' %}">
+                    <i class="fa fa-fw fa-forward"></i> {% trans "Avançar status" %}
+                </a>
+                <br><br>
+                {% endif %}
+                {% if shipment.status > 1 and shipment.status < 5 %}
+                <a class="btn btn-primary filtar-btn alterar-status" id="change-btn-status-backward" href="{% url 'shipment_status' shipment.id 'backward' %}">
+                    <i class="fa fa-fw fa-backward"></i> {% trans "Voltar status" %}
+                </a>
+                <br><br>
+                {% endif %}
+               {% endif %}
+                 <!-- Botao arquivar -->
+                 <a class="btn btn-danger filtar-btn alterar-status" id="archive-btn" href="#">
+                    <i class="fa fa-fw fa-archive"></i> {% trans "Arquivar Envio" %}
+                 </a>
+              {% endif %}
+                 <br><br>
+                 <form action="{% if shipment.is_archived %}{% url 'shipment_archive' shipment.id '1' %}{% else %}{% url 'shipment_archive' shipment.id '2' %}{% endif %}" method="post" id="form-archive-shipment">
+                    {% csrf_token %}
+                    <input type="hidden" name="archive_shipment" value="1">
+                 </form>
+                 <!-- botao arquivar -->
+                 <!-- Botao cancelar -->
+                 <a class="btn btn-danger filtar-btn alterar-status" id="cancel-btn" href="#">
+                    <i class="fa fa-fw fa-remove"></i> {% trans "Cancelar Envio" %}
+                 </a>
+                 <br><br>
+             {% endif %}
+                <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a>
+                <br><br><br><br>
+             </div>
+          </div>
+        {% endif %}
+        </div>
+        <div class="col-md-1 sidebar">
+        </div>
+      </div>
+    {% if shipment.status == 4 and user|has_group:'admins' %}
+    <div id="send-shipment-confirmation" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Confirmação" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Confirma a conclusão do processo de envio?" %}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="send-btn-final-confirmation" class="btn btn-danger">{% trans "Sim" %}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if shipment.is_canceled is False %}
+     <form action="{% url 'shipment_cancel' shipment.id %}" method="post" id="form-cancel-shipment">
+        {% csrf_token %}
+        <input type="hidden" name="cancel_shipment" value="1">
+        <div id="confirmacao-exclusao" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">{% trans "Cancelar" %}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>{% trans "Confirma o cancelamento deste envio?" %}</p>
+                        <p>{% trans "Esta ação não poderá ser desfeita." %}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">{% trans "Sim" %}</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </form>
+    {% endif %}
 {% endblock %}
-
-{% block package_info_class %}col-md-5{% endblock %}
-
-{% block package_label_class %}col-md-3{% endblock %}
-
-{% block package_tracking_class %}col-md-2{% endblock %}
