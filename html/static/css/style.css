@@ -1155,16 +1155,20 @@ label.titulo-pct span{
     text-decoration: none;
 }
 
+.send-btn-async{
+    margin-left: 17px;
+}
+
 /*balão*/
 .status{
     background: #ddd;
     border-radius: 15px;
     width: 475px;
-    height: 414px;
+    height: 475px;
     position: absolute;
     padding: 20px;
     top: -470px;
-    right: 2px;
+    right: -80px;
     text-align: left;
 }
 .status:after{
@@ -1466,7 +1470,8 @@ form small{
 }
 
 .en .navbar-brand img:first-child {
-    width: auto;
+    width: 200px;
+    margin-top: 15px;
 }
 
 .termos .page-header{
