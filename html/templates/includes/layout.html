@@ -104,7 +104,7 @@
                     {% endif %}
 
                     <li>
-                        <a href="/ajuda.html#contact" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
+                        <a href="{% if LANGUAGE_CODE == 'pt-br' %}/ajuda.html#contact{% else %}mailto:support@prepshiptool.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
 {% comment %}
                     <li class="{% block lotes-u %}{% endblock %}">
@@ -150,7 +150,14 @@
                     {% endif %}
                     {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
                     <li class="dropdown ">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envios Amazon" %} <b class="caret"></b> <span title="Novos envios cadastrados" class="suspenso">29</span></a>
+                        {% open_fba_shipments request.user as ofs %}
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown">
+                            <i class="fa fa-share"></i> {% trans "Envios Amazon" %}
+                            <b class="caret"></b>
+                            {% if ofs > 0 %}
+                            <span title="{% trans 'Envios em aberto' %}" class="suspenso">{{ ofs }}</span>
+                            {% endif %}
+                        </a>
                         <ul class="dropdown-menu">
                             {% if user|has_shipment_perm:'view_shipments' %}
                             <li class="{% block listashipment %}{% endblock %}">
@@ -168,7 +175,14 @@
                         </ul>
                     </li>
                     <li class="dropdown ">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envios Merchant" %} <b class="caret"></b><span title="Novos envios cadastrados" class="suspenso">29</span> </a>
+                        {% open_mf_shipments request.user as oms %}
+                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown">
+                            <i class="fa fa-share"></i> {% trans "Envios Merchant" %}
+                            <b class="caret"></b>
+                            {% if oms > 0 %}
+                            <span title="{% trans 'Envios em aberto' %}" class="suspenso">{{ oms }}</span>
+                            {% endif %}
+                        </a>
                         <ul class="dropdown-menu">
                             {% if user|has_shipment_perm:'view_shipments' %}
                             <li class="{% block merchant_shipment %}{% endblock %}">

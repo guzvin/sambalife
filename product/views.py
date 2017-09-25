@@ -17,6 +17,7 @@ from product.templatetags.products import has_product_perm
 from myauth.templatetags.users import has_user_perm
 from django.utils.html import format_html, mark_safe
 from django.conf import settings
+from django.utils import translation
 import json
 import logging
 import datetime
@@ -80,19 +81,15 @@ def product_stock(request):
         if is_user_perm is False:
             queries.append(~Q(status=100))
             queries.append(Q(user=request.user))
-        is_filtered = len(queries) > 0
-        if is_filtered:
-            query = queries.pop()
-            for item in queries:
-                query &= item
-            logger.debug(str(query))
+        else:
+            queries.append(Q(user__language_code=translation.get_language()))
+        query = queries.pop()
+        for item in queries:
+            query &= item
+        logger.debug(str(query))
         if is_user_perm:
-            if is_filtered:
-                logger.debug('@@@@@@@@@@@@ FILTERED @@@@@@@@@@@@@@')
-                products_list = Product.objects.filter(query).select_related('user').order_by('id')
-            else:
-                logger.debug('@@@@@@@@@@@@ ALL @@@@@@@@@@@@@@')
-                products_list = Product.objects.all().select_related('user').order_by('id')
+            logger.debug('@@@@@@@@@@@@ FILTERED @@@@@@@@@@@@@@')
+            products_list = Product.objects.filter(query).select_related('user').order_by('id')
         else:
             products_list = Product.objects.filter(query).order_by('id')
     else:
@@ -125,7 +122,8 @@ def product_add_edit(request, pid=None):
         return HttpResponseForbidden()
     ProductFormSet = modelformset_factory(Product, fields=('name', 'asin', 'description', 'quantity',
                                                            'quantity_partial', 'send_date', 'edd_date', 'best_before',
-                                                           'condition', 'actual_condition', 'condition_comments'),
+                                                           'condition', 'actual_condition', 'condition_comments',
+                                                           'status'),
                                           localized_fields=('send_date',), min_num=1, max_num=1)
     TrackingFormSet = inlineformset_factory(Product, Tracking, formset=MyBaseInlineFormSet, fields=('track_number',),
                                             extra=1)
@@ -163,7 +161,7 @@ def product_add_edit(request, pid=None):
                         product.status = 1
                         product.user = request.user
                         if product.quantity_partial is None:
-                            product.quantity_partial = product.quantity
+                            product.quantity_original = product.quantity_partial = product.quantity
                         elif product.quantity_partial <= 0:
                             product.quantity = product.quantity_partial = 0
                         elif product.quantity_partial > product.quantity:
@@ -174,8 +172,10 @@ def product_add_edit(request, pid=None):
                 else:
                     for product_form in product_formset:
                         product = product_form.save(commit=False)
+                        product.status = product_instance.status
+                        product.quantity = product_instance.quantity
                         if product.quantity_partial is None:
-                            product.quantity_partial = product.quantity
+                            product.quantity_original = product.quantity_partial = product.quantity
                         elif product.quantity_partial <= 0:
                             product.quantity = product.quantity_partial = 0
                         elif product.quantity_partial > product.quantity:

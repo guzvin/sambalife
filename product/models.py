@@ -15,6 +15,7 @@ class Product(models.Model):
     name = models.CharField(_('Nome'), max_length=150)
     asin = models.CharField(_('ASIN'), max_length=50, null=True, blank=True)
     description = models.TextField(_('Descrição'), null=True, blank=True)
+    quantity_original = models.PositiveIntegerField(_('Quantidade Original Cadastrada'), null=True)
     quantity = models.PositiveIntegerField(_('Quantidade'))
     quantity_partial = models.PositiveIntegerField(_('Quantidade Parcial'), null=True, blank=True)
     send_date = models.DateField(_('Data da Compra'))
@@ -24,7 +25,7 @@ class Product(models.Model):
         (99, _('Arquivado')),
         (100, _('Abandonado')),
     )
-    status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES, null=True)
+    status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES, null=True, blank=True)
     CONDITION_CHOICES = (
         (1, _('New')),
         (2, _('Refurbished')),

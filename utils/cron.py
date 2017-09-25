@@ -31,8 +31,9 @@ def price_warning():
                                                 'AND shipment_shipment.is_archived = false '
                                                 'AND shipment_shipment.is_canceled = false) '
                                                 'OR NOT EXISTS (SELECT 1 FROM shipment_product '
-                                                'WHERE product_product.id = shipment_product.product_id)']).\
-        select_related('user').filter(status=2).order_by('user')
+                                                'WHERE product_product.id = shipment_product.product_id '
+                                                'AND product_product.status=2)'])\
+        .select_related('user').order_by('user')
     time_period_one = params.time_period_one
     time_period_two = params.time_period_two
     time_period_three = params.time_period_three

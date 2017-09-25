@@ -55,7 +55,7 @@ admin_site.register(CostFormula, CostFormulaAdmin)
 
 
 class EstimatesAdmin(admin.ModelAdmin):
-    list_display = ('preparation', 'shipment',)
+    list_display = ('preparation', 'shipment', 'weekends',)
 
     def has_module_permission(self, request):
         if request.user.is_authenticated and request.user.first_name == 'Administrador':

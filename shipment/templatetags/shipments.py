@@ -1,5 +1,8 @@
 from django import template
-from shipment.models import Package, Estimates
+from shipment.models import Package, Estimates, Shipment
+from django.db.models import Q
+from django.utils import translation
+from myauth.templatetags.users import has_user_perm
 from datetime import timedelta
 
 register = template.Library()
@@ -53,6 +56,33 @@ def etc(initial_date, **kwargs):
             delta_t = estimates.shipment
         else:
             return None
-        return initial_date + timedelta(hours=delta_t)
+        etc_date = initial_date + timedelta(hours=delta_t)
+        if estimates.weekends is False:
+            etc_weekday = etc_date.weekday()
+            if etc_weekday == 5:
+                etc_date += timedelta(days=2)
+            elif etc_weekday == 6:
+                etc_date += timedelta(days=1)
+        return etc_date
     except Estimates.DoesNotExist:
         return None
+
+
+@register.simple_tag
+def open_fba_shipments(user):
+    query_filter = Q(status__lt=5) & Q(is_archived=False) & Q(is_canceled=False) & Q(type=None)
+    if has_user_perm(user, 'view_users'):
+        query_filter &= Q(user__language_code=translation.get_language())
+    else:
+        query_filter &= Q(user=user)
+    return Shipment.objects.filter(query_filter).count()
+
+
+@register.simple_tag
+def open_mf_shipments(user):
+    query_filter = Q(status__lt=5) & Q(is_archived=False) & Q(is_canceled=False) & ~Q(type=None)
+    if has_user_perm(user, 'view_users'):
+        query_filter &= Q(user__language_code=translation.get_language())
+    else:
+        query_filter &= Q(user=user)
+    return Shipment.objects.filter(query_filter).count()

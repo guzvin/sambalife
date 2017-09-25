@@ -75,7 +75,7 @@
           {% endif %}
           {% if user|has_shipment_perm:'add_shipment' %}
             <a class="btn btn-default" id="btn-add-shipment" data-action-url="{% url 'shipment_add' %}"><i class="fa fa-amazon"></i> {% trans "Criar Envio para Amazon" %}</a>
-            <a class="btn btn-default" id="btn-add-merchant-shipment" data-action-url="{% url 'merchant_shipment_add' %}"><i class="fa fa-envelope-o"></i> {% trans "Criar Envio Merchant" %}</a>
+            <a class="btn btn-default" id="btn-add-merchant-shipment" data-action-url="{% url 'merchant_shipment_add' %}"><i class="fa fa-ship"></i> {% trans "Criar Envio Merchant" %}</a>
           {% comment %}
             <!-- Novo botao -->
             <a class="btn btn-default" id="btn-add-shipment-brazil"><i class="fa fa-globe"></i> {% trans "Criar Envio para o Brasil" %}</a>

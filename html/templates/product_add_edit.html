@@ -44,11 +44,16 @@
                 </div><br>
                 <div class="form-group col-md-12">
                   <label for="{{ form.quantity.id_for_label }}">{{ form.quantity.label }}*</label>
+                  {% if form.status.value is None or form.status.value == 1 %}
                     {% trans "Digite a quantidade" as quantity %}
                   <input type="number" class="form-control menor quantity_validate" id="{{ form.quantity.id_for_label }}" name="{{ form.quantity.html_name }}" placeholder="{{ quantity }}..." value="{% if form.quantity.value %}{{ form.quantity.value|unlocalize }}{% endif %}">
                   {% for error in form.quantity.errors %}
                     <label id="quantity-error" class="error" for="{{ form.quantity.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
+                  {% else %}
+                    {% if form.quantity.value %}{{ form.quantity.value|unlocalize }}{% endif %}
+                    <input type="hidden" name="{{ form.quantity.html_name }}" value="{% if form.quantity.value %}{{ form.quantity.value|unlocalize }}{% endif %}">
+                  {% endif %}
                 </div><br>
               {% if user|has_product_perm:'change_product_status' %}
                 <div class="form-group col-md-12">

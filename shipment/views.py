@@ -132,23 +132,19 @@ def list_shipment(request, template_name):
         logger.debug(str(len(queries)))
         if is_user_perm is False:
             queries.append(Q(user=request.user))
+        else:
+            queries.append(Q(user__language_code=translation.get_language()))
         if template_name == 'shipment_list.html':
             queries.append(Q(type=None))
         else:
             queries.append(~Q(type=None))
-        is_filtered = len(queries) > 0
-        if is_filtered:
-            query = queries.pop()
-            for item in queries:
-                query &= item
-            logger.debug(str(query))
+        query = queries.pop()
+        for item in queries:
+            query &= item
+        logger.debug(str(query))
         if is_user_perm:
-            if is_filtered:
-                logger.debug('FILTERED')
-                _shipment_list = Shipment.objects.filter(query).select_related('user').order_by('id')
-            else:
-                logger.debug('ALL')
-                _shipment_list = Shipment.objects.all().select_related('user').order_by('id')
+            logger.debug('FILTERED')
+            _shipment_list = Shipment.objects.filter(query).select_related('user').order_by('id')
         else:
             _shipment_list = Shipment.objects.filter(query).order_by('id')
     else:
@@ -402,7 +398,8 @@ def paypal_mode(user):
 
 
 def complete_shipment(_shipment_details):
-    original_products_to_update = []
+    set_as_archived = []
+    set_as_forwarded = []
     products = _shipment_details.product_set.all()
     for product in products:
         if Product.objects.filter(Q(product__id=product.product_id) &
@@ -414,11 +411,16 @@ def complete_shipment(_shipment_details):
         try:
             original_product = OriginalProduct.objects.get(pk=product.product_id)
             if original_product.quantity == original_product.quantity_partial and original_product.quantity == 0:
-                original_products_to_update.append(product.product_id)
+                set_as_archived.append(product.product_id)
+            elif original_product.quantity != original_product.quantity_partial and \
+                    original_product.quantity_partial == 0:
+                set_as_forwarded.append(product.product_id)
         except OriginalProduct.DoesNotExist:
             pass
-    if original_products_to_update:
-        OriginalProduct.objects.filter(id__in=original_products_to_update).update(status=99)
+    if set_as_archived:
+        OriginalProduct.objects.filter(id__in=set_as_archived).update(status=99)
+    if set_as_forwarded:
+        OriginalProduct.objects.filter(id__in=set_as_forwarded).update(status=1)
 
 
 def render_extra_package(_shipment_details):
@@ -580,8 +582,9 @@ def shipment_delete_product(request, output=None):
             if deleted[0] == 0:
                 raise Product.DoesNotExist('Delete did not affect any row.')
             if shipment.total_products == 0:
+                redirect_url = resolve_url(shipment)
                 shipment.delete()
-                return HttpResponse(json.dumps({'redirect': reverse('shipment')}), content_type='application/json')
+                return HttpResponse(json.dumps({'redirect': redirect_url}), content_type='application/json')
             products = shipment.product_set.all()
             logger.debug('@@@@@@@@@@@@ SHIPMENT PRODUCTS @@@@@@@@@@@@@@')
             logger.debug(products)
@@ -592,6 +595,13 @@ def shipment_delete_product(request, output=None):
         logger.error(err)
         return HttpResponseBadRequest()
     return http_response
+
+
+def resolve_url(_shipment_details):
+    if _shipment_details.type:
+        return reverse('merchant_shipment')
+    else:
+        return reverse('shipment')
 
 
 @login_required
@@ -621,11 +631,13 @@ def shipment_status(request, pid=None, op=None):
 @login_required
 @require_http_methods(["POST"])
 def shipment_archive(request, pid=None, op='0'):
+    redirect_url = None
     try:
         with transaction.atomic():
             if request.POST.get('archive_shipment') is None:
                 raise Shipment.DoesNotExist('archive_shipment parameter not found in request.')
             _shipment_details = Shipment.objects.select_for_update().get(pk=pid, is_canceled=False)
+            redirect_url = resolve_url(_shipment_details)
             if request.user != _shipment_details.user and has_group(request.user, 'admins') is False:
                 raise Shipment.DoesNotExist('Shipment from another user and user is not from admins group.')
             if op == '1':
@@ -657,7 +669,7 @@ def shipment_archive(request, pid=None, op='0'):
                         update(quantity=new_quantity, quantity_partial=new_quantity_partial)
                 if _shipment_details.total_products < 1:
                     _shipment_details.delete()
-                    return HttpResponseRedirect('%s?ra=1' % reverse('shipment'))
+                    return HttpResponseRedirect('%s?ra=1' % redirect_url)
                 if fields_to_update:
                     _shipment_details.save(update_fields=fields_to_update)
                 return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
@@ -666,7 +678,7 @@ def shipment_archive(request, pid=None, op='0'):
                     raise Shipment.DoesNotExist('Shipment already archived.')
                 Shipment.objects.filter(pk=pid).update(is_archived=True)
                 if _shipment_details.status == 5:
-                    return HttpResponseRedirect(reverse('shipment'))
+                    return HttpResponseRedirect(redirect_url)
                 products = _shipment_details.product_set.select_for_update().all()
                 for product in products:
                     OriginalProduct.objects.select_for_update().filter(pk=product.product_id).\
@@ -676,17 +688,22 @@ def shipment_archive(request, pid=None, op='0'):
         logger.error(err)
     except OriginalProduct.DoesNotExist as err:
         logger.error(err)
-    return HttpResponseRedirect(reverse('shipment'))
+    if redirect_url:
+        return HttpResponseRedirect(redirect_url)
+    else:
+        return HttpResponseRedirect(reverse('product_stock'))
 
 
 @login_required
 @require_http_methods(["POST"])
 def shipment_cancel(request, pid=None):
+    redirect_url = None
     try:
         with transaction.atomic():
             if request.POST.get('cancel_shipment') is None:
                 raise Shipment.DoesNotExist('cancel_shipment parameter not found in request.')
             _shipment_details = Shipment.objects.select_for_update().get(pk=pid)
+            redirect_url = resolve_url(_shipment_details)
             if request.user != _shipment_details.user and has_group(request.user, 'admins') is False:
                 raise Shipment.DoesNotExist('Shipment from another user and user is not from admins group.')
             cancel_shipment(_shipment_details)
@@ -694,7 +711,10 @@ def shipment_cancel(request, pid=None):
         logger.error(err)
     except OriginalProduct.DoesNotExist as err:
         logger.error(err)
-    return HttpResponseRedirect(reverse('shipment'))
+    if redirect_url:
+        return HttpResponseRedirect(redirect_url)
+    else:
+        return HttpResponseRedirect(reverse('product_stock'))
 
 
 def cancel_shipment(_shipment_details):

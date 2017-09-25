@@ -56,7 +56,7 @@ class Shipment(models.Model):
     )
     type = models.SmallIntegerField(_('Tipo'), choices=TYPE_CHOICES, null=True)
     created_date = models.DateTimeField(_('Data de criação'), auto_now_add=True, null=True)
-    information = models.TextField(_('Observação'), null=True, blank=True)
+    information = models.TextField(_('Informações adicionais'), null=True, blank=True)
     payment_date = models.DateTimeField(_('Data de pagamento'), null=True)
 
     class Meta:
@@ -214,6 +214,7 @@ class Estimates(models.Model):
     id = models.AutoField(primary_key=True)
     preparation = models.IntegerField(_('Preparação para Envio'), help_text=_('Valor em horas'), default=48)
     shipment = models.IntegerField(_('Envio'), help_text=_('Valor em horas'), default=24)
+    weekends = models.BooleanField(_('Funciona final de semana?'), default=False)
 
     class Meta:
         verbose_name = _('Estimativa')
