@@ -4,6 +4,11 @@ from django.db.models import Q
 from django.utils import translation
 from myauth.templatetags.users import has_user_perm
 from datetime import timedelta
+from utils.templatetags.commons import timezone_name
+import pytz
+import logging
+
+logger = logging.getLogger('django')
 
 register = template.Library()
 
@@ -56,7 +61,10 @@ def etc(initial_date, **kwargs):
             delta_t = estimates.shipment
         else:
             return None
-        etc_date = initial_date + timedelta(hours=delta_t)
+        tz = pytz.timezone(timezone_name(translation.get_language()))
+        etc_date = initial_date.astimezone(tz) + timedelta(hours=delta_t)
+        logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@TIMEZONE DATE@@@@@@@@@@@@@@@@@@@@')
+        logger.debug(etc_date)
         if estimates.weekends is False:
             etc_weekday = etc_date.weekday()
             if etc_weekday == 5:

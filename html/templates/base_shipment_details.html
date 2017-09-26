@@ -223,7 +223,7 @@
                             {% etc shipment.created_date estimate='preparation' as etc_preparation %}
                             {% if etc_preparation %}
                             {% timezone mytz %}
-                            <span class="previsao">( {% trans "Previsão: Até" %} {{ etc_preparation|date:'SHORT_DATETIME_FORMAT' }} {% trans "inclusive" %})</span>
+                            <span class="previsao">({% trans "Previsão: Até" %} {{ etc_preparation|date:'SHORT_DATE_FORMAT' }} {% trans "inclusive" %})</span>
                             {% endtimezone %}
                             {% endif %}
                         </label>
@@ -240,7 +240,7 @@
                             {% etc shipment.payment_date estimate='shipment' as etc_shipment %}
                             {% if etc_shipment %}
                             {% timezone mytz %}
-                             <span class="previsao">( {% trans "Previsão: Até" %} {{ etc_shipment|date:'SHORT_DATETIME_FORMAT' }} {% trans "inclusive" %})</span>
+                             <span class="previsao">({% trans "Previsão: Até" %} {{ etc_shipment|date:'SHORT_DATE_FORMAT' }} {% trans "inclusive" %})</span>
                             {% endtimezone %}
                             {% endif %}
                         </label>

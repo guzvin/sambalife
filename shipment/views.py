@@ -27,6 +27,7 @@ from shipment.templatetags.shipments import unit_weight_display, unit_length_dis
 from django.contrib.auth import get_user_model
 from django.template import loader, TemplateDoesNotExist
 from django.utils import translation
+from shipment.templatetags.shipments import etc
 from decimal import Decimal
 import time
 import magic
@@ -618,6 +619,7 @@ def shipment_status(request, pid=None, op=None):
                     is_sandbox = settings.PAYPAL_TEST or paypal_mode(shipment[0].user)
                     shipment.update(status=F('status') + 1, cost=cost, is_sandbox=is_sandbox,
                                     payment_date=timezone.now())
+                    send_email_shipment_paid(request, shipment[0], async=True)
                 else:
                     shipment.update(status=F('status') + 1)
             elif op == 'backward' and shipment[0].status > 1:
@@ -1030,7 +1032,10 @@ def shipment_paypal_notification_success(request, _shipment_details, ipn_obj, pa
 def send_email_shipment_add(request, shipment, products, warehouses):
     email_title = _('Cadastro de Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
-                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 3 +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 2 +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong>'
+                           '<br> {} {}</p>'] +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> U$ {}</p>'] +
                           ['<br>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
@@ -1044,6 +1049,9 @@ def send_email_shipment_add(request, shipment, products, warehouses):
     texts = (_('Seu envio foi cadastrado com sucesso. Seguem abaixo os dados do envio:'),
              _('Envio'), shipment.id,
              _('Data de envio'), force_text(formats.localize(shipment.send_date, use_l10n=True)),
+             _('Previsão de cadastro do(s) pacote(s)'),
+             formats.date_format(etc(shipment.created_date, estimate='preparation'), "SHORT_DATE_FORMAT"),
+             _('inclusive'),
              _('Quantidade de produtos'), shipment.total_products,
              _('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
 
@@ -1069,7 +1077,10 @@ def send_email_shipment_add(request, shipment, products, warehouses):
 def send_email_merchant_shipment_add(request, shipment, products):
     email_title = _('Cadastro de Envio Merchant %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
-                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 3 +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 2 +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong>'
+                           '<br> {} {}</p>'] +
+                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> U$ {}</p>'] +
                           ['<br>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
@@ -1080,6 +1091,9 @@ def send_email_merchant_shipment_add(request, shipment, products):
     texts = (_('Seu envio foi cadastrado com sucesso. Seguem abaixo os dados do envio:'),
              _('Envio'), shipment.id,
              _('Data de envio'), force_text(formats.localize(shipment.send_date, use_l10n=True)),
+             _('Previsão de cadastro do(s) pacote(s)'),
+             formats.date_format(etc(shipment.created_date, estimate='preparation'), "SHORT_DATE_FORMAT"),
+             _('inclusive'),
              _('Quantidade de produtos'), shipment.total_products,
              _('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
 
@@ -1133,7 +1147,9 @@ def send_email_shipment_payment(request, shipment):
 def send_email_shipment_paid(request, shipment, async=False):
     texts = (_('Obrigado novamente, agora é só aguardar que, assim que fizermos as checagens finais e tudo estiver ok, '
                'iremos enviar um novo e-mail para avisar da conclusão do processo do seu envio %(id)s.')
-             % {'id': shipment.id},)
+             % {'id': shipment.id}, _('Previsão para conclusão'),
+             formats.date_format(etc(shipment.payment_date, estimate='shipment'), "SHORT_DATE_FORMAT"),
+             _('inclusive'),)
     send_email_shipment_status_change(request, shipment, _('para acessar seu envio.'), *texts, async=async)
 
 
@@ -1187,6 +1203,8 @@ def send_email_shipment_status_change(request, shipment, link_text, *texts, asyn
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           (['<p style="color:#858585;font:13px/120% \'Helvetica\'">'
                            '<strong>{}:</strong> U$ {}</p>'] if len(texts) == 3 else ['']) +
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong>'
+                           '<br> {} {}</p>'] if len(texts) == 4 else ['']) +
                           ['<p><a href="{}">{}</a> {}</p>'])
     texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), link_text,)
