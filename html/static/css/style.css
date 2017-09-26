@@ -1474,6 +1474,28 @@ form small{
     margin-top: 15px;
 }
 
+.sistema .navbar-brand img:first-child{
+    width: 200px;
+    margin-top: 6px;
+}
+
+.en .navbar-default .navbar-brand.logo-site{
+    text-indent: -999em;
+    height: 50px;
+    margin-top: 0px;
+    width: 250px;
+}
+
+.en .navbar-default.affix-top .navbar-brand.logo-site{
+    background: url('../img/logo-en-white.png') no-repeat 0 0;
+    background-size: 250px;
+}
+
+.en .navbar-default.affix .navbar-brand.logo-site{
+    background: url('../img/logo-en.png') no-repeat 0 0;
+    background-size: 250px;
+}
+
 .termos .page-header{
     margin-top: 90px;
 }
