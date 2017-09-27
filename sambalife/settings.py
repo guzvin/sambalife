@@ -271,7 +271,6 @@ LANGUAGES_DOMAINS = {
     'vendedorinternacional.net': 'pt-br',
     'prepshiptool.com': 'en-us',
     'redirecionamento.maquinadevendasusa.com': 'pt-br',
-    'localhost:9083': 'pt-br',
 }
 
 # Static files (CSS, JavaScript, Images)

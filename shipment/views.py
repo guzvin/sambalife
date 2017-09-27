@@ -1016,8 +1016,9 @@ def shipment_paypal_notification(user_id, shipment_id, ipn_obj):
 
 
 def shipment_paypal_notification_success(request, _shipment_details, ipn_obj, paypal_status_message):
-    updated_rows = Shipment.objects.filter(pk=_shipment_details.id, status=3).update(status=4,
-                                                                                     payment_date=timezone.now())
+    _shipment_details.payment_date = timezone.now()
+    updated_rows = Shipment.objects.filter(pk=_shipment_details.id, status=3)\
+        .update(status=4, payment_date=_shipment_details.payment_date)
     if updated_rows == 0:
         logger.error('Zero rows updated.')
         raise helper.PaymentException()
