@@ -47,9 +47,9 @@
                     </select>
                 </div>
                 <div class="form-group col-md-2">
-                  {% trans "Data de Envio" as send_date %}
-                    <label for="datepicker">{{ send_date }}</label>
-                    <input type="text" class="form-control datepicker" id="datepicker" placeholder="{{ send_date }}..." name="date" value="{{ filter_values.date }}">
+                  {% trans "Data de Criação" as created_date %}
+                    <label for="datepicker">{{ created_date }}</label>
+                    <input type="text" class="form-control datepicker" id="datepicker" placeholder="{{ created_date }}..." name="date" value="{{ filter_values.date }}">
                 </div>
                 <div class="col-md-12">
                   <label for="filtro-arquivado">
@@ -89,8 +89,8 @@
                   <!-- fim campo -->
                   {% endif %}
                   <th>
-                    {% trans "Ordenar pela data de envio" as order_send_date %}
-                    <a title="{{ order_send_date }}" href="javascript:void(0);">{{ send_date }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
+                    {% trans "Ordenar pela data de criação" as order_created_date %}
+                    <a title="{{ order_created_date }}" href="javascript:void(0);">{{ created_date }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
                   <th class="center">
                     {% trans "Ordenar pela quantidade" as order_qty %}
@@ -112,7 +112,7 @@
                   <td class="center">{{ shipment.user.first_name }}<br>({{ shipment.user.email }})</td>
                   <!-- fim campo -->
                   {% endif %}
-                  <td>{{ shipment.send_date }}</td>
+                  <td>{{ shipment.created_date|date:'SHORT_DATE_FORMAT' }}</td>
                   <td class="center">{{ shipment.total_products }}</td>
                   <td class="center"> {{ shipment.get_status_display  }}</td>
                   <td class="center"><a class="download" href="{% url 'shipment_details' shipment.id %}"><i class="fa fa-pencil-square"></i> {% trans "Visualizar" %}</a></td>

@@ -104,8 +104,8 @@ def list_shipment(request, template_name):
         filter_values = {
             'status': '',
         }
-        filter_send_date = request.GET.get('date')
-        logger.debug(str(filter_send_date))
+        filter_created_date = request.GET.get('date')
+        logger.debug(str(filter_created_date))
         if filter_id:
             queries.append(Q(pk__startswith=filter_id))
             filter_values['id'] = filter_id
@@ -116,9 +116,10 @@ def list_shipment(request, template_name):
         if filter_status:
             queries.append(Q(status=filter_status))
             filter_values['status'] = filter_status
-        if filter_send_date:
-            queries.append(Q(send_date=DateField().to_python(filter_send_date)))
-            filter_values['date'] = filter_send_date
+        if filter_created_date:
+            d = DateField().to_python(filter_created_date)
+            queries.append(Q(created_date__date=d))
+            filter_values['date'] = filter_created_date
         if filter_canceled and filter_canceled == 'on':
             filter_values['canceled'] = 'checked=checked'
         else:
@@ -745,8 +746,7 @@ def shipment_add(request):
             original_products = OriginalProduct.objects.none()
     else:
         original_products = OriginalProduct.objects.none()
-    ShipmentFormSet = modelformset_factory(Shipment, fields=('send_date', 'pdf_1',),
-                                           localized_fields=('send_date',), min_num=1, max_num=1,
+    ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
                                            widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
                                                                                                           'product'),
@@ -840,8 +840,7 @@ def merchant_shipment_add(request):
             original_products = OriginalProduct.objects.none()
     else:
         original_products = OriginalProduct.objects.none()
-    ShipmentFormSet = modelformset_factory(Shipment, fields=('send_date', 'type',), localized_fields=('send_date',),
-                                           min_num=1, max_num=1)
+    ShipmentFormSet = modelformset_factory(Shipment, fields=('type',), min_num=1, max_num=1)
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
                                                                                                           'product'),
                                            field_classes={'product': Field},
@@ -1048,7 +1047,9 @@ def send_email_shipment_add(request, shipment, products, warehouses):
                           ['<p><a href="{}">{}</a> {}</p>'])
     texts = (_('Seu envio foi cadastrado com sucesso. Seguem abaixo os dados do envio:'),
              _('Envio'), shipment.id,
-             _('Data de envio'), force_text(formats.localize(shipment.send_date, use_l10n=True)),
+             _('Data de criação'),
+             # force_text(formats.localize(shipment.send_date, use_l10n=True)),
+             formats.date_format(helper.localize_date(shipment.created_date), "SHORT_DATE_FORMAT"),
              _('Previsão de cadastro do(s) pacote(s)'),
              formats.date_format(etc(shipment.created_date, estimate='preparation'), "SHORT_DATE_FORMAT"),
              _('inclusive'),
@@ -1090,7 +1091,9 @@ def send_email_merchant_shipment_add(request, shipment, products):
                           ['<p><a href="{}">{}</a> {}</p>'])
     texts = (_('Seu envio foi cadastrado com sucesso. Seguem abaixo os dados do envio:'),
              _('Envio'), shipment.id,
-             _('Data de envio'), force_text(formats.localize(shipment.send_date, use_l10n=True)),
+             _('Data de criação'),
+             # force_text(formats.localize(shipment.send_date, use_l10n=True)),
+             formats.date_format(helper.localize_date(shipment.created_date), "SHORT_DATE_FORMAT"),
              _('Previsão de cadastro do(s) pacote(s)'),
              formats.date_format(etc(shipment.created_date, estimate='preparation'), "SHORT_DATE_FORMAT"),
              _('inclusive'),

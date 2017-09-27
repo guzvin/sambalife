@@ -32,7 +32,6 @@ class Shipment(models.Model):
     id = BigAutoField(primary_key=True)
     total_products = models.PositiveIntegerField(_('Total de Produtos'))
     cost = models.DecimalField(_('Valor Total'), max_digits=12, decimal_places=2)
-    send_date = models.DateField(_('Data de Envio'))
     STATUS_CHOICES = (
         (1, _('Preparando para Envio')),  # Preparing for Shipment
         (2, _('Upload Etiqueta Caixa Autorizado')),  # Upload Box Label Authorized
@@ -65,15 +64,6 @@ class Shipment(models.Model):
         permissions = (
             ('view_shipments', _('Pode visualizar Envios')),
         )
-
-    def clean(self):
-        errors = {}
-        logger.debug('@@@@@@@@@@@@ SHIPMENT CLEAN DATE @@@@@@@@@@@@@@')
-        logger.debug(self.send_date)
-        if self.send_date and self.send_date > datetime.now().date():
-            errors['send_date'] = ValidationError(_('Informe uma data menor ou igual a de hoje.'), code='invalid_date')
-        if bool(errors):
-            raise ValidationError(errors)
 
 
 @receiver(pre_save, sender=Shipment)

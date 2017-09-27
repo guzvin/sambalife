@@ -104,10 +104,10 @@
 {% endcomment %}
                 <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">{{ shipment.cost|floatformat:2|localize }}</span></p>
             </div>
-            <div class="{% block info_send_date %}{% endblock %}">
-                <p><strong><i class="fa fa-fw fa-calendar"></i> {% trans "Data de Envio" %}: </strong></p>
+            <div class="{% block info_created_date %}{% endblock %}">
+                <p><strong><i class="fa fa-fw fa-calendar"></i> {% trans "Data de Criação" %}: </strong></p>
                 <div class="form-group">
-                    {{ shipment.send_date }}
+                    {{ shipment.created_date|date:'SHORT_DATE_FORMAT' }}
                 </div>
 {% comment %}
                 {% if user|has_group:'admins' %}
@@ -219,12 +219,15 @@
                    {% timezone_name LANGUAGE_CODE as mytz %}
                    <div class="col-md-3 center">
                         <label>
-                            <i class="fa fa-2x fa-fw fa-plus-square"></i><br>{% trans "Preparando para Envio" %}<br>
+                            <i class="fa fa-2x fa-fw fa-plus-square"></i><br>{% trans "Preparando para Envio" %}
+                            {% if shipment.status == 1 %}
+                            <br>
                             {% etc shipment.created_date estimate='preparation' as etc_preparation %}
                             {% if etc_preparation %}
                             {% timezone mytz %}
                             <span class="previsao">({% trans "Previsão: Até" %} {{ etc_preparation|date:'SHORT_DATE_FORMAT' }} {% trans "inclusive" %})</span>
                             {% endtimezone %}
+                            {% endif %}
                             {% endif %}
                         </label>
                    </div>
@@ -236,12 +239,15 @@
                    </div>
                    <div class="col-md-2 center">
                         <label>
-                            <i class="fa fa-2x fa-list-alt"></i><br>{% trans "Checagens Finais" %}<br>
+                            <i class="fa fa-2x fa-list-alt"></i><br>{% trans "Checagens Finais" %}
+                            {% if shipment.status == 4 %}
+                            <br>
                             {% etc shipment.payment_date estimate='shipment' as etc_shipment %}
                             {% if etc_shipment %}
                             {% timezone mytz %}
                              <span class="previsao">({% trans "Previsão: Até" %} {{ etc_shipment|date:'SHORT_DATE_FORMAT' }} {% trans "inclusive" %})</span>
                             {% endtimezone %}
+                            {% endif %}
                             {% endif %}
                         </label>
                    </div>
@@ -339,7 +345,7 @@
             {% endif %}
            {% endif %}
              <div class="row">
-             {% if shipment.is_canceled is False %}
+             {% if shipment.is_canceled is False and shipment.status < 5 %}
               {% if shipment.is_archived %}
                  <!-- Botao arquivar -->
                  <a class="btn btn-primary filtar-btn alterar-status" id="restore-btn" href="#">

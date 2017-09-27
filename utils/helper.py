@@ -26,6 +26,9 @@ from store.views import store_paypal_notification, store_paypal_notification_suc
 from django.template import Context, Template
 from django.template.base import VariableNode
 from utils.models import Params
+from django.utils import translation
+from utils.templatetags.commons import timezone_name
+import pytz
 import threading
 import socket
 import hashlib
@@ -57,6 +60,11 @@ def valida_senha(senha):
 
 def digitos(valor):
     return re.sub(r'\D', '', valor)
+
+
+def localize_date(my_date):
+    tz = pytz.timezone(timezone_name(translation.get_language()))
+    return my_date.astimezone(tz)
 
 
 class ObjectView(object):

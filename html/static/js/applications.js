@@ -750,15 +750,6 @@
                 positiveNumber: true,
             });
         });
-        $('.send_date_validate').each(function ()
-        {
-            $(this).rules('add',
-            {
-                required: true,
-                date: true,
-                dateLessThanOrEqualNow: true,
-            });
-        });
         $('.pdf_1-validate').each(function ()
         {
             $(this).rules('add',
@@ -1191,15 +1182,6 @@
             {
                 required: true,
                 positiveNumber: true,
-            });
-        });
-        $('.send_date_validate').each(function ()
-        {
-            $(this).rules('add',
-            {
-                required: true,
-                date: true,
-                dateLessThanOrEqualNow: true,
             });
         });
         $('.type_validate').each(function ()

@@ -48,7 +48,7 @@
 
 </head>
 
-<body id="page-top" class="lista-usuarios sistema">
+<body id="page-top" class="lista-usuarios sistema {% if LANGUAGE_CODE == 'en-us' %}sistema-en{% endif %}">
  <header class="bs-docs-nav navbar navbar-static-top header-sistema" id="top">
         <div class="container">
             <div class="navbar-header">
@@ -60,7 +60,7 @@
                 </button>
                 <a href="/" class="navbar-brand page-scroll">
                     {% if LANGUAGE_CODE == 'pt-br' %}
-                        <img class="logo-img-plataforma" src="/static/img/logo-maquina-vendas.png" />
+                        <img class="logo-img-plataforma" src="/static/img/logo-maquina-vendas.png"/>
                     {% else %}
                     <img src="/static/img/logo-en.png" />
                     {% endif %}

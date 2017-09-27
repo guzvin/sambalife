@@ -90,24 +90,13 @@
           {% for shipment_form in shipment_formset %}
             {{ shipment_form.id }}
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <label><i class="fa fa-fw fa-bar-chart"></i> {% trans "Valores" %}:</label><br><br>
                 <a class="btn btn-default" href="#" id="btn-calculate-shipment"><i class="fa fa-fw fa-calculator"></i> {% trans "Calcular valor do Envio" %}</a><br><br>
                 <p><strong><i class="fa fa-fw fa-list-ol"></i> {% trans "Total de Produtos" %}: </strong><span id="totalProducts">-</span> </p>
                 <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">-</span></p>
             </div>
-            <div class="col-md-4">
-                <p><strong><i class="fa fa-fw fa-calendar"></i> {{ shipment_form.send_date.label }}: </strong></p>
-                <div class="form-group">
-                    {% with formatted_date=shipment_form.send_date.value|date:'SHORT_DATE_FORMAT' %}
-                    <input type="text" placeholder="{{ shipment_form.send_date.label }}..." name="{{ shipment_form.send_date.html_name }}" class="form-control menor datepicker send_date_validate" id="{{ shipment_form.send_date.id_for_label }}" value="{% if formatted_date %}{{ formatted_date }}{% elif shipment_form.send_date.value %}{{ shipment_form.send_date.value }}{% endif %}">
-                    {% endwith %}
-                      {% for error in shipment_form.send_date.errors %}
-                        <label id="{{ shipment_form.send_date.id_for_label }}-error" class="error" for="{{ shipment_form.send_date.id_for_label }}">{{ error|escape }}</label>
-                      {% endfor %}
-                </div>
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="form-group">
                     <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Upload/Download Arquivos" %}:</label><br><br>
                     <label>{{ shipment_form.pdf_1.label }}:</label>{{ shipment_form.pdf_1 }}
