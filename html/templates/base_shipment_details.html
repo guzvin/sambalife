@@ -104,10 +104,13 @@
 {% endcomment %}
                 <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">{{ shipment.cost|floatformat:2|localize }}</span></p>
             </div>
+            {% timezone_name LANGUAGE_CODE as mytz %}
             <div class="{% block info_created_date %}{% endblock %}">
                 <p><strong><i class="fa fa-fw fa-calendar"></i> {% trans "Data de Criação" %}: </strong></p>
                 <div class="form-group">
+                    {% timezone mytz %}
                     {{ shipment.created_date|date:'SHORT_DATE_FORMAT' }}
+                    {% endtimezone %}
                 </div>
 {% comment %}
                 {% if user|has_group:'admins' %}
@@ -216,7 +219,6 @@
                </div>
 
                <div class="col-md-12 itens-progress">
-                   {% timezone_name LANGUAGE_CODE as mytz %}
                    <div class="col-md-3 center">
                         <label>
                             <i class="fa fa-2x fa-fw fa-plus-square"></i><br>{% trans "Preparando para Envio" %}

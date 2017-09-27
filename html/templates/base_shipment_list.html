@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n permissions users shipments commons %}
+{% load i18n tz permissions users shipments commons %}
 
 {% block conteudo %}
 
@@ -112,7 +112,10 @@
                   <td class="center">{{ shipment.user.first_name }}<br>({{ shipment.user.email }})</td>
                   <!-- fim campo -->
                   {% endif %}
+                  {% timezone_name LANGUAGE_CODE as mytz %}
+                  {% timezone mytz %}
                   <td>{{ shipment.created_date|date:'SHORT_DATE_FORMAT' }}</td>
+                  {% endtimezone %}
                   <td class="center">{{ shipment.total_products }}</td>
                   <td class="center"> {{ shipment.get_status_display  }}</td>
                   <td class="center"><a class="download" href="{% url 'shipment_details' shipment.id %}"><i class="fa fa-pencil-square"></i> {% trans "Visualizar" %}</a></td>
