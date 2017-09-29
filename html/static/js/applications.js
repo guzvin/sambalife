@@ -507,6 +507,7 @@
             {
                 var tr = form.closest('tr');
                 var quantityColumn = tr.find('td.row-quantity');
+                var pickTicketColumn = tr.find('td.row-pick-ticket-display');
                 var inputPartial = tr.find('input.row-qty-partial');
                 var currentPartial = inputPartial.data('current-partial');
                 var newPartialValue = inputPartial.val();
@@ -519,10 +520,16 @@
                 var inputConditionComments = tr.find('input.row-condition-comments');
                 var currentConditionComments = inputConditionComments.data('condition-comments')
                 var newConditionCommentsValue = inputConditionComments.val();
+
+                var inputPickTicket = tr.find('input.row-pick-ticket');
+                var currentPickTicket = inputPickTicket.data('pick-ticket')
+                var newPickTicketValue = inputPickTicket.val();
+
                 var checkedValue = radioChecked.val();
                 var currentValue = radioChecked.data('current-status');
                 if(''+checkedValue !== ''+currentValue || ''+currentPartial !== ''+newPartialValue || ''+currentBestBefore != ''+newBestBeforeValue
-                || ''+currentActualCondition != ''+newActualConditionValue || ''+currentConditionComments != ''+newConditionCommentsValue)
+                || ''+currentActualCondition != ''+newActualConditionValue || ''+currentConditionComments != ''+newConditionCommentsValue
+                || ''+currentPickTicket != ''+newPickTicketValue)
                 {
                     var $this = $(this);
                     if($this.hasClass('nosubmit'))
@@ -546,6 +553,7 @@
                         inputBestBefore.data('best-before', obj.product.best_before);
                         selectActualCondition.data('actual-condition', obj.product.actual_condition);
                         inputConditionComments.data('condition-comments', obj.product.condition_comments);
+                        inputPickTicket.data('pick-ticket', obj.product.pick_ticket);
                         if(obj.product.show_check && obj.product.status === SHIPMENT_STATUS_IN_STOCK && obj.product.quantity >= 0)
                         {
                             var checkColumn = $('span#product-status-display-'+obj.product.id).closest('td').next();
@@ -584,6 +592,12 @@
                             {
                                 rowBestBefore.remove();
                             }
+                        }
+                        var pickTicket = obj.product.pick_ticket;
+                        $('span.help.fa-thumb-tack').remove();
+                        if(pickTicket !== '')
+                        {
+                            pickTicketColumn.append($('<span class="help help-tooltip fa fa-thumb-tack" title="' + gettext('Pick ticket') + ': ' + pickTicket + '"></span>'));
                         }
                         form.closest('.contem-status').hide();
                     })

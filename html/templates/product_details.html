@@ -22,19 +22,33 @@
                     <div class="col-xs-9">
                         <p>{{ product.name }}</p>
                     </div>
-                </div>
+              </div>
               <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "ASIN" %}:</label>
                     <div class="col-xs-9">
                         <p>{% if product.asin %}{{ product.asin }}{% endif %}</p>
                     </div>
-                </div>
+              </div>
               <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Descrição" %}:</label>
                     <div class="col-xs-9">
                         <p>{{ product.description }}</p>
                     </div>
-                </div>
+              </div>
+              {% if user|has_product_perm:'change_product_status' %}
+              <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "Localização na Warehouse" %}:</label>
+                    <div class="col-xs-9">
+                        <p>{% if product.pick_ticket %}{{ product.pick_ticket }}{% endif %}</p>
+                    </div>
+              </div>
+              {% endif %}
+              <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "Loja" %}:</label>
+                    <div class="col-xs-9">
+                        <p>{% if product.store %}{{ product.store }}{% endif %}</p>
+                    </div>
+              </div>
               <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Quantidade" %}:</label>
                     <div class="col-xs-9">

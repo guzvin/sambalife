@@ -125,7 +125,12 @@
                 {% for product in products %}
                 <tr>
                   <td>{{ product.id }}</td>
-                  <td class="limit-field">{{ product.name }}</td>
+                  <td class="limit-field row-pick-ticket-display">
+                      {{ product.name }}
+                      {% if user|has_product_perm:'change_product_status' and product.pick_ticket %}
+                      <span class="help help-tooltip fa fa-thumb-tack" title="{% blocktrans %}Localização na Warehouse{% endblocktrans %}: {{ product.pick_ticket }}"></span>
+                      {% endif %}
+                  </td>
                   <td>{% if product.asin %}{{ product.asin }}{% endif %}</td>
                   <td class="center row-quantity" data-current-qty="{{ product.quantity }}">
                       <span class="row-quantity-display">
@@ -217,12 +222,10 @@
                           <label><i class="fa fa-desktop"></i> {% trans "Comentários da Condição" %}:</label>
                           <input type="text" class="form-control row-condition-comments" name="product_condition_comments" value="{% if product.condition_comments %}{{ product.condition_comments }}{% endif %}" data-condition-comments="{% if product.condition_comments %}{{ product.condition_comments }}{% endif %}">
                         </div>
-{% comment %}
                         <div class="form-group col-md-12">
                             <label><i class="fa fa-thumb-tack"></i> {% trans "Localização na Warehouse" %}:</label>
-                            <input class="form-control" name="localizacao" value="" id="localizacao" type="text">
+                            <input class="form-control row-pick-ticket" name="product_pick_ticket" type="text" value="{% if product.pick_ticket %}{{ product.pick_ticket }}{% endif %}" data-pick-ticket="{% if product.pick_ticket %}{{ product.pick_ticket }}{% endif %}">
                         </div>
-{% endcomment %}
                         <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i> {% trans "Salvar" %}</a>
                         <a class="btn btn-danger fechar" href="javascript:void(0);"><i class="fa fa-times"></i> {% trans "Fechar" %}</a>
                         </form>

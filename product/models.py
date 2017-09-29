@@ -14,6 +14,7 @@ class Product(models.Model):
     id = BigAutoField(primary_key=True)
     name = models.CharField(_('Nome'), max_length=150)
     asin = models.CharField(_('ASIN'), max_length=50, null=True, blank=True)
+    store = models.CharField(_('Loja'), max_length=200, null=True, blank=True)
     description = models.TextField(_('Descrição'), null=True, blank=True)
     quantity_original = models.PositiveIntegerField(_('Quantidade Original Cadastrada'), null=True)
     quantity = models.PositiveIntegerField(_('Quantidade'))
@@ -42,6 +43,7 @@ class Product(models.Model):
     create_date = models.DateTimeField(_('Data de Cadastro'), auto_now_add=True, null=True)
     receive_date = models.DateTimeField(_('Data de Recebimento'), null=True, blank=True)
     edd_date = models.DateField(_('Previsão de Entrega'), null=True, blank=True)
+    pick_ticket = models.CharField(_('Localização na Warehouse'), max_length=200, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
     class Meta:

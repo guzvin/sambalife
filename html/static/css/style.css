@@ -1390,6 +1390,11 @@ form small{
     color: #999;
 }
 
+.help.fa-thumb-tack {
+    font-size: 1.22222222em;
+    color: #999;
+}
+
 /*versao en*/
 
 .en header .intro-text {

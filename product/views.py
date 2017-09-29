@@ -120,10 +120,10 @@ def product_add_edit(request, pid=None):
         return HttpResponseForbidden()
     elif pid is not None and has_product_perm(request.user, 'change_product') is False:
         return HttpResponseForbidden()
-    ProductFormSet = modelformset_factory(Product, fields=('name', 'asin', 'description', 'quantity',
+    ProductFormSet = modelformset_factory(Product, fields=('name', 'asin', 'store', 'description', 'quantity',
                                                            'quantity_partial', 'send_date', 'edd_date', 'best_before',
                                                            'condition', 'actual_condition', 'condition_comments',
-                                                           'status'),
+                                                           'status', 'pick_ticket'),
                                           localized_fields=('send_date',), min_num=1, max_num=1)
     TrackingFormSet = inlineformset_factory(Product, Tracking, formset=MyBaseInlineFormSet, fields=('track_number',),
                                             extra=1)
@@ -212,15 +212,17 @@ def product_edit_status(request, pid=None, output=None):
             product_quantity_partial = request.PUT.get('product_quantity_partial')
             if product_quantity_partial:
                 try:
-                    product.quantity_partial = int(product_quantity_partial)
+                    product_quantity_partial = int(product_quantity_partial)
                     if product.quantity_partial < 0:
                         int('err')
                 except ValueError:
                     error_msg.append(_('Quantidade deve ser maior ou igual a zero.') % {'qty': product.quantity})
-                fields_to_update.append('quantity_partial')
-                if product.quantity_partial == 0 or product.quantity_partial > product.quantity:
-                    product.quantity = product.quantity_partial
-                    fields_to_update.append('quantity')
+                if product_quantity_partial != product.quantity_partial:
+                    product.quantity_partial = product_quantity_partial
+                    fields_to_update.append('quantity_partial')
+                    if product.quantity_partial == 0 or product.quantity_partial > product.quantity:
+                        product.quantity = product.quantity_partial
+                        fields_to_update.append('quantity')
             product_best_before = request.PUT.get('product_best_before')
             if product_best_before:
                 try:
@@ -278,15 +280,24 @@ def product_edit_status(request, pid=None, output=None):
             if product.condition_comments != product_condition_comments:
                 product.condition_comments = product_condition_comments
                 fields_to_update.append('condition_comments')
-            if len(fields_to_update) == 0:
+            pick_ticket = False
+            product_pick_ticket = request.PUT.get('product_pick_ticket')
+            if product.pick_ticket != product_pick_ticket:
+                product.pick_ticket = product_pick_ticket.strip()
+                pick_ticket = True
+            if len(fields_to_update) == 0 and pick_ticket is False:
                 raise Product.DoesNotExist
-            with transaction.atomic():
-                product.save(update_fields=fields_to_update)
-                shipment_products = product.product_set.all()
-                for shipment_product in shipment_products:
-                    shipment_product.receive_date = product.receive_date
-                    shipment_product.save(update_fields=['receive_date'])
-            send_email_product_info(request, product, product_status_display, product_actual_condition_display)
+            elif len(fields_to_update) == 0 and pick_ticket:
+                product.save(update_fields=['pick_ticket'])
+            else:
+                fields_to_update.append('pick_ticket')
+                with transaction.atomic():
+                    product.save(update_fields=fields_to_update)
+                    shipment_products = product.product_set.all()
+                    for shipment_product in shipment_products:
+                        shipment_product.receive_date = product.receive_date
+                        shipment_product.save(update_fields=['receive_date'])
+                send_email_product_info(request, product, product_status_display, product_actual_condition_display)
             if output and output == 'json':
                 product_json = {
                     'id': product.id,
@@ -299,6 +310,7 @@ def product_edit_status(request, pid=None, output=None):
                                                                                               "SHORT_DATE_FORMAT"),
                     'actual_condition': '' if product.actual_condition is None else product.actual_condition,
                     'condition_comments': '' if product.condition_comments is None else product.condition_comments,
+                    'pick_ticket': '' if product.pick_ticket is None else product.pick_ticket,
                     'status': product.status,
                     'status_display': product_status_display,
                     'show_check': product.user == request.user,

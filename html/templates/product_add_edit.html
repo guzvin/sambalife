@@ -43,6 +43,14 @@
                   <textarea class="form-control" id="{{ form.description.id_for_label }}" name="{{ form.description.html_name }}" placeholder="{{ description }}...">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
                 </div><br>
                 <div class="form-group col-md-12">
+                  <label for="{{ form.store.id_for_label }}">{{ form.store.label }}</label>
+                    {% blocktrans asvar store with store_label=form.store.label %}Digite a {{ store_label }}{% endblocktrans %}
+                  <input type="text" class="form-control" id="{{ form.store.id_for_label }}" aria-describedby="store" name="{{ form.store.html_name }}" placeholder="{{ store }}..." value="{% if form.store.value %}{{ form.store.value }}{% endif %}">
+                  {% for error in form.store.errors %}
+                    <label id="store-error" class="error" for="{{ form.store.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                <div class="form-group col-md-12">
                   <label for="{{ form.quantity.id_for_label }}">{{ form.quantity.label }}*</label>
                   {% if form.status.value is None or form.status.value == 1 %}
                     {% trans "Digite a quantidade" as quantity %}
@@ -156,6 +164,14 @@
                   <input type="text" class="form-control" id="{{ form.condition_comments.id_for_label }}" aria-describedby="condition_comments" name="{{ form.condition_comments.html_name }}" placeholder="{{ condition_comments }}..." value="{% if form.condition_comments.value %}{{ form.condition_comments.value }}{% endif %}">
                   {% for error in form.condition_comments.errors %}
                     <label id="condition_comments-error" class="error" for="{{ form.condition_comments.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                <div class="form-group col-md-12">
+                  <label for="{{ form.pick_ticket.id_for_label }}">{{ form.pick_ticket.label }}</label>
+                    {% trans "Digite a localização na warehouse" as pick_ticket %}
+                  <input type="text" class="form-control" id="{{ form.pick_ticket.id_for_label }}" name="{{ form.pick_ticket.html_name }}" placeholder="{{ pick_ticket }}..." value="{% if form.pick_ticket.value %}{{ form.pick_ticket.value }}{% endif %}">
+                  {% for error in form.pick_ticket.errors %}
+                    <label id="pick_ticket-error" class="error" for="{{ form.pick_ticket.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
                 {% endif %}

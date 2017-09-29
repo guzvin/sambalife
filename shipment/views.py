@@ -196,8 +196,8 @@ def shipment_details(request, pid=None):
                         'warehouses': _shipment_warehouses}
         custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
         PackageFormSet = inlineformset_factory(Shipment, Package, formset=helper.MyBaseInlineFormSet,
-                                               fields=('warehouse', 'weight', 'height', 'width', 'length', 'pdf_2',
-                                                       'shipment_tracking'),
+                                               fields=('warehouse', 'pick_ticket', 'weight', 'height', 'width',
+                                                       'length', 'pdf_2', 'shipment_tracking'),
                                                extra=render_extra_package(_shipment_details),
                                                error_messages={'weight': custom_error_messages,
                                                                'height': custom_error_messages,
@@ -305,7 +305,7 @@ def shipment_details(request, pid=None):
                                             logger.error('Inconsistent data.')
                                             raise Shipment.DoesNotExist('Inconsistent data.')
                                         if has_group(request.user, 'admins'):
-                                            package.save(update_fields=['warehouse', 'pdf_2'])
+                                            package.save(update_fields=['warehouse', 'pick_ticket', 'pdf_2'])
                                         else:
                                             package.save(update_fields=['pdf_2'])
                             except Shipment.DoesNotExist as e:
@@ -356,7 +356,7 @@ def shipment_details(request, pid=None):
                                         if force_text(package_shipment_id) != force_text(pid):
                                             logger.error('Inconsistent data.')
                                             raise Shipment.DoesNotExist('Inconsistent data.')
-                                        package.save(update_fields=['shipment_tracking'])
+                                        package.save(update_fields=['pick_ticket', 'shipment_tracking'])
                                         packages.append(package)
                                     previous_state = _shipment_details.status
                                     if _shipment_details.status == 4 and has_group(request.user, 'admins'):
@@ -521,7 +521,7 @@ def edit_warehouse(package_formset, pid):
         if force_text(package.shipment.id) != force_text(pid):
             logger.error('Inconsistent data.')
             raise Shipment.DoesNotExist('Inconsistent data.')
-        package.save(update_fields=['warehouse'])
+        package.save(update_fields=['warehouse', 'pick_ticket'])
     return form_has_changed
 
 
