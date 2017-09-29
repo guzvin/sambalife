@@ -1480,6 +1480,11 @@ form small{
     margin-top: 6px;
 }
 
+.sistema.sistema-en .navbar-brand img{
+    width: 200px;
+    margin-top: 12px;
+}
+
 .en .navbar-default .navbar-brand.logo-site{
     text-indent: -999em;
     height: 50px;
@@ -1552,12 +1557,9 @@ footer.fixed-footer{
 }
 
 @media (max-width: 767px){
-    .navbar-brand img:last-child {
-        display: none;
-    }
 
-    .navbar-brand img:first-child {
-        margin-top: 10px;
+    .sistema .navbar-brand img:first-child{
+        margin-top: -2px;
     }
 
     .navbar-brand {
