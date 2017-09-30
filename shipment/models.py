@@ -128,6 +128,7 @@ class Warehouse(models.Model):
 class Package(models.Model):
     id = BigAutoField(primary_key=True)
     warehouse = models.CharField(_('Warehouse'), max_length=150, null=True)
+    pick_ticket = models.CharField(_('Localização na Warehouse'), max_length=200, null=True, blank=True)
     weight = models.FloatField(_('Peso'))
     height = models.FloatField(_('H'))
     width = models.FloatField(_('W'))

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-25 12:11-0300\n"
+"POT-Creation-Date: 2017-09-28 17:26-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -319,40 +319,44 @@ msgstr ""
 msgid "Purchase date"
 msgstr ""
 
-#: html/static/js/applications.js:574 html/static/js/applications.js:578
+#: html/static/js/applications.js:582 html/static/js/applications.js:586
 msgid "Expiration date"
 msgstr ""
 
-#: html/static/js/applications.js:733 html/static/js/applications.js:1176
+#: html/static/js/applications.js:600
+msgid "Pick ticket"
+msgstr ""
+
+#: html/static/js/applications.js:747 html/static/js/applications.js:1181
 msgid "Unable to save, fix errors above to continue."
 msgstr ""
 
-#: html/static/js/applications.js:896 html/static/js/applications.js:985
+#: html/static/js/applications.js:901 html/static/js/applications.js:990
 msgid ""
 "Sorry, but there seems to be some inconsistencies. Please reload the page "
 "and try again."
 msgstr ""
 
-#: html/static/js/applications.js:897 html/static/js/applications.js:902
-#: html/static/js/applications.js:907 html/static/js/applications.js:986
-#: html/static/js/applications.js:991 html/static/js/applications.js:996
+#: html/static/js/applications.js:902 html/static/js/applications.js:907
+#: html/static/js/applications.js:912 html/static/js/applications.js:991
+#: html/static/js/applications.js:996 html/static/js/applications.js:1001
 msgid "Error"
 msgstr ""
 
-#: html/static/js/applications.js:901 html/static/js/applications.js:990
+#: html/static/js/applications.js:906 html/static/js/applications.js:995
 msgid "Access denied"
 msgstr ""
 
-#: html/static/js/applications.js:906 html/static/js/applications.js:995
+#: html/static/js/applications.js:911 html/static/js/applications.js:1000
 msgid ""
 "Sorry, we are unable to process your operation. Please reload the page and "
 "try again."
 msgstr ""
 
-#: html/static/js/applications.js:1129
+#: html/static/js/applications.js:1134
 msgid "Your message has been sent. Thank you for your contact."
 msgstr ""
 
-#: html/static/js/applications.js:1134 html/static/js/applications.js:1145
+#: html/static/js/applications.js:1139 html/static/js/applications.js:1150
 msgid "Sorry but we couldn't send your message, try again in a moment."
 msgstr ""

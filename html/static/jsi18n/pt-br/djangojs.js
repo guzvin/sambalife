@@ -64,6 +64,7 @@
     "November": "Novembro",
     "Now": "Agora",
     "October": "Outubro",
+    "Pick ticket": "Localiza\u00e7\u00e3o na Warehouse",
     "Please enter a date greater than {1}.": "Informe uma data maior que a {1}.",
     "Please enter a date less than or equal to today.": "Informe uma data menor ou igual a de hoje.",
     "Please enter a number greater than zero.": "Informe um n\u00famero maior que zero.",

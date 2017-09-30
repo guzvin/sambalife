@@ -97,12 +97,13 @@ def get_admins_emails():
 
 
 class EmailThread(threading.Thread):
-    def __init__(self, email_data_tuple, email_from, bcc, connection, raise_exception):
+    def __init__(self, email_data_tuple, email_from, bcc, connection, raise_exception, reply_to):
         self.email_data_tuple = email_data_tuple
         self.email_from = email_from
         self.bcc = bcc
         self.connection = connection
         self.raise_exception = raise_exception
+        self.reply_to = reply_to
         threading.Thread.__init__(self)
 
     def run(self):
@@ -117,7 +118,8 @@ class EmailThread(threading.Thread):
                                from_email=self.email_from,
                                to=recipient,
                                bcc=self.bcc,
-                               connection=self.connection)
+                               connection=self.connection,
+                               reply_to=self.reply_to)
             msg.content_subtype = 'html'
             messages.append(msg)
             recipients.append(recipient)
@@ -142,7 +144,7 @@ class EmailThread(threading.Thread):
                 raise err
 
 
-def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False, raise_exception=False):
+def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False, raise_exception=False, reply_to=None):
     if email_from is None:
         email_from = string_concat(_('Vendedor Online Internacional'), ' ',
                                    _('<no-reply@vendedorinternacional.net>'))
@@ -162,7 +164,8 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         email_from,
         bcc,
         connection,
-        raise_exception
+        raise_exception,
+        reply_to
     )
     if async:
         email.start()
