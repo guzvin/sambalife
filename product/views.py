@@ -173,7 +173,8 @@ def product_add_edit(request, pid=None):
                     for product_form in product_formset:
                         product = product_form.save(commit=False)
                         product.status = product_instance.status
-                        product.quantity = product_instance.quantity
+                        if has_product_perm(request.user, 'change_product_status') is False:
+                            product.quantity = product_instance.quantity
                         if product.quantity_partial is None:
                             product.quantity_original = product.quantity_partial = product.quantity
                         elif product.quantity_partial <= 0:
