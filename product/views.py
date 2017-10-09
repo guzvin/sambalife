@@ -47,6 +47,8 @@ def product_stock(request):
         logger.debug(str(filter_status))
         filter_tracking = request.GET.get('tracking')
         logger.debug(str(filter_tracking))
+        filter_store = request.GET.get('store')
+        logger.debug(str(filter_store))
         filter_archived = request.GET.get('archived')
         logger.debug(str(filter_archived))
         filter_values = {
@@ -71,6 +73,9 @@ def product_stock(request):
         if filter_tracking:
             queries.append(Q(tracking__track_number=filter_tracking))
             filter_values['tracking'] = filter_tracking
+        if filter_store:
+            queries.append(Q(store__icontains=filter_store))
+            filter_values['store'] = filter_store
         if filter_archived and filter_archived == 'on':
             filter_values['archived'] = 'checked=checked'
         else:
