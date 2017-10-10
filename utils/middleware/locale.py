@@ -15,15 +15,15 @@ class DomainLocaleMiddleware(MiddlewareMixin):
         logger.debug('==================================================')
         logger.debug(current_thread())
         logger.debug(request.META['HTTP_HOST'])
-        if 'HTTP_ACCEPT_LANGUAGE' in request.META:
-            # Totally ignore the browser settings...
-            logger.debug(request.META['HTTP_ACCEPT_LANGUAGE'])
-            del request.META['HTTP_ACCEPT_LANGUAGE']
+        # if 'HTTP_ACCEPT_LANGUAGE' in request.META:
+        #     # Totally ignore the browser settings...
+        #     logger.debug(request.META['HTTP_ACCEPT_LANGUAGE'])
+        #     del request.META['HTTP_ACCEPT_LANGUAGE']
         logger.debug(request)
         request.CURRENT_DOMAIN = request.META['HTTP_HOST']
-        lang_code = settings.LANGUAGES_DOMAINS.get(request.CURRENT_DOMAIN)
-        logger.debug(lang_code)
-        if lang_code:
-            translation.activate(lang_code)
-            request.LANGUAGE_CODE = translation.get_language()
+        # lang_code = settings.LANGUAGES_DOMAINS.get(request.CURRENT_DOMAIN)
+        # logger.debug(lang_code)
+        # if lang_code:
+        #     translation.activate(lang_code)
+        #     request.LANGUAGE_CODE = translation.get_language()
         logger.debug(request.CURRENT_DOMAIN)

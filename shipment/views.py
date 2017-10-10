@@ -395,7 +395,7 @@ def shipment_details(request, pid=None):
 
 
 def paypal_mode(user):
-    is_sandbox = (user.email in settings.PAYPAL_SANDBOX_USERS) or translation.get_language() == 'en-us'
+    is_sandbox = (user.email in settings.PAYPAL_SANDBOX_USERS) or translation.get_language() == 'en'
     if user.email in settings.PAYPAL_LIVE_USERS:
         is_sandbox = False
     return is_sandbox
@@ -454,23 +454,17 @@ def shipment_pay_form(request, pid=None):
                     is_sandbox = settings.PAYPAL_TEST or paypal_mode(_shipment_details.user)
                     if is_sandbox:
                         invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
-                        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if \
-                            _shipment_details.user.language_code == 'pt-br' else settings.PAYPAL_BUSINESS_EN_SANDBOX
-                        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX if \
-                            _shipment_details.user.language_code == 'pt-br' else settings.PAYPAL_CERT_ID_EN_SANDBOX
+                        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
+                        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
                         paypal_cert = settings.PAYPAL_CERT_SANDBOX
                     else:
                         invoice_id = '_'.join(['A', str(request.user.id), str(pid)])
-                        paypal_business = settings.PAYPAL_BUSINESS if \
-                            _shipment_details.user.language_code == 'pt-br' else settings.PAYPAL_BUSINESS_EN
-                        paypal_cert_id = settings.PAYPAL_CERT_ID if \
-                            _shipment_details.user.language_code == 'pt-br' else settings.PAYPAL_CERT_ID_EN
+                        paypal_business = settings.PAYPAL_BUSINESS
+                        paypal_cert_id = settings.PAYPAL_CERT_ID
                         paypal_cert = settings.PAYPAL_CERT
 
-                    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT if \
-                        _shipment_details.user.language_code == 'pt-br' else settings.PAYPAL_PRIVATE_CERT_EN
-                    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT if \
-                        _shipment_details.user.language_code == 'pt-br' else settings.PAYPAL_PUBLIC_CERT_EN
+                    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT
+                    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT
 
                     _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').\
                         order_by('id')
@@ -952,7 +946,7 @@ def calculate_shipment(products, user_id, save_product_price=False):
     try:
         cost_formula = CostFormula.objects.first()
         for product in products:
-            formula = helper.resolve_formula(cost_formula.formula, current_user.language_code, partner, product,
+            formula = helper.resolve_formula(cost_formula.formula, partner, product,
                                              save_product_price)
             logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
             logger.debug(formula)
@@ -960,7 +954,7 @@ def calculate_shipment(products, user_id, save_product_price=False):
             quantity += product.quantity
     except CostFormula.DoesNotExist:
         for product in products:
-            cost += product.quantity * (helper.resolve_price_value(product.receive_date, current_user.language_code) +
+            cost += product.quantity * (helper.resolve_price_value(product.receive_date) +
                                         helper.resolve_partner_value(partner))
             quantity += product.quantity
     return HttpResponse(json.dumps({'cost': force_text(formats.number_format(round(cost, 2), use_l10n=True,

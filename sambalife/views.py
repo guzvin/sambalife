@@ -15,6 +15,7 @@ from django.contrib.auth import get_user_model
 from django.template import loader, Context
 from django.views.decorators.http import require_http_methods, require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.i18n import set_language
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.contrib.auth.models import Group
@@ -63,13 +64,11 @@ def user_login(request):
         if form.is_valid():
             username = request.POST['login'].lower()
             password = request.POST['password']
-            if username == settings.SYS_SU_USER:
-                username = ''.join([username, '-pt-br'])
-            else:
-                username = ''.join([username, '-', translation.get_language()])
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                if update_user_language(user.id) is False:
+                    return HttpResponseBadRequest()
                 if 'next' in request.POST:
                     return HttpResponseRedirect(request.POST['next'])
                 else:
@@ -95,7 +94,7 @@ def user_forgot_password(request):
         user_model = get_user_model()
         email = form.cleaned_data['login']
         try:
-            user = user_model.objects.get(username_internal=''.join([email, '-', translation.get_language()]))
+            user = user_model.objects.get(email=email)
             if user.is_active:
                 token = default_token_generator.make_token(user)
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -155,7 +154,7 @@ def user_registration(request, pid=None):
             user_model = get_user_model()
             email = form.cleaned_data['email']
             try:
-                user = user_model.objects.get(username_internal=''.join([email, '-', translation.get_language()]))
+                user = user_model.objects.get(email=email)
                 if not user.is_active:
                     form.add_error(None, _('E-mail já cadastrado, porém o usuário ainda não foi liberado para acesso '
                                            'ao sistema. Em caso de dúvida '
@@ -181,7 +180,6 @@ def user_registration(request, pid=None):
                     pass
             user.terms_conditions = True
             user.language_code = translation.get_language()
-            user.username_internal = ''.join([user.email, '-', user.language_code])
             user.is_active = True
             user.save()
             all_users_group = Group.objects.get(name='all_users')
@@ -287,6 +285,28 @@ def accept_terms_conditions(request):
     except user_model.DoesNotExist as e:
         logger.error(e)
         return HttpResponseBadRequest()
+
+
+def my_set_language(request):
+    response = set_language(request)
+    if request.user.id is None:
+        return response
+    if update_user_language(request.user.id) is False:
+        return HttpResponseBadRequest()
+    return response
+
+
+def update_user_language(user_id):
+    user_model = get_user_model()
+    try:
+        logger.debug(user_id)
+        current_user = user_model.objects.get(pk=user_id)
+        current_user.language_code = translation.get_language()
+        current_user.save(update_fields=['language_code'])
+    except user_model.DoesNotExist as e:
+        logger.error(e)
+        return False
+    return True
 
 
 def cadastroLote(request):

@@ -22,8 +22,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     id = BigAutoField(primary_key=True)
     first_name = models.CharField(_('Nome'), max_length=50)
     last_name = models.CharField(_('Sobrenome'), max_length=50)
-    email = models.CharField(_('E-mail'), max_length=150)
-    username_internal = models.CharField(_('username'), max_length=156, unique=True, null=True)
+    email = models.CharField(_('E-mail'), max_length=150, unique=True)
     doc_number = models.CharField(_('CPF'), max_length=25, null=True)
     cell_phone = models.CharField(_('Telefone 1'), max_length=25)
     phone = models.CharField(_('Telefone 2'), max_length=25, null=True, blank=True)
@@ -32,7 +31,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(_('Verificado'), default=False)
     partner = models.ForeignKey(Partner, verbose_name=_('Parceiro'), on_delete=models.SET_NULL, null=True, blank=True)
     terms_conditions = models.BooleanField(_('Termos e Condições'), default=False)
-    language_code = models.CharField(_('Idioma'), choices=settings.LANGUAGES, max_length=5, default='pt-br')
+    language_code = models.CharField(_('Idioma'), choices=settings.LANGUAGES, max_length=5, default='pt')
 
     def __iter__(self):
         yield 'id', self.id
@@ -51,7 +50,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
     objects = MyUserManager()
 
-    USERNAME_FIELD = 'username_internal'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'cell_phone']
 
     class Meta:
@@ -108,7 +107,6 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
             logger.warning('PROBLEMA NO ENVIO DE EMAIL:: %s' % str(err))
         translation.activate(current_language)
         self.email = self.email.lower()
-        self.username_internal = ''.join([self.email, '-', self.language_code])
         super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
 
     def _send_email(self, template_name):

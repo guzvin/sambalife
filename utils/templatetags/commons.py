@@ -20,4 +20,4 @@ def select_condition(item, condition):
 
 @register.simple_tag
 def timezone_name(lang):
-    return 'Brazil/East' if lang == 'pt-br' else 'US/Eastern'
+    return 'Brazil/East' if lang == 'pt' else 'US/Eastern'

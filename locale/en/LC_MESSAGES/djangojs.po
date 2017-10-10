@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-28 17:26-0300\n"
+"POT-Creation-Date: 2017-10-09 21:42-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -265,109 +265,107 @@ msgid ""
 "In case of more than one warehouse, type in here the products and quantity "
 "for this warehouse and then click to add another warehouse..."
 msgstr ""
-"Caso haja mais de um local de envio, digite aqui os produtos e as "
-"respectivas quantidades que deverão ser enviados para esta warehouse. Em "
-"seguida, abaixo, adicione o outro local..."
 
 #: html/static/js/applications.js:120
 msgid "en-US"
-msgstr "pt-BR"
+msgstr ""
 
 #: html/static/js/applications.js:172 html/static/js/applications.js:189
 #: html/static/js/applications.js:206 html/static/js/applications.js:213
 msgid "mm/dd/yy"
-msgstr "dd/mm/yy"
+msgstr ""
 
 #: html/static/js/applications.js:225
 msgid "Please enter a date greater than {1}."
-msgstr "Informe uma data maior que a {1}."
+msgstr ""
 
 #: html/static/js/applications.js:235
 msgid "Required field."
-msgstr "Campo obrigatório."
+msgstr ""
 
 #: html/static/js/applications.js:236
 msgid "Please enter at least 6 characters."
-msgstr "Informe ao menos 6 caracteres."
+msgstr ""
 
 #: html/static/js/applications.js:237
 msgid "Please enter the same value again."
-msgstr "Informe o mesmo valor."
+msgstr ""
 
 #: html/static/js/applications.js:238
 msgid "See instructions for valid format."
-msgstr "Consulte as instruções de formato válido."
+msgstr ""
 
 #: html/static/js/applications.js:239
 msgid "Please enter a valid email address."
-msgstr "Informe um e-mail válido."
+msgstr ""
 
 #: html/static/js/applications.js:240
 msgid "Please enter a valid date."
-msgstr "Informe uma data válida."
+msgstr ""
 
 #: html/static/js/applications.js:241
 msgid "Please enter a date less than or equal to today."
-msgstr "Informe uma data menor ou igual a de hoje."
+msgstr ""
 
 #: html/static/js/applications.js:242
 msgid "Please enter a number greater than zero."
-msgstr "Informe um número maior que zero."
+msgstr ""
 
 #: html/static/js/applications.js:243
 msgid "You must add products to this shipment."
-msgstr "É preciso adicionar produtos a este envio."
+msgstr ""
+
+#: html/static/js/applications.js:321 html/static/js/applications.js:332
+#: html/static/js/applications.js:354
+msgid "en"
+msgstr ""
+
+#: html/static/js/applications.js:332
+msgid "/user/password/forgot/"
+msgstr ""
 
 #: html/static/js/applications.js:480
 msgid "Purchase date"
-msgstr "Data da compra"
+msgstr ""
 
 #: html/static/js/applications.js:582 html/static/js/applications.js:586
 msgid "Expiration date"
-msgstr "Validade"
+msgstr ""
 
 #: html/static/js/applications.js:600
 msgid "Pick ticket"
-msgstr "Localização na Warehouse"
+msgstr ""
 
 #: html/static/js/applications.js:747 html/static/js/applications.js:1181
 msgid "Unable to save, fix errors above to continue."
 msgstr ""
-"Não foi possível criar seu envio, corrija os erros destacados acima para "
-"continuar."
 
 #: html/static/js/applications.js:901 html/static/js/applications.js:990
 msgid ""
 "Sorry, but there seems to be some inconsistencies. Please reload the page "
 "and try again."
 msgstr ""
-"Desculpe, foi encontrada alguma inconsistência nos dados. Por favor, "
-"recarregue a página e tente novamente."
 
 #: html/static/js/applications.js:902 html/static/js/applications.js:907
 #: html/static/js/applications.js:912 html/static/js/applications.js:991
 #: html/static/js/applications.js:996 html/static/js/applications.js:1001
 msgid "Error"
-msgstr "Erro"
+msgstr ""
 
 #: html/static/js/applications.js:906 html/static/js/applications.js:995
 msgid "Access denied"
-msgstr "Acesso negado"
+msgstr ""
 
 #: html/static/js/applications.js:911 html/static/js/applications.js:1000
 msgid ""
 "Sorry, we are unable to process your operation. Please reload the page and "
 "try again."
 msgstr ""
-"Desculpe, não foi possível realizar sua operação. Por favor, recarregue a "
-"página e tente novamente."
 
 #: html/static/js/applications.js:1134
 msgid "Your message has been sent. Thank you for your contact."
-msgstr "Mensagem enviada, obrigado pelo seu contato."
+msgstr ""
 
 #: html/static/js/applications.js:1139 html/static/js/applications.js:1150
 msgid "Sorry but we couldn't send your message, try again in a moment."
 msgstr ""
-"Desculpe no momento não foi possível enviar sua mensagem, tente novamente em "
-"instantes."

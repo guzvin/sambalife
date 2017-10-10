@@ -318,7 +318,7 @@
                 return false;
             }
             $(this).addClass('nosubmit');
-            $('form#form-login').attr('action', '/login/');
+            $('form#form-login').attr('action', '/' + gettext('en') + '/login/');
         });
 
         $('a#forgot-password-btn').on('click', function (e)
@@ -329,7 +329,7 @@
                 return false;
             }
             $(this).addClass('nosubmit');
-            $('form#form-login').attr('action', '/user/password/forgot/');
+            $('form#form-login').attr('action', '/' + gettext('en') + gettext('/user/password/forgot/'));
             $('form#form-login').submit();
         });
 
@@ -351,7 +351,7 @@
                     {
                         depends: function(element)
                         {
-                          return $('form#form-login').attr('action') === '/login';
+                          return $('form#form-login').attr('action') === '/' + gettext('en') + '/login';
                         }
                     },
                 },

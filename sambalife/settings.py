@@ -250,7 +250,7 @@ LOGOUT_REDIRECT_URL = '/'
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'pt-br'
+LANGUAGE_CODE = 'pt'
 
 TIME_ZONE = 'UTC'
 
@@ -265,8 +265,8 @@ LOCALE_PATHS = [
 ]
 
 LANGUAGES = [
-    ('pt-br', _('Português')),
-    ('en-us', _('Inglês')),
+    ('pt', _('Português')),
+    ('en', _('Inglês')),
 ]
 
 LANGUAGES_DOMAINS = {

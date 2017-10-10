@@ -54,8 +54,6 @@ def close_accounting(request, simulate=False, sandbox=False):
             partners.append(accounting_partner)
         if shipment.user.partner:
             cost = 0
-            if shipment.user.language_code == 'en-us':
-                cost += english_version_cost
             if shipment.user.partner.cost:
                 cost += shipment.user.partner.cost
             accounting_partner = next((p for p in partners if p.partner == shipment.user.partner.identity), None)
@@ -81,8 +79,6 @@ def close_accounting(request, simulate=False, sandbox=False):
 def _shipment_products_cost(products, base_price, base_cost, user, english_version_cost):
     cost = 0
     subtract = 0
-    if user.language_code == 'en-us' and user.partner:
-        subtract = english_version_cost * -1
     for product in products:
         price = product.cost
         price += subtract

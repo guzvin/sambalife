@@ -13,7 +13,7 @@ class MyAdminAuthenticationForm(AdminAuthenticationForm):
 
         if username and password:
             if username == settings.SYS_SU_USER:
-                username = ''.join([username, '-pt-br'])
+                username = ''.join([username, '-pt'])
             else:
                 username = ''.join([username, get_language()])
             self.user_cache = authenticate(username=username, password=password)

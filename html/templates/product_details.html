@@ -77,7 +77,7 @@
                     <label class="control-label col-xs-3">{% trans "Data de Cadastro" %}:</label>
                     <div class="col-xs-9">
                         {% if product.create_date %}
-                         {% if LANGUAGE_CODE == 'pt-br' %}
+                         {% if LANGUAGE_CODE == 'pt' %}
                           {% timezone "Brazil/East" %}
                         <p>{{ product.create_date|date:'SHORT_DATETIME_FORMAT' }} - <small>{% trans "Horário de Brasília" %}</small></p>
                           {% endtimezone %}

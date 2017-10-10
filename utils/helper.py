@@ -153,7 +153,7 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         bcc = get_admins_emails()
 
     connection = get_connection(fail_silently=False)
-    if translation.get_language() == 'en-us':
+    if translation.get_language() == 'en':
         connection.password = settings.EMAIL_HOST_PASSWORD_EN
         connection.username = settings.EMAIL_HOST_USER_EN
         connection.host = settings.EMAIL_HOST_EN
@@ -202,10 +202,10 @@ def resolve_price_value(reference_date, language):
     extra_cost = 0
     try:
         params = Params.objects.first()
-        if language == 'en-us':
+        if language == 'en':
             extra_cost = params.english_version_cost
     except Params.DoesNotExist:
-        if language == 'en-us':
+        if language == 'en':
             extra_cost = settings.DEFAULT_ENGLISH_VERSION_COST
         return extra_cost + settings.DEFAULT_REDIRECT_FACTOR
     logger.debug('@@@@@@@@@@@@ REFERENCE_DATE @@@@@@@@@@@@@@')
@@ -441,11 +441,9 @@ def paypal_notification(sender, **kwargs):
     try:
         current_user = user_model.objects.get(pk=invoice[1])
         if ipn_obj.test_ipn:
-            paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if current_user.language_code == 'pt-br' \
-                else settings.PAYPAL_BUSINESS_EN_SANDBOX
+            paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
         else:
-            paypal_business = settings.PAYPAL_BUSINESS if current_user.language_code == 'pt-br' \
-                else settings.PAYPAL_BUSINESS_EN
+            paypal_business = settings.PAYPAL_BUSINESS
         if ipn_obj.receiver_email != paypal_business:
             # Not a valid payment
             texts = (_('E-mail da conta paypal recebedora não confere com o e-mail configurado no sistema.'),

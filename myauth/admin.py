@@ -65,7 +65,6 @@ class UserCreationForm(forms.ModelForm):
         # Save the provided password in hashed format
         user = super(UserCreationForm, self).save(commit=False)
         user.set_password(self.cleaned_data['password1'])
-        user.username_internal = ''.join([self.cleaned_data['email'], '-', self.cleaned_data['language_code']])
         user.save()
         user.groups = self.cleaned_data['groups']
         if commit:
@@ -131,7 +130,6 @@ class UserChangeForm(forms.ModelForm):
             instance.set_password(password)
         # Add the users to the Group.
         instance.groups = self.cleaned_data['groups']
-        instance.username_internal = ''.join([self.cleaned_data['email'], '-', self.cleaned_data['language_code']])
         # Call save.
         instance.save()
         return instance
@@ -212,12 +210,12 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('id', 'email', 'date_joined', 'is_superuser', 'is_active', 'is_verified', 'partner', 'language_code')
+    list_display = ('id', 'email', 'date_joined', 'is_superuser', 'is_active', 'is_verified', 'partner')
     list_display_links = ('id', 'email',)
-    list_filter = ('is_superuser', 'is_active', 'is_verified', 'partner', 'language_code')
+    list_filter = ('is_superuser', 'is_active', 'is_verified', 'partner')
     readonly_fields = ('date_joined',)
     fieldsets = (
-        (None, {'fields': ('date_joined', 'email', 'language_code', 'partner', 'password', 'is_verified', 'is_active',
+        (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
                            'password1', 'password2')}),
         (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
         (_('Permissões'), {'fields': ('is_superuser',)}),
@@ -228,7 +226,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'language_code', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
+            'fields': ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
                        'is_verified', 'is_active', 'is_superuser', 'password1', 'password2', 'groups')}
          ),
     )

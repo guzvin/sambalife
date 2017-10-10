@@ -48,7 +48,7 @@
 
 </head>
 
-<body id="page-top" class="lista-usuarios sistema {% if LANGUAGE_CODE == 'en-us' %}sistema-en{% endif %}">
+<body id="page-top" class="lista-usuarios sistema {% if LANGUAGE_CODE == 'en' %}sistema-en{% endif %}">
  <header class="bs-docs-nav navbar navbar-static-top header-sistema" id="top">
         <div class="container">
             <div class="navbar-header">
@@ -59,11 +59,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a href="/" class="navbar-brand page-scroll">
-                    {% if LANGUAGE_CODE == 'pt-br' %}
-                        <img class="logo-img-plataforma" src="/static/img/logo-maquina-vendas.png"/>
-                    {% else %}
                     <img src="/static/img/logo-en.png" />
-                    {% endif %}
                 </a>
             </div>
             <nav class="collapse navbar-collapse" id="bs-navbar">
@@ -104,7 +100,7 @@
                     {% endif %}
 
                     <li>
-                        <a href="{% if LANGUAGE_CODE == 'pt-br' %}/ajuda.html#contact{% else %}mailto:support@prepshiptool.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
+                        <a href="{% if LANGUAGE_CODE == 'pt' %}/ajuda.html#contact{% else %}mailto:support@prepshiptool.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
 {% comment %}
                     <li class="{% block lotes-u %}{% endblock %}">
