@@ -1561,6 +1561,29 @@ footer.fixed-footer{
     color: white;
 }
 
+.bandeira{
+    display: block;
+    float: left;
+    width: 40px;
+    height: 26px;
+    text-indent: -999em;
+    background: url(../img/bandeira.png) no-repeat;
+    background-position: -2px -17px;
+    background-size: 86px 60px;
+    position: absolute;
+    right: 22px;
+    top: 22px;
+}
+
+.bandeira.bandeira-en{
+    background-position: -43px -17px;
+}
+
+.index .navbar-right {
+    margin-right: 40px;
+}
+
+
 @media (max-width: 767px){
 
     .sistema .navbar-brand img:first-child{

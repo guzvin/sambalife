@@ -93,8 +93,8 @@
             <div class="col-md-12">
                 <label for="{{ shipment_form.type.id_for_label }}"><i class="fa fa-fw fa-ship"></i> {% trans "Canal de venda" %}:</label><br><br>
                 <fieldset id="{{ shipment_form.type.id_for_label }}">
-                    <input type="radio" name="{{ shipment_form.type.html_name }}" value="1"> {% trans "Amazon" %}
-                    <input type="radio" name="{{ shipment_form.type.html_name }}" value="2"> {% trans "eBay" %}
+                    <input type="radio" name="{{ shipment_form.type.html_name }}" value="1"> {% trans "Amazon" %}<br />
+                    <input type="radio" name="{{ shipment_form.type.html_name }}" value="2"> {% trans "eBay" %}<br />
                     <input type="radio" name="{{ shipment_form.type.html_name }}" value="3" class="type_validate"> {% trans "Outro" %}
                 </fieldset>
                 {% for error in shipment_form.type.errors %}
