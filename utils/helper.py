@@ -168,7 +168,7 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         email.run()
 
 
-def resolve_formula(formula, language, partner=None, product=None, save_product_price=False):
+def resolve_formula(formula, partner=None, product=None, save_product_price=False):
     template = Template(formula)
     context_var = {}
     for var in template:
@@ -178,7 +178,7 @@ def resolve_formula(formula, language, partner=None, product=None, save_product_
                 context_var[var] = str(resolve_partner_value(partner))
             elif var == 'price':
                 reference_date = product.receive_date if product else None
-                price = resolve_price_value(reference_date, language)
+                price = resolve_price_value(reference_date)
                 if save_product_price and product:
                     product.cost = price
                     product.save(update_fields=['cost'])
@@ -193,16 +193,11 @@ def resolve_partner_value(partner):
     return 0
 
 
-def resolve_price_value(reference_date, language):
-    extra_cost = 0
+def resolve_price_value(reference_date):
     try:
         params = Params.objects.first()
-        if language == 'en':
-            extra_cost = params.english_version_cost
     except Params.DoesNotExist:
-        if language == 'en':
-            extra_cost = settings.DEFAULT_ENGLISH_VERSION_COST
-        return extra_cost + settings.DEFAULT_REDIRECT_FACTOR
+        return settings.DEFAULT_REDIRECT_FACTOR
     logger.debug('@@@@@@@@@@@@ REFERENCE_DATE @@@@@@@@@@@@@@')
     logger.debug(datetime.datetime.now())
     logger.debug(reference_date)
@@ -214,12 +209,12 @@ def resolve_price_value(reference_date, language):
         logger.debug(elapsed)
         if time_period_one:
             if elapsed <= time_period_one:
-                return extra_cost + params.redirect_factor
+                return params.redirect_factor
         if time_period_two:
             if elapsed <= time_period_one + time_period_two:
-                return extra_cost + params.redirect_factor_two
-            return extra_cost + params.redirect_factor_three
-    return extra_cost + params.redirect_factor
+                return params.redirect_factor_two
+            return params.redirect_factor_three
+    return params.redirect_factor
 
 
 class RequiredBaseInlineFormSet(BaseInlineFormSet):

@@ -191,8 +191,7 @@ class CostFormula(models.Model):
 
     def clean(self):
         try:
-            for lang in settings.LANGUAGES:
-                helper.Calculate().parse(helper.resolve_formula(self.formula, lang[0]))
+            helper.Calculate().parse(helper.resolve_formula(self.formula))
         except ParseException as err:
             logger.error(str(err))
             raise ValidationError(_('Fórmula inválida.'), code='invalid_formula')
