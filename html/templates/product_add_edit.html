@@ -1,6 +1,6 @@
 {% extends 'includes/layout.html' %}
 {% load i18n l10n products commons %}
-{% block addproduto %}{% if '/add' in request.path %}active{% endif %}{% endblock %}
+{% block addproduto %}{% if page_type == 1 %}active{% endif %}{% endblock %}
 
 {% block specific_styles %}
 <link href="/static/css/inlines.css" rel="stylesheet">
@@ -10,7 +10,7 @@
 
   <div class="container-fluid">
       <div class="row">
-        {% if '/add' in request.path and user|has_product_perm:'add_product' or '/edit' in request.path and user|has_product_perm:'change_product' %}
+        {% if page_type == 1 and user|has_product_perm:'add_product' or page_type == 2 and user|has_product_perm:'change_product' %}
         <div class="col-md-3 sidebar">
 
         </div>

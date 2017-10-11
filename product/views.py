@@ -133,10 +133,12 @@ def product_add_edit(request, pid=None):
     TrackingFormSet = inlineformset_factory(Product, Tracking, formset=MyBaseInlineFormSet, fields=('track_number',),
                                             extra=1)
     if pid is None:
+        page_type = 1
         page_title = _('Adicionar Produto')
         product_qs = Product.objects.none()
         product_instance = None
     else:
+        page_type = 2
         product_qs = Product.objects.filter(pk=pid)
         try:
             product_instance = product_qs[:1].get()
@@ -147,7 +149,8 @@ def product_add_edit(request, pid=None):
     if request.method != 'POST':
         product_formset = ProductFormSet(queryset=product_qs)
         tracking_formset = TrackingFormSet(instance=product_instance, prefix='tracking_set', **kwargs)
-        context_data = {'title': page_title, 'product_formset': product_formset, 'tracking_formset': tracking_formset}
+        context_data = {'title': page_title, 'product_formset': product_formset, 'tracking_formset': tracking_formset,
+                        'page_type': page_type}
         if request.GET.get('s') == '1':
             if pid is None:
                 success_message = _('Produto inserido com sucesso.')
@@ -197,7 +200,8 @@ def product_add_edit(request, pid=None):
         tracking_formset = TrackingFormSet(request.POST, instance=product_instance, prefix='tracking_set', **kwargs)
         return render(request, 'product_add_edit.html', {'title': page_title, 'success': False,
                                                          'product_formset': product_formset,
-                                                         'tracking_formset': tracking_formset})
+                                                         'tracking_formset': tracking_formset,
+                                                         'page_type': page_type})
 
 
 @login_required

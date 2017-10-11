@@ -147,7 +147,7 @@ function formInitialized(options)
             $.ajax(
             {
                 method: 'GET',
-                url: '/shipment/calculate/',
+                url: '/' + gettext('en') + '/shipment/calculate/',
                 data: 'items=' + $('#totalCost').data('items')
             })
             .done(function( obj )

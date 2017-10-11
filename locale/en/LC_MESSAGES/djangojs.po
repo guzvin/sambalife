@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-09 21:42-0300\n"
+"POT-Creation-Date: 2017-10-10 14:08-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -316,8 +316,15 @@ msgid "You must add products to this shipment."
 msgstr ""
 
 #: html/static/js/applications.js:321 html/static/js/applications.js:332
-#: html/static/js/applications.js:354
+#: html/static/js/applications.js:354 html/static/js/applications.js:545
+#: html/static/js/applications.js:891 html/static/js/applications.js:980
+#: html/static/js/applications.js:1085 html/static/js/applications.js:1120
+#: html/static/js/applications.js:1127 html/static/js/specifics/shipment.js:150
 msgid "en"
+msgstr ""
+
+#: html/static/js/applications.js:321 html/static/js/applications.js:354
+msgid "/login"
 msgstr ""
 
 #: html/static/js/applications.js:332

@@ -318,7 +318,7 @@
                 return false;
             }
             $(this).addClass('nosubmit');
-            $('form#form-login').attr('action', '/' + gettext('en') + '/login/');
+            $('form#form-login').attr('action', '/' + gettext('en') + gettext('/login') + '/');
         });
 
         $('a#forgot-password-btn').on('click', function (e)
@@ -351,7 +351,7 @@
                     {
                         depends: function(element)
                         {
-                          return $('form#form-login').attr('action') === '/' + gettext('en') + '/login';
+                          return $('form#form-login').attr('action') === '/' + gettext('en') + gettext('/login') + '/';
                         }
                     },
                 },
@@ -542,7 +542,7 @@
                     $.ajax(
                     {
                         method: 'PUT',
-                        url: '/product/edit/status/' + pid + '.json',
+                        url: '/' + gettext('en') + '/product/edit/status/' + pid + '.json',
                         data: form.serialize()
                     })
                     .done(function( obj )
@@ -888,7 +888,7 @@
             $.ajax(
             {
                 method: 'DELETE',
-                url: '/shipment/delete/product.json',
+                url: '/' + gettext('en') + '/shipment/delete/product.json',
                 data: form.serialize(),
                 statusCode:
                 {
@@ -977,7 +977,7 @@
             $.ajax(
             {
                 method: 'GET',
-                url: '/shipment/pay/' + $this.data('generic'),
+                url: '/' + gettext('en') + '/shipment/pay/' + $this.data('generic'),
                 statusCode:
                 {
                     400: function(jqXHR, textStatus, errorThrown)
@@ -1082,7 +1082,7 @@
                 $.ajax(
                 {
                     method: 'POST',
-                    url: '/user/accept_terms/',
+                    url: '/' + gettext('en') + '/user/accept_terms/',
                 })
                 .done(function()
                 {
@@ -1117,14 +1117,14 @@
             $.ajax(
             {
                 method: 'GET',
-                url: '/touch/'
+                url: '/' + gettext('en') + '/touch/'
             }).done(function( obj )
             {
                 console.log('done');
                 $.ajax(
                 {
                     method: 'POST',
-                    url: '/contactus/',
+                    url: '/' + gettext('en') + '/contactus/',
                     data: form.serialize()
                 })
                 .done(function( obj )

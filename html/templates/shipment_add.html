@@ -47,7 +47,7 @@
           <div class="table-responsive">
             <table class="table table-striped js-inline-admin-formset" id="{{ product_formset.prefix }}-group"
                data-inline-type="stacked"
-               data-inline-autocomplete="/product/autocomplete"
+               data-inline-autocomplete="{% url 'product_autocomplete' %}"
                data-inline-formset="{{ product_formset.inline_formset_data }}">
               <thead>
                 <tr>

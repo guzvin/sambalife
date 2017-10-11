@@ -2,6 +2,7 @@ from django.conf import settings
 from django.utils import translation
 from django.utils.deprecation import MiddlewareMixin
 from threading import Thread, current_thread
+from django.utils.translation import LANGUAGE_SESSION_KEY
 import logging
 
 logger = logging.getLogger('django')
@@ -26,4 +27,5 @@ class DomainLocaleMiddleware(MiddlewareMixin):
         # if lang_code:
         #     translation.activate(lang_code)
         #     request.LANGUAGE_CODE = translation.get_language()
-        logger.debug(request.CURRENT_DOMAIN)
+        logger.debug(translation.get_language())
+        request.session[LANGUAGE_SESSION_KEY] = request.LANGUAGE_CODE

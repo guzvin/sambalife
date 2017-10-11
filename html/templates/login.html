@@ -30,23 +30,23 @@
 </head>
 
 <body id="page-top" class="login">
-    <div id="login-box">
-            <img src="/static/img/logo-en-maior.png" style="width: 170px;" />
-<form action="{% url 'my_set_language' %}" method="post">{% csrf_token %}
-    <input name="next" type="hidden" value="{{ redirect_to }}" />
-    <select name="language">
+    <form action="{% url 'my_set_language' %}" method="post">{% csrf_token %}
         {% get_current_language as LANGUAGE_CODE %}
         {% get_available_languages as LANGUAGES %}
         {% get_language_info_list for LANGUAGES as languages %}
         {% for language in languages %}
-            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
-                {{ language.name_local }} ({{ language.code }})
-            </option>
+            {% if language.code != LANGUAGE_CODE %}
+                <input type="hidden" name="language" value="{{ language.code }}">
+                {% if language.code == 'en' %}
+                    <input title="Translate to English" class="bandeira bandeira-en" type="submit">
+                {% else %}
+                    <input title="Traduzir para português do Brasil" class="bandeira" type="submit">
+                {% endif %}
+            {% endif %}
         {% endfor %}
-    </select>
-    <input type="submit" value="Go" />
-</form>
-
+    </form>
+    <div id="login-box">
+            <img src="/static/img/logo-en-maior.png" style="width: 170px;" />
             <p>{% trans "Digite abaixo seus dados de acesso" %}</p>
             <form action="" method="post" id="form-login">
               {% csrf_token %}
