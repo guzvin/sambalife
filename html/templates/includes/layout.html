@@ -231,6 +231,14 @@
                         </ul>
                     </li>
                 </ul>
+
+                {% if LANGUAGE_CODE == 'pt-br' %}
+                    <a title="Translate to english" class="bandeira bandeira-en" href="#">Translate to english</a>
+                {% else %}
+                    <a title="Traduzir para português" class="bandeira" href="#">Traduzir para portugues</a>
+                {% endif %}
+
+
             </nav>
         </div>
     </header>

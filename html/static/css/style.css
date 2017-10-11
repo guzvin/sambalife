@@ -1480,29 +1480,29 @@ form small{
     margin-top: 15px;
 }
 
-.sistema .navbar-brand img:first-child{
-    width: 60px;
-    margin-top: 6px;
-}
-
-.sistema.sistema-en .navbar-brand img{
+.sistema .navbar-brand img{
     width: 200px;
     margin-top: 12px;
 }
 
-.en .navbar-default .navbar-brand.logo-site{
+.sistema .navbar-right {
+    margin-right: 10px;
+}
+
+
+.navbar-default .navbar-brand.logo-site{
     text-indent: -999em;
     height: 50px;
     margin-top: 0px;
     width: 250px;
 }
 
-.en .navbar-default.affix-top .navbar-brand.logo-site{
+.navbar-default.affix-top .navbar-brand.logo-site{
     background: url('../img/logo-en-white.png') no-repeat 0 0;
     background-size: 250px;
 }
 
-.en .navbar-default.affix .navbar-brand.logo-site{
+.navbar-default.affix .navbar-brand.logo-site{
     background: url('../img/logo-en.png') no-repeat 0 0;
     background-size: 250px;
 }
@@ -1573,6 +1573,10 @@ footer.fixed-footer{
     position: absolute;
     right: 22px;
     top: 22px;
+}
+
+.sistema .bandeira {
+    top: 11px;
 }
 
 .bandeira.bandeira-en{
