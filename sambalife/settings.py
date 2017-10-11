@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse_lazy
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -244,7 +245,7 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptPasswordHasher',
 ]
 
-LOGIN_URL = '/login/'
+LOGIN_URL = reverse_lazy('login')
 LOGOUT_REDIRECT_URL = '/'
 
 # Internationalization

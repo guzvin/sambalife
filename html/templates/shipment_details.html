@@ -38,6 +38,12 @@
                     <a href="{% url 'shipment_pdf_1' 'pdf_1' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
                     <br>
                 </div>
+                <!--<div class="form-group">-->
+                    <!--{{ shipment_form.pdf_1 }}-->
+                    <!--{% for error in shipment_form.pdf_1.errors %}-->
+                        <!--<label id="{{ shipment_form.pdf_1.id_for_label }}-error" class="error" for="{{ shipment_form.pdf_1.id_for_label }}">{{ error|escape }}</label>-->
+                    <!--{% endfor %}-->
+                <!--</div>-->
             </div>
 {% endblock %}
 

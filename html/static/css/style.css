@@ -906,7 +906,7 @@ body {
     margin-left: 15px;
 }
 
-#login-box input[type="submit"]{
+#login-box input[type="submit"]#send-btn{
     background: #DC3438;
     color: #fff;
     border: 1PX SOLID #DC3438;
