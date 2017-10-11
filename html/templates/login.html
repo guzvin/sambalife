@@ -78,6 +78,13 @@
         <div class="bottom-login">
             <p>{% blocktrans %}Caso tenha alguma dúvida <a class="download" href="/ajuda.html#contact">clique aqui</a> e entre em contato conosco.{% endblocktrans %}</p>
         </div>
+
+        {% if LANGUAGE_CODE == 'pt-br' %}
+            <a title="Translate to english" class="bandeira bandeira-en" href="#">Translate to english</a>
+        {% else %}
+            <a title="Traduzir para português" class="bandeira" href="#">Traduzir para portugues</a>
+        {% endif %}
+
     </div>
 
      <!-- Modal confirmacao de acao-->
