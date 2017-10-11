@@ -134,8 +134,6 @@ def list_shipment(request, template_name):
         logger.debug(str(len(queries)))
         if is_user_perm is False:
             queries.append(Q(user=request.user))
-        else:
-            queries.append(Q(user__language_code=translation.get_language()))
         if template_name == 'shipment_list.html':
             queries.append(Q(type=None))
         else:

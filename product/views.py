@@ -86,15 +86,19 @@ def product_stock(request):
         if is_user_perm is False:
             queries.append(~Q(status=100))
             queries.append(Q(user=request.user))
-        else:
-            queries.append(Q(user__language_code=translation.get_language()))
-        query = queries.pop()
-        for item in queries:
-            query &= item
-        logger.debug(str(query))
+        is_filtered = len(queries) > 0
+        if is_filtered:
+            query = queries.pop()
+            for item in queries:
+                query &= item
+            logger.debug(str(query))
         if is_user_perm:
-            logger.debug('@@@@@@@@@@@@ FILTERED @@@@@@@@@@@@@@')
-            products_list = Product.objects.filter(query).select_related('user').order_by('id')
+            if is_filtered:
+                logger.debug('@@@@@@@@@@@@ FILTERED @@@@@@@@@@@@@@')
+                products_list = Product.objects.filter(query).select_related('user').order_by('id')
+            else:
+                logger.debug('@@@@@@@@@@@@ ALL @@@@@@@@@@@@@@')
+                products_list = Product.objects.all().select_related('user').order_by('id')
         else:
             products_list = Product.objects.filter(query).order_by('id')
     else:

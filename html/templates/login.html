@@ -58,7 +58,7 @@
             </form>
             <div class="infos">
                 <a href="#" class="download" id="forgot-password-btn">{% trans "Esqueci Minha Senha" %}</a>
-                <a class="btn-azul" href="/user/registration"><i class="fa fa-paper-plane"></i> {% trans "Quero me Cadastrar" %}</a>
+                <a class="btn-azul" href="{% url 'user_registration' %}"><i class="fa fa-paper-plane"></i> {% trans "Quero me Cadastrar" %}</a>
             </div>
         <div class="bottom-login">
             <p>{% blocktrans %}Caso tenha alguma dúvida <a class="download" href="/ajuda.html#contact">clique aqui</a> e entre em contato conosco.{% endblocktrans %}</p>

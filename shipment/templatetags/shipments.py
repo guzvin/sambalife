@@ -79,9 +79,7 @@ def etc(initial_date, **kwargs):
 @register.simple_tag
 def open_fba_shipments(user):
     query_filter = Q(status__lt=5) & Q(is_archived=False) & Q(is_canceled=False) & Q(type=None)
-    if has_user_perm(user, 'view_users'):
-        query_filter &= Q(user__language_code=translation.get_language())
-    else:
+    if has_user_perm(user, 'view_users') is False:
         query_filter &= Q(user=user)
     return Shipment.objects.filter(query_filter).count()
 
@@ -89,8 +87,6 @@ def open_fba_shipments(user):
 @register.simple_tag
 def open_mf_shipments(user):
     query_filter = Q(status__lt=5) & Q(is_archived=False) & Q(is_canceled=False) & ~Q(type=None)
-    if has_user_perm(user, 'view_users'):
-        query_filter &= Q(user__language_code=translation.get_language())
-    else:
+    if has_user_perm(user, 'view_users') is False:
         query_filter &= Q(user=user)
     return Shipment.objects.filter(query_filter).count()
