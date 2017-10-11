@@ -79,22 +79,16 @@ def store_lot_details(request, pid=None):
         import time
         current_milli_time = lambda: int(round(time.time() * 1000))
         invoice_id = '_'.join(['B', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
-        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX if translation.get_language() == 'pt' \
-            else settings.PAYPAL_BUSINESS_EN_SANDBOX
-        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX if translation.get_language() == 'pt' \
-            else settings.PAYPAL_CERT_ID_EN_SANDBOX
+        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
+        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
         paypal_cert = settings.PAYPAL_CERT_SANDBOX
     else:
         invoice_id = '_'.join(['B', str(request.user.id), str(pid)])
-        paypal_business = settings.PAYPAL_BUSINESS if translation.get_language() == 'pt' \
-            else settings.PAYPAL_BUSINESS_EN
-        paypal_cert_id = settings.PAYPAL_CERT_ID if translation.get_language() == 'pt' \
-            else settings.PAYPAL_CERT_ID_EN
+        paypal_business = settings.PAYPAL_BUSINESS
+        paypal_cert_id = settings.PAYPAL_CERT_ID
         paypal_cert = settings.PAYPAL_CERT
-    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT if translation.get_language() == 'pt' \
-        else settings.PAYPAL_PRIVATE_CERT_EN
-    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT if translation.get_language() == 'pt' \
-        else settings.PAYPAL_PUBLIC_CERT_EN
+    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT
+    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT
     paypal_dict = {
         'business': paypal_business,
         'amount': 5.00,

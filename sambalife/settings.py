@@ -41,14 +41,6 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             EMAIL_HOST_USER = key_value_pair[1]
         elif key_value_pair[0] == 'email_password':
             EMAIL_HOST_PASSWORD = key_value_pair[1]
-        elif key_value_pair[0] == 'email_host_en':
-            EMAIL_HOST_EN = key_value_pair[1]
-        elif key_value_pair[0] == 'email_port_en':
-            EMAIL_PORT_EN = key_value_pair[1]
-        elif key_value_pair[0] == 'email_user_en':
-            EMAIL_HOST_USER_EN = key_value_pair[1]
-        elif key_value_pair[0] == 'email_password_en':
-            EMAIL_HOST_PASSWORD_EN = key_value_pair[1]
         elif key_value_pair[0] == 'db_host':
             DB_HOST = key_value_pair[1]
         elif key_value_pair[0] == 'db_port':
@@ -71,14 +63,6 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             PAYPAL_CERT_ID_SANDBOX = key_value_pair[1]
         elif key_value_pair[0] == 'paypal_business_sandbox':
             PAYPAL_BUSINESS_SANDBOX = key_value_pair[1]
-        elif key_value_pair[0] == 'paypal_cert_id_en':
-            PAYPAL_CERT_ID_EN = key_value_pair[1]
-        elif key_value_pair[0] == 'paypal_business_en':
-            PAYPAL_BUSINESS_EN = key_value_pair[1]
-        elif key_value_pair[0] == 'paypal_cert_id_en_sandbox':
-            PAYPAL_CERT_ID_EN_SANDBOX = key_value_pair[1]
-        elif key_value_pair[0] == 'paypal_business_en_sandbox':
-            PAYPAL_BUSINESS_EN_SANDBOX = key_value_pair[1]
         elif key_value_pair[0] == 'paypal_sandbox_users':
             PAYPAL_SANDBOX_USERS = key_value_pair[1].split(',')
         elif key_value_pair[0] == 'paypal_live_users':
@@ -333,8 +317,6 @@ PAYPAL_TEST = PAYPAL_SANDBOX
 
 PAYPAL_PRIVATE_CERT = os.path.join(PAYPAL_ROOT, 'paypal_private.pem')
 PAYPAL_PUBLIC_CERT = os.path.join(PAYPAL_ROOT, 'paypal_public.pem')
-PAYPAL_PRIVATE_CERT_EN = os.path.join(PAYPAL_ROOT, 'paypal_private_en.pem')
-PAYPAL_PUBLIC_CERT_EN = os.path.join(PAYPAL_ROOT, 'paypal_public_en.pem')
 PAYPAL_CERT = os.path.join(PAYPAL_ROOT, 'paypal_cert.pem')
 PAYPAL_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_cert.pem'))
 

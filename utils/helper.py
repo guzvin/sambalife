@@ -153,12 +153,7 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         bcc = get_admins_emails()
 
     connection = get_connection(fail_silently=False)
-    if translation.get_language() == 'en':
-        connection.password = settings.EMAIL_HOST_PASSWORD_EN
-        connection.username = settings.EMAIL_HOST_USER_EN
-        connection.host = settings.EMAIL_HOST_EN
-        connection.port = settings.EMAIL_PORT_EN
-        connection.use_ssl = True
+    connection.use_ssl = True
     email = EmailThread(
         email_data_tuple,
         email_from,
