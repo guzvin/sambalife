@@ -18,7 +18,7 @@ class TermsAndConditionsMiddleware(MiddlewareMixin):
     def process_view(self, request, view_func, view_args, view_kwargs):
         logger.debug(request.path)
         if request.method != 'GET' and view_func.__name__ not in self.ignored_funcs and \
-           not request.path.startswith('/admin/') and self.login_required_decorator in get_decorators(view_func):
+           not request.path.startswith(reverse('admin:index')) and self.login_required_decorator in get_decorators(view_func):
             user_model = get_user_model()
             try:
                 current_user = user_model.objects.get(pk=request.user.id)
