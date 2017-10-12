@@ -1131,9 +1131,18 @@ label.titulo-pct span{
     margin: 0 auto;
 }
 
-#ajuda{
-    margin: 100px auto;
-    width: 70%;
+.tab-pane{
+    padding: 40px 20px 20px 20px;
+}
+
+.img-ajuda-center{
+    display: block;
+    margin: 0 auto;
+    width: 60%;
+}
+
+.index .img-ajuda-center-menor{
+    width: 40%;
 }
 
 #ajuda .nav-tabs > li.active > a, #ajuda .nav-tabs > li.active > a:focus, #ajuda .nav-tabs > li.active > a:hover{

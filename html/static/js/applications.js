@@ -1277,8 +1277,7 @@
     });
 
     //Tabs pagina ajuda
-
-     $("#ajudatab li:eq(0) a").tab('show');
+    $("#ajudatab li:eq(0) a").tab('show');
 
     //Modal tutorial
     $('.abre-tutorial').click(function(){
