@@ -222,7 +222,7 @@
                     valid = false;
                 }
                 return valid;
-            }, $.validator.format(gettext('Please enter a date greater than {1}.')));
+            } , $.validator.format(gettext('Please enter a date greater than {1}.')));
             $.validator.addMethod('productsNotEmpty', function (value, element)
             {
                 return $(element).val() === '1';
@@ -1300,5 +1300,18 @@
             $(".endereco-novo-form").hide();
          }
     });
+
+    //Edicao de arquivos das etiquetas
+    $(".edit-pdf").click(function(){
+         $(this).parent().hide();
+         $(this).parent().parent().find(".input-content-edit-pdf").show();
+    });
+
+    $(".edit-pdf-undo").click(function(){
+         $(this).parent().hide();
+         $(this).parent().parent().find(".link-download-pdf").show();
+    });
+
+
 
 })(jQuery); // End of use strict

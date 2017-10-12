@@ -150,7 +150,7 @@
                     </div>
                 </div>
               {% if user|has_product_perm:'change_product' %}
-              <a href="{% url 'product_edit' product.id %}" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
+              <a href="{% url 'product_edit' product.id %}" class="btn btn-warning"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
               {% endif %}
               {% if user|has_product_perm:'delete_product' and shipments == 0 %}
               <a href="#" class="btn btn-danger send-btn-delete"><i class="fa fa-fw fa-trash"></i> {% trans "Excluir" %}</a>

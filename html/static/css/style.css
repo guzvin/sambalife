@@ -1577,6 +1577,7 @@ footer.fixed-footer{
 
 .sistema .bandeira {
     top: 11px;
+    border: 0;
 }
 
 .bandeira.bandeira-en{
@@ -1585,6 +1586,16 @@ footer.fixed-footer{
 
 .index .navbar-right {
     margin-right: 40px;
+}
+
+.input-content-edit-pdf{
+    display: none;
+}
+
+.form-control.input-70{
+    width: 70%;
+    margin-right: 10px;
+    float: left;
 }
 
 

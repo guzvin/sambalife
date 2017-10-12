@@ -32,10 +32,17 @@
 
 {% block info_pdf_1 %}
             <div class="col-md-3">
-                <div class="form-group">
+                <div class="form-group upload-pdf-edit">
                     <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Upload/Download Arquivos" %}:</label><br><br>
                     <label>{% trans "Etiqueta do produto" %}:</label><br>
-                    <a href="{% url 'shipment_pdf_1' 'pdf_1' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
+                    <div class="link-download-pdf">
+                        <a href="{% url 'shipment_pdf_1' 'pdf_1' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
+                        <a href="javascript:void(0);" class="btn btn-warning edit-pdf"><i class="fa fa-fw fa-pencil-square-o"></i> {% trans "Alterar" %}</a>
+                    </div>
+                    <div class="input-content-edit-pdf">
+                        <input class="form-control input-70" id="pdf-edit" name="pdf-edited" aria-required="true" type="file" />
+                        <a href="javascript:void(0);" class="btn btn-default edit-pdf-undo"><i class="fa fa-fw fa-undo"></i></a>
+                    </div>
                     <br>
                 </div>
                 <!--<div class="form-group">-->
