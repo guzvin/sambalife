@@ -393,7 +393,7 @@ def shipment_details(request, pid=None):
 
 
 def paypal_mode(user):
-    is_sandbox = (user.email in settings.PAYPAL_SANDBOX_USERS) or translation.get_language() == 'en'
+    is_sandbox = user.email in settings.PAYPAL_SANDBOX_USERS
     if user.email in settings.PAYPAL_LIVE_USERS:
         is_sandbox = False
     return is_sandbox

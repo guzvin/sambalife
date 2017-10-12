@@ -254,12 +254,6 @@ LANGUAGES = [
     ('en', _('Inglês')),
 ]
 
-LANGUAGES_DOMAINS = {
-    'vendedorinternacional.net': 'pt-br',
-    'prepshiptool.com': 'en-us',
-    'redirecionamento.maquinadevendasusa.com': 'pt-br',
-}
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 

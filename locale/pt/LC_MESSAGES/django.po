@@ -444,7 +444,7 @@ msgstr ""
 #: html/templates/email/forgot-password.html:22
 #: html/templates/email/registration-validation.html:22
 msgid "contato@vendedorinternacional.online"
-msgstr "redirecionamento@maquinadevendasusa.com"
+msgstr "support@prepshiptool.freshdesk.com"
 
 #: html/templates/email/account-activation.html:23
 #: html/templates/email/basic-template.html:19
@@ -1558,7 +1558,7 @@ msgstr ""
 
 #: myauth/models.py:117 utils/cron.py:54 utils/cron.py:132
 msgid "vendedorinternacional.net"
-msgstr "redirecionamento.maquinadevendasusa.com"
+msgstr "prepshiptool.com"
 
 #: myauth/models.py:128
 msgid "País"
@@ -2434,7 +2434,7 @@ msgstr ""
 
 #: utils/helper.py:150
 msgid "<no-reply@vendedorinternacional.net>"
-msgstr "<no-reply@maquinadevendasusa.com>"
+msgstr "<no-reply@prepshiptool.com>"
 
 #: utils/helper.py:243
 msgid "Adicionar"
