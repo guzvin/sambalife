@@ -706,7 +706,7 @@ input:-ms-input-placeholder {
 
 /*Works Area*/
 #works-area{
-    background: url(../images/main-bg.png) repeat scroll 0 0;
+    background: url(../../img/main-bg.png) repeat scroll 0 0;
     width: 100%;
     overflow: hidden;
 }
