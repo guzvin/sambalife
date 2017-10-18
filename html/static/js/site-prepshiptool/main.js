@@ -23,6 +23,9 @@ jQuery(document).ready(function ($) {
             }
         }
     });
+
+    //Tabs pagina ajuda
+    $("#ajudatab li:eq(0) a").tab('show');
 	
 
 	/*---------------------------------------------*
@@ -36,12 +39,12 @@ jQuery(document).ready(function ($) {
           
             $(window).scroll(function () {
                 if ($(this).scrollTop() >200) {
-                    $('.navbar').fadeIn(200);
-                    $('.navbar').addClass('menu-bg');
+                    $('.home .navbar').fadeIn(200);
+                    $('.home .navbar').addClass('menu-bg');
 
                 } else {
                     
-                    $('.navbar').removeClass('menu-bg');
+                    $('.home .navbar').removeClass('menu-bg');
                 }
             });
         
