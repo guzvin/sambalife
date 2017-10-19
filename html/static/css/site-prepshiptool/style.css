@@ -215,6 +215,15 @@ Section
     position: relative;
     overflow: hidden;
 }
+
+.ajuda .sections {
+    padding-top: 0;
+}
+
+.ajuda .tab-content li a{
+    font-weight: bold;
+}
+
 .footer {
     padding:50px 0 35px 0;;
 }
@@ -740,6 +749,22 @@ input:-ms-input-placeholder {
     margin-left:28px;	
 }
 
+.tab-pane{
+    padding: 40px;
+}
+
+.ajuda .navbar-fixed-top{
+    position: inherit;
+}
+
+.nav-tabs > li.active > a{
+    font-weight: bold;
+}
+
+.nav-tabs > li.active > a:hover{
+    font-weight: bold;
+}
+
 /*Our Packages Area*/
 .main-package .col-sm-4{
     padding:0;
@@ -1026,6 +1051,23 @@ input:-ms-input-placeholder {
     overflow:hidden;
     text-align:center;
 }
+
+.contato-midia .socio-copyright .social{
+    text-align: left;
+}
+
+.contato-midia .socio-copyright .social a{
+    text-align: center;
+}
+
+.contato-midia a{
+    font-weight: bold;
+}
+
+.border-right{
+    border-right: 1px solid #ccc;
+}
+
 .socio-copyright .social a i{
     background:#DC3437;
     border-radius:2px;
