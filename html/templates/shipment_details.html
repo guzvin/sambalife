@@ -31,26 +31,31 @@
 {% block info_created_date %}col-md-4{% endblock %}
 
 {% block info_pdf_1 %}
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="form-group upload-pdf-edit">
                     <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Upload/Download Arquivos" %}:</label><br><br>
                     <label>{% trans "Etiqueta do produto" %}:</label><br>
                     <div class="link-download-pdf">
                         <a href="{% url 'shipment_pdf_1' 'pdf_1' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
+                        {% if shipment.status < 5 %}
                         <a href="javascript:void(0);" class="btn btn-warning edit-pdf"><i class="fa fa-fw fa-pencil-square-o"></i> {% trans "Alterar" %}</a>
+                        {% endif %}
                     </div>
+                    {% if shipment.status < 5 %}
                     <div class="input-content-edit-pdf">
-                        <input class="form-control input-70" id="pdf-edit" name="pdf-edited" aria-required="true" type="file" />
+                        {{ shipment_fs.management_form }}
+                        {% for shipment_f in shipment_fs %}
+                            {{ shipment_f.id }}
+                            {{ shipment_f.pdf_1 }}
+                            {% for error in shipment_f.pdf_1.errors %}
+                            <label id="{{ shipment_f.pdf_1.id_for_label }}-error" class="error" for="{{ shipment_f.pdf_1.id_for_label }}">{{ error|escape }}</label>
+                            {% endfor %}
+                        {% endfor %}
                         <a href="javascript:void(0);" class="btn btn-default edit-pdf-undo"><i class="fa fa-fw fa-undo"></i></a>
                     </div>
+                    {% endif %}
                     <br>
                 </div>
-                <!--<div class="form-group">-->
-                    <!--{{ shipment_form.pdf_1 }}-->
-                    <!--{% for error in shipment_form.pdf_1.errors %}-->
-                        <!--<label id="{{ shipment_form.pdf_1.id_for_label }}-error" class="error" for="{{ shipment_form.pdf_1.id_for_label }}">{{ error|escape }}</label>-->
-                    <!--{% endfor %}-->
-                <!--</div>-->
             </div>
 {% endblock %}
 

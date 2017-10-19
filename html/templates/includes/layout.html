@@ -100,7 +100,7 @@
                     {% endif %}
 
                     <li>
-                        <a href="{% if LANGUAGE_CODE == 'pt' %}/ajuda.html#contact{% else %}mailto:support@prepshiptool.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
+                        <a href="{% if LANGUAGE_CODE == 'pt' %}{% trans '/pt/ajuda/' %}#contact{% else %}mailto:support@prepshiptool.freshdesk.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
 {% comment %}
                     <li class="{% block lotes-u %}{% endblock %}">
@@ -117,7 +117,7 @@
                     </li>
 {% endcomment %}
                     <li class="tutorial">
-                        <a href="/ajuda.html" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
+                        <a href="{% trans '/pt/ajuda/' %}" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
                     </li>
 
                     <li class="tutorial adress">
