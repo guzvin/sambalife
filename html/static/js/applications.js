@@ -951,12 +951,14 @@
             invalidHandler: function(event, validator)
             {
                 $('a#send-btn-3').removeClass('nosubmit');
+                $('a#send-btn-5').removeClass('nosubmit');
+                $('.loading').hide();
             },
             onfocusout: false,
             onkeyup: false,
             onclick: false
         });
-        if($('input[type="hidden"][name="edit_package_warehouse"]')[0] === undefined)
+        if($('input[type="hidden"][name="add_package_file"]')[0] && $('input[type="hidden"][name="edit_package_warehouse"]')[0] === undefined)
         {
             $('.pdf_2-validate').each(function ()
             {
@@ -1034,6 +1036,7 @@
             }
             $(this).addClass('nosubmit');
             $('.loading').show();
+            $('form#form-upload-file').append('<input type="hidden" name="complete_shipment" value="1"></input>');
             $('form#form-upload-file').submit();
         });
     }
@@ -1302,13 +1305,14 @@
 
     //Edicao de arquivos das etiquetas
     $(".edit-pdf").click(function(){
-         $(this).parent().hide();
-         $(this).parent().parent().find(".input-content-edit-pdf").show();
+        $(this).parent().hide();
+        $(this).parent().parent().find(".input-content-edit-pdf").show();
     });
 
     $(".edit-pdf-undo").click(function(){
-         $(this).parent().hide();
-         $(this).parent().parent().find(".link-download-pdf").show();
+        $(this).parent().find('input:file').val('')
+        $(this).parent().hide();
+        $(this).parent().parent().find(".link-download-pdf").show();
     });
 
 
