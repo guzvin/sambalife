@@ -32,6 +32,8 @@
                   {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False %}
                   <th>{% trans "Retirar" %}</th>
                   {% endif %}
+
+                  <th>{% trans "Services" %}</th>
                 </tr>
               </thead>
               <tbody>
@@ -63,6 +65,43 @@
                       </form>
                   </td>
                   {% endif %}
+
+                  <!-- Novo botao servicos -->
+
+                  <td class="center">
+                      <a class="btn btn-primary inline-service" title="Manager Prep Service" href="javascript:void(0);"><i class="fa fa-fw fa-cogs"></i></a>
+                      <!-- Popup para marcar os servicos -->
+                        <div id="prodtuto-1" class="modal fade modal-m">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                        <h4 class="modal-title"><i class="fa fa-fw fa-cogs"></i> Serviços necessários para o "Prep" desses produtos</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" /> Flate Rate - USD 1,49</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" /> Label - USD 1,40</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" /> Buble Wrap - USD 1,30</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" /> No Prep - USD 0,40</label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary">{% trans "Salvar" %}</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                  </td>
+
+
                 </tr>
               {% endfor %}
               </tbody>

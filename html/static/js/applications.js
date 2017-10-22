@@ -1293,6 +1293,11 @@
         $('#tutorial-br').modal('show');
     });
 
+    //popup servicos de prep
+    $('.inline-service').click(function(){
+        $(this).parent("td").find(".modal").modal('show');
+    });
+
     //Click radio cadastro de envio brasil
     $(".endereco-cadastro-chk").click(function(){
          var classe = $(this).find("input[type='radio']").attr("class");
