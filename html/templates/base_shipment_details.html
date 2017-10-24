@@ -373,12 +373,12 @@
                             <span class="badge altura">{% trans "em" %} {% unit_length_display 3 %}</span>
                         </div>
                         <!-- Campo localizacao adm -->
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <input placeholder="{{ package_form.pick_ticket.label }}..." name="{{ package_form.pick_ticket.html_name }}" class="form-control" id="{{ package_form.pick_ticket.id_for_label }}" value="{% if package_form.pick_ticket.value %}{{ package_form.pick_ticket.value }}{% endif %}" aria-required="true" type="text">
                             <span class="badge altura">{{ package_form.pick_ticket.label }}</span>
                         </div>
                         {% if forloop.first is False %}
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <a class="rem-track btn btn-danger rem-pacote-shipment inline-deletelink" title="{{ packages.deleteText }}" href="#"><i class="fa fa-fw fa-times"></i></a>
                         </div>
                         {% endif %}
@@ -418,40 +418,36 @@
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-final" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Enviar e Finalizar Envio" %}
                 </a>
-                <br><br>
                {% endif %}
                {% if shipment.status == 1 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-1" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
                 </a>
-                <br><br>
                {% endif %}
                {% if shipment.status == 2 %}
                 {% if user == shipment.user or user|has_group:'admins' or user|has_shipment_perm:'add_package' %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-3" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
                 </a>
-                <br><br>
                 {% endif %}
                {% endif %}
                {% if shipment.status == 5 and user|has_group:'admins' or shipment.status == 4 or shipment.status == 3 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-5" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
                 </a>
-                <br><br>
                {% endif %}
                {% if user|has_group:'admins' %}
                 {% if shipment.status < 4 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="change-btn-status-forward" href="{% url 'shipment_status' shipment.id 'forward' %}">
                     <i class="fa fa-fw fa-forward"></i> {% trans "Avançar status" %}
                 </a>
-                <br><br>
+
                 {% endif %}
                 {% if shipment.status > 1 and shipment.status < 5 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="change-btn-status-backward" href="{% url 'shipment_status' shipment.id 'backward' %}">
                     <i class="fa fa-fw fa-backward"></i> {% trans "Voltar status" %}
                 </a>
-                <br><br>
+
                 {% endif %}
                {% endif %}
                {% if shipment.status < 5 %}
@@ -462,8 +458,8 @@
                {% endif %}
               {% endif %}
               {% if shipment.status < 5 %}
-                 <br><br>
-                 <form action="{% if shipment.is_archived %}{% url 'shipment_archive' shipment.id '1' %}{% else %}{% url 'shipment_archive' shipment.id '2' %}{% endif %}" method="post" id="form-archive-shipment">
+
+                 <form class="left" action="{% if shipment.is_archived %}{% url 'shipment_archive' shipment.id '1' %}{% else %}{% url 'shipment_archive' shipment.id '2' %}{% endif %}" method="post" id="form-archive-shipment">
                     {% csrf_token %}
                     <input type="hidden" name="archive_shipment" value="1">
                  </form>
@@ -496,8 +492,8 @@
                     <p>{% trans "Confirma a conclusão do processo de envio?" %}</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="send-btn-final-confirmation" class="btn btn-danger">{% trans "Sim" %}</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                    <button type="button" id="send-btn-final-confirmation" class="btn btn-danger"><i class="fa fa-fw fa-check"></i> {% trans "Sim" %}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-fw fa-times-circle"></i> {% trans "Fechar" %}</button>
                 </div>
             </div>
         </div>
@@ -519,8 +515,8 @@
                         <p>{% trans "Esta ação não poderá ser desfeita." %}</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-danger">{% trans "Sim" %}</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-fw fa-check"></i> {% trans "Sim" %}</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-fw fa-times-circle"></i> {% trans "Fechar" %}</button>
                     </div>
                 </div>
             </div>

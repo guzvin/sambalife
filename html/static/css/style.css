@@ -1181,6 +1181,16 @@ label.titulo-pct span{
     margin-left: 17px;
 }
 
+.by{
+    margin-top: 10px;
+    display: block;
+    text-decoration: none;
+}
+
+.left{
+    float: left;
+}
+
 /*balão*/
 .status{
     background: #ddd;
@@ -1507,7 +1517,7 @@ form small{
 }
 
 .sistema .navbar-right {
-    margin-right: 10px;
+    margin-right: 40px;
 }
 
 

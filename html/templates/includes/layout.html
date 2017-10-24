@@ -50,7 +50,6 @@
 
 <body id="page-top" class="lista-usuarios sistema sistema-en">
  <header class="bs-docs-nav navbar navbar-static-top header-sistema" id="top">
-        <div class="container">
             <div class="navbar-header">
                 <button aria-controls="bs-navbar" aria-expanded="false" class="collapsed navbar-toggle" data-target="#bs-navbar" data-toggle="collapse" type="button">
                     <span class="sr-only">Toggle navigation</span>
@@ -244,7 +243,6 @@
                     {% endfor %}
                 </form>
             </nav>
-        </div>
     </header>
 
     {% block conteudo %}Conteudo pagina{% endblock %}
@@ -256,7 +254,8 @@
                     <span class="copyright">{% trans "Copyright &copy; Vendedor Online 2017" %}</span>
                 </div>
                 <div class="col-md-3">
-
+                    <a href="https://prepshiptool.com" target="_blank" class="by download">
+                        <img src="../../static/img/logo-en-maior.png" width="20px"/> by PrepShip Tool</a>
                 </div>
                 <div class="col-md-5">
                     <ul class="list-inline quicklinks">
@@ -308,7 +307,7 @@
                     {% endif %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-fw fa-times-circle"></i> {% trans "Fechar" %}</button>
                 </div>
             </div>
         </div>
@@ -327,7 +326,7 @@
                     <p class="center">Address: 8611 SW  207 Terrace<br />City: Miami ou Cutler Bay<br />State: FL<br />Zip code: 33189</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-fw fa-times-circle"></i> {% trans "Fechar" %}</button>
                 </div>
             </div>
         </div>

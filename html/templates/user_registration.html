@@ -440,7 +440,7 @@
                     {% endfor %}
                   </div>
 
-                  <button type="submit" id="send-btn" class="btn btn-primary">{% trans "Enviar" %}</button><br><br>
+                  <button type="submit" id="send-btn" class="btn btn-primary"><i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}</button><br><br>
                 </form>
             </div>
             <div class="col-md-1">
@@ -454,17 +454,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <span class="copyright">{% trans "Copyright &copy; Vendedor Online 2017" %}</span>
+                    <span class="copyright">{% trans "Copyright &copy; PrepShip Tool 2017" %}</span>
                 </div>
                 <div class="col-md-3">
-                    <ul class="list-inline social-buttons"><!--
-                        <li><a href="#"><i class="fa fa-twitter"></i></a>
-                        </li>
-                        <li><a href="https://www.facebook.com/groups/vendedorinternacional/">Facebook</a>
-                        </li>
-                        <li><a href="#"><i class="fa fa-linkedin"></i></a>
-                        </li>-->
-                    </ul>
+                   <a href="https://prepshiptool.com" target="_blank" class="by download">
+                        <img src="../../static/img/logo-en-maior.png" width="20px"/> by PrepShip Tool
+                   </a>
                 </div>
                 <div class="col-md-5">
                     <ul class="list-inline quicklinks">
@@ -518,7 +513,7 @@
                     {% endif %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-fw fa-times-circle"></i> {% trans "Fechar" %}</button>
                 </div>
             </div>
         </div>
