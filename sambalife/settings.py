@@ -127,6 +127,7 @@ INSTALLED_APPS = [
     'payment',
     'store',
     'partner',
+    'service',
     'django_crontab',
 ]
 

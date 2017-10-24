@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n l10n tz permissions users shipments commons %}
+{% load i18n l10n tz permissions users shipments services commons %}
 
 {% block specific_styles %}
 <link href="/static/css/inlines.css" rel="stylesheet">
@@ -29,11 +29,12 @@
                   {% if user|has_user_perm:'view_users' %}
                   <th>{% trans "Usuário" %}</th>
                   {% endif %}
+                  {% if user|has_service_perm:'add_product' %}
+                  <th>{% trans "Serviços" %}</th>
+                  {% endif %}
                   {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False %}
                   <th>{% trans "Retirar" %}</th>
                   {% endif %}
-
-                  <th>{% trans "Services" %}</th>
                 </tr>
               </thead>
               <tbody>
@@ -55,6 +56,11 @@
                   {% if user|has_user_perm:'view_users' %}
                   <td>{{ shipment.user.first_name }}</td>
                   {% endif %}
+                  {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
+                  <td>
+                      <a class="btn btn-primary add-service-product-shipment" title="{% trans 'Atribuir serviços' %}" href="javascript:void(0);" data-shipment-product-id="{{product.id}}"><i class="fa fa-fw fa-cogs"></i></a>
+                  </td>
+                  {% endif %}
                   {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False %}
                   {% trans "Excluir" as delete %}
                   <td>
@@ -65,43 +71,6 @@
                       </form>
                   </td>
                   {% endif %}
-
-                  <!-- Novo botao servicos -->
-
-                  <td class="center">
-                      <a class="btn btn-primary inline-service" title="Manager Prep Service" href="javascript:void(0);"><i class="fa fa-fw fa-cogs"></i></a>
-                      <!-- Popup para marcar os servicos -->
-                        <div id="prodtuto-1" class="modal fade modal-m">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                        <h4 class="modal-title"><i class="fa fa-fw fa-cogs"></i> Serviços necessários para o "Prep" desses produtos</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="checkbox">
-                                            <label><input type="checkbox" /> Flate Rate - USD 1,49</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <label><input type="checkbox" /> Label - USD 1,40</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <label><input type="checkbox" /> Buble Wrap - USD 1,30</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <label><input type="checkbox" /> No Prep - USD 0,40</label>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-primary">{% trans "Salvar" %}</button>
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                  </td>
-
-
                 </tr>
               {% endfor %}
               </tbody>
@@ -526,5 +495,32 @@
             </div>
         </div>
      </form>
+    {% endif %}
+    {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
+    <form>
+    <input type="hidden" name="service_product_id" value="">
+    <div id="add-service-product" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Serviços utilizados na preparação" %}</h4>
+                </div>
+                <div class="modal-body">
+                    {% for service in services%}
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="service" value="{{ service.id }}"> {{ service.name }}</label>
+                        <input type="text" name="price{{ service.id }}" value="{{service.price|unlocalize}}">
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="send-btn-add-service-product" class="btn btn-info">{% trans "Salvar" %}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
     {% endif %}
 {% endblock %}

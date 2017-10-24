@@ -1217,6 +1217,55 @@
         });
     }
 
+    $('.add-service-product-shipment').click(function()
+    {
+        var pid = $(this).data('shipment-product-id');
+        var addServiceProduct = $('#add-service-product');
+        var form = addServiceProduct.closest('form');
+        form.find('input[name="service_product_id"]').val(pid);
+        $('.loading').show();
+        $.ajax(
+        {
+            method: 'GET',
+            url: '/' + gettext('en') + '/service/product/' + pid + '/'
+        }).done(function( obj )
+        {
+            form[0].reset();
+            obj.forEach(function(item)
+            {
+                addServiceProduct.find('input[name="service"]').each(function ()
+                {
+                    if(''+item.service_id === this.value)
+                    {
+                        this.checked=true;
+                        addServiceProduct.find('input[name="price' + this.value + '"]').val(item.service_price);
+                        return false;
+                    }
+                });
+            });
+            $('.loading').hide();
+            addServiceProduct.modal('show');
+        });
+    });
+
+    $('#send-btn-add-service-product').click(function()
+    {
+        var addServiceProduct = $('#add-service-product');
+        var form = addServiceProduct.closest('form');
+        $('.loading').show();
+        $.ajax(
+        {
+            method: 'POST',
+            url: '/' + gettext('en') + '/service/product/' + form.find('input[name="service_product_id"]').val() + '/',
+            data: form.serialize()
+        }).done(function( obj )
+        {
+            form[0].reset();
+            $('.loading').hide();
+            addServiceProduct.modal('hide');
+        });
+    });
+
     $('.add-pro').click(function()
     {
         var numeroProduto = Number($('.lista-produtos .produto:last-child .num-produto').text()) + 1;

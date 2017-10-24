@@ -23,6 +23,7 @@ from product.views import *
 from shipment.views import *
 from payment.views import *
 from store.views import *
+from service.views import *
 from utils.views import *
 from myauth.views import *
 
@@ -78,5 +79,6 @@ urlpatterns += i18n_patterns(
     url(r'^user/impersonate[/]$', user_impersonate, name='user_impersonate'),
     url(r'^user/end_impersonate[/]$', user_end_impersonate, name='user_end_impersonate'),
     url(r'^product/autocomplete[/]$', product_autocomplete, name='product_autocomplete'),
+    url(r'^service/product/(?P<pid>[0-9]+)[/]$', service_product, name='service_product'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 )
