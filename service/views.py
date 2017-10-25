@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseForbidden
-from service.models import Service, Product
+from service.models import Product
 from service.templatetags.services import has_service_perm
 import json
 import logging

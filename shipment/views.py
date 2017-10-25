@@ -7,7 +7,7 @@ from myauth.templatetags.permissions import has_group
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from django.utils.translation import ugettext as _, ungettext
 from product.models import Product as OriginalProduct
-from service.models import Service, Product as ServiceProduct
+from service.models import Service
 from shipment.models import Shipment, Product, Warehouse, Package, CostFormula
 from django.forms import modelformset_factory, inlineformset_factory, Field, DateField
 from django.forms.widgets import Widget, FileInput
@@ -25,9 +25,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from shipment.templatetags.shipments import unit_weight_display, unit_length_display
+from service.templatetags.services import has_service_perm
 from django.contrib.auth import get_user_model
 from django.template import loader, TemplateDoesNotExist
-from django.utils import translation
 from shipment.templatetags.shipments import etc
 from decimal import Decimal
 import time
@@ -187,8 +187,8 @@ def shipment_details(request, pid=None):
                 return HttpResponseBadRequest()
             return HttpResponseBadRequest(error_400_template.render())
         _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
-        # ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id)
-        # _shipment_details.cost = cost
+        ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id)
+        _shipment_details.cost = cost
         _shipment_warehouses = Warehouse.objects.filter(shipment=_shipment_details).order_by('id')
         title = ' '.join([str(_('Envio')), str(_shipment_details.id)])
         context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products,
@@ -236,8 +236,9 @@ def shipment_details(request, pid=None):
                 else:
                     return HttpResponseForbidden()
             if has_shipment_perm(request.user, 'add_package'):
-                _services = Service.objects.all()
-                context_data['services'] = _services
+                if has_service_perm(request.user, 'add_product'):
+                    _services = Service.objects.all()
+                    context_data['services'] = _services
                 serialized_products = serializers.serialize('json', _shipment_products, fields=('id', 'quantity',
                                                                                                 'product',))
                 logger.debug('@@@@@@@@@@@@@@@ SERIALIZED PRODUCTS @@@@@@@@@@@@@@@@@')

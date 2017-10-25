@@ -29,7 +29,7 @@
                   {% if user|has_user_perm:'view_users' %}
                   <th>{% trans "Usuário" %}</th>
                   {% endif %}
-                  {% if user|has_service_perm:'add_product' %}
+                  {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
                   <th>{% trans "Serviços" %}</th>
                   {% endif %}
                   {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False %}

@@ -2,8 +2,7 @@ from django.contrib.admin import AdminSite
 from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth import authenticate
 from django import forms
-from django.utils.translation import ugettext_lazy as _, get_language
-from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 
 class MyAdminAuthenticationForm(AdminAuthenticationForm):
@@ -12,10 +11,6 @@ class MyAdminAuthenticationForm(AdminAuthenticationForm):
         password = self.cleaned_data.get('password')
 
         if username and password:
-            if username == settings.SYS_SU_USER:
-                username = ''.join([username, '-pt'])
-            else:
-                username = ''.join([username, get_language()])
             self.user_cache = authenticate(username=username, password=password)
             if self.user_cache is None:
                 raise forms.ValidationError(
