@@ -262,8 +262,29 @@ class UserAdmin(BaseUserAdmin):
             if this_extra_context is None:
                 this_extra_context = {}
             this_extra_context.update(system_user_extra_context)
+        if not request.user.is_superuser:
+            self.list_display = ('id', 'email', 'date_joined', 'is_active', 'is_verified', 'partner')
+            self.list_filter = ('is_active', 'is_verified', 'partner')
+            self.fieldsets = (
+                (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
+                                   'password1', 'password2')}),
+                (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
+                (_('Grupos'), {'fields': ('groups',)}),
+            )
         return super(UserAdmin, self).change_view(request, object_id, form_url=form_url,
                                                   extra_context=this_extra_context)
+
+    def changelist_view(self, request, extra_context=None):
+        if not request.user.is_superuser:
+            self.list_display = ('id', 'email', 'date_joined', 'is_active', 'is_verified', 'partner')
+            self.list_filter = ('is_active', 'is_verified', 'partner')
+            self.fieldsets = (
+                (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
+                                   'password1', 'password2')}),
+                (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
+                (_('Grupos'), {'fields': ('groups',)}),
+            )
+        return super(UserAdmin, self).changelist_view(request, extra_context)
 
 # admin.site.unregister(MyUser)
 # Now register the new UserAdmin...
@@ -336,10 +357,16 @@ class GroupAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         # Proper kwargs are form, fields, exclude, formfield_callback
         if obj and obj.name == 'admins':  # obj is not None, so this is a change page
-            self.fieldsets = (
-                (None, {'fields': ('translated_name', 'users')}),
-            )
-            kwargs['fields'] = ('translated_name', 'users')
+            if not request.user.is_superuser:
+                self.fieldsets = (
+                    (None, {'fields': ('translated_name', 'users')}),
+                )
+                kwargs['fields'] = ('translated_name', 'users')
+            else:  # obj is None, so this is an add page
+                self.fieldsets = (
+                    (None, {'fields': ('name', 'permissions', 'users')}),
+                )
+                kwargs['fields'] = ('name', 'permissions', 'users')
         elif obj and obj.name == 'all_users':  # obj is not None, so this is a change page
             self.fieldsets = (
                 (None, {'fields': ('translated_name', 'permissions', 'users')}),
