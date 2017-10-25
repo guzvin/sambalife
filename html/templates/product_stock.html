@@ -103,7 +103,7 @@
                       {% trans "Ordenar pelo nome" as order_name %}
                       <a title="{{ order_name }}" href="javascript:void(0);">{{ name }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
-                  <th>{% trans "ASIN" %}</th>
+                  <th class="center">{% trans "ASIN" %}</th>
                   <th class="center">
                       {% trans "Ordenar pela quantidade" as order_qty %}
                       <a title="{{ order_qty }}" href="javascript:void(0);">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
@@ -136,7 +136,7 @@
                       <span class="help help-tooltip fa fa-thumb-tack" title="{% blocktrans %}Localização na Warehouse{% endblocktrans %}: {{ product.pick_ticket }}"></span>
                       {% endif %}
                   </td>
-                  <td>{% if product.asin %}{{ product.asin }}{% endif %}</td>
+                  <td class="center">{% if product.asin %}{{ product.asin }}{% endif %}</td>
                   <td class="center row-quantity" data-current-qty="{{ product.quantity }}">
                       <span class="row-quantity-display">
                       {{ product.quantity }}{% if product.quantity_partial is not None and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}
@@ -231,8 +231,8 @@
                             <label><i class="fa fa-thumb-tack"></i> {% trans "Localização na Warehouse" %}:</label>
                             <input class="form-control row-pick-ticket" name="product_pick_ticket" type="text" value="{% if product.pick_ticket %}{{ product.pick_ticket }}{% endif %}" data-pick-ticket="{% if product.pick_ticket %}{{ product.pick_ticket }}{% endif %}">
                         </div>
-                        <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-check"></i> {% trans "Salvar" %}</a>
-                        <a class="btn btn-danger fechar" href="javascript:void(0);"><i class="fa fa-times"></i> {% trans "Fechar" %}</a>
+                        <a class="btn btn-primary send-btn-async" href="javascript:void(0);"><i class="fa fa-fw fa-paper-plane"></i>{% trans "Salvar" %}</a>
+                        <a class="btn btn-danger fechar" href="javascript:void(0);"><i class="fa fa-fw fa-times-circle"></i> {% trans "Fechar" %}</a>
                         </form>
                        </div>
                       </div>
