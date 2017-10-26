@@ -99,7 +99,7 @@
                     {% endif %}
 
                     <li>
-                        <a href="{% if LANGUAGE_CODE == 'pt' %}{% trans '/pt/ajuda/' %}#contact{% else %}mailto:support@prepshiptool.freshdesk.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
+                        <a href="{% if LANGUAGE_CODE == 'pt' %}{% trans '/pt/ajuda/' %}#contact{% else %}mailto:{% trans 'support@prepshiptool.freshdesk.com' %}{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
 {% comment %}
                     <li class="{% block lotes-u %}{% endblock %}">
@@ -255,7 +255,7 @@
                 </div>
                 <div class="col-md-3">
                     <a href="https://prepshiptool.com" target="_blank" class="by download">
-                        <img src="../../static/img/logo-en-maior.png" width="20px"/> by PrepShip Tool</a>
+                        <img src="../../static/img/logo-en-maior.png" width="20px"/> by {% trans "PrepShip Tool" %}</a>
                 </div>
                 <div class="col-md-5">
                     <ul class="list-inline quicklinks">
