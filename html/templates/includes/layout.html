@@ -99,7 +99,7 @@
                     {% endif %}
 
                     <li>
-                        <a href="{% if LANGUAGE_CODE == 'pt' %}{% trans '/pt/ajuda/' %}#contact{% else %}mailto:{% trans 'support@prepshiptool.freshdesk.com' %}{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
+                        <a href="mailto:{% trans 'support@prepshiptool.freshdesk.com' %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
 {% comment %}
                     <li class="{% block lotes-u %}{% endblock %}">

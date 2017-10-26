@@ -148,6 +148,8 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
     if email_from is None:
         email_from = string_concat(_('Vendedor Online Internacional'), ' ',
                                    _('<no-reply@vendedorinternacional.net>'))
+    if reply_to is None:
+        reply_to = 'wbossimp@gmail.com'
     bcc = None
     if bcc_admins:
         bcc = get_admins_emails()
