@@ -5,12 +5,13 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.contrib.admin.utils import unquote
 from django.contrib.admin import utils
 from django.core.exceptions import ObjectDoesNotExist
 from myauth.models import MyUser, UserAddress
 from django.db.models.fields import BLANK_CHOICE_DASH
+from django.db.models import Q
 from utils.sites import admin_site
 import logging
 
@@ -394,6 +395,14 @@ class GroupAdmin(admin.ModelAdmin):
             this_extra_context.update(system_group_extra_context)
         return super(GroupAdmin, self).change_view(request, object_id, form_url=form_url,
                                                    extra_context=this_extra_context)
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        field = super(GroupAdmin, self).formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == 'permissions' and request.user.is_superuser is False:
+            field.queryset = field.queryset.filter(Q(content_type__app_label__in=[
+                'admin', 'auth', 'myauth', 'product', 'shipment', 'payment']) & ~Q(content_type__model__in=[
+                    'estimates', 'permission', 'costformula']))
+        return field
 
 # Register the new Group ModelAdmin.
 admin_site.register(Group, GroupAdmin)
