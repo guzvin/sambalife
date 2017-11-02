@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-02 15:38-0200\n"
+"POT-Creation-Date: 2017-11-02 16:08-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -598,7 +598,7 @@ msgstr "Copyright &copy; PrepShip Tool 2017"
 #: html/templates/user_registration.html:468
 #: html/templates/user_reset_password.html:117
 #: html/templates/user_validation.html:96
-msgid "<a href='/termos-e-condicoes-de-uso.html'>Termos e Condições de Uso"
+msgid "<a href='/pt/termos-e-condicoes-de-uso.html'>Termos e Condições de Uso"
 msgstr ""
 
 #: html/templates/includes/layout-footer.html:204
@@ -628,7 +628,7 @@ msgstr ""
 #: html/templates/includes/layout.html:346
 msgid ""
 "Os termos e condições de uso da nossa plataforma foram atualizados. <a "
-"href='/termos-e-condicoes-de-uso.html' class='download' "
+"href='/pt/termos-e-condicoes-de-uso.html' class='download' "
 "target='_blank'>Confira clicando aqui</a>. Duas informações importantes para "
 "você."
 msgstr ""
@@ -659,12 +659,14 @@ msgstr "Produto no estoque FBA Inspection até 45 dias: USD 1,29 por produto"
 #: html/templates/includes/layout-footer.html:254
 #: html/templates/includes/layout.html:349
 msgid "Produto no estoque VOI de 46 até 75 dias: USD 1,49 por produto"
-msgstr "Produto no estoque FBA Inspection de 46 até 75 dias: USD 1,49 por produto"
+msgstr ""
+"Produto no estoque FBA Inspection de 46 até 75 dias: USD 1,49 por produto"
 
 #: html/templates/includes/layout-footer.html:255
 #: html/templates/includes/layout.html:350
 msgid "Produto no estoque VOI de 76 até 90 dias: USD 1,99 por produto"
-msgstr "Produto no estoque FBA Inspection de 76 até 90 dias: USD 1,99 por produto"
+msgstr ""
+"Produto no estoque FBA Inspection de 76 até 90 dias: USD 1,99 por produto"
 
 #: html/templates/includes/layout-footer.html:256
 #: html/templates/includes/layout.html:351
@@ -1288,7 +1290,7 @@ msgstr ""
 
 #: html/templates/user_registration.html:67
 msgid ""
-"Leia <a href='/termos-e-condicoes-de-uso.html' class='download'>aqui</a> "
+"Leia <a href='/pt/termos-e-condicoes-de-uso.html' class='download'>aqui</a> "
 "nossos termos e condições de uso da plataforma."
 msgstr ""
 
@@ -2447,8 +2449,9 @@ msgid ""
 "Seu produto encontra-se há %(days)s dias no estoque VOI. Fique atento, pois "
 "se passar do período de %(period)s dias ele será considerado abandonado."
 msgstr ""
-"Seu produto encontra-se há %(days)s dias no estoque FBA Inspection. Fique atento, "
-"pois se passar do período de %(period)s dias ele será considerado abandonado."
+"Seu produto encontra-se há %(days)s dias no estoque FBA Inspection. Fique "
+"atento, pois se passar do período de %(period)s dias ele será considerado "
+"abandonado."
 
 #: utils/cron.py:163
 #, python-format
@@ -2457,9 +2460,9 @@ msgid ""
 "se passar do período de %(period)s dias o valor por unidade deste produto "
 "passará para USD %(value)s."
 msgstr ""
-"Seu produto encontra-se há %(days)s dias no estoque FBA Inspection. Fique atento, "
-"pois se passar do período de %(period)s dias o valor por unidade deste "
-"produto passará para USD %(value)s."
+"Seu produto encontra-se há %(days)s dias no estoque FBA Inspection. Fique "
+"atento, pois se passar do período de %(period)s dias o valor por unidade "
+"deste produto passará para USD %(value)s."
 
 #: utils/cron.py:169
 #, python-format
@@ -2469,8 +2472,8 @@ msgid ""
 "%(days2)s dias."
 msgstr ""
 "O valor unitário deste produto passou para USD %(value)s. Ele encontra-se há "
-"%(days)s dias no estoque FBA Inspection. Não perca o próximo prazo que vence em "
-"%(days2)s dias."
+"%(days)s dias no estoque FBA Inspection. Não perca o próximo prazo que vence "
+"em %(days2)s dias."
 
 #: utils/cron.py:175
 #, python-format
