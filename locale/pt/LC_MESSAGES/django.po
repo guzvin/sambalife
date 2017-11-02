@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-02 15:18-0200\n"
+"POT-Creation-Date: 2017-11-02 16:03-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -599,7 +599,7 @@ msgstr "Copyright &copy; PrepShip Tool 2017"
 #: html/templates/user_registration.html:468
 #: html/templates/user_reset_password.html:117
 #: html/templates/user_validation.html:96
-msgid "<a href='/termos-e-condicoes-de-uso.html'>Termos e Condições de Uso"
+msgid "<a href='/pt/termos-e-condicoes-de-uso.html'>Termos e Condições de Uso"
 msgstr ""
 
 #: html/templates/includes/layout-footer.html:204
@@ -629,7 +629,7 @@ msgstr ""
 #: html/templates/includes/layout.html:346
 msgid ""
 "Os termos e condições de uso da nossa plataforma foram atualizados. <a "
-"href='/termos-e-condicoes-de-uso.html' class='download' "
+"href='/pt/termos-e-condicoes-de-uso.html' class='download' "
 "target='_blank'>Confira clicando aqui</a>. Duas informações importantes para "
 "você."
 msgstr ""
@@ -1287,7 +1287,7 @@ msgstr ""
 
 #: html/templates/user_registration.html:67
 msgid ""
-"Leia <a href='/termos-e-condicoes-de-uso.html' class='download'>aqui</a> "
+"Leia <a href='/pt/termos-e-condicoes-de-uso.html' class='download'>aqui</a> "
 "nossos termos e condições de uso da plataforma."
 msgstr ""
 
