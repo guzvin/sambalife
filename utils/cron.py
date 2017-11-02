@@ -20,9 +20,8 @@ def archive_shipped_shipments():
 
 
 def price_warning():
-    try:
-        params = Params.objects.first()
-    except Params.DoesNotExist:
+    params = Params.objects.first()
+    if params is None:
         return
     all_products = Product.objects.extra(where=['EXISTS (SELECT 1 FROM shipment_product INNER JOIN shipment_shipment '
                                                 'ON shipment_product.shipment_id = shipment_shipment.id '

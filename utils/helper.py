@@ -214,9 +214,8 @@ def resolve_price_value_by_service(product):
 
 def resolve_price_value_flat_rate(product):
     reference_date = product.receive_date
-    try:
-        params = Params.objects.first()
-    except Params.DoesNotExist:
+    params = Params.objects.first()
+    if params is None:
         return settings.DEFAULT_REDIRECT_FACTOR
     logger.debug('@@@@@@@@@@@@ REFERENCE_DATE @@@@@@@@@@@@@@')
     logger.debug(datetime.datetime.now())

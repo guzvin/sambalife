@@ -16,11 +16,11 @@ logger = logging.getLogger('django')
 @require_http_methods(["GET"])
 @transaction.atomic
 def close_accounting(request, simulate=False, sandbox=False):
-    try:
-        params = Params.objects.first()
+    params = Params.objects.first()
+    if params:
         fgr_cost = params.fgr_cost
         base_price = params.redirect_factor
-    except Params.DoesNotExist:
+    else:
         fgr_cost = settings.DEFAULT_FGR_COST
         base_price = settings.DEFAULT_REDIRECT_FACTOR
     shipments = Shipment.objects.select_related('user', 'user__partner').filter(status=5, is_sandbox=sandbox,

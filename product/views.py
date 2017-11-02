@@ -112,11 +112,9 @@ def product_stock(request):
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
     max_time_period = None
-    try:
-        params = Params.objects.first()
+    params = Params.objects.first()
+    if params:
         max_time_period = params.time_period_one + params.time_period_two + params.time_period_three
-    except Params.DoesNotExist:
-        pass
     return render(request, 'product_stock.html', {'title': _('Estoque'), 'products': products,
                                                   'filter_values': ObjectView(filter_values),
                                                   'max_time_period': max_time_period if max_time_period else 0})

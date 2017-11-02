@@ -351,13 +351,13 @@ def send_email_contact_us(request, name, email, tel, message, async=False):
     email_body = format_html(html_format, *texts)
     ctx = Context({'protocol': 'https', 'email_body': email_body})
     message = loader.get_template('email/contact-us.html').render(ctx, request)
-    try:
-        params = Params.objects.first()
+    params = Params.objects.first()
+    if params:
         if params.contact_us_mail_to:
             mail_to = params.contact_us_mail_to.split(';')
         else:
             raise Params.DoesNotExist()
-    except Params.DoesNotExist:
+    else:
         mail_to = None
     logger.debug(mail_to)
     email_tuple = (email_title, message, mail_to)
