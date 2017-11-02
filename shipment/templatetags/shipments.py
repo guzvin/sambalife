@@ -55,9 +55,9 @@ def etc(initial_date, **kwargs):
         return None
     try:
         estimates = Estimates.objects.first()
-        if kwargs['estimate'] == 'preparation':
+        if estimates and kwargs['estimate'] == 'preparation':
             delta_t = estimates.preparation
-        elif kwargs['estimate'] == 'shipment':
+        elif estimates and kwargs['estimate'] == 'shipment':
             delta_t = estimates.shipment
         else:
             return None
