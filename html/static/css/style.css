@@ -856,6 +856,11 @@ body {
     height: 560px;
 }
 
+#login-box .logo-login{
+    width: 240px;
+    margin-top: 70px;
+}
+
 .previsao{
     color: #777;
     font-size: 12px;
@@ -1512,7 +1517,7 @@ form small{
 }
 
 .sistema .navbar-brand img{
-    width: 200px;
+    width: 180px;
     margin-top: 9px;
 }
 
