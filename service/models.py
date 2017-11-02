@@ -28,3 +28,15 @@ class Product(models.Model):
     class Meta:
         verbose_name = _('Produto')
         verbose_name_plural = _('Produtos')
+
+
+class Config(models.Model):
+    id = models.AutoField(primary_key=True)
+    minimum_price = models.DecimalField(_('Preço mínimo total'), max_digits=12, decimal_places=2)
+
+    class Meta:
+        verbose_name = _('Configuração')
+        verbose_name_plural = _('Configurações')
+
+    def __str__(self):
+        return str(_('Configuração'))

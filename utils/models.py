@@ -16,8 +16,6 @@ class Params(models.Model):
     amazon_fee = models.DecimalField(_('Tarifa Amazon'), max_digits=12, decimal_places=2, default=0.99)
     shipping_cost = models.DecimalField(_('Custo de Envio para Amazon'), max_digits=12, decimal_places=2, default=0.30)
     fgr_cost = models.DecimalField(_('Valor Fábio/Gustavo/Roberto'), max_digits=12, decimal_places=2, default=0.29)
-    english_version_cost = models.DecimalField(_('Valor Extra da Versão em Inglês'), max_digits=12, decimal_places=2,
-                                               default=0.20)
     redirect_factor = models.DecimalField(_('Valor Base'), max_digits=12, decimal_places=2, default=1.29)
     time_period_one = models.SmallIntegerField(_('Período Base'), null=True, blank=True,
                                                default=30, help_text=_('Em dias.'),
@@ -136,3 +134,23 @@ class AccountingPartner(models.Model):
         yield 'paid', self.paid
         yield 'total_products', self.total_products
         yield 'accounting', self.accounting
+
+
+class Billing(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    TYPE_CHOICES = (
+        (1, _('Taxa fixa')),
+        (2, _('Por serviços')),
+    )
+    type = models.SmallIntegerField(_('Tipo'), choices=TYPE_CHOICES, null=True)
+
+    class Meta:
+        verbose_name = _('Tipo de cobrança')
+        verbose_name_plural = _('Tipo de cobrança')
+
+    def __str__(self):
+        if self.type == 1:
+            return str(_('Taxa fixa'))
+        elif self.type == 2:
+            return str(_('Por serviços'))
+        return ''

@@ -11,6 +11,7 @@ from product.models import Product as OriginalProduct
 from utils import helper
 from utils.models import Accounting
 from pyparsing import ParseException
+import uuid
 import logging
 
 logger = logging.getLogger('django')
@@ -82,6 +83,7 @@ def save_file(sender, instance, created, **kwargs):
 
 class Product(models.Model):
     id = BigAutoField(primary_key=True)
+    uid = models.UUIDField(default=uuid.uuid4, editable=False)
     quantity = models.PositiveIntegerField(_('Quantidade'))
     product = models.ForeignKey('product.Product')
     receive_date = models.DateTimeField(_('Data de Recebimento'), null=True)

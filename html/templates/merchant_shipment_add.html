@@ -104,9 +104,13 @@
             </div>
             <div class="col-md-12">
                 <label><i class="fa fa-fw fa-bar-chart"></i> {% trans "Valores" %}:</label><br><br>
+                {% if billing_type == 1 %}
                 <a class="btn btn-default" href="#" id="btn-calculate-shipment"><i class="fa fa-fw fa-calculator"></i> {% trans "Calcular valor do Envio" %}</a><br><br>
+                {% endif %}
                 <p><strong><i class="fa fa-fw fa-list-ol"></i> {% trans "Total de Produtos" %}: </strong><span id="totalProducts">-</span> </p>
+                {% if billing_type == 1 %}
                 <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">-</span></p>
+                {% endif %}
             </div>
           </div>
           {% endfor %}

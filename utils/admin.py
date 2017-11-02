@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
-from utils.models import Params, Accounting, AccountingPartner
+from utils.models import Params, Accounting, AccountingPartner, Billing
 from utils.sites import admin_site
 from utils.views import close_accounting
 from partner.models import Partner
@@ -15,7 +15,7 @@ class ParamsAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': [
-                'amazon_fee', 'shipping_cost', 'fgr_cost', 'english_version_cost', 'contact_us_mail_to'
+                'amazon_fee', 'shipping_cost', 'fgr_cost', 'contact_us_mail_to'
             ]
         }),
         (_('Redirecionamento'), {
@@ -138,3 +138,15 @@ class AccountingAdmin(admin.ModelAdmin):
 
 
 admin_site.register(Accounting, AccountingAdmin)
+
+
+class BillingAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        if request.user.is_authenticated:
+            billing_exists = Billing.objects.all().count() == 1
+            if billing_exists is False:
+                return super(BillingAdmin, self).has_add_permission(request)
+        return False
+
+
+admin_site.register(Billing, BillingAdmin)
