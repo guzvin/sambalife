@@ -19,11 +19,9 @@ def close_accounting(request, simulate=False, sandbox=False):
     try:
         params = Params.objects.first()
         fgr_cost = params.fgr_cost
-        english_version_cost = params.english_version_cost
         base_price = params.redirect_factor
     except Params.DoesNotExist:
         fgr_cost = settings.DEFAULT_FGR_COST
-        english_version_cost = settings.DEFAULT_ENGLISH_VERSION_COST
         base_price = settings.DEFAULT_REDIRECT_FACTOR
     shipments = Shipment.objects.select_related('user', 'user__partner').filter(status=5, is_sandbox=sandbox,
                                                                                 accounting=None)
@@ -41,14 +39,13 @@ def close_accounting(request, simulate=False, sandbox=False):
         if accounting_partner:
             accounting_partner.value = accounting_partner.value + _shipment_products_cost(shipment.product_set.all(),
                                                                                           base_price, fgr_cost,
-                                                                                          shipment.user,
-                                                                                          english_version_cost)
+                                                                                          shipment.user)
             accounting_partner.total_products += shipment.total_products
         else:
             accounting_partner = AccountingPartner()
             accounting_partner.partner = 'fgr'
             accounting_partner.value = _shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost,
-                                                               shipment.user, english_version_cost)
+                                                               shipment.user)
             accounting_partner.total_products = shipment.total_products
             accounting_partner.accounting = accounting
             partners.append(accounting_partner)
@@ -76,7 +73,7 @@ def close_accounting(request, simulate=False, sandbox=False):
     return accounting, partners
 
 
-def _shipment_products_cost(products, base_price, base_cost, user, english_version_cost):
+def _shipment_products_cost(products, base_price, base_cost, user):
     cost = 0
     subtract = 0
     for product in products:

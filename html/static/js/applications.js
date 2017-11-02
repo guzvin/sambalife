@@ -923,7 +923,11 @@
                 }
                 tr.remove();
                 $('#totalProducts')[0].innerHTML = obj.items;
-                $('#totalCost')[0].innerHTML = obj.cost;
+                var totalCost = $('#totalCost')[0];
+                if(totalCost)
+                {
+                    totalCost.innerHTML = obj.cost;
+                }
             });
         });
     });
@@ -1220,18 +1224,25 @@
     $('.add-service-product-shipment').click(function()
     {
         var pid = $(this).data('shipment-product-id');
+        var puid = $(this).data('shipment-product-uid');
         var addServiceProduct = $('#add-service-product');
         var form = addServiceProduct.closest('form');
         form.find('input[name="service_product_id"]').val(pid);
+        form.find('input[name="shipment_product_uid"]').val(puid);
         $('.loading').show();
         $.ajax(
         {
             method: 'GET',
-            url: '/' + gettext('en') + '/service/product/' + pid + '/'
+            url: '/' + gettext('en') + '/service/product/' + pid + '/?puid=' + puid
         }).done(function( obj )
         {
-            form[0].reset();
-            obj.forEach(function(item)
+            if(form[0])
+                form[0].reset();
+            addServiceProduct.find('span').each(function ()
+            {
+                $(this).hide();
+            });
+            obj.products.forEach(function(item)
             {
                 addServiceProduct.find('input[name="service"]').each(function ()
                 {
@@ -1241,6 +1252,11 @@
                         addServiceProduct.find('input[name="price' + this.value + '"]').val(item.service_price);
                         return false;
                     }
+                });
+                addServiceProduct.find('span[id="service_'+item.service_id+'"]').each(function ()
+                {
+                    $(this).show();
+//                        addServiceProduct.find('input[name="price' + this.value + '"]').val(item.service_price);
                 });
             });
             $('.loading').hide();
@@ -1259,6 +1275,14 @@
             url: '/' + gettext('en') + '/service/product/' + form.find('input[name="service_product_id"]').val() + '/',
             data: form.serialize()
         }).done(function( obj )
+        {
+            var totalCost = $('#totalCost')[0];
+            if(totalCost)
+            {
+                totalCost.innerHTML = obj.new_cost;
+            }
+        })
+        .always(function()
         {
             form[0].reset();
             $('.loading').hide();

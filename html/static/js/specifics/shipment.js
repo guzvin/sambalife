@@ -107,12 +107,15 @@ function calculateTotalProducts(prefix)
             total += Number($(this).val());
         }
     });
-    $('#totalCost').data('items', JSON.stringify(items));
     var previousValue = $('#totalProducts')[0].innerHTML;
     $('#totalProducts')[0].innerHTML = total;
-    if(previousValue !== ''+total)
+    if($('#totalCost')[0])
     {
-        $('#totalCost')[0].innerHTML = '-';
+        $('#totalCost').data('items', JSON.stringify(items));
+        if(previousValue !== ''+total)
+        {
+            $('#totalCost')[0].innerHTML = '-';
+        }
     }
     if(total === 0)
     {
@@ -141,19 +144,22 @@ function formInitialized(options)
             addQuantityEvent($(this), options.prefix);
         });
         calculateTotalProducts(options.prefix);
-        $('#btn-calculate-shipment').click(function(e)
+        if($('#totalCost')[0])
         {
-            e.preventDefault();
-            $.ajax(
+            $('#btn-calculate-shipment').click(function(e)
             {
-                method: 'GET',
-                url: '/' + gettext('en') + '/shipment/calculate/',
-                data: 'items=' + $('#totalCost').data('items')
-            })
-            .done(function( obj )
-            {
-                $('#totalCost')[0].innerHTML = obj.cost;
+                e.preventDefault();
+                $.ajax(
+                {
+                    method: 'GET',
+                    url: '/' + gettext('en') + '/shipment/calculate/',
+                    data: 'items=' + $('#totalCost').data('items')
+                })
+                .done(function( obj )
+                {
+                    $('#totalCost')[0].innerHTML = obj.cost;
+                });
             });
-        });
+        }
     }
 }

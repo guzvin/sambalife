@@ -93,8 +93,6 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             DEFAULT_AMAZON_SHIPPING_COST = key_value_pair[1]
         elif key_value_pair[0] == 'default_fgr_cost':
             DEFAULT_FGR_COST = key_value_pair[1]
-        elif key_value_pair[0] == 'default_english_version_cost':
-            DEFAULT_ENGLISH_VERSION_COST = key_value_pair[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
@@ -317,6 +315,6 @@ PAYPAL_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_
 
 CRONJOBS = [
     ('0 0 1 * *', 'utils.cron.archive_shipped_shipments'),
-    ('0 1 * * *', 'utils.cron.price_warning'),
+    # ('0 1 * * *', 'utils.cron.price_warning'),
     # ('0   4 * * *', 'django.core.management.call_command', ['clearsessions']),
 ]

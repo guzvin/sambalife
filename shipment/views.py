@@ -7,7 +7,7 @@ from myauth.templatetags.permissions import has_group
 from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from django.utils.translation import ugettext as _, ungettext
 from product.models import Product as OriginalProduct
-from service.models import Service
+from service.models import Service, Config
 from shipment.models import Shipment, Product, Warehouse, Package, CostFormula
 from django.forms import modelformset_factory, inlineformset_factory, Field, DateField
 from django.forms.widgets import Widget, FileInput
@@ -20,6 +20,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
 from utils import helper
+from utils.models import Billing
 from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
@@ -187,12 +188,17 @@ def shipment_details(request, pid=None):
                 return HttpResponseBadRequest()
             return HttpResponseBadRequest(error_400_template.render())
         _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
+        try:
+            billing = Billing.objects.first()
+            billing_type = billing.type
+        except Billing.DoesNotExist:
+            billing_type = 2  # por serviço
         ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id)
         _shipment_details.cost = cost
         _shipment_warehouses = Warehouse.objects.filter(shipment=_shipment_details).order_by('id')
         title = ' '.join([str(_('Envio')), str(_shipment_details.id)])
         context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products,
-                        'warehouses': _shipment_warehouses}
+                        'warehouses': _shipment_warehouses, 'billing_type': billing_type}
         custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
 
         ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
@@ -236,7 +242,7 @@ def shipment_details(request, pid=None):
                 else:
                     return HttpResponseForbidden()
             if has_shipment_perm(request.user, 'add_package'):
-                if has_service_perm(request.user, 'add_product'):
+                if billing_type == 2 and has_service_perm(request.user, 'add_product'):
                     _services = Service.objects.all()
                     context_data['services'] = _services
                 serialized_products = serializers.serialize('json', _shipment_products, fields=('id', 'quantity',
@@ -262,6 +268,9 @@ def shipment_details(request, pid=None):
             if _shipment_details.type:
                 novalidate_fields.append('warehouse')
             package_kwargs = {'renderEmptyForm': False, 'noValidateFields': novalidate_fields}
+            if billing_type == 2:
+                _services = Service.objects.filter(product__product__shipment__user_id=_shipment_details.user_id).distinct()
+                context_data['services'] = _services
             if _shipment_details.status == 3:
                 # Pagamento Autorizado
                 if request.user == _shipment_details.user or has_shipment_perm(request.user, 'add_package'):
@@ -842,6 +851,11 @@ def shipment_add(request):
             original_products = OriginalProduct.objects.none()
     else:
         original_products = OriginalProduct.objects.none()
+    try:
+        billing = Billing.objects.first()
+        billing_type = billing.type
+    except Billing.DoesNotExist:
+        billing_type = 2  # por serviço
     ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
                                            widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
@@ -891,9 +905,12 @@ def shipment_add(request):
                         original_product = OriginalProduct.objects.get(pk=product.product_id)
                         product.receive_date = original_product.receive_date
                         shipment.total_products += product.quantity
-                    ignored_response, cost = calculate_shipment(products, request.user.id)
-                    if cost > 0:
-                        shipment.cost = cost
+                    if billing_type == 2:
+                        shipment.cost = 0
+                    else:
+                        ignored_response, cost = calculate_shipment(products, request.user.id)
+                        if cost > 0:
+                            shipment.cost = cost
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
                     shipment.save()
                     product_formset.instance = shipment
@@ -919,7 +936,8 @@ def shipment_add(request):
             }
     return render(request, 'shipment_add.html', {'title': _('Envio'), 'shipment_formset': shipment_formset,
                                                  'product_formset': product_formset,
-                                                 'warehouse_formset': warehouse_formset})
+                                                 'warehouse_formset': warehouse_formset,
+                                                 'billing_type': billing_type})
 
 
 @login_required
@@ -936,6 +954,11 @@ def merchant_shipment_add(request):
             original_products = OriginalProduct.objects.none()
     else:
         original_products = OriginalProduct.objects.none()
+    try:
+        billing = Billing.objects.first()
+        billing_type = billing.type
+    except Billing.DoesNotExist:
+        billing_type = 2  # por serviço
     ShipmentFormSet = modelformset_factory(Shipment, fields=('type',), min_num=1, max_num=1)
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
                                                                                                           'product'),
@@ -977,9 +1000,12 @@ def merchant_shipment_add(request):
                         original_product = OriginalProduct.objects.get(pk=product.product_id)
                         product.receive_date = original_product.receive_date
                         shipment.total_products += product.quantity
-                    ignored_response, cost = calculate_shipment(products, request.user.id)
-                    if cost > 0:
-                        shipment.cost = cost
+                    if billing_type == 2:
+                        shipment.cost = 0
+                    else:
+                        ignored_response, cost = calculate_shipment(products, request.user.id)
+                        if cost > 0:
+                            shipment.cost = cost
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
                     shipment.save()
                     product_formset.instance = shipment
@@ -1001,7 +1027,8 @@ def merchant_shipment_add(request):
             }
     return render(request, 'merchant_shipment_add.html', {'title': _('Envio Merchant'),
                                                           'shipment_formset': shipment_formset,
-                                                          'product_formset': product_formset})
+                                                          'product_formset': product_formset,
+                                                          'billing_type': billing_type})
 
 
 @login_required
@@ -1009,6 +1036,13 @@ def merchant_shipment_add(request):
 def shipment_calculate(request):
     if has_shipment_perm(request.user, 'add_shipment') is False:
         return HttpResponseForbidden()
+    try:
+        billing = Billing.objects.first()
+        billing_type = billing.type
+    except Billing.DoesNotExist:
+        billing_type = 2  # por serviço
+    if billing_type == 2:
+        return HttpResponseBadRequest()
     try:
         items = json.loads(request.GET.get('items'))
     except ValueError as e:
@@ -1044,19 +1078,31 @@ def calculate_shipment(products, user_id, save_product_price=False):
     cost = 0
     quantity = 0
     try:
+        billing = Billing.objects.first()
+        billing_type = billing.type
+    except Billing.DoesNotExist:
+        billing_type = 2  # por serviço
+    try:
         cost_formula = CostFormula.objects.first()
         for product in products:
             formula = helper.resolve_formula(cost_formula.formula, partner, product,
-                                             save_product_price)
+                                             save_product_price, billing_type)
             logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
             logger.debug(formula)
             cost += helper.Calculate().evaluate(formula, variables={'x': product.quantity})
             quantity += product.quantity
     except CostFormula.DoesNotExist:
         for product in products:
-            cost += product.quantity * (helper.resolve_price_value(product.receive_date) +
+            cost += product.quantity * (helper.resolve_price_value(product, billing_type) +
                                         helper.resolve_partner_value(partner))
             quantity += product.quantity
+    if billing_type == 2:
+        try:
+            config = Config.objects.first()
+            if cost < config.minimum_price:
+                cost = config.minimum_price
+        except CostFormula.DoesNotExist:
+            pass
     return HttpResponse(json.dumps({'cost': force_text(formats.number_format(round(cost, 2), use_l10n=True,
                                                                              decimal_pos=2)),
                                     'items': quantity}),

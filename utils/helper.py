@@ -25,8 +25,9 @@ from store.views import store_paypal_notification, store_paypal_notification_suc
     store_paypal_notification_post_transaction
 from django.template import Context, Template
 from django.template.base import VariableNode
-from utils.models import Params
+from utils.models import Params, Billing
 from django.utils import translation
+from service.models import Product
 from utils.templatetags.commons import timezone_name
 import pytz
 import threading
@@ -170,7 +171,7 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         email.run()
 
 
-def resolve_formula(formula, partner=None, product=None, save_product_price=False):
+def resolve_formula(formula, partner=None, product=None, save_product_price=False, billing_type=2):
     template = Template(formula)
     context_var = {}
     for var in template:
@@ -179,8 +180,7 @@ def resolve_formula(formula, partner=None, product=None, save_product_price=Fals
             if var == 'partner':
                 context_var[var] = str(resolve_partner_value(partner))
             elif var == 'price':
-                reference_date = product.receive_date if product else None
-                price = resolve_price_value(reference_date)
+                price = resolve_price_value(product, billing_type)
                 if save_product_price and product:
                     product.cost = price
                     product.save(update_fields=['cost'])
@@ -195,7 +195,25 @@ def resolve_partner_value(partner):
     return 0
 
 
-def resolve_price_value(reference_date):
+def resolve_price_value(product, billing_type):
+    if product is None:
+        return 0
+    if billing_type == 2:
+        return resolve_price_value_by_service(product)
+    else:
+        return resolve_price_value_flat_rate(product)
+
+
+def resolve_price_value_by_service(product):
+    services = Product.objects.filter(product=product)
+    price = 0
+    for service in services:
+        price += service.price
+    return price
+
+
+def resolve_price_value_flat_rate(product):
+    reference_date = product.receive_date
     try:
         params = Params.objects.first()
     except Params.DoesNotExist:
