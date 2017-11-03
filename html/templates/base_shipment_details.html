@@ -509,7 +509,7 @@
     <input type="hidden" name="service_product_id" value="">
     <input type="hidden" name="shipment_product_uid" value="">
     {% endif %}
-    <div id="add-service-product" class="modal fade">
+    <div id="add-service-product" class="modal fade modal-m">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -521,7 +521,7 @@
                     <div class="checkbox">
                         {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
                         <label><input type="checkbox" name="service" value="{{ service.id }}"> {{ service.name }}</label>
-                        <input type="text" name="price{{ service.id }}" value="{{service.price|unlocalize}}">
+                        <input type="text" class="form-control" name="price{{ service.id }}" value="{{service.price|unlocalize}}">
                         {% else %}
                         <span id="service_{{ service.id }}">
                         <label>{{ service.name }}</label>
