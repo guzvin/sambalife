@@ -113,12 +113,7 @@ class EmailThread(threading.Thread):
         logger.debug(self.email_data_tuple)
         messages = []
         recipients = []
-        logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 111111111111111111111 @@@@@@@@@@@@@@')
         for subject, message, recipient in self.email_data_tuple:
-            logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 22222222222222222222 @@@@@@@@@@@@@@')
-            logger.debug(subject)
-            logger.debug(message)
-            logger.debug(recipient)
             msg = EmailMessage(subject,
                                message,
                                from_email=self.email_from,
@@ -126,7 +121,6 @@ class EmailThread(threading.Thread):
                                bcc=self.bcc,
                                connection=self.connection,
                                reply_to=self.reply_to)
-            logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 3333333333333333333333 @@@@@@@@@@@@@@')
             msg.content_subtype = 'html'
             messages.append(msg)
             recipients.append(recipient)
@@ -156,7 +150,7 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         email_from = string_concat(_('Vendedor Online Internacional'), ' ',
                                    _('<no-reply@vendedorinternacional.net>'))
     if reply_to is None:
-        reply_to = 'support@fbainspection.com'
+        reply_to = ('support@fbainspection.com',)
     bcc = None
     if bcc_admins:
         bcc = get_admins_emails()
@@ -172,7 +166,7 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         raise_exception,
         reply_to
     )
-    if async is False:
+    if async:
         email.start()
     else:
         email.run()
