@@ -2508,7 +2508,7 @@ msgstr ""
 
 #: utils/helper.py:151
 msgid "<no-reply@vendedorinternacional.net>"
-msgstr "<no-reply@prepshiptool.com>"
+msgstr "<no-reply@fbainspection.com>"
 
 #: utils/helper.py:253
 msgid "Adicionar"

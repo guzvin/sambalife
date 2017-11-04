@@ -172,7 +172,7 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         raise_exception,
         reply_to
     )
-    if async:
+    if async is False:
         email.start()
     else:
         email.run()
