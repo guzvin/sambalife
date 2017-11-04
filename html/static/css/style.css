@@ -1151,6 +1151,10 @@ label.titulo-pct span{
     width: 206px;
 }
 
+.modal-m label.label-titulo-servico{
+    line-height: 18px;
+}
+
 .modal-m .checkbox{
     text-align: left;
 }
