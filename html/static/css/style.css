@@ -1146,10 +1146,17 @@ label.titulo-pct span{
 
 .modal-m label{
     line-height: 32px;
+    float: left;
+    display: block;
+    width: 206px;
 }
 
 .modal-m .checkbox{
     text-align: left;
+}
+
+.modal-m  input.form-control{
+    width: 70px;
 }
 
 .img-ajuda-center{
