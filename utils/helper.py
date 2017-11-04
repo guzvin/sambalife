@@ -163,7 +163,7 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
 
     connection = get_connection(fail_silently=False)
     connection.use_ssl = True
-    connection.use_tls = True
+    connection.use_tls = False
     email = EmailThread(
         email_data_tuple,
         email_from,
