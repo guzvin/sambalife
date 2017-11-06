@@ -79,6 +79,12 @@
                             <li class="{% block pagamentos %}{% endblock %}">
                                 <a href="{%url 'admin:payment_mypaypalipn_changelist' %}"><i class="fa fa-fw fa-paypal"></i> {% trans "Pagamentos" %}</a>
                             </li>
+                            {% if user|has_service_perm:'add_service' %}
+                            <li class="divider"></li>
+                            <li class="{% block servicos %}{% endblock %}">
+                                <a href="{%url 'admin:service_service_changelist' %}"><i class="fa fa-fw fa-cogs"></i> {% trans "Serviços" %}</a>
+                            </li>
+                            {% endif %}
 {% comment %}
                             <li class="divider"></li>
                             <li class="{% block lotes %}{% endblock %}">
