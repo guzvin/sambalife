@@ -524,8 +524,8 @@
                         <input type="text" class="form-control" name="price{{ service.id }}" value="{{service.price|unlocalize}}">
                         {% else %}
                         <span id="service_{{ service.id }}">
-                        <label>{{ service.name }}</label>
-                        - ${{service.price|unlocalize}}
+                            <label class="label-titulo-servico">{{ service.name }}</label>
+                            - ${{service.price|unlocalize}}<br /><br />
                         </span>
                         {% endif %}
                     </div>
