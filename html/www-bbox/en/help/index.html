@@ -66,10 +66,10 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
+                <ul class="nav navbar-nav navbar-right"><!--
                     <li class="page-scroll">
                         <a title="Home" href="/en/">Home</a>
-                    </li>
+                    </li>-->
                     <li>
                         <a class="page-scroll" href="/en/help">Tutorial</a>
                     </li>
@@ -93,19 +93,121 @@
         <div class="container">
             <div class="row">
                 <h1 class="page-header"><i class="fa fa-file-text"></i> Help</h1>
-                <section id="ajuda">
-                   <h2>Been Translated...</h2>
+                                <section id="ajuda">
+                   <ul class="nav nav-tabs" id="ajudatab">
+                       <li class="active"><a data-toggle="tab" href="#cadastro" aria-expanded="true">Register</a></li>
+                       <li><a data-toggle="tab" href="#login">Log in</a></li>
+                       <li><a data-toggle="tab" href="#enviarpst">Sending products to the FBA inspection</a></li>
+                       <li><a data-toggle="tab" href="#enviaramz">Sending to the Amazon</a></li>
+                       <li><a data-toggle="tab" href="#enviarmer">Sending Merchant</a></li>
+                       <li><a data-toggle="tab" href="#endereco">FBA inspection Adress</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="cadastro" class="tab-pane active">
+                            <p>Very simple. To register to the platform, click on the link <a href="https://fbainspection.prepshiptool.com/en/user/registration/" class="download">hhttps://fbainspection.prepshiptool.com/en/user/registration/</a>, fill in the blanks and accept the terms and conditions and in less than a minute you’ll become a registered user.</p>
+                            <br>
+                            <img src="../../../static/img/print-cad-en.png" class="img-ajuda-center"/><br><br>
+                            <!--<p>Após o cadastro, você receberá um email de confirmação.</p>-->
+                        </div>
+                        <div id="login" class="tab-pane fade">
+                            <p>Just click on the link <a href="https://fbainspection.prepshiptool.com/en/login/" class="download">https://fbainspection.prepshiptool.com/en/login/</a> type in your chosen username and password at registration.</p>
+                            <br>
+                            <h5>Forgot my password</h5>
+                            <p>Click on <a href="https://fbainspection.prepshiptool.com/en/login/" class="download">https://fbainspection.prepshiptool.com/en/login/</a> And then “Forgot my password”.</p>
+                            <br>
+                            <img src="../../..//static/img/print-login-en.png" class="img-ajuda-center img-ajuda-center-menor"/><br><br>
+                        </div>
+                        <div id="enviarpst" class="tab-pane fade">
+                            <p>When sending products to the FBA inspections, these must be registered in the platform, to do that click on “Inventory > Add a product"</p>
+                            <br><img src="../../..//static/img/print-menu-add-prod-en.png" class="img-ajuda-center"/>
+                            <br>
+                            <p><strong>You must fill:</strong></p>
+                            <ul>
+                                <li> Name</li>
+                                <li> Description</li>
+                                <li> ASIN</li>
+                                <li> Quantity</li>
+                                <li> Store</li>
+                                <li> Purchase Date</li>
+                                <li> Estimated Delivery Date</li>
+                                <li> Condition</li>
+                                <li> Tracking</li>
+                            </ul>
+                            <br>
+                            <img src="../../../static/img/print-cad-prod.png" class="img-ajuda-center"/><br>
+                            <p>It is important do fill the “Track Number” box so that your package can be identified upon arrival in the warehouse.</p>
+                            <p>To access and edit the fields of a item such as the track number, for instance, just click on “view” in the item on your storage page.</p>
+                            <br>
+                            <img src="../../../static/img/print-vis-prod.png" class="img-ajuda-center"/>
+                            <br>
+                            <br><img src="../../../static/img/print-editar-prod.png" class="img-ajuda-center img-ajuda-center-menor"/>
+                            <p>Save the changes.</p>
+                            <p>The list and control of your products are located in the following page: <a href="https://fbainspection.prepshiptool.com/en/product/stock/" class="download">https://fbainspection.prepshiptool.com/en/product/stock/</a></p>
+                            <br>
+                            <p><strong>Items in stock</strong></p>
+                            <p>After you register your products it will have a “Sent to FBA Inspection” status. After we receive it, will verify the registered information and change the status to “In hand”.</p>
+                        </div>
+                        <div id="enviaramz" class="tab-pane fade">
+                            <p>Note that our platform works independently from Amazon. You must create your sent status at Amazon as well and put the same information in our platform.</p>
+                            <p>With your products registered in our platform with the “In hand” status you’re able to send them to Amazon. In your storage page you have the option of creating your shipment by selecting the item in your list and clicking on “Create Shipment to Amazon” and you’ll be redirected to the shipment page.</p>
+                            <br>
+                            <img src="../../../static/img/print-criar-envio.png" class="img-ajuda-center"/>
+                            <br>
+                            <p>The next step is to register the rest of the requested information for shipping such as the number of items you’re shipping and remove or add items from shipment</p>
+                            <p>- Amazon Label: This is a PDF file that you download at the moment of creating your shipment.</p>
+                            <p>- Warehouse destination: Also informed the time of your Amazon shipping. Note that Amazon might request shipment to more than one warehouse, in that case just inform which item goes to which warehouse. You can do that by copying the information from Amazon and past it in the warehouse field in the platform. It’s not necessary to list the items if you’re shipping to just one warehouse</p>
+                            <img src="../../../static/img/print-cria-envio.png" class="img-ajuda-center"/>
+                            <br>
+                            <br>
+                            <img src="../../../static/img/pint-warehouse.png" class="img-ajuda-center"/>
+                            <br>
+                            <p>Save the changes. We’ll both receive an e-mail confirming your shipment creation and we’ll take it from there.</p>
+                            <p>We’ll prepare your products according to the uploaded label information, than we’ll register the package information in the platform and as soon as we do that you’ll receive an e-mail informing that the status of your shipment changed to “Box label upload Authorized”.</p>
+                            <p>Make sure to input this information into the Amazon platform to follow up your shipping registration in there as well..</p>
+                            <br>
+                            <img src="../../../static/img/print-upload.png" class="img-ajuda-center"/><br>
+                            <p>Amazon will generate a label to each package, you must download and upload these files in the platform.  Make sure you upload the file to the same package so there’s no disparity of information with Amazon.</p>
+                            <br>
+                            <img src="../../../static/img/print-info-pct.png" class="img-ajuda-center"/>
+                            <br>
+                            <p>After the label uploads, payment will be cleared and your shipment status changes to “Payment Authorized”.</p>
+                            <br>
+                            <img src="../../../static/img/print-pgt.png" class="img-ajuda-center"/><br>
+                            <p>As soon as the payment is done and confirmed, the status will change to “Final checkins” that way your items will be shipped, the status will change and we’ll send you the UPS tracking number. Now you just have to wait for your items to arrive at Amazon and go to your stock.</p>
+                        </div>
+                        <div id="enviarmer" class="tab-pane fade">
+                            <p>In case you need to ship directly to your client, e.g. Ebay or Amazon Merchant Fullfilment, the process is similar to Amazon’s.  Follow the same steps as above but instead or clicking on “Creat shipment to Amazon” click on “Create Merchant Shippment”.</p>
+                            <br>
+                            <img src="../../../static/img/print-mer.png" class="img-ajuda-center"/><br>
+                            <p>The next step is to fill your shipment information:</p>
+                            <p>- Items and number of items</p>
+                            <p>- Select you sales channel</p>
+                            <br>
+                            <img src="../../../static/img/print-tela-envio-mer.png" class="img-ajuda-center"/><br>
+                            <p>Click “save” and your shipment will be created and the process will start.</p>
+                            <p>After these steps, we’ll inform the details in your packages and your status will change to “Box Label upload authorized” and with that you can upload the labels in our platform and payment will be authorized. As soon as the payment is done and confirmed, we’ll conclude the shipment. </p>
+                            <br>
+                            <img src="../../../static/img/print-etiqueta-mer.png" class="img-ajuda-center"/><br>
+                            <br>
+                            <br>
+                            <img src="../../../static/img/print-concluido.png" class="img-ajuda-center"/><br>
+                            <p>Note that all the information such as status changes and process will be informed by e-mail. </p>
+                        </div>
+                        <div id="endereco" class="tab-pane fade">
+                            <p><strong>Address: 1230 N. Main St. Suite B2<br />City: Fort Bragg<br />State: California<br />Zip code: 95437</strong></p>
+                        </div>
+                    </div>
                 </section>
             </div>
         </div>
     </section>
-       <!-- Contact Section -->
+       <!-- Contact Section
     <section id="contact">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <h2 class="section-heading">Contact Us</h2>
-                    <!--<h3 class="section-subheading text-muted">Caso precise de algum esclarecimento, teremos o maior prazer em atendê-lo. Preencha os campos abaixo e retornaremos o mais breve possível.</h3>-->
+                    <!--<h3 class="section-subheading text-muted">Caso precise de algum esclarecimento, teremos o maior prazer em atendê-lo. Preencha os campos abaixo e retornaremos o mais breve possível.</h3>
                 </div>
             </div>
             <div class="row">
@@ -142,7 +244,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section>-->
     <footer>
         <div class="container">
             <div class="row">
