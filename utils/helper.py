@@ -91,7 +91,7 @@ def get_admins_emails():
     admins = user_model.objects.filter(groups__name='admins')
     admins_email = [user.email for user in admins]
     if settings.SYS_SU_USER in admins_email:
-        admins_email[admins_email.index(settings.SYS_SU_USER)] = settings.ADMIN_EMAIL
+        del admins_email[admins_email.index(settings.SYS_SU_USER)]
     logger.debug('@@@@@@@@@@@@ ADMINS EMAIL @@@@@@@@@@@@@@')
     logger.debug(admins_email)
     return admins_email
