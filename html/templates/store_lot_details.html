@@ -24,7 +24,7 @@
               <div class="col-md-4">
                   <!-- Aparece apenas para usuarios comuns -->
                     <br><br>
-                    {{ paypal_form.render }}
+                    {% render_payment_button paypal_form lot.id %}
                   <!-- fim botao compra -->
               </div>
           </div>
@@ -80,7 +80,7 @@
             <!-- Aparece apenas para usuarios comuns -->
             <br><br>
 
-            {{ paypal_form.render }}
+            {% render_payment_button paypal_form lot.id %}
 
             <!-- fim botao compra -->
 

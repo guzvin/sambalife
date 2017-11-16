@@ -993,7 +993,7 @@
                             $('html')[0].innerHTML = jqXHR.responseText;
                             return;
                         }
-                        var body = gettext('Sorry, but there seems to be some inconsistencies. Please reload the page and try again.');
+                        var body = gettext('Sorry, but this item is unavailable.');
                         assembleModal(gettext('Error'), body);
                     },
                     403: function()

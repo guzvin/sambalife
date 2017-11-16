@@ -21,3 +21,8 @@ def select_condition(item, condition):
 @register.simple_tag
 def timezone_name(lang):
     return 'Brazil/East' if lang == 'pt' else 'US/Eastern'
+
+
+@register.simple_tag
+def render_payment_button(paypal_form, data):
+    return paypal_form.render_button(data=data)

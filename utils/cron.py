@@ -8,7 +8,9 @@ from shipment.models import Shipment
 from shipment.views import cancel_shipment
 from product.models import Product
 from utils.models import Params
+from store.models import Lot
 from utils import helper
+from django.db.models import Q
 import datetime
 import logging
 
@@ -190,3 +192,8 @@ def _send_email_abandoned(request, product, days, user):
               _('Clique aqui'), _('para acessar nossos termos e condições de uso.'),)
     email_body = format_html(html_format, *texts)
     return helper.build_basic_template_email_tuple(request, user.first_name, [user.email], email_title, email_body)
+
+
+def reset_lots_sell_date():
+    date_limit = datetime.datetime.now() - datetime.timedelta(minutes=5)
+    Lot.objects.filter(Q(sell_date__lte=date_limit) & Q(payment_complete=False)).update(sell_date=None, user=None)

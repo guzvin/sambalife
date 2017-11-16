@@ -45,11 +45,6 @@ def unit_length_display(unit, **kwargs):
 
 
 @register.simple_tag
-def render_payment_button(paypal_form, data):
-    return paypal_form.render_button(data=data)
-
-
-@register.simple_tag
 def etc(initial_date, **kwargs):
     if initial_date is None or 'estimate' not in kwargs:
         return None

@@ -85,12 +85,10 @@
                                 <a href="{%url 'admin:service_service_changelist' %}"><i class="fa fa-fw fa-cogs"></i> {% trans "Serviços" %}</a>
                             </li>
                             {% endif %}
-{% comment %}
                             <li class="divider"></li>
                             <li class="{% block lotes %}{% endblock %}">
                                 <a href="{%url 'admin:store_lot_changelist' %}"><i class="fa fa-fw fa-th"></i> {% trans "Lotes" %}</a>
                             </li>
-{% endcomment %}
                             {% if request.user.is_superuser %}
                             <li class="divider"></li>
                             <li>
@@ -107,7 +105,6 @@
                     <li>
                         <a href="{% if LANGUAGE_CODE == 'pt' %}{% trans '/pt/ajuda/' %}#contact{% else %}mailto:support@prepshiptool.freshdesk.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
-{% comment %}
                     <li class="{% block lotes-u %}{% endblock %}">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
@@ -120,7 +117,6 @@
                             </li>
                         </ul>
                     </li>
-{% endcomment %}
                     <li class="tutorial">
                         <a href="{% trans '/pt/ajuda/' %}" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
                     </li>

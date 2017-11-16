@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-10 14:08-0300\n"
+"POT-Creation-Date: 2017-11-15 14:36-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -320,9 +320,10 @@ msgstr "É preciso adicionar produtos a este envio."
 
 #: html/static/js/applications.js:321 html/static/js/applications.js:332
 #: html/static/js/applications.js:354 html/static/js/applications.js:545
-#: html/static/js/applications.js:891 html/static/js/applications.js:980
-#: html/static/js/applications.js:1085 html/static/js/applications.js:1120
-#: html/static/js/applications.js:1127 html/static/js/specifics/shipment.js:150
+#: html/static/js/applications.js:891 html/static/js/applications.js:986
+#: html/static/js/applications.js:1092 html/static/js/applications.js:1127
+#: html/static/js/applications.js:1134 html/static/js/applications.js:1236
+#: html/static/js/applications.js:1275 html/static/js/specifics/shipment.js:155
 msgid "en"
 msgstr "pt"
 
@@ -346,13 +347,13 @@ msgstr "Validade"
 msgid "Pick ticket"
 msgstr "Localização na Warehouse"
 
-#: html/static/js/applications.js:747 html/static/js/applications.js:1181
+#: html/static/js/applications.js:747 html/static/js/applications.js:1188
 msgid "Unable to save, fix errors above to continue."
 msgstr ""
 "Não foi possível criar seu envio, corrija os erros destacados acima para "
 "continuar."
 
-#: html/static/js/applications.js:901 html/static/js/applications.js:990
+#: html/static/js/applications.js:901
 msgid ""
 "Sorry, but there seems to be some inconsistencies. Please reload the page "
 "and try again."
@@ -361,16 +362,16 @@ msgstr ""
 "recarregue a página e tente novamente."
 
 #: html/static/js/applications.js:902 html/static/js/applications.js:907
-#: html/static/js/applications.js:912 html/static/js/applications.js:991
-#: html/static/js/applications.js:996 html/static/js/applications.js:1001
+#: html/static/js/applications.js:912 html/static/js/applications.js:997
+#: html/static/js/applications.js:1002 html/static/js/applications.js:1007
 msgid "Error"
 msgstr "Erro"
 
-#: html/static/js/applications.js:906 html/static/js/applications.js:995
+#: html/static/js/applications.js:906 html/static/js/applications.js:1001
 msgid "Access denied"
 msgstr "Acesso negado"
 
-#: html/static/js/applications.js:911 html/static/js/applications.js:1000
+#: html/static/js/applications.js:911 html/static/js/applications.js:1006
 msgid ""
 "Sorry, we are unable to process your operation. Please reload the page and "
 "try again."
@@ -378,11 +379,15 @@ msgstr ""
 "Desculpe, não foi possível realizar sua operação. Por favor, recarregue a "
 "página e tente novamente."
 
-#: html/static/js/applications.js:1134
+#: html/static/js/applications.js:996
+msgid "Sorry, but this item is unavailable."
+msgstr "Desculpe, mas este item se encontra indisponível."
+
+#: html/static/js/applications.js:1141
 msgid "Your message has been sent. Thank you for your contact."
 msgstr "Mensagem enviada, obrigado pelo seu contato."
 
-#: html/static/js/applications.js:1139 html/static/js/applications.js:1150
+#: html/static/js/applications.js:1146 html/static/js/applications.js:1157
 msgid "Sorry but we couldn't send your message, try again in a moment."
 msgstr ""
 "Desculpe no momento não foi possível enviar sua mensagem, tente novamente em "

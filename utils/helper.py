@@ -169,6 +169,13 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         email.run()
 
 
+def paypal_mode(user):
+    is_sandbox = user.email in settings.PAYPAL_SANDBOX_USERS
+    if user.email in settings.PAYPAL_LIVE_USERS:
+        is_sandbox = False
+    return is_sandbox
+
+
 def resolve_formula(formula, partner=None, product=None, save_product_price=False, billing_type=2):
     template = Template(formula)
     context_var = {}

@@ -297,7 +297,7 @@ def shipment_details(request, pid=None):
                                 logger.error(e)
                                 return HttpResponseBadRequest()
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
-                    is_sandbox = settings.PAYPAL_TEST or paypal_mode(_shipment_details.user)
+                    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_shipment_details.user)
                     context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
                                                                                             is_render_button=True)
             elif _shipment_details.status == 2:
@@ -473,13 +473,6 @@ def shipment_details(request, pid=None):
     return HttpResponseForbidden()
 
 
-def paypal_mode(user):
-    is_sandbox = user.email in settings.PAYPAL_SANDBOX_USERS
-    if user.email in settings.PAYPAL_LIVE_USERS:
-        is_sandbox = False
-    return is_sandbox
-
-
 def complete_shipment(_shipment_details):
     set_as_archived = []
     set_as_forwarded = []
@@ -530,7 +523,7 @@ def shipment_pay_form(request, pid=None):
                     query &= Q(user=request.user)
                 _shipment_details = Shipment.objects.select_for_update().select_related('user').get(query)
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
-                    is_sandbox = settings.PAYPAL_TEST or paypal_mode(_shipment_details.user)
+                    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_shipment_details.user)
                     if is_sandbox:
                         invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
                         paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
@@ -722,7 +715,7 @@ def shipment_status(request, pid=None, op=None):
                 if shipment[0].status == 3:
                     products = shipment[0].product_set.all()
                     ignored_response, cost = calculate_shipment(products, shipment[0].user_id, save_product_price=True)
-                    is_sandbox = settings.PAYPAL_TEST or paypal_mode(shipment[0].user)
+                    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(shipment[0].user)
                     shipment.update(status=F('status') + 1, cost=cost, is_sandbox=is_sandbox,
                                     payment_date=timezone.now())
                     send_email_shipment_paid(request, shipment[0], async=True)

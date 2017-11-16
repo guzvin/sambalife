@@ -71,6 +71,7 @@
     "Show": "Mostrar",
     "Sorry but we couldn't send your message, try again in a moment.": "Desculpe no momento n\u00e3o foi poss\u00edvel enviar sua mensagem, tente novamente em instantes.",
     "Sorry, but there seems to be some inconsistencies. Please reload the page and try again.": "Desculpe, foi encontrada alguma inconsist\u00eancia nos dados. Por favor, recarregue a p\u00e1gina e tente novamente.",
+    "Sorry, but this item is unavailable.": "Desculpe, mas este item se encontra indispon\u00edvel.",
     "Sorry, we are unable to process your operation. Please reload the page and try again.": "Desculpe, n\u00e3o foi poss\u00edvel realizar sua opera\u00e7\u00e3o. Por favor, recarregue a p\u00e1gina e tente novamente.",
     "This is the list of available %s. You may choose some by selecting them in the box below and then clicking the \"Choose\" arrow between the two boxes.": "Esta \u00e9 a lista de %s dispon\u00edveis. Poder\u00e1 escolher alguns, selecionando-os na caixa abaixo e clicando na seta \"Escolher\" entre as duas caixas.",
     "This is the list of chosen %s. You may remove some by selecting them in the box below and then clicking the \"Remove\" arrow between the two boxes.": "Esta \u00e9 a lista de %s escolhidos. Poder\u00e1 remover alguns, selecionando-os na caixa abaixo e clicando na seta \"Remover\" entre as duas caixas.",

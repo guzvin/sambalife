@@ -16,6 +16,9 @@ from paypal.standard.models import ST_PP_COMPLETED, ST_PP_PENDING, ST_PP_VOIDED
 from django.utils import formats
 from django.utils.encoding import force_text
 from myauth.templatetags.users import has_user_perm
+from myauth.templatetags.permissions import has_group
+from django.db import transaction
+import time
 import datetime
 import logging
 
@@ -35,7 +38,7 @@ def store_list(request):
     if filter_name:
         queries.append(Q(name__icontains=filter_name))
         filter_values['name'] = filter_name
-    queries.append(Q(status=1))
+    queries.append(Q(status=1) & Q(sell_date=None))
     logger.debug(str(queries))
     logger.debug(str(len(queries)))
     _lot_list = Lot.objects.extra(where=['EXISTS (SELECT 1 FROM store_lot_groups WHERE store_lot.id = store_lot_groups.'
@@ -70,14 +73,45 @@ def store_lot_details(request, pid=None):
                                                 '(U0.id = U1.group_id) WHERE U1.myuser_id = %s)) OR NOT EXISTS ('
                                                 'SELECT 1 FROM store_lot_groups WHERE store_lot.id = '
                                                 'store_lot_groups.lot_id)'], params=[request.user.id]).\
-            prefetch_related('product_set').get(pk=pid)
+            prefetch_related('product_set').get(pk=pid, payment_complete=False)
     except Lot.DoesNotExist as e:
         logger.error(e)
         return HttpResponseBadRequest()
-    is_sandbox = (request.user.email in settings.PAYPAL_SANDBOX_USERS)
-    if settings.PAYPAL_TEST or is_sandbox:
-        import time
-        current_milli_time = lambda: int(round(time.time() * 1000))
+    context_data = {'title': _('Loja'), 'lot': _lot_details}
+    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_lot_details.user)
+    context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
+                                                                            is_render_button=True)
+    return render(request, 'store_lot_details.html', context_data)
+
+
+def current_milli_time(): return int(round(time.time() * 1000))
+
+
+@login_required
+@require_http_methods(["GET"])
+def shipment_pay_form(request, pid=None):
+    try:
+        with transaction.atomic():
+            _lot_details = Lot.objects.extra(where=['EXISTS (SELECT 1 FROM store_lot_groups '
+                                                    'WHERE store_lot.id = store_lot_'
+                                                    'groups.lot_id AND store_lot_groups.group_id IN (SELECT U0.id FROM '
+                                                    'auth_group U0 INNER JOIN myauth_myuser_groups U1 ON '
+                                                    '(U0.id = U1.group_id) WHERE U1.myuser_id = %s)) OR NOT EXISTS ('
+                                                    'SELECT 1 FROM store_lot_groups WHERE store_lot.id = '
+                                                    'store_lot_groups.lot_id)'], params=[request.user.id]). \
+                select_for_update().get(pk=pid, payment_complete=False)
+            if _lot_details.sell_date is None or \
+                    _lot_details.sell_date is not None and _lot_details.user_id == request.user.id:
+                _lot_details.user = request.user
+                _lot_details.sell_date = datetime.datetime.now()
+                _lot_details.save(update_fields=['user', 'sell_date'])
+            else:
+                return HttpResponseBadRequest()
+    except Lot.DoesNotExist as e:
+        logger.error(e)
+        return HttpResponseBadRequest()
+    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_lot_details.user)
+    if is_sandbox:
         invoice_id = '_'.join(['B', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
         paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
         paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
@@ -91,7 +125,7 @@ def store_lot_details(request, pid=None):
     paypal_public_cert = settings.PAYPAL_PUBLIC_CERT
     paypal_dict = {
         'business': paypal_business,
-        'amount': 5.00,
+        'amount': _lot_details.lot_cost,
         'item_name': _lot_details.name,
         'invoice': invoice_id,
         'paymentaction': 'authorization',
@@ -107,8 +141,65 @@ def store_lot_details(request, pid=None):
                                                             cert_id=paypal_cert_id,
                                                             private_cert=paypal_private_cert,
                                                             public_cert=paypal_public_cert)
-    return render(request, 'store_lot_details.html', {'title': _('Loja'), 'lot': _lot_details,
-                                                      'paypal_form': paypal_form})
+    rendered_response = paypal_form.render()
+    logger.info(paypal_dict)
+    logger.info(rendered_response)
+    return HttpResponse(rendered_response)
+    #
+    # if has_shipment_perm(request.user, 'view_shipments'):
+    #     is_user_perm = has_user_perm(request.user, 'view_users')
+    #     query = Q(pk=pid) & Q(status=3) & Q(is_archived=False) & Q(is_canceled=False)
+    #     try:
+    #         with transaction.atomic():
+    #             if is_user_perm is False:
+    #                 query &= Q(user=request.user)
+    #             _shipment_details = Shipment.objects.select_for_update().select_related('user').get(query)
+    #             if request.user == _shipment_details.user or has_group(request.user, 'admins'):
+    #                 is_sandbox = settings.PAYPAL_TEST or paypal_mode(_shipment_details.user)
+    #                 if is_sandbox:
+    #                     invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
+    #                     paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
+    #                     paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
+    #                     paypal_cert = settings.PAYPAL_CERT_SANDBOX
+    #                 else:
+    #                     invoice_id = '_'.join(['A', str(request.user.id), str(pid)])
+    #                     paypal_business = settings.PAYPAL_BUSINESS
+    #                     paypal_cert_id = settings.PAYPAL_CERT_ID
+    #                     paypal_cert = settings.PAYPAL_CERT
+    #
+    #                 paypal_private_cert = settings.PAYPAL_PRIVATE_CERT
+    #                 paypal_public_cert = settings.PAYPAL_PUBLIC_CERT
+    #
+    #                 _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').\
+    #                     order_by('id')
+    #                 ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id,
+    #                                                             save_product_price=True)
+    #                 _shipment_details.cost = cost
+    #                 _shipment_details.is_sandbox = is_sandbox
+    #                 _shipment_details.save(update_fields=['cost', 'is_sandbox'])
+    #                 paypal_dict = {
+    #                     'business': paypal_business,
+    #                     'amount': _shipment_details.cost,
+    #                     'item_name': _('Envio %(number)s') % {'number': pid},
+    #                     'invoice': invoice_id,
+    #                     'notify_url': 'https://' + request.CURRENT_DOMAIN + reverse('paypal-ipn'),
+    #                     'return_url': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details', args=[pid]),
+    #                     'cancel_return': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details', args=[pid]),
+    #                     # 'custom': 'Custom command!',  # Custom command to correlate to some function later (optional)
+    #                 }
+    #                 paypal_form = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox, initial=paypal_dict,
+    #                                                                         paypal_cert=paypal_cert,
+    #                                                                         cert_id=paypal_cert_id,
+    #                                                                         private_cert=paypal_private_cert,
+    #                                                                         public_cert=paypal_public_cert)
+    #                 rendered_response = paypal_form.render()
+    #                 logger.info(paypal_dict)
+    #                 logger.info(rendered_response)
+    #                 return HttpResponse(rendered_response)
+    #     except Store.DoesNotExist as e:
+    #         logger.error(e)
+    #         return HttpResponseBadRequest()
+    # return HttpResponseForbidden()
 
 
 @login_required
