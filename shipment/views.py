@@ -195,6 +195,10 @@ def shipment_details(request, pid=None):
         context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products,
                         'warehouses': _shipment_warehouses}
         custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
+
+        ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
+                                               widgets={'pdf_1': FileInput(attrs={'class': 'form-control input-70'})})
+
         PackageFormSet = inlineformset_factory(Shipment, Package, formset=helper.MyBaseInlineFormSet,
                                                fields=('warehouse', 'pick_ticket', 'weight', 'height', 'width',
                                                        'length', 'pdf_2', 'shipment_tracking'),
@@ -204,8 +208,21 @@ def shipment_details(request, pid=None):
                                                                'width': custom_error_messages,
                                                                'length': custom_error_messages},
                                                widgets={'pdf_2': FileInput(
-                                                   attrs={'class': 'form-control pdf_2-validate'})})
+                                                   attrs={'class': 'form-control input-70 pdf_2-validate'})})
         package_formset = None
+        if request.method == 'GET' and request.GET.get('s') == '2':
+                context_data['success'] = True
+                context_data['success_message'] = _('Alteração salva com sucesso.')
+        elif request.method == 'POST' and _shipment_details.is_archived is False \
+                and _shipment_details.is_canceled is False and _shipment_details.type is None \
+                and _shipment_details.status < 5:
+            shipment_formset = ShipmentFormSet(request.POST, request.FILES)
+            logger.debug('@@@@@@@@@@@@@@@ UPLOAD PDF 1 @@@@@@@@@@@@@@@@@')
+            logger.debug(shipment_formset.is_valid())
+            logger.debug(shipment_formset.has_changed())
+            if shipment_formset.is_valid() and shipment_formset.has_changed():
+                shipment_formset.save()
+                context_data['shipment_fs'] = shipment_formset
         if _shipment_details.is_archived is False and _shipment_details.is_canceled is False and \
                 _shipment_details.status == 1:
             # Preparando para Envio
@@ -228,6 +245,15 @@ def shipment_details(request, pid=None):
         elif _shipment_details.is_archived is False and _shipment_details.is_canceled is False:
             PackageFormSet.extra = 0
             PackageFormSet.max_num = 1
+            ignore_package_fields = []
+            if has_shipment_perm(request.user, 'add_package') is False:
+                ignore_package_fields.append('warehouse')
+                ignore_package_fields.append('pick_ticket')
+                ignore_package_fields.append('weight')
+                ignore_package_fields.append('height')
+                ignore_package_fields.append('width')
+                ignore_package_fields.append('length')
+                ignore_package_fields.append('shipment_tracking')
             novalidate_fields = []
             if _shipment_details.status != 2:
                 novalidate_fields.append('pdf_2')
@@ -236,8 +262,7 @@ def shipment_details(request, pid=None):
             package_kwargs = {'renderEmptyForm': False, 'noValidateFields': novalidate_fields}
             if _shipment_details.status == 3:
                 # Pagamento Autorizado
-                if request.user == _shipment_details.user or has_group(request.user, 'admins') \
-                        or has_shipment_perm(request.user, 'add_package'):
+                if request.user == _shipment_details.user or has_shipment_perm(request.user, 'add_package'):
                     if request.method == 'GET':
                         if request.GET.get('s') == '1':
                             package_formset = PackageFormSet(
@@ -247,15 +272,13 @@ def shipment_details(request, pid=None):
                             context_data['success_message'] = ungettext('Upload realizado com sucesso.',
                                                                         'Uploads realizados com sucesso.',
                                                                         len(package_formset))
-                        elif request.GET.get('s') == '2':
-                            context_data['success'] = True
-                            context_data['success_message'] = _('Alteração salva com sucesso.')
-                    elif request.method == 'POST' and has_shipment_perm(request.user, 'add_package'):
-                        package_formset = PackageFormSet(request.POST, instance=_shipment_details, prefix='package_set',
-                                                         **package_kwargs)
-                        if package_formset.is_valid():
+                    elif request.method == 'POST':
+                        package_formset = PackageFormSet(request.POST, request.FILES, instance=_shipment_details,
+                                                         prefix='package_set', **package_kwargs)
+                        if package_formset.is_valid() and package_formset.has_changed():
                             try:
-                                if edit_warehouse(package_formset, pid):
+                                if edit_warehouse(package_formset, pid, True, ignore_package_fields):
+                                    # TODO ENVIAR EMAIL NO UPLOAD DE NOVO PDF
                                     return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
                                 else:
                                     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
@@ -279,16 +302,13 @@ def shipment_details(request, pid=None):
                             context_data['success_message'] = ungettext('Pacote inserido com sucesso.',
                                                                         'Pacotes inseridos com sucesso.',
                                                                         len(package_formset))
-                        elif request.GET.get('s') == '2':
-                            context_data['success'] = True
-                            context_data['success_message'] = _('Alteração salva com sucesso.')
                     elif request.method == 'POST' and request.POST.get('add_package_file'):
                         package_formset = PackageFormSet(request.POST, request.FILES, instance=_shipment_details,
                                                          prefix='package_set', **package_kwargs)
                         logger.debug('@@@@@@@@@@@@@@@ PDF 2 IS VALID @@@@@@@@@@@@@@@@@')
                         logger.debug(package_formset)
                         if package_formset.is_valid() and (request.user == _shipment_details.user
-                                                           or has_group(request.user, 'admins')):
+                                                           or has_shipment_perm(request.user, 'add_package')):
                             try:
                                 with transaction.atomic():
                                     updated_rows = Shipment.objects.select_for_update().filter(query).update(status=3)
@@ -304,7 +324,7 @@ def shipment_details(request, pid=None):
                                         if force_text(package_shipment_id) != force_text(pid):
                                             logger.error('Inconsistent data.')
                                             raise Shipment.DoesNotExist('Inconsistent data.')
-                                        if has_group(request.user, 'admins'):
+                                        if has_shipment_perm(request.user, 'add_package'):
                                             package.save(update_fields=['warehouse', 'pick_ticket', 'pdf_2'])
                                         else:
                                             package.save(update_fields=['pdf_2'])
@@ -318,7 +338,7 @@ def shipment_details(request, pid=None):
                             package_formset = PackageFormSet(request.POST, instance=_shipment_details,
                                                              prefix='package_set', **package_kwargs)
                             try:
-                                if edit_warehouse(package_formset, pid):
+                                if edit_warehouse(package_formset, pid, False, ignore_package_fields):
                                     return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
                                 else:
                                     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
@@ -332,47 +352,89 @@ def shipment_details(request, pid=None):
                         if has_group(request.user, 'admins') and request.GET.get('s') == '1':
                             context_data['success'] = True
                             context_data['success_message'] = _('Envio concluído com sucesso.')
-                        elif has_shipment_perm(request.user, 'add_package') and request.GET.get('s') == '2':
-                            context_data['success'] = True
-                            context_data['success_message'] = _('Código(s) de postagem salvo(s) com sucesso.')
-                if has_group(request.user, 'admins') or has_shipment_perm(request.user, 'add_package'):
-                    if request.method == 'POST' and request.POST.get('add_package_tracking'):
-                        package_formset = PackageFormSet(request.POST, instance=_shipment_details, prefix='package_set',
-                                                         **package_kwargs)
-                        if package_formset.is_valid():
-                            try:
-                                with transaction.atomic():
-                                    form_has_changed = False
-                                    packages = []
-                                    for package_form in package_formset:
-                                        if package_form.has_changed() is False:
-                                            continue
-                                        form_has_changed = True
-                                        package = package_form.save(commit=False)
-                                        package_shipment_id = package.shipment.id
-                                        logger.debug(package_shipment_id)
-                                        logger.debug(pid)
-                                        logger.debug(package_form.has_changed())
-                                        if force_text(package_shipment_id) != force_text(pid):
-                                            logger.error('Inconsistent data.')
-                                            raise Shipment.DoesNotExist('Inconsistent data.')
-                                        package.save(update_fields=['pick_ticket', 'shipment_tracking'])
+                else:
+                    package_formset = PackageFormSet(request.POST, request.FILES, instance=_shipment_details,
+                                                     prefix='package_set', **package_kwargs)
+                    logger.debug('@@@@@@@@@@@@@ PACKAGE FORMSET VALIDATION @@@@@@@@@@@@@@@@@@@@@')
+                    logger.debug(package_formset.is_valid())
+                    logger.debug(package_formset.has_changed())
+                    is_shipment_closed = _shipment_details.status > 4
+                    if is_shipment_closed:
+                        if 'pick_ticket' not in ignore_package_fields:
+                            ignore_package_fields.append('pick_ticket')
+                    if request.POST.get('add_package_tracking'):
+                        if 'warehouse' not in ignore_package_fields:
+                            ignore_package_fields.append('warehouse')
+                        if 'weight' not in ignore_package_fields:
+                            ignore_package_fields.append('weight')
+                        if 'height' not in ignore_package_fields:
+                            ignore_package_fields.append('height')
+                        if 'width' not in ignore_package_fields:
+                            ignore_package_fields.append('width')
+                        if 'length' not in ignore_package_fields:
+                            ignore_package_fields.append('length')
+                    else:
+                        if 'warehouse' not in ignore_package_fields:
+                            ignore_package_fields.append('warehouse')
+                        if 'weight' not in ignore_package_fields:
+                            ignore_package_fields.append('weight')
+                        if 'height' not in ignore_package_fields:
+                            ignore_package_fields.append('height')
+                        if 'width' not in ignore_package_fields:
+                            ignore_package_fields.append('width')
+                        if 'length' not in ignore_package_fields:
+                            ignore_package_fields.append('length')
+                        if 'shipment_tracking' not in ignore_package_fields:
+                            ignore_package_fields.append('shipment_tracking')
+                    if package_formset.is_valid():
+                        form_has_changed = False
+                        tracking_has_changed = False
+                        is_completing_shipment = str(request.POST.get('complete_shipment')) == '1'
+                        packages = []
+                        try:
+                            with transaction.atomic():
+                                for package_form in package_formset:
+                                    package = package_form.save(commit=False)
+                                    if is_completing_shipment and package.shipment_tracking:
                                         packages.append(package)
-                                    previous_state = _shipment_details.status
-                                    if _shipment_details.status == 4 and has_group(request.user, 'admins'):
-                                        _shipment_details.status = 5
-                                        _shipment_details.save(update_fields=['status'])
-                                        complete_shipment(_shipment_details)
-                            except Shipment.DoesNotExist as e:
-                                logger.error(e)
-                                return HttpResponseBadRequest()
-                            if previous_state != _shipment_details.status:
-                                send_email_shipment_sent(request, _shipment_details, packages)
-                                return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
-                            elif form_has_changed:
+                                    if package_form.has_changed() is False:
+                                        continue
+                                    update_fields_fields = list(
+                                        set(package_form.changed_data).difference(set(ignore_package_fields)))
+                                    if len(update_fields_fields) == 0:
+                                        continue
+                                    form_has_changed = True
+                                    tracking_has_changed = 'shipment_tracking' in update_fields_fields \
+                                        and is_shipment_closed if tracking_has_changed is False else True
+                                    package_shipment_id = package.shipment.id
+                                    logger.debug('@@@@@@@@@@@@@ PACKAGE FORM CHANGED DATA @@@@@@@@@@@@@@@@@@@@@')
+                                    logger.debug(package_shipment_id)
+                                    logger.debug(pid)
+                                    logger.debug(package_form.has_changed())
+                                    logger.debug(package_form.changed_data)
+                                    if force_text(package_shipment_id) != force_text(pid):
+                                        logger.error('Inconsistent data.')
+                                        raise Shipment.DoesNotExist('Inconsistent data.')
+                                    package.save(update_fields=update_fields_fields)
+                                    if is_completing_shipment is False:
+                                        packages.append(package)
+                                previous_state = _shipment_details.status
+                                if _shipment_details.status == 4 and has_group(request.user, 'admins') \
+                                        and is_completing_shipment:
+                                    _shipment_details.status = 5
+                                    _shipment_details.save(update_fields=['status'])
+                                    complete_shipment(_shipment_details)
+                        except Shipment.DoesNotExist as e:
+                            logger.error(e)
+                            return HttpResponseBadRequest()
+                        if previous_state != _shipment_details.status:
+                            send_email_shipment_sent(request, _shipment_details, packages)
+                            return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
+                        elif form_has_changed:
+                            if tracking_has_changed:
                                 send_email_shipment_change_shipment(request, _shipment_details, packages)
-                                return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
-                            return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
+                            return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
+                        return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
         if package_formset is None:
             if has_shipment_perm(request.user, 'add_package') and _shipment_details.status == 1:
                 package_kwargs = {'addText': _('Adicionar pacote'), 'deleteText': _('Remover pacote')}
@@ -386,6 +448,12 @@ def shipment_details(request, pid=None):
                     instance=_shipment_details, prefix='package_set', **package_kwargs)
         if package_formset and 'packages' not in context_data:
             context_data['packages'] = package_formset
+        if 'shipment_fs' not in context_data:
+            context_data['shipment_fs'] = ShipmentFormSet(
+                queryset=Shipment.objects.select_related('user').filter(query))
+        else:
+            # send_email_shipment_change_shipment(request, _shipment_details, packages)
+            return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
         logger.debug(context_data)
         if _shipment_details.type:
             return render(request, 'merchant_shipment_details.html', context_data)
@@ -506,12 +574,42 @@ def shipment_pay_form(request, pid=None):
     return HttpResponseForbidden()
 
 
-def edit_warehouse(package_formset, pid):
+def edit_warehouse(package_formset, pid, save_pdf, ignore_package_fields):
     logger.debug('@@@@@@@@@@@@@@@ EDIT WAREHOUSE @@@@@@@@@@@@@@@@@')
     form_has_changed = False
+
+    if save_pdf:
+        if 'weight' not in ignore_package_fields:
+            ignore_package_fields.append('weight')
+        if 'height' not in ignore_package_fields:
+            ignore_package_fields.append('height')
+        if 'width' not in ignore_package_fields:
+            ignore_package_fields.append('width')
+        if 'length' not in ignore_package_fields:
+            ignore_package_fields.append('length')
+        if 'shipment_tracking' not in ignore_package_fields:
+            ignore_package_fields.append('shipment_tracking')
+    else:
+        if 'pdf_2' not in ignore_package_fields:
+            ignore_package_fields.append('pdf_2')
+        if 'weight' not in ignore_package_fields:
+            ignore_package_fields.append('weight')
+        if 'height' not in ignore_package_fields:
+            ignore_package_fields.append('height')
+        if 'width' not in ignore_package_fields:
+            ignore_package_fields.append('width')
+        if 'length' not in ignore_package_fields:
+            ignore_package_fields.append('length')
+        if 'shipment_tracking' not in ignore_package_fields:
+            ignore_package_fields.append('shipment_tracking')
+
     for package_form in package_formset:
         if package_form.has_changed() is False:
             logger.debug('Nothing changed')
+            continue
+        update_fields_fields = list(
+            set(package_form.changed_data).difference(set(ignore_package_fields)))
+        if len(update_fields_fields) == 0:
             continue
         form_has_changed = True
         package = package_form.save(commit=False)
@@ -521,7 +619,7 @@ def edit_warehouse(package_formset, pid):
         if force_text(package.shipment.id) != force_text(pid):
             logger.error('Inconsistent data.')
             raise Shipment.DoesNotExist('Inconsistent data.')
-        package.save(update_fields=['warehouse', 'pick_ticket'])
+        package.save(update_fields=update_fields_fields)
     return form_has_changed
 
 
