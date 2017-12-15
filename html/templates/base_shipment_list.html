@@ -5,7 +5,7 @@
 
     <div class="container-fluid">
       <div class="row">
-        {% if user|has_shipment_perm:'view_shipments' %}
+        {% if view_perm %}
         <div class="col-md-1 sidebar">
 
         </div>
@@ -67,9 +67,7 @@
                 </form>
               </div>
           </div><br><br>
-          {% if user|has_shipment_perm:'add_shipment' %}
-            {% block add_button %}{% endblock %}
-          {% endif %}
+          {% block add_button %}{% endblock %}
           <div class="table-responsive">
           <br>
             {% if shipments.paginator.count > 0 %}

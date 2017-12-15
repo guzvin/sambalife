@@ -63,7 +63,9 @@ class Shipment(models.Model):
         verbose_name = _('Envio')
         verbose_name_plural = _('Envios')
         permissions = (
-            ('view_shipments', _('Pode visualizar Envios')),
+            ('view_shipments', _('Pode visualizar Envios Amazon')),
+            ('view_fbm_shipments', _('Pode visualizar Envios Merchant')),
+            ('add_fbm_shipment', _('Pode adicionar Envios Merchant')),
         )
 
 

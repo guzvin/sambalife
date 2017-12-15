@@ -80,16 +80,20 @@
           {% endif %}
           {% if user|has_shipment_perm:'add_shipment' %}
             <a class="btn btn-default" id="btn-add-shipment" data-action-url="{% url 'shipment_add' %}"><i class="fa fa-amazon"></i> {% trans "Criar Envio para Amazon" %}</a>
+          {% endif %}
+          {% if user|has_shipment_perm:'add_fbm_shipment' %}
             <a class="btn btn-default" id="btn-add-merchant-shipment" data-action-url="{% url 'merchant_shipment_add' %}"><i class="fa fa-ship"></i> {% trans "Criar Envio Merchant" %}</a>
+          {% endif %}
           {% comment %}
             <!-- Novo botao -->
             <a class="btn btn-default" id="btn-add-shipment-brazil"><i class="fa fa-globe"></i> {% trans "Criar Envio para o Brasil" %}</a>
           {% endcomment %}
-          <div class="table-responsive">
+          {% if user|has_shipment_perm:'add_shipment' or user|has_shipment_perm:'add_fbm_shipment' %}
             <form action="" method="post" class="form-add-shipment" id="form-add-shipment">
                 {% csrf_token %}
             </form>
-            {% endif %}
+          {% endif %}
+          <div class="table-responsive">
             <br>
             {% if products.paginator.count > 0 %}
             <table class="table table-striped table-bordered">
@@ -120,7 +124,7 @@
                       {% trans "Ordenar pelo status" as order_status %}
                       <a title="{{ order_status }}" href="javascript:void(0);">{% trans "Status" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
-                  {% if user|has_shipment_perm:'add_shipment' %}
+                  {% if user|has_shipment_perm:'add_shipment' or user|has_shipment_perm:'add_fbm_shipment' %}
                   <th class="center">{% trans "Envio" %}</th>
                   {% endif %}
                   <th class="center"> {% trans "Visualizar" %}</th>
@@ -240,7 +244,7 @@
                       <!-- fim box -->
                       {% endif %}
                   </td>
-                  {% if user|has_shipment_perm:'add_shipment' %}
+                  {% if user|has_shipment_perm:'add_shipment' or user|has_shipment_perm:'add_fbm_shipment' %}
                       <td class="center">
                           {% if product.status == 2 and product.user == request.user %}
                               {% if product.quantity_partial is not None and product.quantity_partial > 0 or product.quantity_partial is None and product.quantity > 0 %}

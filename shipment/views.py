@@ -79,17 +79,17 @@ def my_formfield_callback(f, **kwargs):
 @login_required
 @require_http_methods(["GET"])
 def shipment_list(request):
-    return list_shipment(request, 'shipment_list.html')
+    return list_shipment(request, 'shipment_list.html', has_shipment_perm(request.user, 'view_shipments'))
 
 
 @login_required
 @require_http_methods(["GET"])
 def merchant_shipment_list(request):
-    return list_shipment(request, 'merchant_shipment_list.html')
+    return list_shipment(request, 'merchant_shipment_list.html', has_shipment_perm(request.user, 'view_fbm_shipments'))
 
 
-def list_shipment(request, template_name):
-    if has_shipment_perm(request.user, 'view_shipments'):
+def list_shipment(request, template_name, has_perm):
+    if has_perm:
         is_user_perm = has_user_perm(request.user, 'view_users')
         queries = []
         logger.debug('@@@@@@@@@@@@ SHIPMENT FILTERS @@@@@@@@@@@@@@')
@@ -159,7 +159,8 @@ def list_shipment(request, template_name):
         shipments = paginator.page(1)
     except EmptyPage:
         shipments = paginator.page(paginator.num_pages)
-    context_data = {'title': _('Estoque'), 'shipments': shipments, 'filter_values': helper.ObjectView(filter_values)}
+    context_data = {'title': _('Estoque'), 'shipments': shipments, 'filter_values': helper.ObjectView(filter_values),
+                    'view_perm': has_perm}
     if request.GET.get('ra') == '1':
         context_data['custom_modal'] = True
         context_data['modal_title'] = _('Mensagem importante!')
@@ -173,7 +174,7 @@ def list_shipment(request, template_name):
 def shipment_details(request, pid=None):
     logger.debug('@@@@@@@@@@@@@@@ REMOTE ADDRESS @@@@@@@@@@@@@@@@@')
     logger.debug(request.META)
-    if has_shipment_perm(request.user, 'view_shipments'):
+    if has_shipment_perm(request.user, 'view_shipments') or has_shipment_perm(request.user, 'view_fbm_shipments'):
         is_user_perm = has_user_perm(request.user, 'view_users')
         query = Q(pk=pid)
         try:
@@ -187,6 +188,11 @@ def shipment_details(request, pid=None):
             except TemplateDoesNotExist:
                 return HttpResponseBadRequest()
             return HttpResponseBadRequest(error_400_template.render())
+        has_perm = _shipment_details.type and has_shipment_perm(request.user, 'view_fbm_shipments')
+        if has_perm is False:
+            has_perm = _shipment_details.type is None and has_shipment_perm(request.user, 'view_shipments')
+        if has_perm is False:
+            return HttpResponseForbidden()
         _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
         billing = Billing.objects.first()
         if billing:
@@ -234,10 +240,9 @@ def shipment_details(request, pid=None):
             if request.method == 'POST' and request.POST.get('add_shipment_package'):
                 if has_shipment_perm(request.user, 'add_package'):
                     _shipment_details.information = request.POST.get('shipment_extra_info')
+
                     package_formset = shipment_add_status_one_data(request, PackageFormSet,
                                                                    _shipment_details.information, pid)
-                    if isinstance(package_formset, HttpResponse):
-                        return package_formset
                     context_data['packages'] = package_formset
                 else:
                     return HttpResponseForbidden()
@@ -514,7 +519,7 @@ def current_milli_time(): return int(round(time.time() * 1000))
 @login_required
 @require_http_methods(["GET"])
 def shipment_pay_form(request, pid=None):
-    if has_shipment_perm(request.user, 'view_shipments'):
+    if has_shipment_perm(request.user, 'view_shipments') or has_shipment_perm(request.user, 'view_fbm_shipments'):
         is_user_perm = has_user_perm(request.user, 'view_users')
         query = Q(pk=pid) & Q(status=3) & Q(is_archived=False) & Q(is_canceled=False)
         try:
@@ -624,9 +629,6 @@ def edit_warehouse(package_formset, pid, save_pdf, ignore_package_fields):
 
 
 def shipment_add_status_one_data(request, PackageFormSet, shipment_extra_info, pid=None):
-    if has_shipment_perm(request.user, 'view_shipments') is False or \
-                    has_shipment_perm(request.user, 'add_package') is False:
-        return HttpResponseForbidden()
     logger.debug('@@@@@@@@@@@@ ADD PACKAGE @@@@@@@@@@@@@@')
     try:
         with transaction.atomic():
@@ -936,7 +938,7 @@ def shipment_add(request):
 @login_required
 @require_http_methods(["GET", "POST"])
 def merchant_shipment_add(request):
-    if has_shipment_perm(request.user, 'add_shipment') is False:
+    if has_shipment_perm(request.user, 'add_fbm_shipment') is False:
         return HttpResponseForbidden()
     if request.method == 'POST':
         if request.POST.get('save_shipment') is None:
@@ -1027,7 +1029,8 @@ def merchant_shipment_add(request):
 @login_required
 @require_http_methods(["GET"])
 def shipment_calculate(request):
-    if has_shipment_perm(request.user, 'add_shipment') is False:
+    if has_shipment_perm(request.user, 'add_shipment') is False and \
+                    has_shipment_perm(request.user, 'add_fbm_shipment') is False:
         return HttpResponseForbidden()
     billing = Billing.objects.first()
     if billing:

@@ -4,4 +4,4 @@
 
 {% block list_title %}<h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Lista de Envios" %}</h1>{% endblock %}
 
-{% block add_button %}<a class="btn btn-default" href="{% url 'shipment_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>{% endblock %}
+{% block add_button %}{% if user|has_shipment_perm:'add_shipment' %}<a class="btn btn-default" href="{% url 'shipment_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>{% endif %}{% endblock %}
