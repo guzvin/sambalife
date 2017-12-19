@@ -58,6 +58,16 @@
                     <label id="phone-error" class="error" for="{{ form.phone.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
+
+                <!-- Assinante -->
+                <div class="form-group terms-cond">
+                   <label for="assinante-check" id="assinante-check">
+                       <input type="checkbox" class="form-control" id="assinante" name="assinante" value="1" checked />
+                       {% trans "Quero me tornar um assinante" %}
+                   </label>
+                   <a href="javascript:void(0);" id="btn-explicacao" class="assinante-link">?</a>
+                </div>
+
               {% endfor %}
               <button type="submit" id="send-btn" class="btn btn-primary" onclick="$('.loading').show();"><i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}</button><br><br>
               <a href="/"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
@@ -67,4 +77,23 @@
         {% endif %}
     </div>
   </div>
+
+   <!--Modal explicao plano -->
+
+    <div id="assinantes-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Porque se tornar um assinante" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "- Tenha acesso a todos os lotes a venda na nossa plataforma<br> - Receba notificações sempre que for lançado um lote novo<br> - Compre pelo paypal <br> - Imediatamente seu produto estará disponível para redirecionamento<br> - Sim, o redirecionamento também é conosco<br /> - Entre outras excelentes vantagens.<br><br> Para isso, marque a opção 'Quero ser um assinante' e desfrute das vantagens de ser um assinante." %}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
