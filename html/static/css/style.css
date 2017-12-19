@@ -1568,18 +1568,37 @@ footer.fixed-footer{
     margin: 0 auto;
 }
 
-.cadastro-usuario .terms-cond label#terms-conditions-check{
+.cadastro-usuario .terms-cond label#terms-conditions-check, .cadastro-usuario label#assinante-check{
     line-height: 40px;
     padding: 10px;
     background: #eee;
     border-radius: 8px;
 }
 
-.cadastro-usuario .terms-cond label#terms-conditions-check input{
+.cadastro-usuario .terms-cond label#terms-conditions-check input, .cadastro-usuario label#assinante-check input{
     width: auto;
     float: left;
     margin: 0 7px 0 0;
     padding: 0;
+}
+
+#assinante-check{
+    float: left;
+}
+
+#btn-explicacao{
+    font-weight: bold;
+    display: block;
+    float: left;
+    width: 30px;
+    height: 30px;
+    background: #DC3438;
+    text-align: center;
+    line-height: 29px;
+    border-radius: 15px;
+    margin: 13px 0 0 11px;
+    color: #fff;
+    font-size: 17px;
 }
 
 .contact-us-success{
