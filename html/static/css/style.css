@@ -1191,6 +1191,143 @@ label.titulo-pct span{
     float: left;
 }
 
+.box-lote{
+    width: 100%;
+    display: block;
+    float: left;
+    border-right: 1px solid #e5e5e5;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.box-container-lote:nth-child(4n) .box-lote{
+    border-right: 0;
+}
+
+.banner-lote{
+    float: left;
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #e5e5e5;
+    background: url('../img/mulher-pointed.png') no-repeat center 0;
+    background-size: 350px;
+    padding-top: 135px;
+}
+
+.banner-lote h2{
+    width: 19%;
+    float: left;
+    display: block;
+    font-size: 17px;
+    text-transform: uppercase;
+    padding: 64px 20px 20px 20px;
+    font-weight: normal;
+    line-height: 24px;
+    background: url('../img/logo_menor.png') no-repeat center top;
+    background-size: 100px
+}
+
+.banner-lote h2:nth-child(3){
+    background: none;
+    padding-top: 17px;
+}
+
+.text-gg{
+    font-size: 44px;
+    font-family: 'Trebuchet MS';
+    display: block;
+    float: left;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.box-lote:hover{
+    text-decoration: none;
+}
+
+.box-lote:hover h6{
+    color: #DC3438;
+    font-weight: bold;
+}
+
+.box-container-lote{
+    border-bottom: 1px solid #e5e5e5;
+    float: left;
+    width: 24%;
+    margin-bottom: 20px;
+}
+
+.box-lote img{
+    width: 100px;
+    display: block;
+    margin: 0 auto;
+    height: 100px;
+}
+
+.vendido{
+    position: relative;
+}
+
+.box-lote.vendido .vendido-text{
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #000;
+    width: 86%;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    font-size: 18px;
+    z-index: 1000;
+}
+
+.box-lote.vendido img{
+    filter: gray;
+    -webkit-filter: grayscale(100%);
+}
+
+.box-lote.vendido span{
+    display: none;
+}
+
+.box-lote h6{
+    font-size: 14px;
+    color: #666;
+    font-weight: normal;
+    float: left;
+    width: 100%;
+    height: 34px;
+}
+
+.valor-prod{
+    font-size: 18px;
+    color: #333;
+    float: left;
+    margin-bottom: 0px;
+}
+
+.lucro-prod{
+    float: left;
+    width: 100%;
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: #666;
+}
+
+.box-lote span{
+    display: block;
+    font-size: 10px;
+    background: url('../img/logo_sup.png') no-repeat 0 0;
+    background-size: auto auto;
+    background-size: 20px;
+    float: left;
+    padding-left: 22px;
+    color: #333;
+    margin: 7px 0 0px 5px;
+}
+
 /*balão*/
 .status{
     background: #ddd;

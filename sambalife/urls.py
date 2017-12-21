@@ -65,9 +65,9 @@ urlpatterns += i18n_patterns(
     # url(r'^store/list[/]$', store_list, name='store'),
     # url(r'^store/lot/details/(?P<pid>[0-9]+)[/]$', store_lot_details, name='store_lot_details'),
     # url(r'^store/purchase', store_purchase, name='store_purchase'),
-    # url(r'^envios-brasil', enviosBrasil, name='enviosBrasil'),
+    url(r'^envios-brasil', enviosBrasil, name='enviosBrasil'),
     # url(r'^envio-brasil/cadastro', envioBrasilCadastro, name='envioBrasilCadastro'),
-    # url(r'^envio-brasil/detalhe', envioBrasilDetalhe, name='envioBrasilDetalhe'),
+    url(r'^envio-brasil/detalhe', envioBrasilDetalhe, name='envioBrasilDetalhe'),
     url(r'^touch/$', touch, name='touch'),
     url(r'^contactus/$', contact_us, name='contactus'),
     url(r'^product/edit/status/(?P<pid>[0-9]+)(?:\.(?P<output>json|html))?', product_edit_status,
@@ -81,4 +81,6 @@ urlpatterns += i18n_patterns(
     url(r'^product/autocomplete[/]$', product_autocomplete, name='product_autocomplete'),
     url(r'^service/product/(?P<pid>[0-9]+)[/]$', service_product, name='service_product'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
+    url(r'^como-funciona', comoFunciona, name='comoFunciona'),
+    url(r'^lotes-novo', lotesNovo, name='lotesNovo'),
 )
