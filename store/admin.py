@@ -112,17 +112,17 @@ class LotAdmin(admin.ModelAdmin):
     list_filter = [
         'status',
         ('create_date', DateFieldListFilter),
-        'payment_complete',
     ]
 
     search_fields = ('name', 'product__name',)
     list_display_links = ('id', 'name',)
-    list_display = ('id', 'name', 'payment_complete', 'status', 'create_date', 'sell_date', 'user')
+    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost')
     fieldsets = (
         (None, {'fields': ('name', 'description', 'groups')}),
     )
 
     def save_related(self, request, form, formsets, change):
+        products_quantity = 0
         products_cost = 0
         profit = 0
         average_roi = 0
@@ -137,11 +137,13 @@ class LotAdmin(admin.ModelAdmin):
             lot = form.save(commit=False)
             products = Product.objects.filter(lot=lot)
             for product in products:
+                products_quantity += product.quantity
                 products_cost += product.product_cost * product.quantity
                 profit += product.total_profit
                 average_roi += (product.roi / 100)
                 lot_cost += (product.buy_price * product.quantity)
                 redirect_cost += (product.redirect_factor * product.quantity)
+            lot.products_quantity = products_quantity
             lot.products_cost = products_cost
             lot.profit = profit
             lot.average_roi = (average_roi / len(products)) * 100

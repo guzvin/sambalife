@@ -97,7 +97,7 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['localhost', '.ppst.com', '.prepshiptool.com', '.maquinadevendasusa.com', 'ec6dc6b4.ngrok.io']
+ALLOWED_HOSTS = ['localhost', '.ppst.com', '.prepshiptool.com', '.maquinadevendasusa.com', 'e95dd75f.ngrok.io']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -315,7 +315,7 @@ PAYPAL_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_
 
 CRONJOBS = [
     ('0 0 1 * *', 'utils.cron.archive_shipped_shipments'),
-    ('*/1 * * * *', 'utils.cron.reset_lots_sell_date'),
+    # ('*/1 * * * *', 'utils.cron.reset_lots_sell_date'),
     # ('0 1 * * *', 'utils.cron.price_warning'),
     # ('0   4 * * *', 'django.core.management.call_command', ['clearsessions']),
 ]

@@ -476,7 +476,7 @@ def paypal_notification(sender, **kwargs):
             if invoice[0] == 'A':
                 entity, texts = shipment_paypal_notification(invoice[1], invoice[2], ipn_obj)
             elif invoice[0] == 'B':
-                entity, texts = store_paypal_notification(invoice[1], invoice[2], ipn_obj)
+                entity, texts = store_paypal_notification(invoice[2], ipn_obj)
             if entity is None:
                 invalid_data.append(_html_format(*texts))
             if entity is not None and (ipn_obj.payment_status == ST_PP_COMPLETED or (invoice[0] == 'B' and
@@ -491,7 +491,9 @@ def paypal_notification(sender, **kwargs):
                 raise PaymentException()
         if invoice[0] == 'B':
             store_paypal_notification_post_transaction(request, entity, ipn_obj, _(paypal_status_message(ipn_obj)))
-    except PaymentException:
+    except PaymentException as pe:
+        if pe.args:
+            invalid_data.append(pe.args[0])
         invalid_data.append(paypal_status_message(ipn_obj))
         admin_url = format_html('<p>{}</p>',
                                 mark_safe(_('Para mais informações consulte a área <a href="%(url)s">administrativa'
@@ -506,7 +508,9 @@ def paypal_notification(sender, **kwargs):
         send_email_basic_template_bcc_admins(request, _('Administrador'), None, email_title, email_message, async=True)
         raise PaymentException()
     except VoidPaymentException:
-        ipn_obj.void_authorization()
+        entity = ObjectView({'user': current_user})
+        logger.info('@@@@@@@@@@@@ VOID PAYMENT @@@@@@@@@@@@@@')
+        logger.info(ipn_obj.void_authorization())
         email_title = _('\'%(item)s\' indisponível') % {'item': ipn_obj.item_name}
         texts = (_('Foi enviada solicitação para o PayPal cancelar seu pagamento, nenhum valor será cobrado da sua '
                    'conta.'),)

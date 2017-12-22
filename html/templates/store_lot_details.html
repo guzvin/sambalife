@@ -11,7 +11,7 @@
           <h1 class="page-header"><i class="fa fa-cart-arrow-down"></i> {{ lot.name }}</h1>
           <div class="row">
               <div class="col-md-4">
-                  <p><strong>{% trans "Situação" %}: </strong> {% if lot.status %}{{ lot.get_status_display  }}{% endif %}</p>
+                  <p><strong>{% trans "Situação" %}: </strong> {% if lot.status %}<strong>{{ lot.get_status_display  }}</strong>{% endif %}</p>
                   <p><strong>{% trans "Data venda" %}: </strong> {% if lot.sell_date %}{{ lot.sell_date }}{% endif %}</p>
                   <p><strong>{% trans "Custo dos Produtos" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Custos dos Produtos&quot; multiplicados pela &quot;Quantidade&quot; de produtos de cada produto do lote.' %}"></span>: </strong> U$ {{ lot.products_cost|localize }}</p>
                   <p><strong>{% trans "Lucro" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Lucros Totais&quot; dos produtos do lote.' %}"></span>: </strong> U$ {{ lot.profit|localize }}</p>
@@ -22,10 +22,12 @@
                   <p><strong>{% trans "Total a pagar" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Valores de Compra&quot; multiplicados pela &quot;Quantidade&quot; de produtos de cada produto do lote.' %}"></span>: </strong> U$ {{ lot.lot_cost|localize }}</p>
               </div>
               <div class="col-md-4">
+                  {% if lot.payment_complete is False %}
                   <!-- Aparece apenas para usuarios comuns -->
                     <br><br>
                     {% render_payment_button paypal_form lot.id %}
                   <!-- fim botao compra -->
+                  {% endif %}
               </div>
           </div>
           <div class="row">
@@ -77,19 +79,19 @@
               </div>
               {% endfor %}
           </div>
-            <!-- Aparece apenas para usuarios comuns -->
-            <br><br>
+            {% if lot.payment_complete is False %}
+                <!-- Aparece apenas para usuarios comuns -->
+                <br><br>
+                {% render_payment_button paypal_form lot.id %}
+                <!-- fim botao compra -->
 
-            {% render_payment_button paypal_form lot.id %}
-
-            <!-- fim botao compra -->
-
-            <br><br>
-            {% if user|has_store_perm:'change_lot' %}
-            <a href="{%url 'admin:store_lot_change' lot.id %}" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
-            {% endif %}
-            {% if user|has_store_perm:'delete_lot' %}
-            <a href="#" class="btn btn-danger send-btn-delete"><i class="fa fa-fw fa-trash"></i> {% trans "Excluir" %}</a><br><br>
+                <br><br>
+                {% if user|has_store_perm:'change_lot' %}
+                <a href="{%url 'admin:store_lot_change' lot.id %}" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
+                {% endif %}
+                {% if user|has_store_perm:'delete_lot' %}
+                <a href="#" class="btn btn-danger send-btn-delete"><i class="fa fa-fw fa-trash"></i> {% trans "Excluir" %}</a><br><br>
+                {% endif %}
             {% endif %}
             <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a>
             <br><br><br>
@@ -98,7 +100,7 @@
         </div>
       </div>
     </div>
-    {% if user|has_store_perm:'delete_lot' %}
+    {% if user|has_store_perm:'delete_lot' and lot.payment_complete is False %}
     <form action="{%url 'admin:store_lot_delete' lot.id %}" method="post" class="form-delete-lot" id="form-delete-lot">
     {% csrf_token %}
     <div id="confirmacao-exclusao" class="modal fade">
