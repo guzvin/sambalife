@@ -625,6 +625,11 @@
         $('#confirmacao-exclusao').modal('show');
     });
 
+    $('#btn-explicacao').click(function()
+    {
+        $('#assinantes-modal').modal('show');
+    });
+
     $('.open-adress').click(function()
     {
         $('#box-adress').modal('show');

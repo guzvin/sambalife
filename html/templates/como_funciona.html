@@ -1,0 +1,86 @@
+{% extends 'includes/layout.html' %}
+
+{% block comoFunciona %}active{% endblock %}
+
+{% block conteudo %}
+
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-md-1 sidebar">
+
+        </div>
+        <div class="col-md-10 main">
+          <h1 class="page-header"><i class="fa fa-leanpub"></i> Veja abaixo como nossa plataforma funciona</h1>
+          <div class="row">
+              <div class="col-md-2">
+              </div>
+              <div class="col-md-8">
+                  <iframe width="100%" height="315" src="https://www.youtube.com/embed/fyaI4-5849w" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
+              </div>
+              <div class="col-md-2">
+              </div>
+              <div class="col-md-12">
+                <h3 class="page-header">Abaixo um passo-a-passo desde a compra dos lotes até enviá-los para Amazon</h3>
+                <ul class="timeline">
+                    <li>
+                        <div class="timeline-image">
+                            <img alt="Cadsatre-se" class="img-circle img-responsive" src="../../static/img/about/1.jpeg" alt="">
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <br><br>
+                                <h4 class="subheading">Primeiro, cadastre-se.</h4>
+                            </div>
+                            <div class="timeline-body">
+                                <p class="text-muted"><a href="/pt/usuario/cadastro/" class="download">Clique aqui</a> e cadastre-se. Simples e muito rápido. não se esqueça de marcar a opção para se tornar assinante.</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="timeline-inverted">
+                        <div class="timeline-image">
+                            <img alt="Insira seus produtos" class="img-circle img-responsive" src="../../static/img/about/2.jpeg" alt="">
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4 class="subheading">Compre quantos lotes quiser com poucos cliques</h4>
+                            </div>
+                            <div class="timeline-body">
+                                <p class="text-muted">Após se tornar um assinante da nossa plataforma, você terá acesso a todos os nossos lotes. Basta escolher quais você quer e com poucos cliques os seus produtos já estarão disponíveis para serem enviados para a Amazon.</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="timeline-image">
+                            <img class="img-circle img-responsive" src="../../static/img/about/4.jpeg" alt="Produto vendido">
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading"><br><br>
+                                <h4 class="subheading">Envio par Amazon</h4>
+                            </div>
+                            <div class="timeline-body">
+                                <p class="text-muted">
+                                    Depois de receber a notificação de que seus itens estão disponíveis no seu estoque VOI (Isso ocorre imediatamente após a compra do lote), basta criar seu envio para a Amazon. <a href="/pt/ajuda" class="download">Veja como.</a></p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="timeline-inverted">
+                        <div class="timeline-image">
+                            <h4><br>Envio<br> Concluido</h4>
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4 class="subheading">Envio Concluido</h4>
+                            </div>
+                            <div class="timeline-body">
+                                <p class="text-muted">Você pode gerenciar todo o processo em nosso sistema. É rápido, fácil e extremamente seguro.</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

@@ -340,6 +340,11 @@ def envioBrasilCadastro(request):
 def envioBrasilDetalhe(request):
     return render(request, 'detalhe_envio_brasil.html')
 
+def comoFunciona(request):
+    return render(request, 'como_funciona.html')
+
+def lotesNovo(request):
+    return render(request, 'pagina_lotes_novo_layout.html')
 
 def send_email_contact_us(request, name, email, tel, message, async=False):
     email_title = _('Fale conosco %(user_name)s - Vendedor Online Internacional') % {'user_name': name}
