@@ -141,6 +141,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'utils.middleware.terms.TermsAndConditionsMiddleware',
+    'utils.middleware.thread_local.ThreadLocalMiddleware',
 ]
 
 SITE_ID = 1

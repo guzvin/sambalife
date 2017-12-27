@@ -3,73 +3,67 @@
 {% block lotes-u %}active{% endblock %}
 
 {% block conteudo %}
-
+    <div class="banner-lote">
+        <div class="">
+            <h2><span class="text-gg">{% trans "Chega" %}</span> {% trans "de problemas para encontrar produtos" %}</h2>
+            <h2><span class="text-gg">{% trans "Chega" %}</span> {% trans "de problemas para pagar com seu cartão de crédito do Brasil" %}</h2>
+            <h2><img src="/static/img/sale-img.png" width="100%" /> </h2>
+            <h2><span class="text-gg">{% trans "Agora" %}</span> {% trans "preocupação apenas com o crescimento do seu negócio. Nós pensamos tudo pra você" %}</h2>
+            <h2><span class="text-gg">{% trans "Agora" %}</span> {% trans "com poucos cliques seus produtos já estarão no seu inventário Amazon" %}</h2>
+        </div>
+    </div>
     <div class="container-fluid">
       <div class="row">
+
         <div class="col-md-1 sidebar">
 
         </div>
         <div class="col-md-10 main">
-          <h1 class="page-header"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</h1>
           <div class="row">
-              <div class="filtros col-md-12">
-                <h3><i class="fa fa-filter"></i> {% trans "Filtros" %}</h3>  <br>
-                <form action="" method="get" id="form-filter-lot" class="form-filter">
-                <div class="form-group col-md-3">
-                    {% trans "Nome" as name_label %}
-                    <label for="filtro-nome">{{ name_label }}</label>
-                    <input type="text" name="name" class="form-control" id="filtro-nome" placeholder="{{ name_label }}..." value="{{ filter_values.name }}">
-                </div>
-                <div class="form-group col-md-3">
-                    <button type="submit" class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
-                </div>
-                </form>
+              {% for lot in lots %}
+              <div class="box-container-lote">
+                 <a href="{% url 'store_lot_details' lot.id %}" class="box-lote{% if lot.status == 2 %} vendido{% endif %}">
+                     {% if lot.status == 2 %}
+                     <p class="vendido-text">{% trans "Vendido" %}</p>
+                     {% endif %}
+                     <div class="foto">
+                        <img src="/static/img/cacarola.jpg" />
+                     </div>
+                     <div class="descricao-lote-prod">
+                        <h6>{{ lot.name }}</h6>
+                        <p class="valor-prod">U$ {{ lot.lot_cost|localize }} </p>
+                         <span>{% trans "Somente Assinantes" %}</span><br>
+                        <p class="lucro-prod">{% trans "Número de Itens" %}: {{ lot.products_quantity }}</p>
+                        <p class="lucro-prod">{% trans "ROI" %}: {{ lot.average_roi|localize }}% | Rank: {{ lot.rank }}%</p>
+                     </div>
+                 </a>
               </div>
-          </div><br>
-          <div class="row">
-            {% for lot in lots %}
-            <div class="col-md-3 col-sm-6 hero-feature">
-                <div class="thumbnail">
-                    <div class="caption">
-                        <h3 class="text-center border-bottom titulo-lote"><i class="fa fa-cart-arrow-down"></i><br> {{ lot.name }}</h3>
-                        <p><strong>{% trans "Lucro" %}: </strong> U$ {{ lot.profit|localize }}</p>
-                        <p><strong>{% trans "ROI médio" %}: </strong> {{ lot.average_roi|localize }}%</p>
-                        <p><strong>{% trans "Valor a pagar" %}: </strong> U$ {{ lot.lot_cost|localize }}</p>
-                        <p class="text-center border-top btn-comprar-list">
-                            <a href="{% url 'store_lot_details' lot.id %}" class="btn btn-primary"><i class="fa fa-fw fa-shopping-cart"></i> {% trans "Comprar" %}</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+              {% endfor %}
+              <nav aria-label="...">
+                {% if lots.has_other_pages %}
+                  <ul class="pagination">
+                    {% if lots.has_previous %}
+                      <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ lots.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                      <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+                    {% for i in lots.paginator.page_range %}
+                      {% if lots.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                      {% else %}
+                        <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ i }}">{{ i }}</a></li>
+                      {% endif %}
+                    {% endfor %}
+                    {% if lots.has_next %}
+                      <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ lots.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                      <li class="disabled"><span>&raquo;</span></li>
+                    {% endif %}
+                  </ul>
+                {% endif %}
+              </nav>
           </div>
-          <nav aria-label="...">
-            {% if lots.has_other_pages %}
-              <ul class="pagination">
-                {% if lots.has_previous %}
-                  <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ lots.previous_page_number }}">&laquo;</a></li>
-                {% else %}
-                  <li class="disabled"><span>&laquo;</span></li>
-                {% endif %}
-                {% for i in lots.paginator.page_range %}
-                  {% if lots.number == i %}
-                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                  {% else %}
-                    <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ i }}">{{ i }}</a></li>
-                  {% endif %}
-                {% endfor %}
-                {% if lots.has_next %}
-                  <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ lots.next_page_number }}">&raquo;</a></li>
-                {% else %}
-                  <li class="disabled"><span>&raquo;</span></li>
-                {% endif %}
-              </ul>
-            {% endif %}
-          </nav>
-        </div>
-        <div class="col-md-1 sidebar">
         </div>
       </div>
     </div>
-
 {% endblock %}

@@ -33,19 +33,22 @@ def store_list(request):
     if filter_name:
         queries.append(Q(name__icontains=filter_name))
         filter_values['name'] = filter_name
-    queries.append(Q(status=1) & Q(sell_date=None))
-    logger.debug(str(queries))
-    logger.debug(str(len(queries)))
-    _lot_list = Lot.objects.extra(where=['EXISTS (SELECT 1 FROM store_lot_groups WHERE store_lot.id = store_lot_groups.'
-                                         'lot_id AND store_lot_groups.group_id IN (SELECT U0.id FROM auth_group U0 '
-                                         'INNER JOIN myauth_myuser_groups U1 ON (U0.id = U1.group_id) WHERE '
-                                         'U1.myuser_id = %s)) OR NOT EXISTS (SELECT 1 FROM store_lot_groups WHERE '
-                                         'store_lot.id = store_lot_groups.lot_id)'], params=[request.user.id])
-    query = queries.pop()
-    for item in queries:
-        query &= item
-    logger.debug(str(query))
-    _lot_list = _lot_list.filter(query).order_by('id')
+    # queries.append(Q(status=1) & Q(sell_date=None))
+    # logger.debug(str(queries))
+    # logger.debug(str(len(queries)))
+    # _lot_list = Lot.objects.extra(where=['EXISTS (SELECT 1 FROM store_lot_groups WHERE store_lot.id = store_lot_groups.'
+    #                                      'lot_id AND store_lot_groups.group_id IN (SELECT U0.id FROM auth_group U0 '
+    #                                      'INNER JOIN myauth_myuser_groups U1 ON (U0.id = U1.group_id) WHERE '
+    #                                      'U1.myuser_id = %s)) OR NOT EXISTS (SELECT 1 FROM store_lot_groups WHERE '
+    #                                      'store_lot.id = store_lot_groups.lot_id)'], params=[request.user.id])
+    if queries:
+        query = queries.pop()
+        for item in queries:
+            query &= item
+        logger.debug(str(query))
+        _lot_list = Lot.objects.filter(query).order_by('-id')
+    else:
+        _lot_list = Lot.objects.all().order_by('-id', 'status', '-sell_date')
     page = request.GET.get('page', 1)
     paginator = Paginator(_lot_list, 20)
     try:
@@ -62,13 +65,7 @@ def store_list(request):
 @require_http_methods(["GET"])
 def store_lot_details(request, pid=None):
     try:
-        _lot_details = Lot.objects.extra(where=['EXISTS (SELECT 1 FROM store_lot_groups WHERE store_lot.id = store_lot_'
-                                                'groups.lot_id AND store_lot_groups.group_id IN (SELECT U0.id FROM '
-                                                'auth_group U0 INNER JOIN myauth_myuser_groups U1 ON '
-                                                '(U0.id = U1.group_id) WHERE U1.myuser_id = %s)) OR NOT EXISTS ('
-                                                'SELECT 1 FROM store_lot_groups WHERE store_lot.id = '
-                                                'store_lot_groups.lot_id)'], params=[request.user.id]).\
-            prefetch_related('product_set').get(pk=pid)
+        _lot_details = Lot.objects.prefetch_related('product_set').get(pk=pid)
     except Lot.DoesNotExist as e:
         logger.error(e)
         return HttpResponseBadRequest()

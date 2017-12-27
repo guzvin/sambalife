@@ -417,7 +417,8 @@ def my_lookup_field(name, obj, model_admin=None):
     logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     if name == 'action_checkbox' \
             and (str(model_admin) == 'auth.GroupAdmin' or str(model_admin) == 'myauth.UserAdmin') \
-            and (str(obj) == 'all_users' or str(obj) == 'admins' or str(obj.first_name) == 'Administrador'):
+            and (str(obj) == 'all_users' or str(obj) == 'admins' or
+                    (str(model_admin) == 'myauth.UserAdmin' and str(obj.first_name) == 'Administrador')):
         raise ObjectDoesNotExist
     return native_lookup_field(name, obj, model_admin=model_admin)
 

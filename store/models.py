@@ -37,6 +37,7 @@ class Lot(models.Model):
     average_roi = models.DecimalField(_('ROI Médio'), max_digits=12, decimal_places=2, default=0)
     redirect_cost = models.DecimalField(_('Redirecionamento'), max_digits=12, decimal_places=2, default=0)
     lot_cost = models.DecimalField(_('Valor do Lote'), max_digits=12, decimal_places=2, default=0)
+    rank = models.IntegerField(_('Rank'), default=0)
 
     class Meta:
         verbose_name = _('Lote')
@@ -70,3 +71,22 @@ class Product(models.Model):
     class Meta:
         verbose_name = _('Produto')
         verbose_name_plural = _('Produtos')
+
+
+class Config(models.Model):
+    id = models.AutoField(primary_key=True)
+    default_group = models.OneToOneField(
+        Group,
+        verbose_name=_('Grupo padrão'),
+        blank=True,
+        help_text=_(
+            'Grupo ao qual os lotes e os usuários assinantes serão associados por padrão.'
+        ),
+    )
+
+    class Meta:
+        verbose_name = _('Configuração')
+        verbose_name_plural = _('Configurações')
+
+    def __str__(self):
+        return str(_('Configuração'))
