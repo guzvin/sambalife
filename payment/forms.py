@@ -28,6 +28,7 @@ class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
         self.is_sandbox = kwargs.pop('is_sandbox', False)
         if kwargs.pop('is_render_button', False):
             self.button_type = button_type
+            self.button_origin = kwargs.pop('origin', None)
             return
         super(MyPayPalSharedSecretEncryptedPaymentsForm, self).__init__(*args, **kwargs)
         # @@@ Attach the secret parameter in a way that is safe for other query params.
@@ -67,8 +68,8 @@ class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
 
     def render_button(self, data=None):
         return format_html('<input type="image" src="{0}" id="payment_button" border="0" name="submit" '
-                           'alt="Buy it Now" data-generic="{1}" />',
-                           self.get_image(), data if data else '')
+                           'alt="Buy it Now" data-origin="{1}" data-generic="{2}" />',
+                           self.get_image(), self.button_origin if self.button_origin else '', data if data else '')
 
     def test_mode(self):
         logger.debug('@@@@@@@@@@@@ IS SANDBOX @@@@@@@@@@@@@@')

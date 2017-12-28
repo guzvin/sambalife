@@ -988,7 +988,7 @@
             $.ajax(
             {
                 method: 'GET',
-                url: '/' + gettext('en') + '/shipment/pay/' + $this.data('generic'),
+                url: '/' + gettext('en') + '/' + $this.data('origin') + '/pay/' + $this.data('generic'),
                 statusCode:
                 {
                     400: function(jqXHR, textStatus, errorThrown)
@@ -1015,6 +1015,15 @@
             })
             .done(function( obj )
             {
+                if(obj.redirect)
+                {
+                    window.location.href = obj.redirect;
+                    return;
+                }
+                if(obj.modal)
+                {
+                    return;
+                }
                 var paymentFormArea = $('<span id="payment-form-area"></span>').append($(obj));
                 paymentFormArea.insertAfter($this);
                 var paymentFormArea = $('span#payment-form-area');

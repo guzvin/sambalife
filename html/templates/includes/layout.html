@@ -105,6 +105,10 @@
                     <li>
                         <a href="{% if LANGUAGE_CODE == 'pt' %}{% trans '/pt/ajuda/' %}#contact{% else %}mailto:support@prepshiptool.freshdesk.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
+                    <li class="{% block comoFunciona %}{% endblock %}">
+                        <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
+                    </li>
+                    {% if user.is_authenticated %}
                     <li class="{% block lotes-u %}{% endblock %}">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
@@ -117,6 +121,7 @@
                             </li>
                         </ul>
                     </li>
+                    {% endif %}
 {% comment %}
                     <li class="tutorial">
                         <a href="{% trans '/pt/ajuda/' %}" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
@@ -126,11 +131,6 @@
                         <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fa fa-map-marker"></i> {% trans "Ver Endereço VOI" %}</a>
                     </li>
 {% endcomment %}
-
-                    <li class="{% block comoFunciona %}{% endblock %}">
-                        <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
-                    </li>
-
                     {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Estoque" %} <b class="caret"></b></a>
@@ -221,6 +221,7 @@
                         </ul>
                     </li>
 {% endcomment %}
+                    {% if user.is_authenticated %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span>  {% trans "Olá" %}, {{ user.first_name }} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
@@ -235,6 +236,7 @@
                             </li>
                         </ul>
                     </li>
+                    {% endif %}
                 </ul>
 
                 <form action="{% url 'my_set_language' %}" method="post">{% csrf_token %}

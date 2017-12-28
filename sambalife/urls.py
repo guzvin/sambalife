@@ -65,6 +65,7 @@ urlpatterns += i18n_patterns(
     url(_(r'^store/list[/]$'), store_list, name='store'),
     url(_(r'^store/lot/details/(?P<pid>[0-9]+)[/]$'), store_lot_details, name='store_lot_details'),
     url(_(r'^store/purchase'), store_purchase, name='store_purchase'),
+    url(r'^store/pay/(?P<pid>[0-9]+)[/]$', store_pay_form, name='store_pay_form'),
     # url(r'^envios-brasil', enviosBrasil, name='enviosBrasil'),
     # url(r'^envio-brasil/cadastro', envioBrasilCadastro, name='envioBrasilCadastro'),
     # url(r'^envio-brasil/detalhe', envioBrasilDetalhe, name='envioBrasilDetalhe'),

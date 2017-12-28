@@ -8,19 +8,20 @@ from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from utils import helper
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from django.urls import reverse
 from paypal.standard.models import ST_PP_COMPLETED, ST_PP_PENDING, ST_PP_VOIDED
 from django.db import transaction
+from store.models import Config
 import time
 import datetime
+import json
 import logging
 
 logger = logging.getLogger('django')
 
 
-@login_required
 @require_http_methods(["GET"])
 def store_list(request):
     queries = []
@@ -61,7 +62,6 @@ def store_list(request):
                                                'filter_values': helper.ObjectView(filter_values)})
 
 
-@login_required
 @require_http_methods(["GET"])
 def store_lot_details(request, pid=None):
     try:
@@ -72,16 +72,22 @@ def store_lot_details(request, pid=None):
     context_data = {'title': _('Loja'), 'lot': _lot_details}
     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_lot_details.user)
     context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
-                                                                            is_render_button=True)
+                                                                            is_render_button=True,
+                                                                            origin='store')
     return render(request, 'store_lot_details.html', context_data)
 
 
 def current_milli_time(): return int(round(time.time() * 1000))
 
 
-@login_required
 @require_http_methods(["GET"])
-def shipment_pay_form(request, pid=None):
+def store_pay_form(request, pid=None):
+    if not request.user.is_authenticated():
+        return HttpResponse(json.dumps({'redirect': reverse('user_registration')}), content_type='application/json')
+    config = Config.objects.first()
+    if config:
+        if not request.user.groups.filter(pk=config.default_group.id).exists():
+            return HttpResponse(json.dumps({'modal': 'subscribe'}), content_type='application/json')
     try:
         with transaction.atomic():
             _lot_details = Lot.objects.extra(where=['EXISTS (SELECT 1 FROM store_lot_groups '

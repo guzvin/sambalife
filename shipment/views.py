@@ -304,7 +304,8 @@ def shipment_details(request, pid=None):
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
                     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_shipment_details.user)
                     context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
-                                                                                            is_render_button=True)
+                                                                                            is_render_button=True,
+                                                                                            origin='shipment')
             elif _shipment_details.status == 2:
                 # Upload PDF 2 Autorizado
                 if request.user == _shipment_details.user or has_group(request.user, 'admins') \
