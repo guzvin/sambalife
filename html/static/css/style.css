@@ -1222,11 +1222,25 @@ label.titulo-pct span{
     display: block;
     font-size: 17px;
     text-transform: uppercase;
-    padding: 64px 20px 20px 20px;
+    padding: 10px 20px 20px 20px;
     font-weight: normal;
     line-height: 24px;
-    background: url('../img/logo_menor.png') no-repeat center top;
+    /*background: url('../img/logo_menor.png') no-repeat center top;*/
     background-size: 100px
+}
+
+.banner-lote h2 i{
+    width: 100%;
+    margin-bottom: 20px;
+    font-size: 3em;
+}
+
+.main.loja{
+    border-left: 1px solid #dedede;
+}
+
+.filtros label{
+    font-size: 18px;
 }
 
 .banner-lote h2:nth-child(3){
@@ -1292,13 +1306,30 @@ label.titulo-pct span{
     display: none;
 }
 
-.box-lote h6{
+.box-lote h6, .filtros h6, .filtros-box label{
     font-size: 14px;
     color: #666;
     font-weight: normal;
     float: left;
     width: 100%;
     height: 34px;
+}
+
+.filtros-box input{
+    width: auto;
+    float: left;
+    margin-right: 4px;
+    margin-top: -10px;
+}
+
+.filtros-box .form-group{
+    margin-bottom: 10px;
+    float: left;
+    width: 100%;
+}
+
+.filtros-box .form-group:last-child{
+    border-bottom: 1px solid #dedede;
 }
 
 .valor-prod{
