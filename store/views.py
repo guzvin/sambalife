@@ -14,6 +14,7 @@ from django.urls import reverse
 from paypal.standard.models import ST_PP_COMPLETED, ST_PP_PENDING, ST_PP_VOIDED
 from django.db import transaction
 from store.models import Config
+from bisect import bisect
 import time
 import datetime
 import json
@@ -26,14 +27,39 @@ logger = logging.getLogger('django')
 def store_list(request):
     queries = []
     logger.debug('@@@@@@@@@@@@ STORE FILTERS @@@@@@@@@@@@@@')
-    filter_name = request.GET.get('name')
-    logger.debug(str(filter_name))
+    filter_value = request.GET.getlist('value')
+    logger.debug(str(filter_value))
+    filter_rank = request.GET.getlist('rank')
+    logger.debug(str(filter_rank))
+    filter_roi = request.GET.getlist('roi')
+    logger.debug(str(filter_roi))
     filter_values = {
-        'name': '',
+        'roi': [],
     }
-    if filter_name:
-        queries.append(Q(name__icontains=filter_name))
-        filter_values['name'] = filter_name
+    if filter_value:
+        if len(filter_value) < 3:
+            value_filter = filter_resolver(filter_value)
+            logger.debug('@@@@@@@@@@@@@ VALUE FILTER @@@@@@@@@@@@@@')
+            logger.debug(value_filter)
+            logger.debug(filter_value)
+            build_query(queries, value_filter, lte='lot_cost__lte', gte='lot_cost__gte')
+        filter_values['value'] = filter_value
+    if filter_rank:
+        if len(filter_rank) < 4:
+            rank_filter = filter_resolver(filter_rank)
+            logger.debug('@@@@@@@@@@@@@ RANK FILTER @@@@@@@@@@@@@@')
+            logger.debug(rank_filter)
+            logger.debug(filter_rank)
+            build_query(queries, rank_filter, lte='rank__lte', gte='rank__gte')
+        filter_values['rank'] = filter_rank
+    if filter_roi:
+        if len(filter_roi) < 3:
+            roi_filter = filter_resolver(filter_roi)
+            logger.debug('@@@@@@@@@@@@@ ROI FILTER @@@@@@@@@@@@@@')
+            logger.debug(roi_filter)
+            logger.debug(filter_roi)
+            build_query(queries, roi_filter, lte='average_roi__lte', gte='average_roi__gte')
+        filter_values['roi'] = filter_roi
     # queries.append(Q(status=1) & Q(sell_date=None))
     # logger.debug(str(queries))
     # logger.debug(str(len(queries)))
@@ -47,7 +73,7 @@ def store_list(request):
         for item in queries:
             query &= item
         logger.debug(str(query))
-        _lot_list = Lot.objects.filter(query).order_by('-id')
+        _lot_list = Lot.objects.filter(query).order_by('-id', 'status', '-sell_date')
     else:
         _lot_list = Lot.objects.all().order_by('-id', 'status', '-sell_date')
     page = request.GET.get('page', 1)
@@ -60,6 +86,57 @@ def store_list(request):
         lots = paginator.page(paginator.num_pages)
     return render(request, 'store_list.html', {'title': _('Loja'), 'lots': lots,
                                                'filter_values': helper.ObjectView(filter_values)})
+
+
+def build_query(queries, filter_list, **kwargs):
+    i = iter(filter_list)
+    clauses = []
+    for x in i:
+        l, r = x, next(i)
+        if l == '-':
+            clauses.append(Q(**{kwargs['lte']: r}))
+        elif r == '-':
+            clauses.append(Q(**{kwargs['gte']: l}))
+        else:
+            clauses.append((Q(**{kwargs['gte']: l}) & Q(**{kwargs['lte']: r})))
+    if clauses:
+        query_clause = clauses.pop()
+        for clause in clauses:
+            query_clause |= clause
+        queries.append(query_clause)
+
+
+def filter_resolver(filters):
+    resolved_filter = None
+    for r in filters:
+        filter_range = r.split(';')
+        if resolved_filter is None:
+            resolved_filter = filter_range
+            continue
+        if filter_range[0] == '-':
+            try:
+                i = resolved_filter.index(filter_range[1])
+                resolved_filter[i] = filter_range[0]
+            except ValueError:
+                resolved_filter = filter_range + resolved_filter
+        elif filter_range[1] == '-':
+            try:
+                i = resolved_filter.index(filter_range[0])
+                resolved_filter[i] = filter_range[1]
+            except ValueError:
+                resolved_filter += filter_range
+        else:
+            try:
+                i = resolved_filter.index(filter_range[0])
+                resolved_filter[i] = filter_range[1]
+            except ValueError:
+                try:
+                    i = resolved_filter.index(filter_range[1])
+                    resolved_filter[i] = filter_range[0]
+                except ValueError:
+                    i = bisect(resolved_filter, filter_range[0])
+                    resolved_filter = resolved_filter[:i] + filter_range + resolved_filter[i:]
+    return resolved_filter
 
 
 @require_http_methods(["GET"])

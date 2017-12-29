@@ -5,20 +5,98 @@
 {% block conteudo %}
     <div class="banner-lote">
         <div class="">
-            <h2><span class="text-gg">{% trans "Chega" %}</span> {% trans "de problemas para encontrar produtos" %}</h2>
-            <h2><span class="text-gg">{% trans "Chega" %}</span> {% trans "de problemas para pagar com seu cartão de crédito do Brasil" %}</h2>
+            <h2><i class="fa fa-ban"></i><span class="text-gg">{% trans "Chega" %}</span> {% trans "de problemas para encontrar produtos" %}</h2>
+            <h2><i class="fa fa-credit-card"></i><span class="text-gg">{% trans "Chega" %}</span> {% trans "de problemas para pagar com seu cartão de crédito do Brasil" %}</h2>
             <h2><img src="/static/img/sale-img.png" width="100%" /> </h2>
-            <h2><span class="text-gg">{% trans "Agora" %}</span> {% trans "preocupação apenas com o crescimento do seu negócio. Nós pensamos tudo pra você" %}</h2>
-            <h2><span class="text-gg">{% trans "Agora" %}</span> {% trans "com poucos cliques seus produtos já estarão no seu inventário Amazon" %}</h2>
+            <h2><i class="fa fa-line-chart"></i><span class="text-gg">{% trans "Agora" %}</span> {% trans "preocupe-se apenas com o crescimento do seu negócio. Nós pensamos tudo pra você" %}</h2>
+            <h2><i class="fa fa-amazon"></i><span class="text-gg">{% trans "Agora" %}</span> {% trans "com poucos cliques seus produtos já estarão no seu inventário Amazon" %}</h2>
         </div>
     </div>
     <div class="container-fluid">
       <div class="row">
 
-        <div class="col-md-1 sidebar">
-
+        <div class="col-md-2 sidebar">
+            <form action="" method="get" id="form-filter-store" class="form-filter">
+            <div class="filtros">
+                <label><i class="fa fa-filter"></i> {% trans "Filtros" %}</label>
+                <div class="filtros-box">
+                    <h6>Valor</h6>
+                    <div class="form-group">
+                        <label for="input-valor-500" id="valor-500">
+                            <input type="checkbox" class="form-control" id="input-valor-500" name="value" value="-;500" {% if '-;500' in filter_values.value %}checked="checked"{% endif %} />
+                            {% trans "Até $ 500.00" %}
+                        </label>
+                     </div>
+                    <div class="form-group">
+                        <label for="input-valor-1000" id="valor-1000">
+                            <input type="checkbox" class="form-control" id="input-valor-1000" name="value" value="500;1000" {% if '500;1000' in filter_values.value %}checked="checked"{% endif %} />
+                            {% trans "De $ 500.00 até $ 1000.00" %}
+                        </label>
+                     </div>
+                    <div class="form-group">
+                        <label for="input-valor-acima" id="valor-acima">
+                            <input type="checkbox" class="form-control" id="input-valor-acima" name="value" value="1000;-" {% if '1000;-' in filter_values.value %}checked="checked"{% endif %} />
+                            {% trans "Acima de $ 1000.00" %}
+                        </label>
+                     </div>
+                </div>
+                <div class="filtros-box">
+                    <h6>{% trans "Rank" %}</h6>
+                    <div class="form-group">
+                        <label for="input-rank-1" id="rank-1">
+                            <input type="checkbox" class="form-control" id="input-rank-1" name="rank" value="-;1" {% if '-;1' in filter_values.rank %}checked="checked"{% endif %} />
+                            {% trans "Até 1%" %}
+                        </label><br/>
+                     </div>
+                    <div class="form-group">
+                        <label for="input-rank-3" id="rank-3">
+                            <input type="checkbox" class="form-control" id="input-rank-3" name="rank" value="1;3" {% if '1;3' in filter_values.rank %}checked="checked"{% endif %} />
+                            {% trans "De 1% até 3%" %}
+                        </label>
+                     </div>
+                    <div class="form-group">
+                        <label for="input-rank-5" id="rank-5">
+                            <input type="checkbox" class="form-control" id="input-rank-5" name="rank" value="3;5" {% if '3;5' in filter_values.rank %}checked="checked"{% endif %} />
+                            {% trans "De 3% até 5%" %}
+                        </label>
+                     </div>
+                    <div class="form-group">
+                        <label for="input-rank-acima" id="rank-acima">
+                            <input type="checkbox" class="form-control" id="input-rank-acima" name="rank" value="5;-" {% if '5;-' in filter_values.rank %}checked="checked"{% endif %} />
+                            {% trans "Acima de 5%" %}
+                        </label>
+                     </div>
+                </div>
+                <div class="filtros-box">
+                    <h6>{% trans "ROI" %}</h6>
+                    <div class="form-group">
+                        <label for="input-roi-50" id="roi-50">
+                            <input type="checkbox" class="form-control" id="input-roi-50" name="roi" value="-;50" {% if '-;50' in filter_values.roi %}checked="checked"{% endif %} />
+                            {% trans "Até 50%" %}
+                        </label>
+                     </div>
+                    <div class="form-group">
+                        <label for="input-roi-70" id="roi-70">
+                            <input type="checkbox" class="form-control" id="input-roi-70" name="roi" value="50;70" {% if '50;70' in filter_values.roi %}checked="checked"{% endif %} />
+                            {% trans "De 50% até 70%" %}
+                        </label>
+                     </div>
+                    <div class="form-group">
+                        <label for="input-roi-acima" id="roi-acima">
+                            <input type="checkbox" class="form-control" id="input-roi-acima" name="roi" value="70;-" {% if '70;-' in filter_values.roi %}checked="checked"{% endif %} />
+                            {% trans "Acima de 70%" %}
+                        </label>
+                     </div>
+                </div>
+                <div class="filtros-box">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
+                    </div>
+                </div>
+            </div>
+            </form>
         </div>
-        <div class="col-md-10 main">
+        <div class="col-md-10 main loja">
           <div class="row">
               {% for lot in lots %}
               <div class="box-container-lote">
@@ -27,7 +105,11 @@
                      <p class="vendido-text">{% trans "Vendido" %}</p>
                      {% endif %}
                      <div class="foto">
-                        <img src="/static/img/cacarola.jpg" />
+                        {% if lot.thumbnail %}
+                         <img src="/media/{{ lot.thumbnail }}" />
+                        {% else %}
+                         <img src="/static/img/default-no-image.png" />
+                        {% endif %}
                      </div>
                      <div class="descricao-lote-prod">
                         <h6>{{ lot.name }}</h6>

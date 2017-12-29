@@ -122,7 +122,7 @@ class LotAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'name',)
     list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost')
     fieldsets = (
-        (None, {'fields': ('name', 'description', 'groups', 'rank')}),
+        (None, {'fields': ('name', 'description', 'thumbnail', 'groups', 'rank')}),
     )
 
     def save_related(self, request, form, formsets, change):

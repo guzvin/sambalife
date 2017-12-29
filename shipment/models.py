@@ -6,7 +6,6 @@ from django.core.validators import ValidationError
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from shipment.validators import validate_file_extension
-from datetime import datetime
 from product.models import Product as OriginalProduct
 from utils import helper
 from utils.models import Accounting

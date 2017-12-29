@@ -3,9 +3,21 @@ from django.db.models.fields import BigAutoField
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from store.validators import validate_file_extension
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+from utils.storage import OverWriteStorage
+from PIL import Image
 import logging
 
 logger = logging.getLogger('django')
+
+_SAVED_FILEFIELD = 'saved_filefield'
+_UNSAVED_FILEFIELD = 'unsaved_filefield'
+
+
+def lot_directory_path(instance, filename):
+    return 'lot_{0}/{1}'.format(instance.id, filename)
 
 
 class Lot(models.Model):
@@ -38,6 +50,8 @@ class Lot(models.Model):
     redirect_cost = models.DecimalField(_('Redirecionamento'), max_digits=12, decimal_places=2, default=0)
     lot_cost = models.DecimalField(_('Valor do Lote'), max_digits=12, decimal_places=2, default=0)
     rank = models.IntegerField(_('Rank'), default=0)
+    thumbnail = models.ImageField(_('Imagem'), upload_to=lot_directory_path, storage=OverWriteStorage(),
+                                  validators=[validate_file_extension], null=True, blank=True)
 
     class Meta:
         verbose_name = _('Lote')
@@ -45,6 +59,39 @@ class Lot(models.Model):
 
     def __str__(self):
         return self.name
+
+
+@receiver(pre_save, sender=Lot)
+def skip_saving_file(sender, instance, **kwargs):
+    if instance.thumbnail and not hasattr(instance, _UNSAVED_FILEFIELD) and not hasattr(instance, _SAVED_FILEFIELD):
+        setattr(instance, _UNSAVED_FILEFIELD, instance.thumbnail)
+        instance.thumbnail = None
+
+
+@receiver(post_save, sender=Lot)
+def save_file(sender, instance, created, **kwargs):
+    if hasattr(instance, _UNSAVED_FILEFIELD) and not hasattr(instance, _SAVED_FILEFIELD):
+        instance.thumbnail = getattr(instance, _UNSAVED_FILEFIELD)
+        delattr(instance, _UNSAVED_FILEFIELD)
+        setattr(instance, _SAVED_FILEFIELD, 1)
+        instance.save()
+        img = Image.open(instance.thumbnail)
+        (w, h) = img.size
+        if w <= 100 and h <= 100:
+            return
+        if w > h:
+            new_height = round((h / w) * 100)
+            size = (100, new_height)
+        elif h > w:
+            new_width = round((w / h) * 100)
+            size = (new_width, 100)
+        else:
+            size = (100, 100)
+        logger.debug(img.size)
+        logger.debug('@@@@@@@@@@@@@ THUMB RESIZE @@@@@@@@@@@@@@@@@')
+        logger.debug(size)
+        img = img.resize(size, Image.ANTIALIAS)
+        img.save(instance.thumbnail.path)
 
 
 class Product(models.Model):
