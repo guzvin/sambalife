@@ -46,7 +46,7 @@
                       <option value="5" {{ sent_filter_status }}>{% trans "Enviado" %}</option>
                     </select>
                 </div>
-                <div class="form-group col-md-2">
+                <div class="form-group col-md-4">
                   {% trans "Data de Criação" as created_date %}
                     <label for="datepicker">{{ created_date }}</label>
                     <input type="text" class="form-control datepicker" id="datepicker" placeholder="{{ created_date }}..." name="date" value="{{ filter_values.date }}">

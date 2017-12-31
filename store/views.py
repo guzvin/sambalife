@@ -10,6 +10,7 @@ from utils import helper
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
+from django.forms import DateField
 from django.urls import reverse
 from paypal.standard.models import ST_PP_COMPLETED, ST_PP_PENDING, ST_PP_VOIDED
 from django.db import transaction
@@ -218,7 +219,69 @@ def store_pay_form(request, pid=None):
 @login_required
 @require_http_methods(["GET"])
 def store_purchase(request):
-    return render(request, 'store_purchase.html', {'title': _('Loja - Minhas Compras')})
+    queries = [Q(user=request.user)]
+    logger.debug('@@@@@@@@@@@@ STORE PURCHASE FILTERS @@@@@@@@@@@@@@')
+    filter_name = request.GET.get('name')
+    logger.debug(str(filter_name))
+    filter_date = request.GET.get('date')
+    logger.debug(str(filter_date))
+    filter_values = {
+        'name': '',
+    }
+    if filter_name:
+        queries.append(Q(name__icontains=filter_name))
+        filter_values['name'] = filter_name
+    if filter_date:
+        d = DateField().to_python(filter_date)
+        queries.append(Q(sell_date__date=d))
+        filter_values['date'] = filter_date
+    query = queries.pop()
+    for item in queries:
+        query &= item
+    selected_order = request.GET.get('order')
+    orders = {
+        'name': '+name',
+        'qty': '-qty',
+        'purchase': '-purchase',
+        'roi': '-roi',
+        'rank': '-rank'
+    }
+    if selected_order is None:
+        selected_order = '-purchase'
+    orientation = selected_order[:1]
+    if orientation == '-':
+        new_order = '+'
+    else:
+        new_order = '-'
+        orientation = ''
+    orders[str(selected_order[1:])] = new_order + selected_order[1:]
+    if selected_order[1:] == 'name':
+        order_by = orientation + 'name'
+    elif selected_order[1:] == 'qty':
+        order_by = orientation + 'products_quantity'
+    elif selected_order[1:] == 'purchase':
+        order_by = orientation + 'sell_date'
+    elif selected_order[1:] == 'roi':
+        order_by = orientation + 'average_roi'
+    elif selected_order[1:] == 'rank':
+        order_by = orientation + 'rank'
+    else:
+        selected_order = '-purchase'
+        order_by = '-sell_date'
+        orders['purchase'] = '+purchase'
+    lots = Lot.objects.filter(query).order_by(order_by)
+    page = request.GET.get('page', 1)
+    paginator = Paginator(lots, 20)
+    try:
+        lots = paginator.page(page)
+    except PageNotAnInteger:
+        lots = paginator.page(1)
+    except EmptyPage:
+        lots = paginator.page(paginator.num_pages)
+    return render(request, 'store_purchase.html', {'title': _('Loja - Minhas Compras'), 'lots': lots,
+                                                   'filter_values': helper.ObjectView(filter_values),
+                                                   'order_by': helper.ObjectView(orders),
+                                                   'selected_order': selected_order})
 
 
 def store_paypal_notification(lot_id, ipn_obj):

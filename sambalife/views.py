@@ -345,10 +345,6 @@ def how_it_works(request):
     return render(request, 'how_it_works.html')
 
 
-def lotesNovo(request):
-    return render(request, 'pagina_lotes_novo_layout.html')
-
-
 def send_email_contact_us(request, name, email, tel, message, async=False):
     email_title = _('Fale conosco %(user_name)s - Vendedor Online Internacional') % {'user_name': name}
     html_format = '<p>{}: <strong>{}</strong></p>' \

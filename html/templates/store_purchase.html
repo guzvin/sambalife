@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-
+{% load i18n tz l10n commons %}
 {% block lotes-u %}active{% endblock %}
 
 {% block conteudo %}
@@ -10,90 +10,89 @@
 
         </div>
         <div class="col-md-10 main">
-          <h1 class="page-header"><i class="fa fa-shopping-basket"></i> Minhas compras</h1>
+          <h1 class="page-header"><i class="fa fa-shopping-basket"></i> {% trans "Minhas compras" %}</h1>
+          <form action="" method="get" id="form-filter-store-purchase" class="form-filter">
           <div class="row">
               <div class="filtros col-md-12">
-                <h3><i class="fa fa-filter"></i> Filtros</h3>  <br>
-                <div class="form-group col-md-3">
-                    <label for="filtro-nome">Nome</label>
-                    <input type="text" class="form-control" id="filtro-nome" placeholder="Nome...">
+                <h3><i class="fa fa-filter"></i> {% trans "Filtros" %}</h3>  <br>
+                <div class="form-group col-md-5">
+                    {% trans "Nome" as label_name %}
+                    <label for="filtro-nome">{{ label_name }}</label>
+                    <input type="text" name="name" class="form-control" id="filtro-nome" placeholder="{{ label_name }}..." value="{{ filter_values.name }}">
                 </div>
-                <div class="form-group col-md-2">
-                    <label for="filtro-status">Status</label>
-
-                    <select class="form-control" id="filtro-status" name="status">
-                      <option value="">Status</option>
-                      <option value="1">Aguardando pagamento</option>
-                      <option value="2">Concluído</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-2">
-                    <label for="datepicker">Data da compra</label>
-                    <input type="text" class="form-control datepicker hasDatepicker" id="datepicker" placeholder="Data da compra..." name="date" value="">
+                <div class="form-group col-md-4">
+                    {% trans "Data da compra" as label_date %}
+                    <label for="datepicker">{{ label_date }}</label>
+                    <input type="text" class="form-control datepicker" id="datepicker" placeholder="{{ label_date }}..." name="date" value="{{ filter_values.date }}">
                 </div>
                 <div class="form-group col-md-3">
-                    <a class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> Filtrar</a>
+                    <button type="submit" class="btn btn-primary filtar-btn" id="filtro"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
                 </div>
               </div>
           </div><br><br>
           <div class="row">
-            <br><br>
-            <a class="btn btn-default" href="#"><i class="fa fa-fw fa-check-square-o"></i> Confirmar Pagamento</a>
             <div class="table-responsive">
             <br>
             <table class="table table-striped table-bordered">
               <thead>
                 <tr>
-                  <th></th>
-                  <th><a title="Ordenar pelo pedido" href="javascript:void(0);">Pedido <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
-                  <th><a title="Ordenar pelo Produto" href="javascript:void(0);">Produto <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
-                  <th class="center"><a title="Ordenar pela Data de Envio" href="javascript:void(0);">Data de Envio <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
-                  <th class="center"><a title="Ordenar pela Quantidade" href="javascript:void(0);">Quantidade <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
-                  <th class="center"><a title="Ordenar pelo Status" href="javascript:void(0);">Status <i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
-                  <th class="center">Ações</th>
+                    {% trans "Ordenar pelo nome" as label_order_name %}
+                    {% trans "Ordenar pela quantidade" as label_order_qty %}
+                    {% trans "Ordenar pela data da compra" as label_order_purchase %}
+                    {% trans "Ordenar pelo ROI" as label_order_roi %}
+                    {% trans "Ordenar pelo rank" as label_order_rank %}
+                  <th><a title="{{ label_order_name }}" href="javascript:void(0);" class="order-by" data-order="{{ order_by.name }}">{% trans "Nome" %}{% if selected_order|slice:'1:' == 'name' %} <i class="fa fa-fw fa-sort-amount-{% if selected_order|slice:':1' == '+' %}asc{% else %}desc{% endif %}"></i>{% endif %}</a></th>
+                  <th class="center"><a title="{{ label_order_qty }}" href="javascript:void(0);" class="order-by" data-order="{{ order_by.qty }}">{% trans "Quantidade de itens" %}{% if selected_order|slice:'1:' == 'qty' %} <i class="fa fa-fw fa-sort-amount-{% if selected_order|slice:':1' == '+' %}asc{% else %}desc{% endif %}"></i>{% endif %}</a></th>
+                  <th class="center"><a title="{{ label_order_purchase }}" href="javascript:void(0);" class="order-by" data-order="{{ order_by.purchase }}">{% trans "Data da compra" %}{% if selected_order|slice:'1:' == 'purchase' %} <i class="fa fa-fw fa-sort-amount-{% if selected_order|slice:':1' == '+' %}asc{% else %}desc{% endif %}"></i>{% endif %}</a></th>
+                  <th class="center"><a title="{{ label_order_roi }}" href="javascript:void(0);" class="order-by" data-order="{{ order_by.roi }}">{% trans "ROI" %}{% if selected_order|slice:'1:' == 'roi' %} <i class="fa fa-fw fa-sort-amount-{% if selected_order|slice:':1' == '+' %}asc{% else %}desc{% endif %}"></i>{% endif %}</a></th>
+                  <th class="center"><a title="{{ label_order_rank }}" href="javascript:void(0);" class="order-by" data-order="{{ order_by.rank }}">{% trans "Rank" %}{% if selected_order|slice:'1:' == 'rank' %} <i class="fa fa-fw fa-sort-amount-{% if selected_order|slice:':1' == '+' %}asc{% else %}desc{% endif %}"></i>{% endif %}</a></th>
+                  <th class="center">{% trans "Ações" %}</th>
                 </tr>
               </thead>
               <tbody>
+              {% for lot in lots %}
                 <tr>
-                  <td><input type="checkbox" id="confirmapgt" name="confirmapgt" /></td>
-                  <td>234354</td>
-                  <td class="limit-field">Poker-Keeno Set in Tin</td>
-                  <td class="center">11 de Maio de 2017</td>
-                  <td class="center">21</td>
-                  <td class="center">Concluído</td>
+                  <td class="limit-field">{{ lot.name }}</td>
+                  <td class="center">{{ lot.products_quantity }}</td>
+                  {% timezone_name LANGUAGE_CODE as mytz %}
+                  {% timezone mytz %}
+                  <td class="center">{{ lot.sell_date|date:'SHORT_DATE_FORMAT' }}</td>
+                  {% endtimezone %}
+                  <td class="center">{{ lot.average_roi|localize }}%</td>
+                  <td class="center">{{ lot.rank }}%</td>
                   <td class="center">
-                      <a class="download" href="/lote/detalhe"><i class="fa fa-pencil"></i> Detalhe</a>
+                      <a class="download" href="{% url 'store_lot_details' lot.id %}"><i class="fa fa-pencil"></i> {% trans "Detalhe" %}</a>
                   </td>
                 </tr>
-
-                <tr>
-                  <td><input type="checkbox" id="confirmapgt" name="confirmapgt" /></td>
-                  <td>5446432</td>
-                  <td class="limit-field">5 Camisas Ck pretas</td>
-                  <td class="center">11 de Abril de 2017</td>
-                  <td class="center">5</td>
-                  <td class="center">Aguardando pagamento</td>
-                  <td class="center">
-                      <a class="download" href="/lote/detalhe"><i class="fa fa-pencil"></i> Detalhe</a>
-                  </td>
-                </tr>
+              {% endfor %}
               </tbody>
             </table>
-
+            </div>
           </div>
-
-
-          </div>
-          <nav aria-label="...">
-              <ul class="pagination">
-                <li class="disabled"><a href="javascript:void(0);" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-                <li class="active"><a href="javascript:void(0);">1 <span class="sr-only">(current)</span></a></li>
-                <li class=""><a href="javascript:void(0);">2</a></li>
-                <li class=""><a href="javascript:void(0);">3</a></li>
-                <li class=""><a href="javascript:void(0);">4</a></li>
-                <li><a href="javascript:void(0);" aria-label="Next"><span aria-hidden="true">»</span></a></li>
-              </ul>
-            </nav>
+          </form>
+              <nav aria-label="...">
+                {% if lots.has_other_pages %}
+                  <ul class="pagination">
+                    {% if lots.has_previous %}
+                      <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ lots.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                      <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+                    {% for i in lots.paginator.page_range %}
+                      {% if lots.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                      {% else %}
+                        <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ i }}">{{ i }}</a></li>
+                      {% endif %}
+                    {% endfor %}
+                    {% if lots.has_next %}
+                      <li><a href="javascript:void(0);" class="pagination-page" data-page="{{ lots.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                      <li class="disabled"><span>&raquo;</span></li>
+                    {% endif %}
+                  </ul>
+                {% endif %}
+              </nav>
         </div>
         <div class="col-md-1 sidebar">
         </div>

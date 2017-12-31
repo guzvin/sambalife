@@ -792,8 +792,29 @@
         });
     }
 
-    if($('form.form-filter')[0] && $('ul.pagination')[0])
+    if($('form.form-filter')[0])
     {
+        $('a.order-by').click(function(e)
+        {
+            if($(this).hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $(this).addClass('nosubmit');
+            var data = $(this).data();
+            var orderBy = $('input#order-by');
+            if(orderBy[0])
+            {
+                orderBy.val(data.order);
+            }
+            else
+            {
+                var hidden = $('<input type="hidden" name="order" value="' + data.order + '" id="order-by" />');
+                $('form.form-filter').append(hidden);
+            }
+            $('form.form-filter').submit();
+        });
         $('a.pagination-page').click(function(e)
         {
             if($(this).hasClass('nosubmit'))
@@ -827,6 +848,11 @@
             if(selectedPage[0])
             {
                 selectedPage.remove();
+            }
+            var orderBy = $('input#order-by');
+            if(orderBy[0])
+            {
+                orderBy.remove();
             }
             $('form.form-filter').submit();
         });
