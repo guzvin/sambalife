@@ -58,7 +58,7 @@
                     <label id="phone-error" class="error" for="{{ form.phone.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
-
+{% comment %}
                 <!-- Assinante -->
                 <div class="form-group terms-cond">
                    <label for="assinante-check" id="assinante-check">
@@ -67,7 +67,7 @@
                    </label>
                    <a href="javascript:void(0);" id="btn-explicacao" class="assinante-link">?</a>
                 </div>
-
+{% endcomment %}
               {% endfor %}
               <button type="submit" id="send-btn" class="btn btn-primary" onclick="$('.loading').show();"><i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}</button><br><br>
               <a href="/"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
