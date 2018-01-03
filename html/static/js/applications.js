@@ -1119,6 +1119,8 @@
         $('#confirmacao').modal('show');
     }
 
+    $('#assinatura-confirm').modal('show');
+
     if($('#terms_conditions')[0])
     {
         $('#terms_conditions').modal('show');
