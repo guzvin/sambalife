@@ -1328,6 +1328,10 @@ label.titulo-pct span{
     width: 100%;
 }
 
+#alerta-valor-minimo .alert.alert-warning{
+    font-size: 13px;
+}
+
 .filtros-box .form-group:last-child{
     border-bottom: 1px solid #dedede;
 }

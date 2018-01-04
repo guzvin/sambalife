@@ -377,6 +377,29 @@
     </div>
     {% endif %}
 
+
+   <!-- Modal Assinatura -->
+    <div id="assinatura-confirm" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-fw fa-frown-o"></i> {% trans "Você ainda não é assinante!" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Olá" %}, {{ user.first_name }}</p>
+                    <p>{% trans "Verificamos que você ainda não é assinante. Seja um assinante e tenha direito a diversas vantagens, tais como:" %}</p>
+                    <p>{% trans "- Compra de lotes<br>- Receba emails todas as vezes que um lote estiver disponível<br>- Acesso a nosso sistema de Prep & Ship<br />- Suporte técnico<br />- Entre outras diversas vantagens que irão facilitar muito sua vida como vendedor Amazon" %}</p>
+                    <p></p>
+                    <a href="#" class="btn btn-primary"><i class="fa fa-fw fa-check-circle"></i> {% trans "Quero ser assinante" %}</a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading basta dar display block-->
     <div class="loading" style="display: none;">{% trans "Carregando" %}...</div>
 
