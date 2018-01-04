@@ -173,7 +173,7 @@ class LotAdmin(admin.ModelAdmin):
     def assemble_email_new_lot(request, lot, user):
         email_title = _('Novo lote cadastrado no sistema \'%(lot)s\'') % {'lot': lot.name}
         html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'] +
-                              ['<br>{}'] * 4 +
+                              ['<br>{}'] * 5 +
                               ['</p>'] +
                               ['<p><a href="{}">{}</a> {}</p>'])
         texts = (_('Lote %(lot_name)s') % {'lot_name': lot.name},
@@ -181,12 +181,16 @@ class LotAdmin(admin.ModelAdmin):
                                                                               number_format(lot.lot_cost,
                                                                                             use_l10n=True,
                                                                                             decimal_pos=2))},
+                 _('Lucro: U$ %(lot_profit)s') % {'lot_profit': helper.force_text(helper.formats.
+                                                                                  number_format(lot.profit,
+                                                                                                use_l10n=True,
+                                                                                                decimal_pos=2))},
                  _('Número de itens: %(lot_items)s') % {'lot_items': lot.products_quantity},
                  _('ROI: %(lot_roi)s%%') % {'lot_roi': helper.force_text(helper.formats.
                                                                          number_format(lot.average_roi,
                                                                                        use_l10n=True,
                                                                                        decimal_pos=2))},
-                 _('Rank: %(lot_rank)s%%') % {'lot_rank': lot.rank})
+                 _('Rank: %(lot_rank)s%%') % {'lot_rank': lot.average_rank})
         texts += (''.join(['https://', request.CURRENT_DOMAIN, helper.reverse('store_lot_details', args=[lot.id])]),
                   _('Clique aqui'), _('para acessar este lote agora mesmo!'),)
         email_body = helper.format_html(html_format, *texts)

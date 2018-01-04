@@ -13,12 +13,16 @@
               <div class="col-md-4">
                   <p><strong>{% trans "Situação" %}: </strong> {% if lot.status %}<strong>{{ lot.get_status_display  }}</strong>{% endif %}</p>
                   <p><strong>{% trans "Data venda" %}: </strong> {% if lot.sell_date %}{{ lot.sell_date }}{% endif %}</p>
+{% comment %}
                   <p><strong>{% trans "Custo dos Produtos" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Custos dos Produtos&quot; multiplicados pela &quot;Quantidade&quot; de produtos de cada produto do lote.' %}"></span>: </strong> U$ {{ lot.products_cost|localize }}</p>
+{% endcomment %}
                   <p><strong>{% trans "Lucro" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Lucros Totais&quot; dos produtos do lote.' %}"></span>: </strong> U$ {{ lot.profit|localize }}</p>
               </div>
               <div class="col-md-4">
                   <p><strong>{% trans "ROI médio" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;ROI&quot; divididos pelo número de produtos do lote.' %}"></span>: </strong> {{ lot.average_roi|localize }}%</p>
+{% comment %}
                   <p><strong>{% trans "Redirecionamento" %} <span class="help help-tooltip help-icon" title="{% trans 'Este valor é somente informativo, ele será pago no processo de criação do envio por esta plataforma.' %}"></span>: </strong> U$ {{ lot.redirect_cost|localize }}</p>
+{% endcomment %}
                   <p><strong>{% trans "Total a pagar" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Valores de Compra&quot; multiplicados pela &quot;Quantidade&quot; de produtos de cada produto do lote.' %}"></span>: </strong> U$ {{ lot.lot_cost|localize }}</p>
               </div>
               <div class="col-md-4">
@@ -54,19 +58,22 @@
                   <div class="col-md-6">
                       <p><strong>{% trans "Tarifa FBA" %}:</strong><br> U$ {{ product.fba_fee|localize }}</p>
                   </div>
+{% comment %}
                   <div class="col-md-6">
                       <p><strong>{% trans "Tarifa Amazon" %}:</strong><br> U$ {{ product.amazon_fee|localize }}</p>
                   </div>
-                  <div class="col-md-6">
+{% endcomment %}
+                  <div class="col-md-12">
                       <p><strong>{% trans "Redirecionamento" %}:</strong><br> U$ {{ product.redirect_factor|localize }}</p>
                   </div>
                   <div class="col-md-12">
                       <p><strong>{% trans "Custo de Envio para Amazon" %}:</strong><br> U$ {{ product.shipping_cost|localize }}</p>
                   </div>
+{% comment %}
                   <div class="col-md-12">
                       <p><strong>{% trans "Custo do Produto" %} <span class="help help-tooltip help-icon" title="{% trans 'Valor informativo que é composto por: &quot;Valor de Compra&quot; mais &quot;Tarifa FBA&quot; mais &quot;Tarifa Amazon&quot; mais &quot;Redirecionamento&quot; mais &quot;Custo de Envio para Amazon&quot;.' %}"></span>:</strong><br> U$ {{ product.product_cost|localize }}</p>
                   </div>
-
+{% endcomment %}
                   <div class="col-md-12">
                       <p><strong>{% trans "Lucro Líquido por Unidade" %} <span class="help help-tooltip help-icon" title="{% trans 'Valor informativo que é composto por: &quot;Valor de Venda&quot; menos &quot;Custo do Produto&quot;.' %}"></span>:</strong><br> U$ {{ product.profit_per_unit|localize }}</p>
                   </div>

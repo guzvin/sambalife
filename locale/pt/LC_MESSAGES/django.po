@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-04 01:33-0200\n"
+"POT-Creation-Date: 2018-01-04 01:53-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,7 +68,7 @@ msgstr ""
 #: html/templates/base_shipment_details.html:100
 #: html/templates/merchant_shipment_add.html:55
 #: html/templates/product_details.html:21 html/templates/product_stock.html:25
-#: html/templates/shipment_add.html:55 html/templates/store_lot_details.html:40
+#: html/templates/shipment_add.html:55 html/templates/store_lot_details.html:44
 #: html/templates/store_purchase.html:19 html/templates/store_purchase.html:44
 #: html/templates/user_registration.html:75 myauth/admin.py:351
 #: myauth/models.py:23 partner/models.py:12 product/models.py:15
@@ -96,7 +96,7 @@ msgstr ""
 #: html/templates/base_shipment_list.html:95
 #: html/templates/merchant_shipment_add.html:58
 #: html/templates/product_details.html:53 html/templates/product_stock.html:114
-#: html/templates/shipment_add.html:58 html/templates/store_lot_details.html:49
+#: html/templates/shipment_add.html:58 html/templates/store_lot_details.html:53
 #: product/models.py:20 shipment/models.py:88 shipment/views.py:1201
 #: shipment/views.py:1245 store/models.py:104
 msgid "Quantidade"
@@ -132,8 +132,8 @@ msgstr ""
 #: html/templates/product_details.html:156
 #: html/templates/product_details.html:185
 #: html/templates/product_details.html:204
-#: html/templates/store_lot_details.html:93
-#: html/templates/store_lot_details.html:111
+#: html/templates/store_lot_details.html:100
+#: html/templates/store_lot_details.html:118
 msgid "Excluir"
 msgstr ""
 
@@ -329,7 +329,7 @@ msgstr ""
 #: html/templates/merchant_shipment_add.html:119
 #: html/templates/product_add_edit.html:213
 #: html/templates/product_details.html:168 html/templates/shipment_add.html:153
-#: html/templates/store_lot_details.html:96 html/templates/user_edit.html:73
+#: html/templates/store_lot_details.html:103 html/templates/user_edit.html:73
 #: html/templates/user_registration.html:464
 #: utils/templates/admin/utils/accounting/change_form.html:9
 msgid "Voltar"
@@ -346,7 +346,7 @@ msgstr ""
 #: html/templates/base_shipment_details.html:477
 #: html/templates/base_shipment_details.html:500
 #: html/templates/product_details.html:191
-#: html/templates/store_lot_details.html:117
+#: html/templates/store_lot_details.html:124
 msgid "Sim"
 msgstr ""
 
@@ -361,7 +361,7 @@ msgstr ""
 #: html/templates/product_details.html:192
 #: html/templates/product_details.html:216
 #: html/templates/product_stock.html:240
-#: html/templates/store_lot_details.html:118 html/templates/user_edit.html:94
+#: html/templates/store_lot_details.html:125 html/templates/user_edit.html:94
 #: html/templates/user_registration.html:531
 #: html/templates/user_registration.html:550
 #: html/templates/user_reset_password.html:147
@@ -1028,7 +1028,7 @@ msgid "Rastreamento"
 msgstr ""
 
 #: html/templates/product_details.html:153
-#: html/templates/store_lot_details.html:90
+#: html/templates/store_lot_details.html:97
 msgid "Editar"
 msgstr ""
 
@@ -1206,7 +1206,7 @@ msgid "Acima de 5%%"
 msgstr ""
 
 #: html/templates/store_list.html:71 html/templates/store_list.html:120
-#: html/templates/store_lot_details.html:77
+#: html/templates/store_lot_details.html:84
 #: html/templates/store_purchase.html:47 store/models.py:115
 msgid "ROI"
 msgstr ""
@@ -1234,7 +1234,7 @@ msgstr ""
 msgid "Somente Assinantes"
 msgstr ""
 
-#: html/templates/store_list.html:118 html/templates/store_lot_details.html:17
+#: html/templates/store_list.html:118 html/templates/store_lot_details.html:19
 #: store/models.py:48
 msgid "Lucro"
 msgstr ""
@@ -1251,113 +1251,80 @@ msgstr ""
 msgid "Data venda"
 msgstr ""
 
-#: html/templates/store_lot_details.html:16 store/models.py:47
-msgid "Custo dos Produtos"
-msgstr ""
-
-#: html/templates/store_lot_details.html:16
-msgid ""
-"Soma de todos os &quot;Custos dos Produtos&quot; multiplicados pela &quot;"
-"Quantidade&quot; de produtos de cada produto do lote."
-msgstr ""
-
-#: html/templates/store_lot_details.html:17
+#: html/templates/store_lot_details.html:19
 msgid "Soma de todos os &quot;Lucros Totais&quot; dos produtos do lote."
 msgstr ""
 
-#: html/templates/store_lot_details.html:20
+#: html/templates/store_lot_details.html:22
 msgid "ROI médio"
 msgstr ""
 
-#: html/templates/store_lot_details.html:20
+#: html/templates/store_lot_details.html:22
 msgid ""
 "Soma de todos os &quot;ROI&quot; divididos pelo número de produtos do lote."
 msgstr ""
 
-#: html/templates/store_lot_details.html:21
-#: html/templates/store_lot_details.html:61 store/models.py:50
-#: store/models.py:110 utils/admin.py:21
-msgid "Redirecionamento"
-msgstr ""
-
-#: html/templates/store_lot_details.html:21
-msgid ""
-"Este valor é somente informativo, ele será pago no processo de criação do "
-"envio por esta plataforma."
-msgstr ""
-
-#: html/templates/store_lot_details.html:22
+#: html/templates/store_lot_details.html:26
 msgid "Total a pagar"
 msgstr ""
 
-#: html/templates/store_lot_details.html:22
+#: html/templates/store_lot_details.html:26
 msgid ""
 "Soma de todos os &quot;Valores de Compra&quot; multiplicados pela &quot;"
 "Quantidade&quot; de produtos de cada produto do lote."
 msgstr ""
 
-#: html/templates/store_lot_details.html:34
+#: html/templates/store_lot_details.html:38
 msgid "Produto(s)"
 msgstr ""
 
-#: html/templates/store_lot_details.html:43
+#: html/templates/store_lot_details.html:47
 msgid "UPC / CODIGO IDENTIFICADOR"
 msgstr ""
 
-#: html/templates/store_lot_details.html:46 store/models.py:102
+#: html/templates/store_lot_details.html:50 store/models.py:102
 msgid "Valor de Compra"
 msgstr ""
 
-#: html/templates/store_lot_details.html:52 store/models.py:103
+#: html/templates/store_lot_details.html:56 store/models.py:103
 msgid "Valor de Venda"
 msgstr ""
 
-#: html/templates/store_lot_details.html:55 store/models.py:105
+#: html/templates/store_lot_details.html:59 store/models.py:105
 msgid "Tarifa FBA"
 msgstr ""
 
-#: html/templates/store_lot_details.html:58 store/models.py:106
-#: utils/models.py:16
-msgid "Tarifa Amazon"
+#: html/templates/store_lot_details.html:67 store/models.py:50
+#: store/models.py:110 utils/admin.py:21
+msgid "Redirecionamento"
 msgstr ""
 
-#: html/templates/store_lot_details.html:64 store/models.py:108
+#: html/templates/store_lot_details.html:70 store/models.py:108
 #: utils/models.py:17
 msgid "Custo de Envio para Amazon"
 msgstr ""
 
-#: html/templates/store_lot_details.html:67 store/models.py:112
-msgid "Custo do Produto"
-msgstr ""
-
-#: html/templates/store_lot_details.html:67
-msgid ""
-"Valor informativo que é composto por: &quot;Valor de Compra&quot; mais &quot;"
-"Tarifa FBA&quot; mais &quot;Tarifa Amazon&quot; mais &quot;"
-"Redirecionamento&quot; mais &quot;Custo de Envio para Amazon&quot;."
-msgstr ""
-
-#: html/templates/store_lot_details.html:71
+#: html/templates/store_lot_details.html:78
 msgid "Lucro Líquido por Unidade"
 msgstr ""
 
-#: html/templates/store_lot_details.html:71
+#: html/templates/store_lot_details.html:78
 msgid ""
 "Valor informativo que é composto por: &quot;Valor de Venda&quot; menos &quot;"
 "Custo do Produto&quot;."
 msgstr ""
 
-#: html/templates/store_lot_details.html:74 store/models.py:114
+#: html/templates/store_lot_details.html:81 store/models.py:114
 msgid "Lucro Total"
 msgstr ""
 
-#: html/templates/store_lot_details.html:74
+#: html/templates/store_lot_details.html:81
 msgid ""
 "Valor informativo que é composto por: &quot;Lucro líquido por Unidade&quot; "
 "vezes &quot;Quantidade&quot;."
 msgstr ""
 
-#: html/templates/store_lot_details.html:114
+#: html/templates/store_lot_details.html:121
 msgid "Confirma a exclusão do lote?"
 msgstr ""
 
@@ -1525,7 +1492,7 @@ msgstr ""
 #: html/templates/user_validation.html:75 product/views.py:432
 #: sambalife/views.py:271 shipment/views.py:1210 shipment/views.py:1254
 #: shipment/views.py:1277 shipment/views.py:1321 shipment/views.py:1339
-#: shipment/views.py:1354 store/admin.py:191 utils/cron.py:180
+#: shipment/views.py:1354 store/admin.py:195 utils/cron.py:180
 #: utils/cron.py:192
 msgid "Clique aqui"
 msgstr ""
@@ -2108,7 +2075,7 @@ msgid "Mensagem"
 msgstr ""
 
 #: service/admin.py:17 service/admin.py:19 service/models.py:38
-#: service/models.py:42 store/admin.py:203 store/admin.py:205
+#: service/models.py:42 store/admin.py:207 store/admin.py:209
 #: store/models.py:137 store/models.py:141
 msgid "Configuração"
 msgstr ""
@@ -2501,20 +2468,25 @@ msgstr ""
 
 #: store/admin.py:184
 #, python-format
-msgid "Número de itens: %(lot_items)s"
+msgid "Lucro: U$ %(lot_profit)s"
 msgstr ""
 
-#: store/admin.py:185
+#: store/admin.py:188
 #, python-format
-msgid "ROI: %(lot_roi)s%%"
+msgid "Número de itens: %(lot_items)s"
 msgstr ""
 
 #: store/admin.py:189
 #, python-format
+msgid "ROI: %(lot_roi)s%%"
+msgstr ""
+
+#: store/admin.py:193
+#, python-format
 msgid "Rank: %(lot_rank)s%%"
 msgstr ""
 
-#: store/admin.py:191
+#: store/admin.py:195
 msgid "para acessar este lote agora mesmo!"
 msgstr ""
 
@@ -2536,6 +2508,10 @@ msgstr ""
 
 #: store/models.py:46
 msgid "Quantidade de Produtos"
+msgstr ""
+
+#: store/models.py:47
+msgid "Custo dos Produtos"
 msgstr ""
 
 #: store/models.py:49
@@ -2564,6 +2540,14 @@ msgstr ""
 
 #: store/models.py:101
 msgid "URL do Produto"
+msgstr ""
+
+#: store/models.py:106 utils/models.py:16
+msgid "Tarifa Amazon"
+msgstr ""
+
+#: store/models.py:112
+msgid "Custo do Produto"
 msgstr ""
 
 #: store/models.py:113
