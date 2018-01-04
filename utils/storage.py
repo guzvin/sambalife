@@ -11,5 +11,6 @@ class OverWriteStorage(FileSystemStorage):
     def get_available_name(self, name, max_length=None):
         logger.debug('@@@@@@@@@@ STORAGE @@@@@@@@@@@@@')
         dir_name, file_name = os.path.split(name)
-        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, dir_name))
+        if os.path.exists(dir_name):
+            shutil.rmtree(os.path.join(settings.MEDIA_ROOT, dir_name))
         return name

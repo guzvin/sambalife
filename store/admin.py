@@ -67,8 +67,8 @@ class LotForm(forms.ModelForm):
 class LotProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'quantity', 'fba_fee', 'amazon_fee',
-                  'shipping_cost')
+        fields = ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'rank', 'quantity', 'fba_fee', 'amazon_fee',
+                  'shipping_cost', 'redirect_factor', 'voi_value')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor
@@ -81,9 +81,6 @@ class LotProductForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         instance = super(LotProductForm, self).save(commit=False)
-        params = Params.objects.first()
-        if params:
-            instance.redirect_factor = params.redirect_factor
         instance.product_cost = instance.buy_price + instance.amazon_fee + instance.fba_fee + instance.shipping_cost + \
             instance.redirect_factor
         instance.profit_per_unit = instance.sell_price - instance.product_cost
@@ -122,7 +119,7 @@ class LotAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'name',)
     list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost')
     fieldsets = (
-        (None, {'fields': ('name', 'description', 'thumbnail', 'groups', 'rank')}),
+        (None, {'fields': ('name', 'description', 'thumbnail', 'groups')}),
     )
 
     def save_related(self, request, form, formsets, change):
@@ -130,6 +127,7 @@ class LotAdmin(admin.ModelAdmin):
         products_cost = 0
         profit = 0
         average_roi = 0
+        average_rank = 0
         lot_cost = 0
         redirect_cost = 0
         related_changed = False
@@ -145,12 +143,14 @@ class LotAdmin(admin.ModelAdmin):
                 products_cost += product.product_cost * product.quantity
                 profit += product.total_profit
                 average_roi += (product.roi / 100)
+                average_rank += (product.rank / 100)
                 lot_cost += (product.buy_price * product.quantity)
                 redirect_cost += (product.redirect_factor * product.quantity)
             lot.products_quantity = products_quantity
             lot.products_cost = products_cost
             lot.profit = profit
             lot.average_roi = (average_roi / len(products)) * 100
+            lot.average_rank = (average_rank / len(products)) * 100
             lot.lot_cost = lot_cost
             lot.redirect_cost = redirect_cost
             lot.save()

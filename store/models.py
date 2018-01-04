@@ -49,7 +49,7 @@ class Lot(models.Model):
     average_roi = models.DecimalField(_('ROI Médio'), max_digits=12, decimal_places=2, default=0)
     redirect_cost = models.DecimalField(_('Redirecionamento'), max_digits=12, decimal_places=2, default=0)
     lot_cost = models.DecimalField(_('Valor do Lote'), max_digits=12, decimal_places=2, default=0)
-    rank = models.IntegerField(_('Rank'), default=0)
+    average_rank = models.DecimalField(_('Rank Médio'), max_digits=12, decimal_places=2, default=0)
     thumbnail = models.ImageField(_('Imagem'), upload_to=lot_directory_path, storage=OverWriteStorage(),
                                   validators=[validate_file_extension], null=True, blank=True)
 
@@ -97,14 +97,14 @@ def save_file(sender, instance, created, **kwargs):
 class Product(models.Model):
     id = BigAutoField(primary_key=True)
     name = models.CharField(_('Nome'), max_length=150)
-    identifier = models.CharField(_('UPC / Código Identificador'), max_length=50)
+    identifier = models.CharField(_('ASIN / UPC'), max_length=50)
     url = models.URLField(_('URL do Produto'), max_length=500, null=True, blank=True)
     buy_price = models.DecimalField(_('Valor de Compra'), max_digits=12, decimal_places=2)
     sell_price = models.DecimalField(_('Valor de Venda'), max_digits=12, decimal_places=2)
     quantity = models.PositiveIntegerField(_('Quantidade'))
     fba_fee = models.DecimalField(_('Tarifa FBA'), max_digits=12, decimal_places=2)
     amazon_fee = models.DecimalField(_('Tarifa Amazon'), max_digits=12, decimal_places=2,
-                                     default=settings.DEFAULT_AMAZON_FEE)
+                                     default=0)
     shipping_cost = models.DecimalField(_('Custo de Envio para Amazon'), max_digits=12, decimal_places=2,
                                         default=settings.DEFAULT_AMAZON_SHIPPING_COST)
     redirect_factor = models.DecimalField(_('Redirecionamento'), max_digits=12, decimal_places=2,
@@ -113,6 +113,8 @@ class Product(models.Model):
     profit_per_unit = models.DecimalField(_('Lucro por Unidade'), max_digits=12, decimal_places=2, default=0)
     total_profit = models.DecimalField(_('Lucro Total'), max_digits=12, decimal_places=2, default=0)
     roi = models.DecimalField(_('ROI'), max_digits=12, decimal_places=2, default=0)
+    rank = models.IntegerField(_('Rank'), default=0)
+    voi_value = models.DecimalField(_('Valor item VOI S'), max_digits=12, decimal_places=2, default=0)
     lot = models.ForeignKey(Lot, on_delete=models.CASCADE)
 
     class Meta:

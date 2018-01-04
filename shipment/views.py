@@ -915,7 +915,7 @@ def shipment_add(request):
                     product_formset.save()
                     warehouses = warehouse_formset.save()
                     logger.debug('@@@@@@@@@@@@ SEND PDF 1 EMAIL @@@@@@@@@@@@@@')
-                    send_email_shipment_add(request, shipment, products, warehouses)
+                    send_email_shipment_add(request, shipment, products, warehouses, billing_type)
             return HttpResponseRedirect('%s?s=1' % reverse('shipment_add'))
         else:
             logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
@@ -1007,7 +1007,7 @@ def merchant_shipment_add(request):
                     product_formset.instance = shipment
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
                     product_formset.save()
-                    send_email_merchant_shipment_add(request, shipment, products)
+                    send_email_merchant_shipment_add(request, shipment, products, billing_type)
             return HttpResponseRedirect('%s?s=1' % reverse('merchant_shipment_add'))
         else:
             logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
@@ -1165,14 +1165,15 @@ def shipment_paypal_notification_success(request, _shipment_details, ipn_obj, pa
     send_email_shipment_paid(request, _shipment_details, async=True)
 
 
-def send_email_shipment_add(request, shipment, products, warehouses):
+def send_email_shipment_add(request, shipment, products, warehouses, billing_type):
     email_title = _('Cadastro de Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 2 +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong>'
                            '<br> {} {}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] +
-                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> U$ {}</p>'] +
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
+                            '<strong>{}:</strong> U$ {}</p>'] if billing_type != 2 else []) +
                           ['<br>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
                            '<strong>{}:</strong> {}</p>'] * len(warehouses) +
@@ -1190,8 +1191,9 @@ def send_email_shipment_add(request, shipment, products, warehouses):
              _('Previsão de cadastro do(s) pacote(s)'),
              formats.date_format(etc(shipment.created_date, estimate='preparation'), "SHORT_DATE_FORMAT"),
              _('inclusive'),
-             _('Quantidade de produtos'), shipment.total_products,
-             _('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
+             _('Quantidade de produtos'), shipment.total_products,)
+    if billing_type != 2:
+        texts += (_('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
 
     for warehouse in warehouses:
         texts += (_('Warehouse'), warehouse.name)
@@ -1212,14 +1214,15 @@ def send_email_shipment_add(request, shipment, products, warehouses):
                                                 email_body, async=True)
 
 
-def send_email_merchant_shipment_add(request, shipment, products):
+def send_email_merchant_shipment_add(request, shipment, products, billing_type):
     email_title = _('Cadastro de Envio Merchant %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 2 +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong>'
                            '<br> {} {}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] +
-                          ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> U$ {}</p>'] +
+                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
+                            '<strong>{}:</strong> U$ {}</p>'] if billing_type != 2 else []) +
                           ['<br>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
                            '<strong>{}:</strong> {}</p>'
@@ -1234,8 +1237,9 @@ def send_email_merchant_shipment_add(request, shipment, products):
              _('Previsão de cadastro do(s) pacote(s)'),
              formats.date_format(etc(shipment.created_date, estimate='preparation'), "SHORT_DATE_FORMAT"),
              _('inclusive'),
-             _('Quantidade de produtos'), shipment.total_products,
-             _('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
+             _('Quantidade de produtos'), shipment.total_products,)
+    if billing_type != 2:
+        texts += (_('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
 
     for product in products:
         texts += (_('Produto'), product.product.name, _('Quantidade'), product.quantity)

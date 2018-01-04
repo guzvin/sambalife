@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load i18n permissions products shipments services %}
+{% load i18n permissions products shipments services lots %}
 <html lang="{{ LANGUAGE_CODE }}">
 
 <head>
@@ -85,10 +85,12 @@
                                 <a href="{%url 'admin:service_service_changelist' %}"><i class="fa fa-fw fa-cogs"></i> {% trans "Serviços" %}</a>
                             </li>
                             {% endif %}
+                            {% if user|has_store_perm:'add_lot' %}
                             <li class="divider"></li>
                             <li class="{% block lotes %}{% endblock %}">
                                 <a href="{%url 'admin:store_lot_changelist' %}"><i class="fa fa-fw fa-th"></i> {% trans "Lotes" %}</a>
                             </li>
+                            {% endif %}
                             {% if request.user.is_superuser %}
                             <li class="divider"></li>
                             <li>

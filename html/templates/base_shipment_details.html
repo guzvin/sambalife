@@ -10,13 +10,23 @@
 <!-- Passo 1 -->
 
  <div class="container-fluid">
+      <form method="delete">
+          <input type="hidden" name="delete_product_shipment_id" id="delete_product_shipment_id" value="">
+          <input type="hidden" name="delete_product_product_id" id="delete_product_product_id" value="">
+      </form>
       <div class="row">
         <div class="col-md-1 sidebar">
 
         </div>
         <div class="col-md-10 main">
           <h1 class="page-header"><i class="fa fa-archive"></i> {% block details_title %}{% endblock %} {{ shipment.id }}{% if shipment.is_canceled %} ({% trans "Cancelado" %}){% elif shipment.is_archived %} ({% trans "Arquivado" %}){% endif %}</h1>
-          <div class="table-responsive">
+          {% if shipment.status != 1 %}
+          <form action="" method="post" id="form-upload-file" enctype="multipart/form-data">
+          {% endif %}
+          {% if shipment.status == 1 %}
+          <form action="{% url 'shipment_details' shipment.id %}" method="post" id="form-add-package" enctype="multipart/form-data">
+          {% endif %}
+            <div class="table-responsive">
             <table class="table table-striped">
               <thead>
                 <tr>
@@ -61,6 +71,7 @@
                   <td>
                   {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
                       <a class="btn btn-primary add-service-product-shipment" title="{% trans 'Atribuir serviços' %}" href="javascript:void(0);" data-shipment-product-id="{{product.id}}" data-shipment-product-uid="{{product.uid}}"><i class="fa fa-fw fa-cogs"></i></a>
+                      <input type="hidden" name="services{{product.id}}" id="services{{product.id}}" class="required-validate" value="{% if product|has_product_service %}1{% endif %}" />
                   {% elif shipment.status > 1 %}
                       <a class="btn btn-primary add-service-product-shipment" title="{% trans 'Visualizar serviços' %}" href="javascript:void(0);" data-shipment-product-id="{{product.id}}" data-shipment-product-uid="{{product.uid}}"><i class="fa fa-fw fa-cogs"></i></a>
                   {% endif %}
@@ -69,11 +80,7 @@
                   {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False %}
                   {% trans "Excluir" as delete %}
                   <td>
-                      <form method="delete">
-                          <input type="hidden" name="delete_product_shipment_id" value="{{ shipment.id }}">
-                          <input type="hidden" name="delete_product_product_id" value="{{ product.id }}">
-                          <a class="btn btn-danger delete-product-shipment" title="{{ delete }} {{ product.product.name }}" href="#"><i class="fa fa-fw fa-close"></i></a>
-                      </form>
+                      <a class="btn btn-danger delete-product-shipment" title="{{ delete }} {{ product.product.name }}" href="#" data-delete-product-shipment-id="{{ shipment.id }}" data-delete-product-product-id="{{ product.id }}"><i class="fa fa-fw fa-close"></i></a>
                   </td>
                   {% endif %}
                 </tr>
@@ -101,12 +108,7 @@
           {% block warehouses %}{% endblock %}
           <hr />
 {% comment %}<!-- FORM GERAL ABRIR -->{% endcomment %}
-          {% if shipment.status != 1 %}
-          <form action="" method="post" id="form-upload-file" enctype="multipart/form-data">
-          {% endif %}
-          {% if shipment.status == 1 %}
-          <form action="{% url 'shipment_details' shipment.id %}" method="post" id="form-add-package" enctype="multipart/form-data">
-          {% endif %}
+
           <div class="row">
             <div class="{% block info_values %}{% endblock %}">
                 <label><i class="fa fa-fw fa-bar-chart"></i> {% trans "Valores" %}:</label><br><br>

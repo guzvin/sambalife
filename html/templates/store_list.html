@@ -114,9 +114,10 @@
                      <div class="descricao-lote-prod">
                         <h6>{{ lot.name }}</h6>
                         <p class="valor-prod">U$ {{ lot.lot_cost|localize }} </p>
-                         <span>{% trans "Somente Assinantes" %}</span><br>
+                        <span>{% trans "Somente Assinantes" %}</span><br>
+                        <p class="lucro-prod">{% trans "Lucro" %}: U$ {{ lot.profit|localize }}</p>
                         <p class="lucro-prod">{% trans "Número de Itens" %}: {{ lot.products_quantity }}</p>
-                        <p class="lucro-prod">{% trans "ROI" %}: {{ lot.average_roi|localize }}% | Rank: {{ lot.rank }}%</p>
+                        <p class="lucro-prod">{% trans "ROI" %}: {{ lot.average_roi|localize }}% | Rank: {{ lot.average_rank|localize }}%</p>
                      </div>
                  </a>
               </div>

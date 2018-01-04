@@ -19,9 +19,11 @@ logger = logging.getLogger('django')
 def service_product(request, pid=None):
     cost = 0
     services_product_json = []
+    product_services = 0
     if request.method == 'GET':
         puid = request.GET.get('puid')
         services_product = Product.objects.filter(product_id=pid, product__uid=puid).order_by('service__name')
+        product_services = len(services_product)
         for _service_product in services_product:
             services_product_json.append({'service_id': _service_product.service_id,
                                           'service_price': str(_service_product.price)})
@@ -29,6 +31,7 @@ def service_product(request, pid=None):
         return HttpResponseForbidden()
     else:
         selected_services = request.POST.getlist('service')
+        product_services = len(selected_services)
         shipment_product_uid = request.POST.get('shipment_product_uid')
         logger.debug(selected_services)
         ShipmentProduct.objects.get(id=pid, uid=uuid.UUID(shipment_product_uid))
@@ -49,5 +52,5 @@ def service_product(request, pid=None):
         logger.debug(cost)
     return HttpResponse(json.dumps({'new_cost': force_text(formats.number_format(round(cost, 2), use_l10n=True,
                                                                                  decimal_pos=2)),
-                                    'products': services_product_json}),
+                                    'products': services_product_json, 'v': product_services}),
                         content_type='application/json')

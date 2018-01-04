@@ -1,5 +1,6 @@
 from django import template
 from shipment.models import Package, Estimates, Shipment
+from service.models import Product
 from django.db.models import Q
 from django.utils import translation
 from myauth.templatetags.users import has_user_perm
@@ -85,3 +86,8 @@ def open_mf_shipments(user):
     if has_user_perm(user, 'view_users') is False:
         query_filter &= Q(user=user)
     return Shipment.objects.filter(query_filter).count()
+
+
+@register.filter
+def has_product_service(product):
+    return Product.objects.filter(product=product).exists()

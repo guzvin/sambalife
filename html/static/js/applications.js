@@ -873,6 +873,7 @@
 
         $('form#form-add-package').validate(
         {
+            ignore: [],
             submitHandler: function(form)
             {
                 $('.loading').show();
@@ -915,7 +916,9 @@
         {
             e.preventDefault();
             var tr = $(this).closest('tr');
-            var form = $(this).closest('form');
+            $('#delete_product_shipment_id').val($(this).data('delete-product-shipment-id'));
+            $('#delete_product_product_id').val($(this).data('delete-product-product-id'));
+            var form = $('#delete_product_product_id').closest('form');
             $.ajax(
             {
                 method: 'DELETE',
@@ -959,6 +962,11 @@
                 {
                     totalCost.innerHTML = obj.cost;
                 }
+            })
+            .always(function()
+            {
+                $('#delete_product_shipment_id').val('');
+                $('#delete_product_product_id').val('');
             });
         });
     });
@@ -1320,6 +1328,14 @@
             if(totalCost)
             {
                 totalCost.innerHTML = obj.new_cost;
+            }
+            var productServiceValidation = $('#services' + form.find('input[name="service_product_id"]').val());
+            if(productServiceValidation[0])
+            {
+                if(obj.v > 0)
+                    productServiceValidation.val('1');
+                else
+                    productServiceValidation.val('');
             }
         })
         .always(function()
