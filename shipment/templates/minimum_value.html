@@ -1,0 +1,10 @@
+{% load i18n %}
+{% if minimum_value %}
+<!-- Aviso de valor minimo -->
+<div class="bs-example" id="alerta-valor-minimo">
+    <div class="alert alert-warning">
+        <strong>{% trans "Importante" %}!</strong> {% trans "Valor mínimo por envio é de" %} U$ {{ minimum_value }}.
+    </div>
+</div>
+<!-- Fim aviso -->
+{% endif %}

@@ -1093,10 +1093,9 @@ def calculate_shipment(products, user_id, save_product_price=False):
             cost += product.quantity * (helper.resolve_price_value(product, billing_type) +
                                         helper.resolve_partner_value(partner))
             quantity += product.quantity
-    if billing_type == 2:
-        config = Config.objects.first()
-        if config and cost < config.minimum_price:
-            cost = config.minimum_price
+    config = Config.objects.first()
+    if config and cost < config.minimum_price:
+        cost = config.minimum_price
     return HttpResponse(json.dumps({'cost': force_text(formats.number_format(round(cost, 2), use_l10n=True,
                                                                              decimal_pos=2)),
                                     'items': quantity}),

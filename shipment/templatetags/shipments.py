@@ -1,11 +1,12 @@
 from django import template
 from shipment.models import Package, Estimates, Shipment
-from service.models import Product
+from service.models import Product, Config
 from django.db.models import Q
-from django.utils import translation
+from django.utils import translation, formats
 from myauth.templatetags.users import has_user_perm
 from datetime import timedelta
 from utils.templatetags.commons import timezone_name
+from django.utils.encoding import force_text
 import pytz
 import logging
 
@@ -91,3 +92,12 @@ def open_mf_shipments(user):
 @register.filter
 def has_product_service(product):
     return Product.objects.filter(product=product).exists()
+
+
+@register.inclusion_tag('minimum_value.html')
+def minimum_value_alert():
+    config = Config.objects.first()
+    if config and config.minimum_price:
+        return {'minimum_value': force_text(formats.number_format(round(config.minimum_price, 2), use_l10n=True,
+                                                                  decimal_pos=2))}
+    return {}

@@ -123,6 +123,8 @@
                     <span class="help help-tooltip help-icon" title="{% blocktrans %}Este valor poderá ser alterado após inclusão dos serviços necessários para o preparo.{% endblocktrans %}"></span>
                     {% endif %}
                 </p>
+
+                {% minimum_value_alert %}
             </div>
             {% timezone_name LANGUAGE_CODE as mytz %}
             <div class="{% block info_created_date %}{% endblock %}">

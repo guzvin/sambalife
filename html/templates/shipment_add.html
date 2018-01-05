@@ -100,13 +100,7 @@
                 <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">-</span></p>
                 {% endif %}
 
-                <!-- Aviso de valor minimo -->
-                <div class="bs-example" id="alerta-valor-minimo">
-                    <div class="alert alert-warning">
-                        <strong>Alerta!</strong> Valor mínimo por envio é de U$50,00.
-                    </div>
-                </div>
-                <!-- Fim aviso -->
+                {% minimum_value_alert %}
 
             </div>
             <div class="col-md-6">
