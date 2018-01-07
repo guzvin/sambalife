@@ -104,12 +104,7 @@
                     </li>
                     {% endif %}
 
-                    <li>
-                        <a href="{% if LANGUAGE_CODE == 'pt' %}{% trans '/pt/ajuda/' %}#contact{% else %}mailto:support@prepshiptool.freshdesk.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
-                    </li>
-                    <li class="{% block comoFunciona %}{% endblock %}">
-                        <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
-                    </li>
+
                     {% if user.is_authenticated %}
                     <li class="{% block lotes-u %}{% endblock %}">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %} <b class="caret"></b></a>
@@ -124,6 +119,12 @@
                         </ul>
                     </li>
                     {% endif %}
+                    <li class="{% block comoFunciona %}{% endblock %}">
+                        <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
+                    </li>
+                    <li>
+                        <a href="{% if LANGUAGE_CODE == 'pt' %}{% trans '/pt/ajuda/' %}#contact{% else %}mailto:support@prepshiptool.freshdesk.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
+                    </li>
 {% comment %}
                     <li class="tutorial">
                         <a href="{% trans '/pt/ajuda/' %}" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
@@ -132,7 +133,7 @@
                     <li class="tutorial adress">
                         <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fa fa-map-marker"></i> {% trans "Ver Endereço VOI" %}</a>
                     </li>
-{% endcomment %}
+
                     {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Estoque" %} <b class="caret"></b></a>
@@ -153,6 +154,9 @@
                         </ul>
                     </li>
                     {% endif %}
+
+
+
                     {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
                     <li class="dropdown ">
                         {% open_fba_shipments request.user as ofs %}
@@ -207,21 +211,7 @@
                         </ul>
                     </li>
                     {% endif %}
-{% comment %}
-                    <!-- Menu envio Brasil-->
 
-                    <li class="dropdown ">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-globe"></i> {% trans "Envios Brasil" %} <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li class="{% block enviobrasil %}{% endblock %}">
-                                <a href="/envios-brasil"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista de Envios" %}</a>
-                            </li>
-                            <li class="divider"></li>
-                            <li class="{% block criarenviobrasil %}{% endblock %}">
-                                <a href="/envio-brasil/cadastro"><i class="fa fa-fw fa-plus-square"></i> {% trans "Criar Envio" %}</a>
-                            </li>
-                        </ul>
-                    </li>
 {% endcomment %}
                     {% if user.is_authenticated %}
                     <li class="dropdown">
@@ -233,6 +223,22 @@
                             </li>
                             <li class="divider"></li>
                             {% endif %}
+                             {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
+                                <li class="{% block listaprodutos %}{% endblock %}">
+                                    <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Estoque" %}</a>
+                                </li>
+                                <li class="divider"></li>
+                            {% endif %}
+                            {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
+                                <li class="{% block listashipment %}{% endblock %}">
+                                    <a href="{% url 'shipment' %}"><i class="fa fa-amazon"></i> {% trans "Envios Amazon" %}</a>
+                                </li>
+                                <li class="divider"></li>
+                            {% endif %}
+                            <li>
+                                <a href="{% url 'store_purchase' %}"><i class="fa fa-fw fa-shopping-basket"></i> {% trans "Minhas compras" %}</a>
+                            </li>
+                            <li class="divider"></li>
                             <li class="">
                                 <a href="{% url 'logout' %}"><i class="fa fa-fw fa-power-off"></i> {% trans "sair" %}</a>
                             </li>
