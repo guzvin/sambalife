@@ -241,8 +241,10 @@ def shipment_details(request, pid=None):
                 if has_shipment_perm(request.user, 'add_package'):
                     _shipment_details.information = request.POST.get('shipment_extra_info')
 
-                    package_formset = shipment_add_status_one_data(request, PackageFormSet,
-                                                                   _shipment_details.information, pid)
+                    package_formset, http_response = shipment_add_status_one_data(request, PackageFormSet,
+                                                                                  _shipment_details.information, pid)
+                    if http_response:
+                        return http_response
                     context_data['packages'] = package_formset
                 else:
                     return HttpResponseForbidden()
@@ -653,14 +655,14 @@ def shipment_add_status_one_data(request, PackageFormSet, shipment_extra_info, p
                     shipment.save(update_fields=['status'])
                 packages = package_formset.save()
                 send_email_shipment_add_package(request, shipment, packages)
-                return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
+                return None, HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
             else:
                 logger.error(package_formset.errors)
-        return package_formset
+        return package_formset, None
     except (Product.DoesNotExist, Shipment.DoesNotExist) as err:
         logger.error(err)
         logger.exception(err)
-        return HttpResponseBadRequest()
+        return None, HttpResponseBadRequest()
 
 
 @login_required

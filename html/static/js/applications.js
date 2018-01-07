@@ -873,7 +873,7 @@
 
         $('form#form-add-package').validate(
         {
-            ignore: [],
+            ignore: '#id_package_set-__prefix__-warehouse, #id_package_set-__prefix__-height, #id_package_set-__prefix__-length, #id_package_set-__prefix__-width, #id_package_set-__prefix__-weight',
             submitHandler: function(form)
             {
                 $('.loading').show();
