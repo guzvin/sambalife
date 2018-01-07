@@ -179,7 +179,7 @@
                     {% block package_warehouse_2 %}{% endblock %}
                     <div class="{% block package_info_class %}{% endblock %}">
                         <label><i class="fa fa-fw fa-info-circle"></i> {% trans "Informações do pacote" %}:</label><br><br>
-                        <p><strong>{{ weight }}:</strong> {{ package.weight.value|unlocalize }} {% unit_weight_display 1 abbreviate=True %} / <strong>{% trans "Dimensões" %} - </strong> {{ length }}: {{ package.length.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ width }}: {{ package.width.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ height }}: {{ package.height.value|unlocalize }}{% unit_length_display 3 abbreviate=True %}</p>
+                        <p><strong>{{ weight }}:</strong> {{ package.weight.value|unlocalize }} {% unit_weight_display 1 abbreviate=True %} <br /> <strong>{% trans "Dimensões" %} - </strong> {{ length }}: {{ package.length.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ width }}: {{ package.width.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ height }}: {{ package.height.value|unlocalize }}{% unit_length_display 3 abbreviate=True %}</p>
                         {% if user|has_shipment_perm:'add_package' %}
                         <!-- info localizacao visao usuario -->
                         <p>

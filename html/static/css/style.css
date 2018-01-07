@@ -1828,6 +1828,14 @@ footer.fixed-footer{
     float: left;
 }
 
+.form-group.pacote-infos .col-md-2, .form-group.pacote-infos .col-md-4{
+    padding-right: 0;
+}
+
+.col-md-4 .upload-pdf-edit .form-control.input-70{
+    width: 84%;
+}
+
 @media (max-width: 767px){
 
     .sistema .navbar-brand img:first-child{
