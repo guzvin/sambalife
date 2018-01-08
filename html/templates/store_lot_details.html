@@ -36,6 +36,11 @@
           </div>
           <div class="row">
               <br><h3><i class="fa fa-list-ol"></i> {% trans "Produto(s)" %}</h3><br><br>
+              <div class="bs-example" id="alerta-valor-minimo">
+                 <div class="alert alert-warning">
+                    <strong>Importante!</strong> Os dados apurados abaixo, tais como: <strong>Rank, Valor de Venda, Tarifa FBA, Lucros, etc...</strong> foram apurados dia <strong>12/12/2017</strong>. É imprescindível que o usuário, antes de finalizar a compra, verifique novamente as informações junto a Amazon. Os dados informados abaixo podem sofrer alteração entre a data de apuração e a data de hoje. Caso tenha dúvidas, leia nossos termos <a href="/pt/termos-e-condicoes-de-uso/"><strong>Clicando aqui</strong></a>.
+                 </div>
+              </div>
           </div>
           <div class="row lista itens">
               {% for product in lot.product_set.all %}

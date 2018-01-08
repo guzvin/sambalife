@@ -103,9 +103,6 @@
                         </ul>
                     </li>
                     {% endif %}
-                    <li>
-                        <a href="{% if LANGUAGE_CODE == 'pt' %}{% trans '/pt/ajuda/' %}#contact{% else %}mailto:support@prepshiptool.freshdesk.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
-                    </li>
                     <li class="{% block comoFunciona %}{% endblock %}">
                         <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
                     </li>
@@ -122,6 +119,8 @@
                     <li class="tutorial adress">
                         <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fa fa-map-marker"></i> {% trans "Ver Endereço VOI" %}</a>
                     </li>
+
+
 
                     {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
                     <li class="dropdown">
@@ -199,6 +198,10 @@
                     {% endif %}
 
 {% endcomment %}
+                    <li>
+                        <a href="javascript: void(0);" id="contato-popup-link"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
+                    </li>
+
                     {% if user.is_authenticated %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><span class="glyphicon glyphicon-cog "></span>  {% trans "Olá" %}, {{ user.first_name }} <b class="caret"></b></a>
@@ -263,7 +266,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <span class="copyright">{% trans "Copyright &copy; Vendedor Online 2017" %}</span>
+                    <span class="copyright">{% trans "Copyright &copy; VOI Services 2018" %}</span>
                 </div>
                 <div class="col-md-3"><!--
                     <a href="https://prepshiptool.com" target="_blank" class="by download">
@@ -272,7 +275,8 @@
                 <div class="col-md-5">
                     <ul class="list-inline quicklinks">
                         <li>
-                            {% trans "<a href='/pt/termos-e-condicoes-de-uso/'>Termos e Condições de Uso" %}</a>
+                            <a href='/pt/termos-e-condicoes-de-uso/'>{% trans "Termos e Condições de Uso" %}</a> |
+                            <a href='/pt/ajuda/'>{% trans "Ajuda" %}</a>
                         </li>
                     </ul>
                 </div>
@@ -325,7 +329,24 @@
         </div>
     </div>
 
-        <div id="box-adress" class="modal fade">
+    <div id="contato-modal" class="modal fade modal-m">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Fale Conosco" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Para entrar em contato com nosso suporte e nossos canais de atendimento, envie um email para <a class='download' hre='mailto:contato@voiservices.com'>contato@voiservices.com</a>. Retornaremos o mais breve possível." %}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="box-adress" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
