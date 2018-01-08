@@ -83,7 +83,7 @@
                         </ul>
                     </li>
                     {% endif %}
-                    <li class="{% block lotes-u %}{% endblock %}">
+                    <li class="{% block store %}{% endblock %}">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li>
@@ -103,7 +103,7 @@
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Estoque" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             {% if user|has_product_perm:'view_products' %}
-                            <li class="{% block listaprodutos %}{% endblock %}">
+                            <li class="{% block productlist %}{% endblock %}">
                                 <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista de Produtos" %}</a>
                             </li>
                             {% endif %}
@@ -123,7 +123,7 @@
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-share"></i> {% trans "Envios" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             {% if user|has_shipment_perm:'view_shipments' %}
-                            <li class="{% block listashipment %}{% endblock %}">
+                            <li class="{% block shipmentlist %}{% endblock %}">
                                 <a href="{% url 'shipment' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista de Envios" %}</a>
                             </li>
                             {% endif %}

@@ -18,6 +18,7 @@ from store.models import Config
 from bisect import bisect
 import time
 import datetime
+import pytz
 import json
 import logging
 
@@ -74,9 +75,9 @@ def store_list(request):
         for item in queries:
             query &= item
         logger.debug(str(query))
-        _lot_list = Lot.objects.filter(query).order_by('-id', 'status', '-sell_date')
+        _lot_list = Lot.objects.filter(query).order_by('status', '-sell_date', '-id')
     else:
-        _lot_list = Lot.objects.all().order_by('-id', 'status', '-sell_date')
+        _lot_list = Lot.objects.all().order_by('status', '-sell_date', '-id')
     page = request.GET.get('page', 1)
     paginator = Paginator(_lot_list, 20)
     try:
@@ -264,7 +265,7 @@ def store_purchase(request):
     elif selected_order[1:] == 'roi':
         order_by = orientation + 'average_roi'
     elif selected_order[1:] == 'rank':
-        order_by = orientation + 'rank'
+        order_by = orientation + 'average_rank'
     else:
         selected_order = '-purchase'
         order_by = '-sell_date'
@@ -319,7 +320,8 @@ def store_paypal_notification_success(_lot_details, user_id, ipn_obj):
             p = Product.objects.create(name=product.name, description=_('Produto comprado pela Plataforma. '
                                                                         '\'%(lot)s\'') % {'lot': _lot_details.name},
                                        quantity=product.quantity, quantity_partial=product.quantity, status=2,
-                                       user_id=user_id)
+                                       user_id=user_id, send_date=pytz.utc.localize(datetime.datetime.today()),
+                                       receive_date=pytz.utc.localize(datetime.datetime.today()), store=_('VOI'))
             Tracking.objects.create(track_number=product.identifier, product=p)
     elif ipn_obj.payment_status == ST_PP_VOIDED and str(_lot_details.user_id) == str(user_id):
         _lot_details.user = None

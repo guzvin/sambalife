@@ -554,7 +554,7 @@ msgstr ""
 #: html/templates/includes/layout.html:122
 #: html/templates/store_purchase.html:13
 msgid "Minhas compras"
-msgstr ""
+msgstr "Lotes comprados"
 
 #: html/templates/includes/layout-footer.html:99
 #: html/templates/includes/layout.html:108
@@ -2577,7 +2577,7 @@ msgstr ""
 
 #: store/views.py:281
 msgid "Loja - Minhas Compras"
-msgstr ""
+msgstr "Loja - Lotes comprados"
 
 #: store/views.py:312
 #, python-format

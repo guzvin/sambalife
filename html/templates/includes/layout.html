@@ -103,28 +103,17 @@
                         </ul>
                     </li>
                     {% endif %}
-
-
-                    {% if user.is_authenticated %}
-                    <li class="{% block lotes-u %}{% endblock %}">
-                        <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %} <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="{% url 'store' %}"><i class="fa fa-fw fa-shopping-cart"></i> {% trans "Lotes" %}</a>
-                            </li>
-                            <li class="divider"></li>
-                            <li>
-                                <a href="{% url 'store_purchase' %}"><i class="fa fa-fw fa-shopping-basket"></i> {% trans "Minhas compras" %}</a>
-                            </li>
-                        </ul>
-                    </li>
-                    {% endif %}
-                    <li class="{% block comoFunciona %}{% endblock %}">
-                        <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
-                    </li>
                     <li>
                         <a href="{% if LANGUAGE_CODE == 'pt' %}{% trans '/pt/ajuda/' %}#contact{% else %}mailto:support@prepshiptool.freshdesk.com{% endif %}" target="_blank"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
+                    <li class="{% block comoFunciona %}{% endblock %}">
+                        <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="{% block storelist %}{% endblock %}">
+                        <a href="{% url 'store' %}" class="logo-marca-link operacional-conf"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</a>
+                    </li>
+                    {% endif %}
 {% comment %}
                     <li class="tutorial">
                         <a href="{% trans '/pt/ajuda/' %}" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
@@ -139,7 +128,7 @@
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Estoque" %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             {% if user|has_product_perm:'view_products' %}
-                            <li class="{% block listaprodutos %}{% endblock %}">
+                            <li class="{% block productlist %}{% endblock %}">
                                 <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista de Produtos" %}</a>
                             </li>
                             {% endif %}
@@ -154,9 +143,6 @@
                         </ul>
                     </li>
                     {% endif %}
-
-
-
                     {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
                     <li class="dropdown ">
                         {% open_fba_shipments request.user as ofs %}
@@ -169,7 +155,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             {% if user|has_shipment_perm:'view_shipments' %}
-                            <li class="{% block listashipment %}{% endblock %}">
+                            <li class="{% block shipmentlist %}{% endblock %}">
                                 <a href="{% url 'shipment' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Lista de Envios" %}</a>
                             </li>
                             {% endif %}
@@ -224,18 +210,24 @@
                             <li class="divider"></li>
                             {% endif %}
                              {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
-                                <li class="{% block listaprodutos %}{% endblock %}">
+                                <li class="{% block productlist %}{% endblock %}">
                                     <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Estoque" %}</a>
                                 </li>
                                 <li class="divider"></li>
                             {% endif %}
                             {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
-                                <li class="{% block listashipment %}{% endblock %}">
-                                    <a href="{% url 'shipment' %}"><i class="fa fa-amazon"></i> {% trans "Envios Amazon" %}</a>
+                                <li class="{% block shipmentlist %}{% endblock %}">
+                                    {% open_fba_shipments request.user as ofs %}
+                                    <a href="{% url 'shipment' %}">
+                                        <i class="fa fa-amazon"></i> {% trans "Envios Amazon" %}
+                                        {% if ofs > 0 %}
+                                        <span title="{% trans 'Envios em aberto' %}" class="suspenso">{{ ofs }}</span>
+                                        {% endif %}
+                                    </a>
                                 </li>
-                                <li class="divider"></li>
+                                <li class="divider-fix divider"></li>
                             {% endif %}
-                            <li>
+                            <li class="{% block mypurchases %}{% endblock %}">
                                 <a href="{% url 'store_purchase' %}"><i class="fa fa-fw fa-shopping-basket"></i> {% trans "Minhas compras" %}</a>
                             </li>
                             <li class="divider"></li>

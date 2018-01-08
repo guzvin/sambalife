@@ -1,6 +1,6 @@
 {% extends 'includes/layout.html' %}
 {% load i18n tz l10n commons %}
-{% block lotes-u %}active{% endblock %}
+{% block mypurchases %}active{% endblock %}
 
 {% block conteudo %}
 
@@ -59,7 +59,7 @@
                   <td class="center">{{ lot.sell_date|date:'SHORT_DATE_FORMAT' }}</td>
                   {% endtimezone %}
                   <td class="center">{{ lot.average_roi|localize }}%</td>
-                  <td class="center">{{ lot.rank }}%</td>
+                  <td class="center">{{ lot.average_rank|localize }}%</td>
                   <td class="center">
                       <a class="download" href="{% url 'store_lot_details' lot.id %}"><i class="fa fa-pencil"></i> {% trans "Detalhe" %}</a>
                   </td>
