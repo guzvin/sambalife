@@ -1873,6 +1873,33 @@ footer.fixed-footer{
     background: #eee;
 }
 
+.box-assine-agora {
+    position: fixed;
+    top: 285px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.box-assine-agora a{
+    background: #DC3438;
+    color: #fff;
+    border-radius: 38px;
+    text-align: center;
+    padding: 21px 13px;
+}
+
+.box-assine-agora span{
+    display: block;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-weight: bold;
+    float: left;
+    padding: 4px 10px;
+    font-size: 14px;
+    margin: 6px 6px 0 0;
+    border-radius: 3px;
+}
+
 
 @media (max-width: 767px){
 
