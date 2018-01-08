@@ -83,5 +83,6 @@ urlpatterns += i18n_patterns(
     url(r'^service/product/(?P<pid>[0-9]+)[/]$', service_product, name='service_product'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     url(r'^howitworks', how_it_works, name='how_it_works'),
-    url(r'^help', help, name='help')
+    url(r'^ajuda', help, name='help'),
+    url(r'^termos-e-condicoes-de-uso', terms, name='terms')
 )

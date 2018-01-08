@@ -347,6 +347,9 @@ def how_it_works(request):
 def help(request):
     return render(request, 'help.html')
 
+def terms(request):
+    return render(request, 'terms.html')
+
 
 def send_email_contact_us(request, name, email, tel, message, async=False):
     email_title = _('Fale conosco %(user_name)s - Vendedor Online Internacional') % {'user_name': name}
