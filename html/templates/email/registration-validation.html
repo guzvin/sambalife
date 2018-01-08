@@ -8,11 +8,9 @@
 <body>
 
 <div id="template-email" style="background: #fff; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
-    <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/">
-        <!--<img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo-en.png" width="200px">-->
-        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_sup.png" width="70px" />
-        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_bottom.png" width="170px" />
-    </a>
+        <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/" style="text-decoration: none;">
+        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_sup.png" width="50" style="display: block;float: left;"/><span style="text-decoration: none; display: block;margin-top: 12px;font-size: 24px;font-weight: bold;color: #3C3E77;font-family: sans-serif;">SERVICES</span>
+    </a><br>
     <div style="background: #eee; padding: 10px 20px 20px 20px;">
         <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Prezado(a)" %} {{ user_name }}</p>
         <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Falta apenas esta etapa. Clique no botão abaixo para validar seu cadastro." %}</p>
@@ -21,7 +19,7 @@
             <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}{{ my_url }}" style="font: 13px/120% 'Helvetica';display: block; background: #337ab7;width: 250px;color: #fff; height: 32px; margin: 0 auto;text-align: center;padding-top: 9px;font-size: 20px;text-decoration: none;font-weight: bold;border-radius: 10px;">{% trans "VALIDAR CADASTRO" %}</a>
         </p>
     </div>
-    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Caso você não tenha feito esta solicitação nos avise através do e-mail" %} <a href="mailto:{% trans 'contato@vendedorinternacional.online' %}">{% trans "contato@vendedorinternacional.online" %}</a>.</small>
+    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Caso você não tenha feito esta solicitação nos avise através do e-mail" %} <a href="mailto:{% trans 'suporte@voiservices.com' %}">{% trans "suporte@voiservices.com" %}</a>.</small>
     <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Este é um e-mail automático disparado pelo sistema. Favor não respondê-lo, pois esta conta não é monitorada." %}</small>
 </div>
 

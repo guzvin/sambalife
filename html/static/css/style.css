@@ -886,9 +886,17 @@ body {
 }
 
 #login-box img{
-    margin: 20px auto 35px auto;
+    margin: 20px auto 0px auto;
     display: block;
+    width: 115px;
 }
+
+#login-box  .logo-services {
+    margin: 0 auto 21px auto;
+    font-size: 31px;
+    width: 166px;
+}
+
 
 #login-box input[type="text"], #login-box input[type="password"]{
     width: 75%;
@@ -1836,6 +1844,15 @@ footer.fixed-footer{
     width: 84%;
 }
 
+.logo-services{
+    display: block;
+    margin: 27px 0 0 18px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #3C3E77;
+    font-family: sans-serif;
+}
+
 @media (max-width: 767px){
 
     .sistema .navbar-brand img:first-child{
@@ -1854,10 +1871,14 @@ footer.fixed-footer{
         width: 100%;
     }
 
-    .box-lote img {
-        width: 100%;
-        height: 200px;
-    }
+    .box-lote {
+    width: 100%;
+    display: block;
+    float: left;
+    border-right: 1px solid #e5e5e5;
+    padding: 0;
+    margin-bottom: 10px;
+}
 
     .valor-prod {
         font-size: 25px;
