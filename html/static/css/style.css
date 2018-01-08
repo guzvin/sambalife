@@ -891,9 +891,9 @@ body {
 }
 
 #login-box img{
-    margin: 20px auto 0px auto;
+    margin: 25px auto 25px auto;
     display: block;
-    width: 115px;
+    width: 158px;
 }
 
 #login-box  .logo-services {
@@ -1704,8 +1704,8 @@ form small{
 }
 
 .sistema .navbar-brand img:first-child{
-    margin-top: 18px;
-    width: 50px;
+    margin-top: 10px;
+    width: 74px;
 }
 
 .sistema .navbar-right {
@@ -1851,12 +1851,28 @@ footer.fixed-footer{
 
 .logo-services{
     display: block;
-    margin: 27px 0 0 18px;
-    font-size: 24px;
+    margin: 27px 0 0 2px;
+    font-size: 17px;
     font-weight: bold;
-    color: #3C3E77;
+    color: #DC3438;
     font-family: sans-serif;
+    float: left;
 }
+
+.logo-services.fr{
+    margin-left: 0px;
+    color: #3C3E77;
+}
+
+.page-header {
+    color: #3C3E77;
+    margin-top: 20px;
+}
+
+.box-comparativo{
+    background: #eee;
+}
+
 
 @media (max-width: 767px){
 
