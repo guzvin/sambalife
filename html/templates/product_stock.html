@@ -40,7 +40,7 @@
                     </div>
                     <!-- fim filtro usuario-->
                     {% endif %}
-
+                    <!--
                     <div class="form-group col-md-2">
                         {% trans "Status" as status %}
                         <label for="filtro-status">{{ status }}</label>
@@ -54,6 +54,7 @@
                           <option value="99" {{ archived_filter_status }}>{% trans "Arquivado" %}</option>
                         </select>
                     </div>
+
                     <div class="form-group col-md-3">
                         {% trans "Rastreamento" as tracking_label %}
                         <label for="filtro-Rastreamento">{{ tracking_label }}</label>
@@ -68,16 +69,16 @@
                         <label for="filtro-arquivado">
                             <input type="checkbox" class="" id="filtro-arquivado" name="archived" {{ filter_values.archived }}> {% trans "Exibir produtos arquivados" %}
                         </label>
-                    </div>
+                    </div>-->
                     <div class="form-group col-md-3">
                         <button type="submit" class="btn btn-primary filtar-btn" id="filter-btn"><i class="fa fa-fw fa-filter"></i> {% trans "Filtrar" %}</button>
                     </div>
                 </form>
               </div>
-          </div><br><br>
+          </div><br><br><!--
           {% if user|has_product_perm:'add_product' %}
             <a class="btn btn-default" href="{% url 'product_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
-          {% endif %}
+          {% endif %}-->
           {% if user|has_shipment_perm:'add_shipment' %}
             <a class="btn btn-default" id="btn-add-shipment" data-action-url="{% url 'shipment_add' %}"><i class="fa fa-amazon"></i> {% trans "Criar Envio para Amazon" %}</a>
           {% endif %}

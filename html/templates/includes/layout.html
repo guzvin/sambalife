@@ -102,15 +102,18 @@
                             {% endif %}
                         </ul>
                     </li>
+
+                    {% if user.is_authenticated %}
+                        <li class="{% block storelist %}{% endblock %}">
+                            <a href="{% url 'store' %}" class="logo-marca-link operacional-conf"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</a>
+                        </li>
                     {% endif %}
+
+                {% endif %}
                     <li class="{% block comoFunciona %}{% endblock %}">
                         <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
                     </li>
-                    {% if user.is_authenticated %}
-                    <li class="{% block storelist %}{% endblock %}">
-                        <a href="{% url 'store' %}" class="logo-marca-link operacional-conf"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</a>
-                    </li>
-                    {% endif %}
+
 {% comment %}
                     <li class="tutorial">
                         <a href="{% trans '/pt/ajuda/' %}" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
