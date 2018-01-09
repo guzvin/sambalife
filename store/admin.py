@@ -1,17 +1,19 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.admin.filters import DateFieldListFilter
+from django.contrib.admin.filters import DateFieldListFilter, SimpleListFilter
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from store.models import Lot, Product, Config
+from store.models import Lot, Product, Config, LotReport
 from utils import helper
 from utils.models import Params
 from utils.sites import admin_site
 from utils.middleware.thread_local import get_current_request
 from django.contrib.admin import utils
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.admin.views.main import ChangeList
+from rangefilter.filter import DateRangeFilter
 import logging
 
 logger = logging.getLogger('django')
@@ -186,11 +188,11 @@ class LotAdmin(admin.ModelAdmin):
                                                                                                 use_l10n=True,
                                                                                                 decimal_pos=2))},
                  _('Número de itens: %(lot_items)s') % {'lot_items': lot.products_quantity},
-                 _('ROI: %(lot_roi)s%%') % {'lot_roi': helper.force_text(helper.formats.
+                 _('ROI médio: %(lot_roi)s%%') % {'lot_roi': helper.force_text(helper.formats.
                                                                          number_format(lot.average_roi,
                                                                                        use_l10n=True,
                                                                                        decimal_pos=2))},
-                 _('Rank: %(lot_rank)s%%') % {'lot_rank': lot.average_rank})
+                 _('Rank médio: %(lot_rank)s%%') % {'lot_rank': lot.average_rank})
         texts += (''.join(['https://', request.CURRENT_DOMAIN, helper.reverse('store_lot_details', args=[lot.id])]),
                   _('Clique aqui'), _('para acessar este lote agora mesmo!'),)
         email_body = helper.format_html(html_format, *texts)
@@ -217,11 +219,58 @@ class ConfigAdmin(admin.ModelAdmin):
 
 admin_site.register(Config, ConfigAdmin)
 
+
+class LotReportChangeList(ChangeList):
+    def __init__(self, request, model, list_display, list_display_links,
+                 list_filter, date_hierarchy, search_fields, list_select_related,
+                 list_per_page, list_max_show_all, list_editable, model_admin):
+        super(LotReportChangeList, self).__init__(request, model, list_display, list_display_links,
+                                                  list_filter, date_hierarchy, search_fields, list_select_related,
+                                                  list_per_page, list_max_show_all, list_editable, model_admin)
+        self.title = _('Relatório de Lotes')
+
+
+class LotReportForm(forms.ModelForm):
+    class Meta:
+        model = LotReport
+        exclude = []
+        translation_from_date, translation_to_date = _('From date'), _('To date')
+
+
+class LotReportAdmin(admin.ModelAdmin):
+    form = LotReportForm
+
+    list_display_links = None
+    list_filter = [
+        'status',
+        ('create_date', DateRangeFilter),
+        ('sell_date', DateRangeFilter),
+    ]
+
+    search_fields = ('name', 'product__name',)
+    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost')
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_add_permission(self, request):
+        return False
+
+    def get_changelist(self, request, **kwargs):
+        return LotReportChangeList
+
+admin_site.register(LotReport, LotReportAdmin)
+
+
 native_lookup_field = utils.lookup_field
 
 
 def my_lookup_field(name, obj, model_admin=None):
-    if name == 'action_checkbox' and str(model_admin) == 'store.LotAdmin' and obj.status == 2:
+    if name == 'action_checkbox' and ((str(model_admin) == 'store.LotAdmin' and obj.status == 2) or
+                                      str(model_admin) == 'store.LotReportAdmin'):
         raise ObjectDoesNotExist
     return native_lookup_field(name, obj, model_admin=model_admin)
 

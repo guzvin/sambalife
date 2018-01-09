@@ -27,7 +27,11 @@
             {% endif %}
 
             {% if model.admin_url and model.object_name|lower != 'mypaypalipn' %}
+                {% if model.admin_url and model.object_name|lower != 'lotreport' %}
                 <td><a href="{{ model.admin_url }}" class="changelink">{% trans 'Change' %}</a></td>
+                {% else %}
+                <td><a href="{{ model.admin_url }}">&nbsp;&nbsp;&nbsp;&nbsp;{% trans 'Visualizar' %}</a></td>
+                {% endif %}
             {% else %}
                 <td>&nbsp;</td>
             {% endif %}

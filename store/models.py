@@ -139,3 +139,10 @@ class Config(models.Model):
 
     def __str__(self):
         return str(_('Configuração'))
+
+
+class LotReport(Lot):
+    class Meta:
+        proxy = True
+        verbose_name = _('Relatório')
+        verbose_name_plural = _('Relatórios')

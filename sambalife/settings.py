@@ -127,6 +127,7 @@ INSTALLED_APPS = [
     'partner',
     'service',
     'django_crontab',
+    'rangefilter',
 ]
 
 MIDDLEWARE = [
