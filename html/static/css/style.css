@@ -1238,8 +1238,8 @@ label.titulo-pct span{
     padding: 10px 20px 20px 20px;
     font-weight: normal;
     line-height: 24px;
-    /*background: url('../img/logo_menor.png') no-repeat center top;*/
     background-size: 100px
+    color: #3C3E77;
 }
 
 .banner-lote h2 i{
@@ -1900,6 +1900,29 @@ footer.fixed-footer{
     border-radius: 3px;
 }
 
+.box-valor .seja{
+    font-size: 26px;
+    font-weight: bold;
+    color: #3C3E77;
+}
+
+.box-valor p{
+    color: #3C3E77;
+}
+
+.box-valor span{
+    color: #3C3E77;
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.box-valor .assinate-span, .box-valor small, .box-cad-esquerda label{
+    color: #3C3E77;
+}
+
+.box-valor p{
+    line-height: 43px;
+}
 
 @media (max-width: 767px){
 
