@@ -306,7 +306,7 @@ def store_paypal_notification_success(_lot_details, user_id, ipn_obj):
             raise helper.VoidPaymentException()
         _lot_details.user_id = user_id
         _lot_details.status = 2
-        _lot_details.sell_date = datetime.date.today()
+        _lot_details.sell_date = pytz.utc.localize(datetime.datetime.today())
         _lot_details.save(update_fields=['user', 'status', 'sell_date'])
     elif ipn_obj.payment_status == ST_PP_COMPLETED:
         if _lot_details.user is not None and str(_lot_details.user_id) != str(user_id):
@@ -321,17 +321,19 @@ def store_paypal_notification_success(_lot_details, user_id, ipn_obj):
                                                                         '\'%(lot)s\'') % {'lot': _lot_details.name},
                                        quantity=product.quantity, quantity_partial=product.quantity, status=2,
                                        user_id=user_id, send_date=pytz.utc.localize(datetime.datetime.today()),
-                                       receive_date=pytz.utc.localize(datetime.datetime.today()), store=_('VOI'))
+                                       receive_date=pytz.utc.localize(datetime.datetime.today()), store=_('VOI'),
+                                       condition=product.condition, actual_condition=product.condition,
+                                       lot_product=product)
             Tracking.objects.create(track_number=product.identifier, product=p)
     elif ipn_obj.payment_status == ST_PP_VOIDED and str(_lot_details.user_id) == str(user_id):
         _lot_details.user = None
         _lot_details.status = 1
         _lot_details.sell_date = None
-        _lot_details.payment_complete = True
+        _lot_details.payment_complete = False
         _lot_details.save(update_fields=['user', 'status', 'sell_date', 'payment_complete'])
 
 
-def store_paypal_notification_post_transaction(request, _lot_details, ipn_obj, paypal_status_message):
+def store_paypal_notification_post_transaction(request, user, ipn_obj, paypal_status_message):
     if ipn_obj.payment_status == ST_PP_PENDING:
         ipn_obj.complete_authorization()
         email_title = _('Pagamento PENDENTE pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
@@ -344,11 +346,11 @@ def store_paypal_notification_post_transaction(request, _lot_details, ipn_obj, p
         email_title = _('Pagamento CONFIRMADO pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
         texts = (_('Seu pagamento foi confirmado, obrigado! Os itens já se encontram em seu estoque.'),)
         email_message = _(helper._html_format(*texts)) + paypal_status_message
-        helper.send_email_basic_template_bcc_admins(request, _lot_details.user.first_name, [_lot_details.user.email],
-                                                    email_title, email_message, async=True)
+        helper.send_email_basic_template_bcc_admins(request, user.first_name, [user.email], email_title, email_message,
+                                                    async=True)
     elif ipn_obj.payment_status == ST_PP_VOIDED:
         email_title = _('CANCELAMENTO do pagamento confirmado pelo PayPal para o item '
                         '\'%(item)s\'') % {'item': ipn_obj.item_name}
         email_message = paypal_status_message
-        helper.send_email_basic_template_bcc_admins(request, _lot_details.user.first_name, [_lot_details.user.email],
-                                                    email_title, email_message, async=True)
+        helper.send_email_basic_template_bcc_admins(request, user.first_name, [user.email], email_title, email_message,
+                                                    async=True)

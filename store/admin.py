@@ -10,6 +10,7 @@ from utils import helper
 from utils.models import Params
 from utils.sites import admin_site
 from utils.middleware.thread_local import get_current_request
+from service.models import Service
 from django.contrib.admin import utils
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin.views.main import ChangeList
@@ -26,6 +27,11 @@ class GroupModelMultipleChoiceField(forms.ModelMultipleChoiceField):
         if obj.name == 'admins':
             return str(_('Administradores do sistema'))
         return obj.name
+
+
+class ServiceModelMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return obj.name + ' - ' + str(obj.price)
 
 
 class LotForm(forms.ModelForm):
@@ -67,10 +73,19 @@ class LotForm(forms.ModelForm):
 
 
 class LotProductForm(forms.ModelForm):
+    redirect_services = ServiceModelMultipleChoiceField(
+        queryset=Service.objects.all(),
+        required=True,
+        # Use the pretty 'filter_horizontal widget'.
+        widget=FilteredSelectMultiple(_('Serviços'), False),
+        label=_('Serviços'),
+        help_text=_('Serviços utilizados na preparação do envio.')
+    )
+
     class Meta:
         model = Product
         fields = ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'rank', 'quantity', 'fba_fee', 'amazon_fee',
-                  'shipping_cost', 'redirect_factor', 'voi_value')
+                  'shipping_cost', 'redirect_services', 'condition', 'voi_value')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor
@@ -80,11 +95,25 @@ class LotProductForm(forms.ModelForm):
             if params:
                 self.fields['amazon_fee'].initial = params.amazon_fee
                 self.fields['shipping_cost'].initial = params.shipping_cost
+        else:
+            # Populate the redirect_services field with the current Services.
+            self.fields['redirect_services'].initial = self.instance.redirect_services.all()
+        # self.fields['condition'].required = True
 
     def save(self, *args, **kwargs):
         instance = super(LotProductForm, self).save(commit=False)
+        if instance.pk is None:
+            instance.save()
+        redirect_cost = 0
+        instance.redirect_services = self.cleaned_data['redirect_services']
+        logger.debug('@@@@@@@@@@@@@ REDIRECT COST @@@@@@@@@@@@@@@@')
+        logger.debug(instance.redirect_services)
+        for redirect_service in instance.redirect_services.all():
+            logger.debug(redirect_service.price)
+            redirect_cost += redirect_service.price
+        logger.debug(redirect_cost)
         instance.product_cost = instance.buy_price + instance.amazon_fee + instance.fba_fee + instance.shipping_cost + \
-            instance.redirect_factor
+            redirect_cost
         instance.profit_per_unit = instance.sell_price - instance.product_cost
         instance.total_profit = instance.profit_per_unit * instance.quantity
         instance.roi = (instance.profit_per_unit / instance.product_cost) * 100
@@ -128,7 +157,6 @@ class LotAdmin(admin.ModelAdmin):
         products_quantity = 0
         products_cost = 0
         profit = 0
-        average_roi = 0
         average_rank = 0
         lot_cost = 0
         redirect_cost = 0
@@ -141,17 +169,19 @@ class LotAdmin(admin.ModelAdmin):
             lot = form.save(commit=False)
             products = Product.objects.filter(lot=lot)
             for product in products:
+                product_redirect_cost = 0
+                for redirect_service in product.redirect_services.all():
+                    product_redirect_cost += redirect_service.price
                 products_quantity += product.quantity
                 products_cost += product.product_cost * product.quantity
                 profit += product.total_profit
-                average_roi += (product.roi / 100)
                 average_rank += (product.rank / 100)
-                lot_cost += (product.buy_price * product.quantity)
-                redirect_cost += (product.redirect_factor * product.quantity)
+                lot_cost += ((product.buy_price + product_redirect_cost) * product.quantity)
+                redirect_cost += (product_redirect_cost * product.quantity)
             lot.products_quantity = products_quantity
             lot.products_cost = products_cost
             lot.profit = profit
-            lot.average_roi = (average_roi / len(products)) * 100
+            lot.average_roi = (profit / products_cost) * 100
             lot.average_rank = (average_rank / len(products)) * 100
             lot.lot_cost = lot_cost
             lot.redirect_cost = redirect_cost

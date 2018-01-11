@@ -45,6 +45,7 @@ class Product(models.Model):
     edd_date = models.DateField(_('Previsão de Entrega'), null=True, blank=True)
     pick_ticket = models.CharField(_('Localização na Warehouse'), max_length=200, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    lot_product = models.ForeignKey('store.Product', null=True)
 
     class Meta:
         verbose_name = _('Produto')

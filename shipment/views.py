@@ -843,8 +843,8 @@ def shipment_add(request):
     if request.method == 'POST':
         if request.POST.get('save_shipment') is None:
             preselected_products = request.POST.getlist('shipment_product')
-            original_products = OriginalProduct.objects.filter(user=request.user, status=2, quantity__gt=0,
-                                                               pk__in=preselected_products).order_by('id')
+            original_products = OriginalProduct.objects.select_related('lot_product')\
+                .filter(user=request.user, status=2, quantity__gt=0, pk__in=preselected_products).order_by('id')
         else:
             original_products = OriginalProduct.objects.none()
     else:

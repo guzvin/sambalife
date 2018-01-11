@@ -401,7 +401,8 @@ def product_autocomplete(request):
             products_autocomplete.append({'value': product.id, 'label': product.name,
                                           'desc': product.description, 'qty': product.quantity_partial,
                                           'bb': formats.date_format(product.best_before, "SHORT_DATE_FORMAT")
-                                          if product.best_before else ''})
+                                          if product.best_before else '',
+                                          'lot': False if product.lot_product is None else True})
     return HttpResponse(json.dumps(products_autocomplete),
                         content_type='application/json')
 

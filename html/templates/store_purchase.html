@@ -55,9 +55,11 @@
                   <td class="limit-field">{{ lot.name }}</td>
                   <td class="center">{{ lot.products_quantity }}</td>
                   {% timezone_name LANGUAGE_CODE as mytz %}
-                  {% timezone mytz %}
-                  <td class="center">{{ lot.sell_date|date:'SHORT_DATE_FORMAT' }}</td>
-                  {% endtimezone %}
+                  <td class="center">
+                    {% timezone mytz %}
+                      {{ lot.sell_date|date:'SHORT_DATE_FORMAT' }}
+                    {% endtimezone %}
+                  </td>
                   <td class="center">{{ lot.average_roi|localize }}%</td>
                   <td class="center">{{ lot.average_rank|localize }}%</td>
                   <td class="center">

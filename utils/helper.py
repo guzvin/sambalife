@@ -490,7 +490,8 @@ def paypal_notification(sender, **kwargs):
                 logger.info('@@@@@@@@@@@@ PAYMENT STATUS @@@@@@@@@@@@@@')
                 raise PaymentException()
         if invoice[0] == 'B':
-            store_paypal_notification_post_transaction(request, entity, ipn_obj, _(paypal_status_message(ipn_obj)))
+            store_paypal_notification_post_transaction(request, current_user, ipn_obj,
+                                                       _(paypal_status_message(ipn_obj)))
     except PaymentException as pe:
         if pe.args:
             invalid_data.append(pe.args[0])

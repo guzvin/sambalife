@@ -67,10 +67,15 @@
                   id="{{ product_formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
                   {{ product_form.product|safe }}
                   <td class="center">
+{% comment %}
                       <input type="number" class="form-control menor-m quantity_validate required-number-validate" id="{{ product_form.quantity.id_for_label }}" name="{{ product_form.quantity.html_name }}" value="{% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}" />
                       {% for error in product_form.quantity.errors %}
                         <label id="{{ product_form.quantity.id_for_label }}-error" class="error" for="{{ product_form.quantity.id_for_label }}">{{ error|escape }}</label>
                       {% endfor %}
+{% endcomment %}
+                      <input type="hidden" class="quantity_validate" id="hidden_{{ product_form.quantity.id_for_label }}" name="{{ product_form.quantity.html_name }}" value="{% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}" />
+                      {% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}
+
                       {{ product_form.id }}
                       {{ product_form.shipment }}
                   </td>
@@ -99,9 +104,9 @@
                 {% if billing_type == 1 %}
                 <p><strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">-</span></p>
                 {% endif %}
-
+{% comment %}
                 {% minimum_value_alert %}
-
+{% endcomment %}
             </div>
             <div class="col-md-6">
                 <div class="form-group">

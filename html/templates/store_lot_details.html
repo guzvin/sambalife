@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n l10n lots permissions users commons %}
+{% load i18n l10n tz lots permissions users commons %}
 {% block conteudo %}
 
 <div class="container-fluid">
@@ -12,7 +12,12 @@
           <div class="row">
               <div class="col-md-4">
                   <p><strong>{% trans "Situação" %}: </strong> {% if lot.status %}<strong>{{ lot.get_status_display  }}</strong>{% endif %}</p>
-                  <p><strong>{% trans "Data venda" %}: </strong> {% if lot.sell_date %}{{ lot.sell_date }}{% endif %}</p>
+                  <p>
+                  {% timezone_name LANGUAGE_CODE as mytz %}
+                  {% timezone mytz %}
+                      <strong>{% trans "Data venda" %}: </strong> {% if lot.sell_date %}{{ lot.sell_date }}{% endif %}
+                  {% endtimezone %}
+                  </p>
 {% comment %}
                   <p><strong>{% trans "Custo dos Produtos" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Custos dos Produtos&quot; multiplicados pela &quot;Quantidade&quot; de produtos de cada produto do lote.' %}"></span>: </strong> U$ {{ lot.products_cost|localize }}</p>
 {% endcomment %}
@@ -46,6 +51,9 @@
                   <div class="col-md-12">
                       <p><strong>{% trans "UPC / CODIGO IDENTIFICADOR" %}:</strong><br> {{ product.identifier }}</p>
                   </div>
+                  <div class="col-md-12">
+                      <p><strong>{% trans "Condição" %}:</strong><br> {{ product.get_condition_display }}</p>
+                  </div>
                   <div class="col-md-6">
                       <p><strong>{% trans "Valor de Compra" %}:</strong><br> U$ {{ product.buy_price|localize }}</p>
                   </div>
@@ -64,7 +72,7 @@
                   </div>
 {% endcomment %}
                   <div class="col-md-12">
-                      <p><strong>{% trans "Redirecionamento" %}:</strong><br> U$ {{ product.redirect_factor|localize }}</p>
+                      <p><strong>{% trans "Redirecionamento" %}:</strong><br> {% trans "Grátis" %}</p>
                   </div>
                   <div class="col-md-12">
                       <p><strong>{% trans "Custo de Envio para Amazon" %}:</strong><br> U$ {{ product.shipping_cost|localize }}</p>

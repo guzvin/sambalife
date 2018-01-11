@@ -53,7 +53,11 @@ function addInlineRow(row, options)
                     case 4:
                         var element = $(this).find('input.quantity_validate');
                         element.val(selectedValue.qty);
+                        element.after(selectedValue.qty);
                         addQuantityEvent(element, options.prefix);
+                        if(selectedValue.lot)
+                        {
+                        }
                         return false;
                 }
             });
