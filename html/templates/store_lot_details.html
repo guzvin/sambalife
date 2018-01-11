@@ -62,7 +62,7 @@
                       <p><strong>{% trans "UPC / CODIGO IDENTIFICADOR" %}:</strong><br> {{ product.identifier }}</p>
                   </div>
                   <div class="col-md-12">
-                      <p><strong>{% trans "Condição" %}:</strong><br> {{ product.get_condition_display }}</p>
+                      <p><strong>{% trans "Condição" %}:</strong><br> {% if product.condition %}{{ product.get_condition_display }}{% endif %}</p>
                   </div>
                   <div class="col-md-6">
                       <p><strong>{% trans "Valor de Compra" %}:</strong><br> U$ {{ product.buy_price|localize }}</p>
