@@ -8,10 +8,8 @@
 <body>
 
 <div id="template-email" style="background: #fff; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
-     <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/">
-        <!--<img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo-en.png" width="200px">-->
-        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_sup.png" width="70px" />
-        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_bottom.png" width="170px" />
+    <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/" style="text-decoration: none;">
+        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_sup.png" width="50" />
     </a>
     <div style="background: #eee; padding: 10px 20px 20px 20px;">
         {{ email_body|safe }}

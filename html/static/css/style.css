@@ -891,9 +891,17 @@ body {
 }
 
 #login-box img{
-    margin: 20px auto 35px auto;
+    margin: 25px auto 25px auto;
     display: block;
+    width: 158px;
 }
+
+#login-box  .logo-services {
+    margin: 0 auto 21px auto;
+    font-size: 31px;
+    width: 166px;
+}
+
 
 #login-box input[type="text"], #login-box input[type="password"]{
     width: 75%;
@@ -1230,8 +1238,8 @@ label.titulo-pct span{
     padding: 10px 20px 20px 20px;
     font-weight: normal;
     line-height: 24px;
-    /*background: url('../img/logo_menor.png') no-repeat center top;*/
     background-size: 100px
+    color: #3C3E77;
 }
 
 .banner-lote h2 i{
@@ -1696,8 +1704,8 @@ form small{
 }
 
 .sistema .navbar-brand img:first-child{
-    margin-top: 18px;
-    width: 50px;
+    margin-top: 10px;
+    width: 74px;
 }
 
 .sistema .navbar-right {
@@ -1841,6 +1849,186 @@ footer.fixed-footer{
     width: 84%;
 }
 
+.logo-services{
+    display: block;
+    margin: 27px 0 0 2px;
+    font-size: 17px;
+    font-weight: bold;
+    color: #DC3438;
+    font-family: sans-serif;
+    float: left;
+}
+
+.logo-services.fr{
+    margin-left: 0px;
+    color: #3C3E77;
+}
+
+.page-header {
+    color: #3C3E77;
+    margin-top: 20px;
+}
+
+.box-comparativo{
+    background: #eee;
+}
+
+.box-assine-agora {
+    position: fixed;
+    top: 285px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.box-assine-agora a{
+    background: #DC3438;
+    color: #fff;
+    border-radius: 38px;
+    text-align: center;
+    padding: 21px 13px;
+}
+
+.box-assine-agora span{
+    display: block;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-weight: bold;
+    float: left;
+    padding: 4px 10px;
+    font-size: 14px;
+    margin: 6px 6px 0 0;
+    border-radius: 3px;
+}
+
+.box-valor .seja{
+    font-size: 26px;
+    font-weight: bold;
+    color: #3C3E77;
+}
+
+.box-valor p{
+    color: #3C3E77;
+}
+
+.box-valor span{
+    color: #3C3E77;
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.box-valor .assinate-span, .box-valor small, .box-cad-esquerda label{
+    color: #3C3E77;
+}
+
+.box-valor p{
+    line-height: 43px;
+}
+
+.box-comparativo{
+    margin-top: 50px;
+}
+
+.box-comparativo-valor{
+    -webkit-box-shadow: 0px 2px 14px -2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 2px 14px -2px rgba(0,0,0,0.75);
+    box-shadow: 0px 2px 14px -2px rgba(0,0,0,0.75);
+    border-radius: 10px;
+    margin-top: 20px;
+    float: left;
+}
+
+.box-comparativo-valor:hover{
+    transition-timing-function: ease-out;
+    transition-duration: .2s;
+    transform: translateY(-5px);
+    -webkit-box-shadow: 0 14px 32px 0 rgba(0,0,0,.75);
+    box-shadow: 0 14px 32px 0 rgba(0,0,0,.2);
+}
+
+.box-comparativo-valor .seja{
+    text-align: left;
+    font-size: 24px;
+    margin-bottom: 0;
+}
+
+.box-comparativo-valor .box-valor .assinate-span{
+    margin-bottom: 0;
+}
+
+.box-comparativo-valor .box-valor{
+    padding: 20px 23px;
+    float: left;
+}
+
+.box-comparativo-valor .box-valor span {
+    font-size: 32px;
+}
+
+.box-comparativo-valor .box-valor small{
+    display: block;
+    float: left;
+    width: 100%;
+    margin: -10px 0 30px 3px;
+    border-bottom: 1px solid #dedede;
+    padding-bottom: 10px;
+}
+
+.box-comparativo-valor .box-valor ul{
+    padding: 0 0 20px 0;
+    margin: 0;
+    list-style: none;
+    border-bottom: 1px solid #dedede;
+    float: left;
+}
+
+.box-comparativo-valor .box-valor ul li{
+    margin: 0 0 16px 0;
+    color: #3C3E77;
+    float: left;
+    width: 100%;
+}
+
+.box-comparativo-valor .box-valor .btn{
+    margin: 26px auto 0px auto;
+    display: block;
+    width: 246px;
+    padding: 11px 10px;
+    font-size: 18px;
+    border-radius: 20px;
+}
+
+.box-comparativo-valor .box-valor ul.opacit-text li, .box-comparativo-valor .box-valor ul.opacit-text li span{
+    color: #dedede;
+}
+
+.box-comparativo-valor .box-valor ul.opacit-text li:first-child, .box-comparativo-valor .box-valor ul.opacit-text li:first-child span{
+    color: #3C3E77;
+}
+
+.no-service:hover{
+    cursor: text;
+}
+
+.box-comparativo-valor .box-valor ul li i{
+    display: block;
+    float: left;
+    margin-top: 1px;
+}
+
+.box-comparativo-valor .box-valor ul li span{
+    font-size: 14px;
+    font-weight: normal;
+    float: left;
+    display: block;
+    width: 90%;
+    line-height: 16px;
+}
+
+.contem-btn-ass{
+    float: left;
+    width: 100%;
+}
+
 @media (max-width: 767px){
 
     .sistema .navbar-brand img:first-child{
@@ -1859,21 +2047,26 @@ footer.fixed-footer{
         width: 100%;
     }
 
-    .box-lote img {
-        width: 100%;
-        height: 200px;
-    }
+    .box-lote {
+    width: 100%;
+    display: block;
+    float: left;
+    border-right: 1px solid #e5e5e5;
+    padding: 0;
+    margin-bottom: 10px;
+}
 
     .valor-prod {
         font-size: 25px;
     }
 
     .box-lote span {
-        margin: 15px 0 0px 5px;
+        margin: -9px 0 9px 1px;
     }
 
     .lucro-prod {
-        font-size: 16px;
+        font-size: 14px;
+        margin: 2px 0 0 0;
     }
 
     .box-lote.vendido .vendido-text {
@@ -1882,8 +2075,9 @@ footer.fixed-footer{
     }
 
     .box-lote h6, .filtros h6, .filtros-box label {
-        font-size: 20px;
+        font-size: 15px;
         font-weight: bold;
+        margin: 0;
     }
 
     .sistema .bandeira {
@@ -1978,5 +2172,25 @@ footer.fixed-footer{
         margin: 18px 0 0 10px;
     }
 
+    .box-lote img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .box-container-lote .foto{
+        width: 49%;
+        height: 170px;
+        float: left;
+        margin-right: 10px;
+    }
+
+    .box-lote {
+        padding: 0px;
+    }
+
+    .descricao-lote-prod{
+        float: left;
+        width: 47%;
+    }
 
 }

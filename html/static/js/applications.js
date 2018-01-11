@@ -1129,6 +1129,10 @@
 
     $('#assinatura-confirm').modal('show');
 
+    $('#contato-popup-link').click(function(){
+        $('#contato-modal').modal('show');
+    });
+
     if($('#terms_conditions')[0])
     {
         $('#terms_conditions').modal('show');

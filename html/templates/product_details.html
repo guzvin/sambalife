@@ -149,6 +149,7 @@
                         {% endfor %}
                     </div>
                 </div>
+
               {% if user|has_product_perm:'change_product' %}
               <a href="{% url 'product_edit' product.id %}" class="btn btn-warning"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
               {% endif %}
