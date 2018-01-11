@@ -1270,7 +1270,7 @@ msgstr ""
 
 #: html/templates/store_lot_details.html:47
 msgid "UPC / CODIGO IDENTIFICADOR"
-msgstr ""
+msgstr "UPC / ASIN"
 
 #: html/templates/store_lot_details.html:50 store/models.py:102
 msgid "Valor de Compra"
