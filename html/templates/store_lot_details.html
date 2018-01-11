@@ -7,13 +7,13 @@
         <div class="col-md-1 sidebar">
 
         </div>
+        {% timezone_name LANGUAGE_CODE as mytz %}
         <div class="col-md-10 main">
           <h1 class="page-header"><i class="fa fa-cart-arrow-down"></i> {{ lot.name }}</h1>
           <div class="row">
               <div class="col-md-4">
                   <p><strong>{% trans "Situação" %}: </strong> {% if lot.status %}<strong>{{ lot.get_status_display  }}</strong>{% endif %}</p>
                   <p>
-                  {% timezone_name LANGUAGE_CODE as mytz %}
                   {% timezone mytz %}
                       <strong>{% trans "Data venda" %}: </strong> {% if lot.sell_date %}{{ lot.sell_date }}{% endif %}
                   {% endtimezone %}
@@ -43,7 +43,9 @@
               <br><h3><i class="fa fa-list-ol"></i> {% trans "Produto(s)" %}</h3><br><br>
               <div class="bs-example" id="alerta-valor-minimo">
                  <div class="alert alert-warning">
-                    <strong>Importante!</strong> Os dados apurados abaixo, tais como: <strong>Rank, Valor de Venda, Tarifa FBA, Lucros, etc...</strong> foram apurados dia <strong>12/12/2017</strong>. É imprescindível que o usuário, antes de finalizar a compra, verifique novamente as informações junto a Amazon. Os dados informados abaixo podem sofrer alteração entre a data de apuração e a data de hoje. Caso tenha dúvidas, leia nossos termos <a href="/pt/termos-e-condicoes-de-uso/"><strong>Clicando aqui</strong></a>.
+                   {% timezone mytz %}
+                    <strong>Importante!</strong> Os dados apurados abaixo, tais como: <strong>Rank, Valor de Venda, Tarifa FBA, Lucros, etc...</strong> foram apurados dia <strong>{{ lot.create_date|date:'SHORT_DATE_FORMAT' }}</strong>. É imprescindível que o usuário, antes de finalizar a compra, verifique novamente as informações junto a Amazon. Os dados informados abaixo podem sofrer alteração entre a data de apuração e a data de hoje. Caso tenha dúvidas, leia nossos termos <a href="/pt/termos-e-condicoes-de-uso/"><strong>Clicando aqui</strong></a>.
+                   {% endtimezone %}
                  </div>
               </div>
           </div>
@@ -54,7 +56,7 @@
                       <p class="nome"><strong>{% trans "Nome" %}:</strong><br> {{ product.name }}</p>
                   </div>
                   <div class="col-md-12">
-                      <p><strong>{% trans "Rank" %}:</strong>  1%</p>
+                      <p><strong>{% trans "Rank" %}:</strong> {{ product.rank|localize }}%</p>
                   </div>
                   <div class="col-md-12">
                       <p><strong>{% trans "UPC / CODIGO IDENTIFICADOR" %}:</strong><br> {{ product.identifier }}</p>
