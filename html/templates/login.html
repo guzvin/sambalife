@@ -61,7 +61,7 @@
                 <a class="btn-azul" href="{% url 'user_registration' %}"><i class="fa fa-paper-plane"></i> {% trans "Quero me Cadastrar" %}</a>
             </div>
         <div class="bottom-login">
-            <p>{% blocktrans %}Caso tenha alguma dúvida <a class="download" href="/pt/ajuda/#contact">clique aqui</a> e entre em contato conosco.{% endblocktrans %}</p>
+            <p>{% blocktrans %}Caso tenha alguma dúvida <a class="download" href="mailto:support@voiservices.com">clique aqui</a> e entre em contato conosco.{% endblocktrans %}</p>
         </div>
 
         <form action="{% url 'my_set_language' %}" method="post">{% csrf_token %}
