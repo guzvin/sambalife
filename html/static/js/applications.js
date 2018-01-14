@@ -739,7 +739,7 @@
 
         $('form#form-save-shipment').validate(
         {
-            ignore: '#id_product_set-__prefix__-quantity, #id_warehouse_set-__prefix__-name',
+            ignore: '#hidden_id_product_set-__prefix__-quantity, #id_warehouse_set-__prefix__-name',
             submitHandler: function(form)
             {
                 $('.loading').show();
@@ -749,7 +749,8 @@
             invalidHandler: function(event, validator)
             {
                 $('button#send-btn').removeClass('nosubmit');
-                $('<label id="send-btn-error" class="error" for="send-btn">' + gettext('Unable to save, fix errors above to continue.') + '</label>').insertAfter('button#send-btn');
+                $('.send-btn-error').remove();
+                $('<label class="error send-btn-error" for="send-btn">' + gettext('Fix the errors above and try again.') + '</label>').insertAfter('button#send-btn');
             },
             onfocusout: false,
             onkeyup: false,
@@ -860,6 +861,17 @@
 
     if($('form#form-add-package')[0])
     {
+        $('a#change-btn-status-forward').on('click', function (e)
+        {
+            if($('.services-validation').valid())
+            {
+                return true;
+            }
+            $('.send-btn-error').remove();
+            $('<label class="error send-btn-error" for="send-btn">' + gettext('Fix the errors above and try again.') + '</label>').insertAfter('a#change-btn-status-forward');
+            return false;
+        });
+
         $('a#send-btn-1').on('click', function (e)
         {
             e.preventDefault();
@@ -882,6 +894,8 @@
             invalidHandler: function(event, validator)
             {
                 $('a#send-btn-1').removeClass('nosubmit');
+                $('.send-btn-error').remove();
+                $('<label class="error send-btn-error" for="send-btn">' + gettext('Fix the errors above and try again.') + '</label>').insertAfter('a#send-btn-1');
             },
             onfocusout: false,
             onkeyup: false,
@@ -1239,7 +1253,7 @@
             invalidHandler: function(event, validator)
             {
                 $('button#send-btn').removeClass('nosubmit');
-                $('<label id="send-btn-error" class="error" for="send-btn">' + gettext('Unable to save, fix errors above to continue.') + '</label>').insertAfter('button#send-btn');
+                $('<label id="send-btn-error" class="error" for="send-btn">' + gettext('Fix the errors above and try again.') + '</label>').insertAfter('button#send-btn');
             },
             onfocusout: false,
             onkeyup: false,
@@ -1330,10 +1344,19 @@
             data: form.serialize()
         }).done(function( obj )
         {
-            var totalCost = $('#totalCost')[0];
-            if(totalCost)
+            var totalCost = $('#totalCost');
+            if(totalCost[0])
             {
-                totalCost.innerHTML = obj.new_cost;
+                var pElement = totalCost.closest('p');
+                if(obj.new_cost_raw > 0)
+                {
+                    pElement.removeAttr('class');
+                }
+                else
+                {
+                    pElement.attr('class', 'hide');
+                }
+                totalCost[0].innerHTML = obj.new_cost;
             }
             var productServiceValidation = $('#services' + form.find('input[name="service_product_id"]').val());
             if(productServiceValidation[0])

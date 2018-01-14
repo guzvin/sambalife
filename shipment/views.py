@@ -20,12 +20,12 @@ from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
 from utils import helper
-from utils.models import Billing
+from utils.models import Billing, Params
 from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
-from shipment.templatetags.shipments import unit_weight_display, unit_length_display
+from shipment.templatetags.shipments import unit_weight_display, unit_length_display, has_payment
 from service.templatetags.services import has_service_perm
 from django.contrib.auth import get_user_model
 from django.template import loader, TemplateDoesNotExist
@@ -203,8 +203,10 @@ def shipment_details(request, pid=None):
         _shipment_details.cost = cost
         _shipment_warehouses = Warehouse.objects.filter(shipment=_shipment_details).order_by('id')
         title = ' '.join([str(_('Envio')), str(_shipment_details.id)])
+        max_time_period = helper.get_max_time_period()
         context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products,
-                        'warehouses': _shipment_warehouses, 'billing_type': billing_type}
+                        'warehouses': _shipment_warehouses, 'billing_type': billing_type,
+                        'max_time_period': max_time_period if max_time_period else 0}
         custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
 
         ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
@@ -220,10 +222,41 @@ def shipment_details(request, pid=None):
                                                                'length': custom_error_messages},
                                                widgets={'pdf_2': FileInput(
                                                    attrs={'class': 'form-control input-70 pdf_2-validate'})})
+        novalidate_fields = []
+        if _shipment_details.status != 2:
+            novalidate_fields.append('pdf_2')
+        if _shipment_details.type:
+            novalidate_fields.append('warehouse')
+        package_kwargs = {'renderEmptyForm': False, 'noValidateFields': novalidate_fields}
         package_formset = None
-        if request.method == 'GET' and request.GET.get('s') == '2':
+        if request.method == 'GET':
+            if request.GET.get('s') == '2':
                 context_data['success'] = True
                 context_data['success_message'] = _('Alteração salva com sucesso.')
+            elif request.GET.get('s') == '1':
+                if _shipment_details.status == 2:
+                    if request.user == _shipment_details.user or has_group(request.user, 'admins') \
+                            or has_shipment_perm(request.user, 'add_package'):
+                        package_formset = PackageFormSet(
+                                queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
+                                instance=_shipment_details, prefix='package_set', **package_kwargs)
+                        context_data['success'] = True
+                        context_data['success_message'] = ungettext('Pacote inserido com sucesso.',
+                                                                    'Pacotes inseridos com sucesso.',
+                                                                    len(package_formset))
+                elif _shipment_details.status == 3 or \
+                        (_shipment_details.status == 4 and has_payment(_shipment_details) is False):
+                    if request.user == _shipment_details.user or has_shipment_perm(request.user, 'add_package'):
+                        package_formset = PackageFormSet(
+                            queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
+                            instance=_shipment_details, prefix='package_set', **package_kwargs)
+                        context_data['success'] = True
+                        context_data['success_message'] = ungettext('Upload realizado com sucesso.',
+                                                                    'Uploads realizados com sucesso.',
+                                                                    len(package_formset))
+                elif _shipment_details.status == 5 and has_group(request.user, 'admins'):
+                        context_data['success'] = True
+                        context_data['success_message'] = _('Envio concluído com sucesso.')
         elif request.method == 'POST' and _shipment_details.is_archived is False \
                 and _shipment_details.is_canceled is False and _shipment_details.type is None \
                 and _shipment_details.status < 5:
@@ -269,28 +302,14 @@ def shipment_details(request, pid=None):
                 ignore_package_fields.append('width')
                 ignore_package_fields.append('length')
                 ignore_package_fields.append('shipment_tracking')
-            novalidate_fields = []
-            if _shipment_details.status != 2:
-                novalidate_fields.append('pdf_2')
-            if _shipment_details.type:
-                novalidate_fields.append('warehouse')
-            package_kwargs = {'renderEmptyForm': False, 'noValidateFields': novalidate_fields}
             if billing_type == 2:
-                _services = Service.objects.filter(product__product__shipment__user_id=_shipment_details.user_id).distinct()
+                _services = Service.objects.filter(product__product__shipment__user_id=_shipment_details.user_id)\
+                    .distinct()
                 context_data['services'] = _services
             if _shipment_details.status == 3:
                 # Pagamento Autorizado
                 if request.user == _shipment_details.user or has_shipment_perm(request.user, 'add_package'):
-                    if request.method == 'GET':
-                        if request.GET.get('s') == '1':
-                            package_formset = PackageFormSet(
-                                queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
-                                instance=_shipment_details, prefix='package_set', **package_kwargs)
-                            context_data['success'] = True
-                            context_data['success_message'] = ungettext('Upload realizado com sucesso.',
-                                                                        'Uploads realizados com sucesso.',
-                                                                        len(package_formset))
-                    elif request.method == 'POST':
+                    if request.method == 'POST':
                         package_formset = PackageFormSet(request.POST, request.FILES, instance=_shipment_details,
                                                          prefix='package_set', **package_kwargs)
                         if package_formset.is_valid() and package_formset.has_changed():
@@ -312,25 +331,19 @@ def shipment_details(request, pid=None):
                 # Upload PDF 2 Autorizado
                 if request.user == _shipment_details.user or has_group(request.user, 'admins') \
                         or has_shipment_perm(request.user, 'add_package'):
-                    if request.method == 'GET':
-                        if request.GET.get('s') == '1':
-                            package_formset = PackageFormSet(
-                                    queryset=Package.objects.filter(shipment=_shipment_details).order_by('id'),
-                                    instance=_shipment_details, prefix='package_set', **package_kwargs)
-                            context_data['success'] = True
-                            context_data['success_message'] = ungettext('Pacote inserido com sucesso.',
-                                                                        'Pacotes inseridos com sucesso.',
-                                                                        len(package_formset))
-                    elif request.method == 'POST' and request.POST.get('add_package_file'):
+                    if request.method == 'POST' and request.POST.get('add_package_file'):
                         package_formset = PackageFormSet(request.POST, request.FILES, instance=_shipment_details,
                                                          prefix='package_set', **package_kwargs)
                         logger.debug('@@@@@@@@@@@@@@@ PDF 2 IS VALID @@@@@@@@@@@@@@@@@')
                         logger.debug(package_formset)
+                        logger.debug(package_formset.is_valid())
                         if package_formset.is_valid() and (request.user == _shipment_details.user
                                                            or has_shipment_perm(request.user, 'add_package')):
                             try:
+                                next_status = 3 if has_payment(_shipment_details) else 4
                                 with transaction.atomic():
-                                    updated_rows = Shipment.objects.select_for_update().filter(query).update(status=3)
+                                    updated_rows = Shipment.objects.select_for_update().filter(query)\
+                                        .update(status=next_status)
                                     if updated_rows == 0:
                                         logger.error('Zero rows updated.')
                                         raise Shipment.DoesNotExist('Zero rows updated.')
@@ -350,28 +363,27 @@ def shipment_details(request, pid=None):
                             except Shipment.DoesNotExist as e:
                                 logger.error(e)
                                 return HttpResponseBadRequest()
-                            send_email_shipment_payment(request, _shipment_details)
+                            if next_status == 3:
+                                send_email_shipment_payment(request, _shipment_details)
+                            else:
+                                _shipment_details.payment_date=timezone.now()
+                                _shipment_details.save(update_fields=['payment_date'])
+                                send_email_shipment_paid(request, _shipment_details, async=True)
                             return HttpResponseRedirect('%s?s=1' % reverse('shipment_details', args=[pid]))
                         elif has_shipment_perm(request.user, 'add_package'):
                             novalidate_fields.append('pdf_2')
-                            package_formset = PackageFormSet(request.POST, instance=_shipment_details,
-                                                             prefix='package_set', **package_kwargs)
+                            edit_package_formset = PackageFormSet(request.POST, instance=_shipment_details,
+                                                                  prefix='package_set', **package_kwargs)
                             try:
-                                if edit_warehouse(package_formset, pid, False, ignore_package_fields):
-                                    return HttpResponseRedirect('%s?s=2' % reverse('shipment_details', args=[pid]))
-                                else:
-                                    return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
+                                if edit_warehouse(edit_package_formset, pid, False, ignore_package_fields):
+                                    context_data['success'] = True
+                                    context_data['success_message'] = _('Alteração salva com sucesso.')
                             except Shipment.DoesNotExist as e:
                                 logger.error(e)
                                 return HttpResponseBadRequest()
             elif _shipment_details.status == 4 or _shipment_details.status == 5:
                 # Checagens Finais ou Enviado
-                if request.method == 'GET':
-                    if _shipment_details.status == 5:
-                        if has_group(request.user, 'admins') and request.GET.get('s') == '1':
-                            context_data['success'] = True
-                            context_data['success_message'] = _('Envio concluído com sucesso.')
-                else:
+                if request.method == 'POST':
                     package_formset = PackageFormSet(request.POST, request.FILES, instance=_shipment_details,
                                                      prefix='package_set', **package_kwargs)
                     logger.debug('@@@@@@@@@@@@@ PACKAGE FORMSET VALIDATION @@@@@@@@@@@@@@@@@@@@@')
@@ -716,19 +728,23 @@ def shipment_status(request, pid=None, op=None):
     if has_group(request.user, 'admins'):
         shipment = Shipment.objects.select_for_update().filter(pk=pid, is_archived=False, is_canceled=False)
         if shipment:
+            if shipment[0].status == 2 or shipment[0].status == 3 or shipment[0].status == 4:
+                products = shipment[0].product_set.all()
+                ignored_response, cost = calculate_shipment(products, shipment[0].user_id, save_product_price=True)
+                shipment[0].cost = cost
             if op == 'forward' and shipment[0].status < 4:
                 if shipment[0].status == 3:
-                    products = shipment[0].product_set.all()
-                    ignored_response, cost = calculate_shipment(products, shipment[0].user_id, save_product_price=True)
                     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(shipment[0].user)
                     shipment.update(status=F('status') + 1, cost=cost, is_sandbox=is_sandbox,
                                     payment_date=timezone.now())
                     send_email_shipment_paid(request, shipment[0], async=True)
                 else:
-                    shipment.update(status=F('status') + 1)
+                    next_status = 2 if has_payment(shipment[0]) is False and shipment[0].status == 2 else 1
+                    shipment.update(status=F('status') + next_status)
             elif op == 'backward' and shipment[0].status > 1:
                 if shipment[0].status == 4:
-                    shipment.update(status=F('status') - 1, payment_date=None)
+                    next_status = 1 if has_payment(shipment[0]) else 2
+                    shipment.update(status=F('status') - next_status, payment_date=None)
                 else:
                     shipment.update(status=F('status') - 1)
     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
@@ -932,10 +948,12 @@ def shipment_add(request):
                 'quantity': data.quantity_partial,
                 'product': data
             }
+    max_time_period = helper.get_max_time_period()
     return render(request, 'shipment_add.html', {'title': _('Envio'), 'shipment_formset': shipment_formset,
                                                  'product_formset': product_formset,
                                                  'warehouse_formset': warehouse_formset,
-                                                 'billing_type': billing_type})
+                                                 'billing_type': billing_type,
+                                                 'max_time_period': max_time_period if max_time_period else 0})
 
 
 @login_required
@@ -1096,7 +1114,7 @@ def calculate_shipment(products, user_id, save_product_price=False):
                                         helper.resolve_partner_value(partner))
             quantity += product.quantity
     config = Config.objects.first()
-    if config and cost < config.minimum_price:
+    if config and 0 < cost < config.minimum_price:
         cost = config.minimum_price
     return HttpResponse(json.dumps({'cost': force_text(formats.number_format(round(cost, 2), use_l10n=True,
                                                                              decimal_pos=2)),
@@ -1290,7 +1308,7 @@ def send_email_shipment_payment(request, shipment):
 
 
 def send_email_shipment_paid(request, shipment, async=False):
-    texts = (_('Obrigado novamente, agora é só aguardar que, assim que fizermos as checagens finais e tudo estiver ok, '
+    texts = (_('Obrigado, agora é só aguardar que, assim que fizermos as checagens finais e tudo estiver ok, '
                'iremos enviar um novo e-mail para avisar da conclusão do processo do seu envio %(id)s.')
              % {'id': shipment.id}, _('Previsão para conclusão'),
              formats.date_format(etc(shipment.payment_date, estimate='shipment'), "SHORT_DATE_FORMAT"),

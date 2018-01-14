@@ -540,4 +540,11 @@ def _html_format(*texts):
     return format_html(html_format, *texts)
 
 
+def get_max_time_period():
+    max_time_period = None
+    params = Params.objects.first()
+    if params:
+        max_time_period = params.time_period_one + params.time_period_two + params.time_period_three
+    return max_time_period
+
 valid_ipn_received.connect(paypal_notification)

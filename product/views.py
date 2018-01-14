@@ -11,7 +11,7 @@ from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpRespo
 from django.utils import formats, timezone
 from django.forms import modelformset_factory, inlineformset_factory
 from django.urls import reverse
-from utils.helper import MyBaseInlineFormSet, ObjectView, send_email_basic_template_bcc_admins
+from utils.helper import MyBaseInlineFormSet, ObjectView, send_email_basic_template_bcc_admins, get_max_time_period
 from utils.models import Params
 from product.templatetags.products import has_product_perm
 from myauth.templatetags.users import has_user_perm
@@ -111,10 +111,7 @@ def product_stock(request):
         products = paginator.page(1)
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
-    max_time_period = None
-    params = Params.objects.first()
-    if params:
-        max_time_period = params.time_period_one + params.time_period_two + params.time_period_three
+    max_time_period = get_max_time_period()
     return render(request, 'product_stock.html', {'title': _('Estoque'), 'products': products,
                                                   'filter_values': ObjectView(filter_values),
                                                   'max_time_period': max_time_period if max_time_period else 0})

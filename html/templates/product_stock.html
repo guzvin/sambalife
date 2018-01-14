@@ -179,10 +179,9 @@
                       {% endif %}
                       <span id="product-status-display-{{ product.id }}">{% if product.status %}{{ product.get_status_display  }}{% endif %}</span>
                       {% if max_time_period > 0 and product.status == 2 %}
-                      {% with days_in_voi_stock=product|days_in_stock:max_time_period %}
                       <br>
+                      {% days_in_stock product max_time_period=max_time_period as days_in_voi_stock %}
                       ({{ days_in_voi_stock }} {% trans "dias" %})
-                      {% endwith %}
                       {% endif %}
                       {% if user|has_product_perm:'change_product_status' %}
                       <!-- somente admin visualiza -->

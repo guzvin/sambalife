@@ -52,5 +52,6 @@ def service_product(request, pid=None):
         logger.debug(cost)
     return HttpResponse(json.dumps({'new_cost': force_text(formats.number_format(round(cost, 2), use_l10n=True,
                                                                                  decimal_pos=2)),
+                                    'new_cost_raw': round(cost, 2),
                                     'products': services_product_json, 'v': product_services}),
                         content_type='application/json')

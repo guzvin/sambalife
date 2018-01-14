@@ -344,8 +344,10 @@ def envioBrasilDetalhe(request):
 def how_it_works(request):
     return render(request, 'how_it_works.html')
 
+
 def help(request):
     return render(request, 'help.html')
+
 
 def terms(request):
     return render(request, 'terms.html')

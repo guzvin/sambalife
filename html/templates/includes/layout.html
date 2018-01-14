@@ -264,14 +264,13 @@
     </header>
 
     {% block conteudo %}Conteudo pagina{% endblock %}
-
-
+{% comment %}
     <!-- Btn para usuario se tornar assinante. So quem nao e assinante pode visualizar esse bloco-->
     <div class="box-assine-agora">
-        <span>Assine Agora</span> <a href="/pt/usuario/cadastro/"><i class="fa fa-fw fa-hand-pointer-o fa-2x"></i></a>
+        <span>{% trans "Assine Agora" %}</span> <a href="#"><i class="fa fa-fw fa-hand-pointer-o fa-2x"></i></a>
     </div>
     <!-- Fim bloco -->
-
+{% endcomment %}
     <footer>
         <div class="container">
             <div class="row">

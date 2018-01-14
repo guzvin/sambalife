@@ -84,5 +84,5 @@ urlpatterns += i18n_patterns(
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     url(r'^howitworks', how_it_works, name='how_it_works'),
     url(r'^ajuda', help, name='help'),
-    url(r'^termos-e-condicoes-de-uso', terms, name='terms')
+    url(_(r'^termos-e-condicoes-de-uso'), terms, name='terms')
 )

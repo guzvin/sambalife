@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n l10n tz permissions users shipments services commons %}
+{% load i18n l10n tz permissions users shipments services commons products %}
 
 {% block specific_styles %}
 <link href="/static/css/inlines.css" rel="stylesheet">
@@ -8,7 +8,7 @@
 {% block conteudo %}
 
 <!-- Passo 1 -->
-
+{% has_payment shipment as shipment_has_payment %}
  <div class="container-fluid">
       <form method="delete">
           <input type="hidden" name="delete_product_shipment_id" id="delete_product_shipment_id" value="">
@@ -34,6 +34,7 @@
                   <th>{% trans "Nome" %}</th>
                   <th>{% trans "Descrição" %}</th>
                   <th>{% trans "Validade" %}</th>
+                  <th class="center">{% trans "Tempo em estoque" %}</th>
                   <th class="center">{% trans "Quantidade" %}</th>
                   {% if user|has_user_perm:'view_users' %}
                   <th>{% trans "Usuário" %}</th>
@@ -62,7 +63,10 @@
                       {% endif %}
                       {% endwith %}
                   </td>
-
+                  <td class="center">
+                    {% days_in_stock product max_time_period=max_time_period as days_in_voi_stock %}
+                    {{ days_in_voi_stock }} {% trans "dias" %}
+                  </td>
                   <td class="center">{{ product.quantity }}</td>
                   {% if user|has_user_perm:'view_users' %}
                   <td>{{ shipment.user.first_name }}</td>
@@ -71,7 +75,7 @@
                   <td>
                   {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
                       <a class="btn btn-primary add-service-product-shipment" title="{% trans 'Atribuir serviços' %}" href="javascript:void(0);" data-shipment-product-id="{{product.id}}" data-shipment-product-uid="{{product.uid}}"><i class="fa fa-fw fa-cogs"></i></a>
-                      <input type="hidden" name="services{{product.id}}" id="services{{product.id}}" class="required-validate" value="{% if product|has_product_service %}1{% endif %}" />
+                      <input type="hidden" name="services{{product.id}}" id="services{{product.id}}" class="required-validate services-validation" value="{% if product|has_product_service %}1{% endif %}" />
                   {% elif shipment.status > 1 %}
                       <a class="btn btn-primary add-service-product-shipment" title="{% trans 'Visualizar serviços' %}" href="javascript:void(0);" data-shipment-product-id="{{product.id}}" data-shipment-product-uid="{{product.uid}}"><i class="fa fa-fw fa-cogs"></i></a>
                   {% endif %}
@@ -117,7 +121,8 @@
                 <!-- Campo desconto visao usuario -->
                 <p><strong><i class="fa fa-fw fa-minus-square"></i> {% trans "Desconto" %}: </strong> U$ <span id="DescCost">5,99</span></p>
 {% endcomment %}
-                <p>
+
+                <p class="{% if shipment_has_payment is False %}hide{% endif %}">
                     <strong><i class="fa fa-fw fa-money"></i> {% trans "Valor Total" %}: </strong> U$ <span id="totalCost">{{ shipment.cost|floatformat:2|localize }}</span>
                     {% if billing_type == 2 and shipment.status == 1 %}
                     <span class="help help-tooltip help-icon" title="{% blocktrans %}Este valor poderá ser alterado após inclusão dos serviços necessários para o preparo.{% endblocktrans %}"></span>
@@ -125,6 +130,7 @@
                 </p>
 
                 {% minimum_value_alert %}
+
             </div>
             {% timezone_name LANGUAGE_CODE as mytz %}
             <div class="{% block info_created_date %}{% endblock %}">
@@ -259,7 +265,7 @@
                <h4><i class="fa fa-fw fa-step-forward"></i> {% trans "Status" %}: </h4> {% trans "Acompanhe abaixo o status do envio" %}:<br><br><br>
 
                <div class="progress">
-                  <div class="progress-bar progress-bar-success {% status_bar shipment %}" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar progress-bar-success {% status_bar shipment shipment_has_payment=shipment_has_payment %}" role="progressbar" aria-valuemin="0" aria-valuemax="100">
                   </div>
                </div>
 
@@ -281,10 +287,12 @@
                    <div class="col-md-3 center">
                         <label><i class="fa fa-2x fa-file-pdf-o"></i><br>{% trans "Upload Etiqueta Caixa Autorizado" %}</label>
                    </div>
+                   {% if shipment_has_payment %}
                    <div class="col-md-3 center">
                         <label><i class="fa fa-2x fa-shopping-cart"></i><br>{% trans "Pagamento Autorizado" %}</label>
                    </div>
-                   <div class="col-md-2 center">
+                   {% endif %}
+                   <div class="col-md-{{ shipment_has_payment|get_column_size:4 }} center">
                         <label>
                             <i class="fa fa-2x fa-list-alt"></i><br>{% trans "Checagens Finais" %}
                             {% if shipment.status == 4 %}
@@ -422,13 +430,13 @@
                {% if user|has_group:'admins' %}
                 {% if shipment.status < 4 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="change-btn-status-forward" href="{% url 'shipment_status' shipment.id 'forward' %}">
-                    <i class="fa fa-fw fa-forward"></i> {% trans "Avançar status" %}
+                    <i class="fa fa-fw fa-forward"></i> {% trans "Pular etapa" %}
                 </a>
 
                 {% endif %}
                 {% if shipment.status > 1 and shipment.status < 5 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="change-btn-status-backward" href="{% url 'shipment_status' shipment.id 'backward' %}">
-                    <i class="fa fa-fw fa-backward"></i> {% trans "Voltar status" %}
+                    <i class="fa fa-fw fa-backward"></i> {% trans "Voltar etapa" %}
                 </a>
 
                 {% endif %}
@@ -516,7 +524,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">{% trans "Serviços utilizados na preparação" %}</h4>
+                    <h4 class="modal-title">{% trans "Composição do preço de redirecionamento" %}</h4>
                 </div>
                 <div class="modal-body">
                     {% for service in services%}

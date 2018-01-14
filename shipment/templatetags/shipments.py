@@ -21,7 +21,7 @@ def has_shipment_perm(user, perm):
 
 
 @register.simple_tag
-def status_bar(item):
+def status_bar(item, **kwargs):
     if item.status == 1:
         return 'emanalise'
     elif item.status == 2:
@@ -29,7 +29,7 @@ def status_bar(item):
     elif item.status == 3:
         return 'uplaut'
     elif item.status == 4:
-        return 'analisef'
+        return 'analisef' if 'shipment_has_payment' in kwargs and kwargs['shipment_has_payment'] else 'analisef2'
     elif item.status == 5:
         return 'enviado'
 
@@ -101,3 +101,18 @@ def minimum_value_alert():
         return {'minimum_value': force_text(formats.number_format(round(config.minimum_price, 2), use_l10n=True,
                                                                   decimal_pos=2))}
     return {}
+
+
+@register.simple_tag
+def has_payment(shipment):
+    logger.debug('@@@@@@@@@@@@@@@@ HAS PAYMENT HAS PAYMENT HAS PAYMENT HAS PAYMENT @@@@@@@@@@@@@@@@@@@@@')
+    logger.debug(shipment.cost)
+    if shipment.cost == 0:
+        return False
+    return True
+
+
+@register.filter
+def get_column_size(shipment_has_payment, step):
+    if step == 4:
+        return 2 if shipment_has_payment else 4

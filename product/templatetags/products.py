@@ -2,6 +2,9 @@ from django import template
 from shipment.models import Product
 from django.db.models import Q
 import datetime
+import logging
+
+logger = logging.getLogger('django')
 
 register = template.Library()
 
@@ -19,8 +22,11 @@ def exists_shipment_associated(product):
     return ', '.join([str(product.shipment_id) for product in products])
 
 
-@register.filter
-def days_in_stock(product, max_time_period):
+@register.simple_tag
+def days_in_stock(product, **kwargs):
+    if product is None:
+        return
+    max_time_period = kwargs.pop('max_time_period')
     elapsed = datetime.datetime.now(datetime.timezone.utc) - product.receive_date
     elapsed = elapsed.days
     return elapsed if elapsed <= max_time_period else ''.join([str(max_time_period), '+'])

@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n l10n shipments %}
+{% load i18n l10n shipments products %}
 {% block criarshipment %}active{% endblock %}
 
 {% block specific_styles %}
@@ -55,6 +55,7 @@
                   <th>{% trans "Nome" %}</th>
                   <th>{% trans "Descrição" %}</th>
                   <th>{% trans "Validade" %}</th>
+                  <th class="center">{% trans "Tempo em estoque" %}</th>
                   <th class="center">{% trans "Quantidade" %}</th>
                   {% if user|has_shipment_perm:'delete_product' %}
                   <th>{% trans "Retirar" %}</th>
@@ -66,6 +67,10 @@
                 <tr class="inline-related {% if forloop.last %}empty-form{% endif %}"
                   id="{{ product_formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
                   {{ product_form.product|safe }}
+                  <td class="center">
+                    {% days_in_stock product_form.product.value max_time_period=max_time_period as days_in_voi_stock %}
+                    {{ days_in_voi_stock }} {% trans "dias" %}
+                  </td>
                   <td class="center">
 {% comment %}
                       <input type="number" class="form-control menor-m quantity_validate required-number-validate" id="{{ product_form.quantity.id_for_label }}" name="{{ product_form.quantity.html_name }}" value="{% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}" />
