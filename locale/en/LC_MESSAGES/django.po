@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-14 01:49-0200\n"
+"POT-Creation-Date: 2018-01-14 10:24-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -376,10 +376,10 @@ msgstr "Yes"
 #: html/templates/base_shipment_details.html:550
 #: html/templates/includes/layout-footer.html:231
 #: html/templates/includes/layout-footer.html:260
-#: html/templates/includes/layout.html:335
-#: html/templates/includes/layout.html:352
-#: html/templates/includes/layout.html:371
-#: html/templates/includes/layout.html:401 html/templates/login.html:121
+#: html/templates/includes/layout.html:334
+#: html/templates/includes/layout.html:351
+#: html/templates/includes/layout.html:370
+#: html/templates/includes/layout.html:400 html/templates/login.html:121
 #: html/templates/product_details.html:193
 #: html/templates/product_details.html:217
 #: html/templates/product_stock.html:240
@@ -571,7 +571,7 @@ msgid "Produtos"
 msgstr "Products"
 
 #: html/templates/includes/layout-footer.html:94
-#: html/templates/includes/layout.html:237
+#: html/templates/includes/layout.html:236
 #: html/templates/store_purchase.html:13
 msgid "Minhas compras"
 msgstr "Purchase history"
@@ -585,7 +585,7 @@ msgid "Tutorial Plataforma"
 msgstr "Tutorial"
 
 #: html/templates/includes/layout-footer.html:103
-#: html/templates/includes/layout.html:220 html/templates/product_stock.html:14
+#: html/templates/includes/layout.html:219 html/templates/product_stock.html:14
 #: product/views.py:115 shipment/views.py:162
 msgid "Estoque"
 msgstr "Inventory"
@@ -616,23 +616,23 @@ msgstr "New Shipment"
 
 #: html/templates/includes/layout-footer.html:158
 #: html/templates/includes/layout-footer.html:246
-#: html/templates/includes/layout.html:210
-#: html/templates/includes/layout.html:387
+#: html/templates/includes/layout.html:209
+#: html/templates/includes/layout.html:386
 msgid "Olá"
 msgstr "Hi"
 
 #: html/templates/includes/layout-footer.html:161
-#: html/templates/includes/layout.html:214 html/templates/user_edit.html:14
+#: html/templates/includes/layout.html:213 html/templates/user_edit.html:14
 msgid "Editar cadastro"
 msgstr "Edit Profile"
 
 #: html/templates/includes/layout-footer.html:165
-#: html/templates/includes/layout.html:241
+#: html/templates/includes/layout.html:240
 msgid "sair"
 msgstr "Exit"
 
 #: html/templates/includes/layout-footer.html:180
-#: html/templates/includes/layout.html:278
+#: html/templates/includes/layout.html:277
 #: html/templates/user_registration.html:481
 #: html/templates/user_reset_password.html:107
 #: html/templates/user_validation.html:86
@@ -647,30 +647,30 @@ msgid "<a href='/pt/termos-e-condicoes-de-uso.html'>Termos e Condições de Uso"
 msgstr "<a href='/en/terms-and-conditions.html'>Terms and Conditions"
 
 #: html/templates/includes/layout-footer.html:200
-#: html/templates/includes/layout.html:300 html/templates/login.html:89
+#: html/templates/includes/layout.html:299 html/templates/login.html:89
 #: html/templates/user_registration.html:503
 msgid "Sucesso"
 msgstr "Success"
 
 #: html/templates/includes/layout-footer.html:203
-#: html/templates/includes/layout.html:303 html/templates/login.html:92
+#: html/templates/includes/layout.html:302 html/templates/login.html:92
 #: html/templates/user_registration.html:506
 #: html/templates/user_reset_password.html:129
 msgid "Erro"
 msgstr "Error"
 
 #: html/templates/includes/layout-footer.html:226
-#: html/templates/includes/layout.html:328
+#: html/templates/includes/layout.html:327
 msgid "Não foi possível concluir sua ação."
 msgstr "Unable to process your request."
 
 #: html/templates/includes/layout-footer.html:243
-#: html/templates/includes/layout.html:384
+#: html/templates/includes/layout.html:383
 msgid "Importante!"
 msgstr "Important!"
 
 #: html/templates/includes/layout-footer.html:247
-#: html/templates/includes/layout.html:388
+#: html/templates/includes/layout.html:387
 msgid ""
 "Os termos e condições de uso da nossa plataforma foram atualizados. <a "
 "href='/pt/termos-e-condicoes-de-uso.html' class='download' "
@@ -682,12 +682,12 @@ msgstr ""
 "We have two important info for you."
 
 #: html/templates/includes/layout-footer.html:248
-#: html/templates/includes/layout.html:389
+#: html/templates/includes/layout.html:388
 msgid "Primeiro"
 msgstr "First"
 
 #: html/templates/includes/layout-footer.html:248
-#: html/templates/includes/layout.html:389
+#: html/templates/includes/layout.html:388
 msgid ""
 "Para uma maior agilidade e transparência no atendimento aos nossos usuários, "
 "a partir do dia 15/07/2017 os valores dos envios são calculados de acordo "
@@ -697,27 +697,27 @@ msgstr ""
 "shipment is calculated based on the time the product is in our stock."
 
 #: html/templates/includes/layout-footer.html:248
-#: html/templates/includes/layout.html:389
+#: html/templates/includes/layout.html:388
 msgid "Seguem os valores"
 msgstr "Here are the prices"
 
 #: html/templates/includes/layout-footer.html:249
-#: html/templates/includes/layout.html:390
+#: html/templates/includes/layout.html:389
 msgid "Produto no estoque VOI até 45 dias: USD 1,29 por produto"
 msgstr "Product in VOI Services' stock for 45 days: $1.49 per product"
 
 #: html/templates/includes/layout-footer.html:250
-#: html/templates/includes/layout.html:391
+#: html/templates/includes/layout.html:390
 msgid "Produto no estoque VOI de 46 até 75 dias: USD 1,49 por produto"
 msgstr "Product in VOI Services' stock for 46 to 75 days: $1.69 per product"
 
 #: html/templates/includes/layout-footer.html:251
-#: html/templates/includes/layout.html:392
+#: html/templates/includes/layout.html:391
 msgid "Produto no estoque VOI de 76 até 90 dias: USD 1,99 por produto"
 msgstr "Product in VOI Services' stock for 76 to 90 days: $2.19 per product"
 
 #: html/templates/includes/layout-footer.html:252
-#: html/templates/includes/layout.html:393
+#: html/templates/includes/layout.html:392
 msgid ""
 "A partir do dia 91, o produto será considerado abandonado e retirado da "
 "lista do usuário."
@@ -726,12 +726,12 @@ msgstr ""
 "from the user's list."
 
 #: html/templates/includes/layout-footer.html:254
-#: html/templates/includes/layout.html:395
+#: html/templates/includes/layout.html:394
 msgid "Segundo"
 msgstr "Second"
 
 #: html/templates/includes/layout-footer.html:255
-#: html/templates/includes/layout.html:396
+#: html/templates/includes/layout.html:395
 msgid ""
 "Para sua segurança e conforto, se você ainda não aceitou nossos termos, pode "
 "fazê-lo agora clicando no botão abaixo"
@@ -744,7 +744,7 @@ msgid "Aceito os termos e condições de uso"
 msgstr "I have read and accept the terms and conditions"
 
 #: html/templates/includes/layout-footer.html:257
-#: html/templates/includes/layout.html:398
+#: html/templates/includes/layout.html:397
 msgid ""
 "É necessário aceitar os termos para poder continuar a utilizar a plataforma."
 msgstr ""
@@ -752,7 +752,7 @@ msgstr ""
 "platform."
 
 #: html/templates/includes/layout-footer.html:268
-#: html/templates/includes/layout.html:433 html/templates/login.html:128
+#: html/templates/includes/layout.html:432 html/templates/login.html:128
 #: html/templates/user_registration.html:566
 #: html/templates/user_reset_password.html:154
 msgid "Carregando"
@@ -766,59 +766,59 @@ msgstr "End impersonation"
 msgid "Acessar como"
 msgstr "Impersonate"
 
-#: html/templates/includes/layout.html:114
+#: html/templates/includes/layout.html:112
 msgid "Como Funciona"
 msgstr "How it works"
 
-#: html/templates/includes/layout.html:205
+#: html/templates/includes/layout.html:116
 msgid "Contato"
 msgstr "Contact us"
 
-#: html/templates/includes/layout.html:228
+#: html/templates/includes/layout.html:227
 msgid "Envios Amazon"
 msgstr "Amazon Shipments"
 
-#: html/templates/includes/layout.html:230
+#: html/templates/includes/layout.html:229
 msgid "Envios em aberto"
 msgstr "Open Shipments"
 
-#: html/templates/includes/layout.html:282
+#: html/templates/includes/layout.html:281
 #: html/templates/user_registration.html:485
 #: html/templates/user_reset_password.html:111
 #: html/templates/user_validation.html:90
 msgid "PrepShip Tool"
 msgstr "VOI Services"
 
-#: html/templates/includes/layout.html:287
+#: html/templates/includes/layout.html:286
 msgid "Termos e Condições de Uso"
 msgstr "Terms and Conditions"
 
-#: html/templates/includes/layout.html:288
+#: html/templates/includes/layout.html:287
 msgid "Ajuda"
 msgstr "Help"
 
-#: html/templates/includes/layout.html:346
+#: html/templates/includes/layout.html:345
 msgid "Fale Conosco"
 msgstr "Contact us"
 
-#: html/templates/includes/layout.html:349
+#: html/templates/includes/layout.html:348
 msgid ""
 "Para entrar em contato com nosso suporte e nossos canais de atendimento, "
 "envie um email para <a class='download' hre='mailto:contato@voiservices."
 "com'>contato@voiservices.com</a>. Retornaremos o mais breve possível."
 msgstr ""
 
-#: html/templates/includes/layout.html:363
+#: html/templates/includes/layout.html:362
 msgid "Endereço VOI"
 msgstr "VOI Services address"
 
-#: html/templates/includes/layout.html:366
+#: html/templates/includes/layout.html:365
 msgid ""
 "Veja abaixo o nosso endereço para o qual você deve enviar seus produtos "
 "antes que eles sejam enviados para Amazon/Ebay."
 msgstr "Address to send your products to before they are sent to Amazon/Ebay."
 
-#: html/templates/includes/layout.html:397
+#: html/templates/includes/layout.html:396
 #: html/templates/user_registration.html:457
 msgid "Li e aceito os termos e condições de uso"
 msgstr "I have read and accept the terms and conditions"
@@ -853,11 +853,11 @@ msgstr "Sign Up"
 
 #: html/templates/login.html:64
 msgid ""
-"Caso tenha alguma dúvida <a class=\"download\" href=\"/pt/ajuda/#contact"
-"\">clique aqui</a> e entre em contato conosco."
+"Caso tenha alguma dúvida <a class=\"download\" href=\"mailto:"
+"support@voiservices.com\">clique aqui</a> e entre em contato conosco."
 msgstr ""
-"In case you need to talk to us <a class=\"download\" href=\"/en/help/#contact"
-"\">click here</a>."
+"In case you need to talk to us <a class=\"download\" href=\"mailto:"
+"support@voiservices.com\">click here</a>."
 
 #: html/templates/login.html:108
 msgid "As instruções para troca de sua senha foram enviadas para o seu e-mail."
