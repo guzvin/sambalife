@@ -1351,10 +1351,12 @@
                 if(obj.new_cost_raw > 0)
                 {
                     pElement.removeAttr('class');
+                    $('.minimum-value-alert').removeClass('hide');
                 }
                 else
                 {
                     pElement.attr('class', 'hide');
+                    $('.minimum-value-alert').addClass('hide');
                 }
                 totalCost[0].innerHTML = obj.new_cost;
             }

@@ -95,11 +95,12 @@ def has_product_service(product):
 
 
 @register.inclusion_tag('minimum_value.html')
-def minimum_value_alert():
+def minimum_value_alert(shipment):
     config = Config.objects.first()
     if config and config.minimum_price:
         return {'minimum_value': force_text(formats.number_format(round(config.minimum_price, 2), use_l10n=True,
-                                                                  decimal_pos=2))}
+                                                                  decimal_pos=2)),
+                'shipment_has_payment': has_payment(shipment)}
     return {}
 
 
