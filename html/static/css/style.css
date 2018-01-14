@@ -2036,10 +2036,10 @@ footer.fixed-footer{
 @media (max-width: 767px){
 
     .sistema .navbar-brand img:first-child{
-        margin-top: 10px;
+        margin-top: 0;
     }
 
-    .sistema .navbar-brand img:last-child{
+    .box-assine-agora {
         display: none;
     }
 
