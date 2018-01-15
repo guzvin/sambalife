@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-14 10:24-0200\n"
+"POT-Creation-Date: 2018-01-15 11:56-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2120,6 +2120,10 @@ msgstr ""
 
 #: sambalife/urls.py:67
 msgid "^store/purchase"
+msgstr ""
+
+#: sambalife/urls.py:85
+msgid "^how-it-works"
 msgstr ""
 
 #: sambalife/urls.py:87

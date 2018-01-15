@@ -82,7 +82,7 @@ urlpatterns += i18n_patterns(
     url(r'^product/autocomplete[/]$', product_autocomplete, name='product_autocomplete'),
     url(r'^service/product/(?P<pid>[0-9]+)[/]$', service_product, name='service_product'),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
-    url(r'^howitworks', how_it_works, name='how_it_works'),
+    url(_(r'^how-it-works'), how_it_works, name='how_it_works'),
     url(r'^ajuda', help, name='help'),
     url(_(r'^termos-e-condicoes-de-uso'), terms, name='terms')
 )

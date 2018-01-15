@@ -344,7 +344,15 @@ def store_paypal_notification_post_transaction(request, user, ipn_obj, paypal_st
                                                     async=True)
     elif ipn_obj.payment_status == ST_PP_COMPLETED:
         email_title = _('Pagamento CONFIRMADO pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
-        texts = (_('Seu pagamento foi confirmado, obrigado! Os itens já se encontram em seu estoque.'),)
+        texts = (_('Seu pagamento foi confirmado, obrigado! Os itens já se encontram em seu estoque.'),
+                 _('GARANTA A GRATUIDADE NO ENVIO DE SEUS PRODUTOS'),
+                 _('Para o usuário usufruir do redirecionamento grátis, o lote adquirido deverá ser enviado em sua '
+                   'totalidade em um prazo de até 3 dias úteis. Caso o tempo de envio supere a gratuidade serão '
+                   'apliadas as seguintes regras de cobrança ao envio:'),
+                 _('- Produto no estoque VOI S a partir do quarto dia até 10 dias: USD 1,29 por unidade do produto;'),
+                 _('- Produto no estoque VOI S de 11 até 20 dias: USD 1,49 por unidade do produto;'),
+                 _('- Produto no estoque VOI S de 21 até 30 dias: USD 1,99 por unidade do produto; e'),
+                 _('- Após 30 dias entrar em contato com o nosso suporte.'),)
         email_message = _(helper._html_format(*texts)) + paypal_status_message
         helper.send_email_basic_template_bcc_admins(request, user.first_name, [user.email], email_title, email_message,
                                                     async=True)
