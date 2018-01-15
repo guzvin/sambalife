@@ -323,8 +323,8 @@ def store_paypal_notification_success(_lot_details, user_id, ipn_obj):
                                        user_id=user_id, send_date=pytz.utc.localize(datetime.datetime.today()),
                                        receive_date=pytz.utc.localize(datetime.datetime.today()), store=_('VOI'),
                                        condition=product.condition, actual_condition=product.condition,
-                                       lot_product=product)
-            Tracking.objects.create(track_number=product.identifier, product=p)
+                                       lot_product=product, asin=product.identifier)
+            # Tracking.objects.create(track_number=product.identifier, product=p)
     elif ipn_obj.payment_status == ST_PP_VOIDED and str(_lot_details.user_id) == str(user_id):
         _lot_details.user = None
         _lot_details.status = 1

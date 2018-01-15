@@ -14,6 +14,8 @@ from service.models import Service
 from django.contrib.admin import utils
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin.views.main import ChangeList
+from django.utils.html import format_html
+from django.core.urlresolvers import reverse
 from rangefilter.filter import DateRangeFilter
 import logging
 
@@ -148,10 +150,16 @@ class LotAdmin(admin.ModelAdmin):
 
     search_fields = ('name', 'product__name',)
     list_display_links = ('id', 'name',)
-    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost')
+    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'duplicate_lot_action')
     fieldsets = (
         (None, {'fields': ('name', 'description', 'thumbnail', 'groups')}),
     )
+
+    def duplicate_lot_action(self, obj):
+        return format_html('<a class="button" href="{}">{}</a>', reverse('admin:duplicate_lot',
+                                                                         args=[obj.pk]), _('Duplicar lote'))
+    duplicate_lot_action.short_description = _('Duplicar')
+    duplicate_lot_action.allow_tags = True
 
     def save_related(self, request, form, formsets, change):
         products_quantity = 0
@@ -228,6 +236,30 @@ class LotAdmin(admin.ModelAdmin):
         email_body = helper.format_html(html_format, *texts)
         return helper.build_basic_template_email_tuple(request, user.first_name, [user.email], email_title,
                                                        email_body)
+
+    def get_urls(self):
+        from django.conf.urls import url
+        urls = super().get_urls()
+        custom_url = [url(r'^duplicate_lot/(?P<lid>.+)[/]$', self.admin_site.admin_view(self.duplicate_lot),
+                          name='duplicate_lot')]
+        return custom_url + urls
+
+    def duplicate_lot(self, request, lid):
+        logger.debug('@@@@@@@@@@@@@@@  DUPLICATE LOT DUPLICATE LOT DUPLICATE LOT @@@@@@@@@@@@@@@@@@@@@@')
+        logger.debug(lid)
+        context = {
+            'my_show_save_as': True,
+            'show_save': False,
+            'show_save_and_add_another': False,
+            'show_save_and_continue': False,
+            'show_delete_link': False,
+            'show_delete': False
+                   }
+        return self.changeform_view(request, lid, '', context)
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        self.save_as = extra_context.get('my_show_save_as', False) if extra_context else False
+        return super(LotAdmin, self).changeform_view(request, object_id, form_url, extra_context)
 
 admin_site.register(Lot, LotAdmin)
 
