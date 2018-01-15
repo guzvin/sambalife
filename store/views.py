@@ -345,6 +345,7 @@ def store_paypal_notification_post_transaction(request, user, ipn_obj, paypal_st
     elif ipn_obj.payment_status == ST_PP_COMPLETED:
         email_title = _('Pagamento CONFIRMADO pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
         texts = (_('Seu pagamento foi confirmado, obrigado! Os itens já se encontram em seu estoque.'),
+                 ' ',
                  _('GARANTA A GRATUIDADE NO ENVIO DE SEUS PRODUTOS'),
                  _('Para o usuário usufruir do redirecionamento grátis, o lote adquirido deverá ser enviado em sua '
                    'totalidade em um prazo de até 3 dias úteis. Caso o tempo de envio supere a gratuidade serão '
