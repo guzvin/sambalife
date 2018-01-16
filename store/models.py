@@ -53,6 +53,9 @@ class Lot(models.Model):
     average_rank = models.DecimalField(_('Rank Médio'), max_digits=12, decimal_places=2, default=0)
     thumbnail = models.ImageField(_('Imagem'), upload_to=lot_directory_path, storage=OverWriteStorage(),
                                   validators=[validate_file_extension], null=True, blank=True)
+    voi_cost = models.DecimalField(_('Custo VOI S'), max_digits=12, decimal_places=2, default=0)
+    voi_profit = models.DecimalField(_('Lucro VOI S'), max_digits=12, decimal_places=2, default=0)
+    voi_roi = models.DecimalField(_('ROI VOI S (%)'), max_digits=12, decimal_places=2, default=0)
 
     class Meta:
         verbose_name = _('Lote')

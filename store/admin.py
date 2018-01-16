@@ -1,11 +1,13 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.admin.filters import DateFieldListFilter, SimpleListFilter
+from django.contrib.admin.filters import DateFieldListFilter
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import Group
+from django.db.models import Sum
 from django.contrib.auth import get_user_model
 from store.models import Lot, Product, Config, LotReport
+from store.admin_filters import UserFilter, AsinFilter
 from utils import helper
 from utils.models import Params
 from utils.sites import admin_site
@@ -16,6 +18,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin.views.main import ChangeList
 from django.utils.html import format_html
 from django.core.urlresolvers import reverse
+from django.contrib.admin.utils import quote
 from rangefilter.filter import DateRangeFilter
 import logging
 
@@ -168,6 +171,7 @@ class LotAdmin(admin.ModelAdmin):
         average_rank = 0
         lot_cost = 0
         redirect_cost = 0
+        voi_cost = 0
         related_changed = False
         form.save_m2m()
         for formset in formsets:
@@ -186,6 +190,7 @@ class LotAdmin(admin.ModelAdmin):
                 average_rank += (product.rank / 100)
                 lot_cost += ((product.buy_price + product_redirect_cost) * product.quantity)
                 redirect_cost += (product_redirect_cost * product.quantity)
+                voi_cost += product.voi_value
             lot.products_quantity = products_quantity
             lot.products_cost = products_cost
             lot.profit = profit
@@ -193,6 +198,9 @@ class LotAdmin(admin.ModelAdmin):
             lot.average_rank = (average_rank / len(products)) * 100
             lot.lot_cost = lot_cost
             lot.redirect_cost = redirect_cost
+            lot.voi_cost = voi_cost
+            lot.voi_profit = lot.lot_cost - lot.voi_cost
+            lot.voi_roi = (lot.voi_profit / lot.voi_cost) * 100 if lot.voi_cost > 0 else 0
             lot.save()
             if not change:
                 config = Config.objects.first()
@@ -286,10 +294,32 @@ class LotReportChangeList(ChangeList):
     def __init__(self, request, model, list_display, list_display_links,
                  list_filter, date_hierarchy, search_fields, list_select_related,
                  list_per_page, list_max_show_all, list_editable, model_admin):
+        self.lot_cost_sum = None
+        self.voi_cost_sum = None
+        self.voi_profit_sum = None
+        self.voi_roi_sum = None
         super(LotReportChangeList, self).__init__(request, model, list_display, list_display_links,
                                                   list_filter, date_hierarchy, search_fields, list_select_related,
                                                   list_per_page, list_max_show_all, list_editable, model_admin)
         self.title = _('Relatório de Lotes')
+
+    def get_results(self, *args, **kwargs):
+        super(LotReportChangeList, self).get_results(*args, **kwargs)
+        q = self.result_list.aggregate(lot_cost_sum=Sum('lot_cost'))
+        self.lot_cost_sum = q['lot_cost_sum']
+        q = self.result_list.aggregate(voi_cost_sum=Sum('voi_cost'))
+        self.voi_cost_sum = q['voi_cost_sum']
+        q = self.result_list.aggregate(voi_profit_sum=Sum('voi_profit'))
+        self.voi_profit_sum = q['voi_profit_sum']
+        q = self.result_list.aggregate(voi_roi_sum=Sum('voi_roi'))
+        self.voi_roi_sum = q['voi_roi_sum']
+
+    def url_for_result(self, result):
+        pk = getattr(result, self.pk_attname)
+        return reverse('admin:%s_%s_change' % (self.opts.app_label,
+                                               'lot'),
+                       args=(quote(pk),),
+                       current_app=self.model_admin.admin_site.name)
 
 
 class LotReportForm(forms.ModelForm):
@@ -302,15 +332,17 @@ class LotReportForm(forms.ModelForm):
 class LotReportAdmin(admin.ModelAdmin):
     form = LotReportForm
 
-    list_display_links = None
+    list_display_links = ('id', 'name',)
     list_filter = [
         'status',
         ('create_date', DateRangeFilter),
         ('sell_date', DateRangeFilter),
+        UserFilter,
+        AsinFilter,
     ]
 
     search_fields = ('name', 'product__name',)
-    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost')
+    list_display = ('id', 'name', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost', 'voi_profit', 'voi_roi')
 
     def has_delete_permission(self, request, obj=None):
         return False
