@@ -2014,7 +2014,7 @@ footer.fixed-footer{
 }
 
 .box-comparativo-valor .box-valor ul.opacit-text li, .box-comparativo-valor .box-valor ul.opacit-text li span{
-    color: #dedede;
+    color: #DC3438;
 }
 
 .box-comparativo-valor .box-valor ul.opacit-text li:first-child, .box-comparativo-valor .box-valor ul.opacit-text li:first-child span{
@@ -2028,15 +2028,16 @@ footer.fixed-footer{
 .box-comparativo-valor .box-valor ul li i{
     display: block;
     float: left;
-    margin-top: 1px;
+    margin-top: -5px;
+    font-size: 2em;
 }
 
 .box-comparativo-valor .box-valor ul li span{
-    font-size: 14px;
+    font-size: 16px;
     font-weight: normal;
     float: left;
     display: block;
-    width: 90%;
+    width: 86%;
     line-height: 16px;
 }
 
@@ -2051,12 +2052,28 @@ footer.fixed-footer{
         margin-top: 0;
     }
 
+    .logo-services{
+        display: none;
+    }
+
+    .box-comparativo {
+        float: left;
+    }
+
+    .box-comparativo .page-header{
+        width: 39%;
+        float: left;
+        margin: 10px 0 0 0;
+    }
+
     .box-assine-agora {
         display: none;
     }
 
-    .page-header{
-        margin-top: 0;
+    .page-header {
+        margin: 0 auto;
+        font-size: 1.3em;
+        width: 90%;
     }
 
     .box-container-lote {
@@ -2101,8 +2118,14 @@ footer.fixed-footer{
         right: 44px;
     }
 
+    .text-gg {
+        font-size: 33px;
+    }
+
     .banner-lote h2 {
         width: 100%;
+        font-size: 13px;
+        padding: 0px 10px;
     }
 
     .banner-lote h2:nth-child(3){
