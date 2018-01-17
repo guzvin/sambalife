@@ -32,7 +32,10 @@
 <body id="page-top" class="login">
     <div id="login-box">
             <img src="/static/img/logo_sup.png" width="176"/>
-            <p>{% trans "Digite abaixo seus dados de acesso" %}</p>
+            <div class="contem-logo-login">
+                <span class="logo-services fr">VOI </span><span class="logo-services">SERVICES</span>
+            </div>
+            <p class="left">{% trans "Digite abaixo seus dados de acesso" %}</p>
             <form action="" method="post" id="form-login">
               {% csrf_token %}
                 {% if next %}

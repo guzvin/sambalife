@@ -802,8 +802,15 @@ body {
 }
 
 .navbar-brand img:first-child{
-    width: 80px;
+    width: 55px;
     float: left;
+    margin-top: 14px;
+}
+
+.logo-login{
+    width: 100%;
+    float: left;
+    text-align: center;
 }
 
 .navbar-brand img.logo-img-plataforma{
@@ -891,15 +898,20 @@ body {
 }
 
 #login-box img{
-    margin: 25px auto 25px auto;
+    margin: 25px auto -4px auto;
     display: block;
-    width: 158px;
+    width: 100px;
 }
 
 #login-box  .logo-services {
-    margin: 0 auto 21px auto;
-    font-size: 31px;
-    width: 166px;
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    width: auto;
+}
+
+.contem-logo-login{
+    width: 55%;
+    margin: 0 auto;
 }
 
 
@@ -1708,8 +1720,8 @@ form small{
 }
 
 .sistema .navbar-brand img:first-child{
-    margin-top: 10px;
-    width: 74px;
+    margin-top: 14px;
+    width: 55px;
 }
 
 .sistema .navbar-right {
