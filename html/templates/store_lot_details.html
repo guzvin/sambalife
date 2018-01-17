@@ -65,7 +65,8 @@
                       <p><strong>{% trans "Condição" %}:</strong><br> {% if product.condition %}{{ product.get_condition_display }}{% endif %}</p>
                   </div>
                   <div class="col-md-6">
-                      <p><strong>{% trans "Valor de Compra" %}:</strong><br> U$ {{ product.buy_price|localize }}</p>
+                      {% calculate_buy_price product as product_buy_price %}
+                      <p><strong>{% trans "Valor de Compra" %}:</strong><br> U$ {{ product_buy_price|localize }}</p>
                   </div>
                   <div class="col-md-6">
                       <p><strong>{% trans "Quantidade" %}:</strong><br> {{ product.quantity }}</p>
