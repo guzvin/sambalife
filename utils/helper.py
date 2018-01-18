@@ -170,8 +170,8 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
 
 
 def paypal_mode(user):
-    is_sandbox = user.email in settings.PAYPAL_SANDBOX_USERS
-    if user.email in settings.PAYPAL_LIVE_USERS:
+    is_sandbox = user is not None and user.email in settings.PAYPAL_SANDBOX_USERS
+    if user is None or user.email in settings.PAYPAL_LIVE_USERS:
         is_sandbox = False
     return is_sandbox
 
