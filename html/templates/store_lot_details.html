@@ -126,6 +126,29 @@
         </div>
       </div>
     </div>
+    <div id="modal-store-subscribe" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Solicite sua assinatura" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        {% blocktrans %}
+                        Você ainda não é assinante da nossa loja,<br>
+                        solicite seu acesso agora mesmo através do e-mail:
+                        support@voiservices.com
+                        {% endblocktrans %}
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="submit" class="btn btn-danger">{% trans "Sim" %}</button>-->
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
     {% if user|has_store_perm:'delete_lot' and lot.payment_complete is False %}
     <form action="{%url 'admin:store_lot_delete' lot.id %}" method="post" class="form-delete-lot" id="form-delete-lot">
     {% csrf_token %}
