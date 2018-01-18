@@ -727,14 +727,14 @@ def shipment_status(request, pid=None, op=None):
                 ignored_response, cost = calculate_shipment(products, shipment[0].user_id, save_product_price=True)
                 shipment[0].cost = cost
             if op == 'forward' and shipment[0].status < 4:
+                is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(shipment[0].user)
                 if shipment[0].status == 3:
-                    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(shipment[0].user)
                     shipment.update(status=F('status') + 1, cost=cost, is_sandbox=is_sandbox,
                                     payment_date=timezone.now())
                     send_email_shipment_paid(request, shipment[0], async=True)
                 else:
                     next_status = 2 if has_payment(shipment[0]) is False and shipment[0].status == 2 else 1
-                    shipment.update(status=F('status') + next_status)
+                    shipment.update(status=F('status') + next_status, is_sandbox=is_sandbox)
             elif op == 'backward' and shipment[0].status > 1:
                 if shipment[0].status == 4:
                     next_status = 1 if has_payment(shipment[0]) else 2

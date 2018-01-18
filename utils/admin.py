@@ -71,7 +71,7 @@ class AccountingPartnerInline(admin.TabularInline):
             partner = Partner.objects.get(identity=obj.partner)
             return partner.name
         except Partner.DoesNotExist:
-            return 'Fábio/Gustavo/Roberto'
+            return _('Repasse')
 
     partner_lookup_name.short_description = _('Parceiro')
 
@@ -79,6 +79,9 @@ class AccountingPartnerInline(admin.TabularInline):
 class AccountingAdmin(admin.ModelAdmin):
     list_display = ('date',)
     readonly_fields = ('date', 'user', 'ipaddress',)
+    fieldsets = (
+        (None, {'fields': ('date', 'user', 'ipaddress',)}),
+    )
 
     inlines = [
         AccountingPartnerInline,
@@ -135,6 +138,11 @@ class AccountingAdmin(admin.ModelAdmin):
         if obj and obj.simulation:
             context['title'] = _('Simulação Fechamento')
         return super(AccountingAdmin, self).render_change_form(request, context, add, change, form_url, obj)
+
+    def get_queryset(self, request):
+        qs = super(AccountingAdmin, self).get_queryset(request)
+        qs = qs.filter(is_sandbox=False)
+        return qs
 
 
 admin_site.register(Accounting, AccountingAdmin)

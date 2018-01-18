@@ -102,6 +102,7 @@ class Accounting(models.Model):
     date = models.DateTimeField(_('Data do Fechamento'), auto_now_add=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name=_('Usuário'))
     ipaddress = models.GenericIPAddressField(_('Endereço IP'), blank=True, null=True)
+    is_sandbox = models.BooleanField(_('Sandbox'), default=False)
     simulation = False
 
     class Meta:

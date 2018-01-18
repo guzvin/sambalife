@@ -15,6 +15,22 @@ logger = logging.getLogger('django')
 @login_required
 @require_http_methods(["GET"])
 @transaction.atomic
+def close_accounting_sandbox(request):
+    if Shipment.objects.filter(status=5, is_sandbox=True, accounting=None).exists():
+        accounting = Accounting()
+        accounting.user = request.user
+        accounting.ipaddress = request.META.get('REMOTE_ADDR', '')
+        accounting.is_sandbox = True
+        accounting.save()
+        Shipment.objects\
+            .filter(status=5, is_sandbox=True, accounting=None)\
+            .update(accounting=accounting)
+    return HttpResponseRedirect(reverse('admin:utils_accounting_changelist'))
+
+
+@login_required
+@require_http_methods(["GET"])
+@transaction.atomic
 def close_accounting(request, simulate=False, sandbox=False):
     params = Params.objects.first()
     if params:
