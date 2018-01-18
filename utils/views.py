@@ -19,10 +19,8 @@ def close_accounting(request, simulate=False, sandbox=False):
     params = Params.objects.first()
     if params:
         fgr_cost = params.fgr_cost
-        base_price = params.redirect_factor
     else:
         fgr_cost = settings.DEFAULT_FGR_COST
-        base_price = settings.DEFAULT_REDIRECT_FACTOR
     shipments = Shipment.objects.select_related('user', 'user__partner').filter(status=5, is_sandbox=sandbox,
                                                                                 accounting=None)
     partners = []
@@ -38,14 +36,12 @@ def close_accounting(request, simulate=False, sandbox=False):
         accounting_partner = next((p for p in partners if p.partner == 'fgr'), None)
         if accounting_partner:
             accounting_partner.value = accounting_partner.value + _shipment_products_cost(shipment.product_set.all(),
-                                                                                          base_price, fgr_cost,
-                                                                                          shipment.user)
+                                                                                          fgr_cost)
             accounting_partner.total_products += shipment.total_products
         else:
             accounting_partner = AccountingPartner()
             accounting_partner.partner = 'fgr'
-            accounting_partner.value = _shipment_products_cost(shipment.product_set.all(), base_price, fgr_cost,
-                                                               shipment.user)
+            accounting_partner.value = _shipment_products_cost(shipment.product_set.all(), fgr_cost)
             accounting_partner.total_products = shipment.total_products
             accounting_partner.accounting = accounting
             partners.append(accounting_partner)
@@ -73,11 +69,12 @@ def close_accounting(request, simulate=False, sandbox=False):
     return accounting, partners
 
 
-def _shipment_products_cost(products, base_price, base_cost, user):
+def _shipment_products_cost(products, base_cost):
     cost = 0
-    subtract = 0
     for product in products:
         price = product.cost
-        price += subtract
-        cost += (base_cost + ((price - base_price) / 2)) * product.quantity
+        if price:
+            cost += (base_cost + (price / 2)) * product.quantity
+        else:
+            cost += base_cost * product.quantity
     return cost
