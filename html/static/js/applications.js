@@ -1070,6 +1070,7 @@
                 }
                 if(obj.modal)
                 {
+                    $('#modal-store-subscribe').modal('show');
                     return;
                 }
                 var paymentFormArea = $('<span id="payment-form-area"></span>').append($(obj));
@@ -1134,8 +1135,8 @@
 
     function assembleModal(title, body)
     {
-        $('div.modal-content h4.modal-title')[0].innerHTML = title;
-        var modalBody = $('div.modal-content div.modal-body');
+        $('#confirmacao').find('div.modal-content h4.modal-title')[0].innerHTML = title;
+        var modalBody = $('#confirmacao').find('div.modal-content div.modal-body');
         modalBody[0].innerHTML = '';
         modalBody.append($('<p>' + body + '</p>'));
         $('#confirmacao').modal('show');

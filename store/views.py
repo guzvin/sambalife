@@ -163,36 +163,37 @@ def current_milli_time(): return int(round(time.time() * 1000))
 def store_pay_form(request, pid=None):
     if not request.user.is_authenticated():
         return HttpResponse(json.dumps({'redirect': reverse('user_registration')}), content_type='application/json')
-    config = Config.objects.first()
-    if config:
-        if not request.user.groups.filter(pk=config.default_group.id).exists():
-            return HttpResponse(json.dumps({'modal': 'subscribe'}), content_type='application/json')
     try:
-        with transaction.atomic():
-            _lot_details = Lot.objects.extra(where=['EXISTS (SELECT 1 FROM store_lot_groups '
-                                                    'WHERE store_lot.id = store_lot_'
-                                                    'groups.lot_id AND store_lot_groups.group_id IN (SELECT U0.id FROM '
-                                                    'auth_group U0 INNER JOIN myauth_myuser_groups U1 ON '
-                                                    '(U0.id = U1.group_id) WHERE U1.myuser_id = %s)) OR NOT EXISTS ('
-                                                    'SELECT 1 FROM store_lot_groups WHERE store_lot.id = '
-                                                    'store_lot_groups.lot_id)'], params=[request.user.id]). \
-                select_for_update().get(pk=pid, payment_complete=False)
+        # _lot_details = Lot.objects.extra(where=['EXISTS (SELECT 1 FROM store_lot_groups '
+        #                                         'WHERE store_lot.id = store_lot_'
+        #                                         'groups.lot_id AND store_lot_groups.group_id IN (SELECT U0.id FROM '
+        #                                         'auth_group U0 INNER JOIN myauth_myuser_groups U1 ON '
+        #                                         '(U0.id = U1.group_id) WHERE U1.myuser_id = %s)) OR NOT EXISTS ('
+        #                                         'SELECT 1 FROM store_lot_groups WHERE store_lot.id = '
+        #                                         'store_lot_groups.lot_id)'], params=[request.user.id])\
+        #     .get(pk=pid, payment_complete=False)
+        _lot_details = Lot.objects.get(pk=pid, payment_complete=False)
     except Lot.DoesNotExist as e:
         logger.error(e)
         return HttpResponseBadRequest()
+    has_access = set(request.user.groups.all()) & set(_lot_details.groups.all())
+    if not has_access:
+        return HttpResponse(json.dumps({'modal': 'subscribe'}), content_type='application/json')
     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_lot_details.user)
     if is_sandbox:
         invoice_id = '_'.join(['B', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
         paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
         paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
         paypal_cert = settings.PAYPAL_CERT_SANDBOX
+        paypal_private_cert = settings.PAYPAL_PRIVATE_CERT_SANDBOX
+        paypal_public_cert = settings.PAYPAL_PUBLIC_CERT_SANDBOX
     else:
         invoice_id = '_'.join(['B', str(request.user.id), str(pid)])
         paypal_business = settings.PAYPAL_BUSINESS
         paypal_cert_id = settings.PAYPAL_CERT_ID
         paypal_cert = settings.PAYPAL_CERT
-    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT
-    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT
+        paypal_private_cert = settings.PAYPAL_PRIVATE_CERT
+        paypal_public_cert = settings.PAYPAL_PUBLIC_CERT
     paypal_dict = {
         'business': paypal_business,
         'amount': _lot_details.lot_cost,

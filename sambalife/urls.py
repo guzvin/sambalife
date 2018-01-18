@@ -35,6 +35,7 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     url(r'^admin/', include(admin_site.urls)),
     url(r'^admin/close_accounting/$', close_accounting, name='close_accounting'),
+    url(r'^admin/close_accounting_sandbox/$', close_accounting_sandbox, name='close_accounting_sandbox'),
     url(_(r'^login[/]$'), user_login, name='login'),
     url(_(r'^logout[/]$'), user_logout, name='logout'),
     url(_(r'^user/password/forgot[/]$'), user_forgot_password, name='user_forgot_password'),

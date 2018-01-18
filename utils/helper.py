@@ -25,7 +25,7 @@ from store.views import store_paypal_notification, store_paypal_notification_suc
     store_paypal_notification_post_transaction
 from django.template import Context, Template
 from django.template.base import VariableNode
-from utils.models import Params, Billing
+from utils.models import Params
 from django.utils import translation
 from service.models import Product
 from utils.templatetags.commons import timezone_name
@@ -170,13 +170,13 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
 
 
 def paypal_mode(user):
-    is_sandbox = user.email in settings.PAYPAL_SANDBOX_USERS
-    if user.email in settings.PAYPAL_LIVE_USERS:
+    is_sandbox = user is not None and user.email in settings.PAYPAL_SANDBOX_USERS
+    if user is None or user.email in settings.PAYPAL_LIVE_USERS:
         is_sandbox = False
     return is_sandbox
 
 
-def resolve_formula(formula, partner=None, product=None, save_product_price=False, billing_type=2):
+def resolve_formula(formula, partner=None, product=None, save_product_price=False):
     template = Template(formula)
     context_var = {}
     for var in template:
@@ -185,7 +185,7 @@ def resolve_formula(formula, partner=None, product=None, save_product_price=Fals
             if var == 'partner':
                 context_var[var] = str(resolve_partner_value(partner))
             elif var == 'price':
-                price = resolve_price_value(product, billing_type)
+                price = resolve_price_value(product)
                 if save_product_price and product:
                     product.cost = price
                     product.save(update_fields=['cost'])
@@ -200,13 +200,10 @@ def resolve_partner_value(partner):
     return 0
 
 
-def resolve_price_value(product, billing_type):
+def resolve_price_value(product):
     if product is None:
         return 0
-    if billing_type == 2:
-        return resolve_price_value_by_service(product)
-    else:
-        return resolve_price_value_flat_rate(product)
+    return resolve_price_value_by_service(product)
 
 
 def resolve_price_value_by_service(product):
@@ -215,30 +212,6 @@ def resolve_price_value_by_service(product):
     for service in services:
         price += service.price
     return price
-
-
-def resolve_price_value_flat_rate(product):
-    reference_date = product.receive_date
-    params = Params.objects.first()
-    if params is None:
-        return settings.DEFAULT_REDIRECT_FACTOR
-    logger.debug('@@@@@@@@@@@@ REFERENCE_DATE @@@@@@@@@@@@@@')
-    logger.debug(datetime.datetime.now())
-    logger.debug(reference_date)
-    if reference_date:
-        time_period_one = params.time_period_one
-        time_period_two = params.time_period_two
-        elapsed = datetime.datetime.now(datetime.timezone.utc) - reference_date
-        elapsed = elapsed.days
-        logger.debug(elapsed)
-        if time_period_one:
-            if elapsed <= time_period_one:
-                return params.redirect_factor
-        if time_period_two:
-            if elapsed <= time_period_one + time_period_two:
-                return params.redirect_factor_two
-            return params.redirect_factor_three
-    return params.redirect_factor
 
 
 class RequiredBaseInlineFormSet(BaseInlineFormSet):

@@ -29,4 +29,4 @@ class DomainLocaleMiddleware(MiddlewareMixin):
         #     request.LANGUAGE_CODE = translation.get_language()
         logger.debug(translation.get_language())
         request.session[LANGUAGE_SESSION_KEY] = request.LANGUAGE_CODE
-        # request.CURRENT_DOMAIN = 'e95dd75f.ngrok.io'
+        # request.CURRENT_DOMAIN = '68aeaace.ngrok.io'

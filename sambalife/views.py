@@ -72,7 +72,7 @@ def user_login(request):
                 if 'next' in request.POST:
                     return HttpResponseRedirect(request.POST['next'])
                 else:
-                    return HttpResponseRedirect(reverse('product_stock'))
+                    return HttpResponseRedirect(reverse('store'))
             else:
                 form.add_error(None, _('Não foi possível realizar seu login. Caso tenha esquecido sua senha, '
                                        'clique na opção Esqueci Minha Senha. Em caso de dúvida '

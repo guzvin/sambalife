@@ -97,7 +97,7 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['localhost', '.voiservices.com', '.ppst.com', '.prepshiptool.com', '.maquinadevendasusa.com', 'e95dd75f.ngrok.io']
+ALLOWED_HOSTS = ['localhost', '.voiservices.com', '.ppst.com', '.prepshiptool.com', '68aeaace.ngrok.io']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -310,10 +310,12 @@ LOGGING = {
 
 PAYPAL_TEST = PAYPAL_SANDBOX
 
-PAYPAL_PRIVATE_CERT = os.path.join(PAYPAL_ROOT, 'paypal_private.pem')
-PAYPAL_PUBLIC_CERT = os.path.join(PAYPAL_ROOT, 'paypal_public.pem')
-PAYPAL_CERT = os.path.join(PAYPAL_ROOT, 'paypal_cert.pem')
+PAYPAL_PRIVATE_CERT = os.path.join(PAYPAL_ROOT, os.path.join('live', 'paypal_private.pem'))
+PAYPAL_PUBLIC_CERT = os.path.join(PAYPAL_ROOT, os.path.join('live', 'paypal_public.pem'))
+PAYPAL_CERT = os.path.join(PAYPAL_ROOT, os.path.join('live', 'paypal_cert.pem'))
 PAYPAL_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_cert.pem'))
+PAYPAL_PRIVATE_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_private.pem'))
+PAYPAL_PUBLIC_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_public.pem'))
 
 CRONJOBS = [
     ('0 0 1 * *', 'utils.cron.archive_shipped_shipments'),
