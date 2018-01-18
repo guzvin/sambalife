@@ -314,6 +314,8 @@ PAYPAL_PRIVATE_CERT = os.path.join(PAYPAL_ROOT, 'paypal_private.pem')
 PAYPAL_PUBLIC_CERT = os.path.join(PAYPAL_ROOT, 'paypal_public.pem')
 PAYPAL_CERT = os.path.join(PAYPAL_ROOT, 'paypal_cert.pem')
 PAYPAL_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_cert.pem'))
+PAYPAL_PRIVATE_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_private.pem'))
+PAYPAL_PUBLIC_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_public.pem'))
 
 CRONJOBS = [
     ('0 0 1 * *', 'utils.cron.archive_shipped_shipments'),

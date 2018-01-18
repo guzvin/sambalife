@@ -186,13 +186,15 @@ def store_pay_form(request, pid=None):
         paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
         paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
         paypal_cert = settings.PAYPAL_CERT_SANDBOX
+        paypal_private_cert = settings.PAYPAL_PRIVATE_CERT_SANDBOX
+        paypal_public_cert = settings.PAYPAL_PUBLIC_CERT_SANDBOX
     else:
         invoice_id = '_'.join(['B', str(request.user.id), str(pid)])
         paypal_business = settings.PAYPAL_BUSINESS
         paypal_cert_id = settings.PAYPAL_CERT_ID
         paypal_cert = settings.PAYPAL_CERT
-    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT
-    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT
+        paypal_private_cert = settings.PAYPAL_PRIVATE_CERT
+        paypal_public_cert = settings.PAYPAL_PUBLIC_CERT
     paypal_dict = {
         'business': paypal_business,
         'amount': _lot_details.lot_cost,
