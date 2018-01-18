@@ -103,11 +103,11 @@
                         </ul>
                     </li>
                     {% endif %}
-
+                    {% if request.user.is_authenticated %}
                     <li class="{% block storelist %}{% endblock %}">
                         <a href="{% url 'store' %}" class="logo-marca-link operacional-conf"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</a>
                     </li>
-
+                    {% endif %}
                     <li class="{% block comoFunciona %}{% endblock %}">
                         <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
                     </li>
