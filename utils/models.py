@@ -134,23 +134,3 @@ class AccountingPartner(models.Model):
         yield 'paid', self.paid
         yield 'total_products', self.total_products
         yield 'accounting', self.accounting
-
-
-class Billing(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    TYPE_CHOICES = (
-        (1, _('Taxa fixa')),
-        (2, _('Por serviços')),
-    )
-    type = models.SmallIntegerField(_('Tipo'), choices=TYPE_CHOICES, null=True)
-
-    class Meta:
-        verbose_name = _('Tipo de cobrança')
-        verbose_name_plural = _('Tipo de cobrança')
-
-    def __str__(self):
-        if self.type == 1:
-            return str(_('Taxa fixa'))
-        elif self.type == 2:
-            return str(_('Por serviços'))
-        return ''

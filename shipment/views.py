@@ -20,7 +20,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
 from utils import helper
-from utils.models import Billing, Params
+from utils.models import Params
 from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
@@ -194,18 +194,13 @@ def shipment_details(request, pid=None):
         if has_perm is False:
             return HttpResponseForbidden()
         _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
-        billing = Billing.objects.first()
-        if billing:
-            billing_type = billing.type
-        else:
-            billing_type = 2  # por serviço
         ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id)
         _shipment_details.cost = cost
         _shipment_warehouses = Warehouse.objects.filter(shipment=_shipment_details).order_by('id')
         title = ' '.join([str(_('Envio')), str(_shipment_details.id)])
         max_time_period = helper.get_max_time_period()
         context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products,
-                        'warehouses': _shipment_warehouses, 'billing_type': billing_type,
+                        'warehouses': _shipment_warehouses,
                         'max_time_period': max_time_period if max_time_period else 0}
         custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
 
@@ -282,7 +277,7 @@ def shipment_details(request, pid=None):
                 else:
                     return HttpResponseForbidden()
             if has_shipment_perm(request.user, 'add_package'):
-                if billing_type == 2 and has_service_perm(request.user, 'add_product'):
+                if has_service_perm(request.user, 'add_product'):
                     _services = Service.objects.all()
                     context_data['services'] = _services
                 serialized_products = serializers.serialize('json', _shipment_products, fields=('id', 'quantity',
@@ -302,10 +297,8 @@ def shipment_details(request, pid=None):
                 ignore_package_fields.append('width')
                 ignore_package_fields.append('length')
                 ignore_package_fields.append('shipment_tracking')
-            if billing_type == 2:
-                _services = Service.objects.filter(product__product__shipment__user_id=_shipment_details.user_id)\
-                    .distinct()
-                context_data['services'] = _services
+            _services = Service.objects.filter(product__product__shipment__user_id=_shipment_details.user_id).distinct()
+            context_data['services'] = _services
             if _shipment_details.status == 3:
                 # Pagamento Autorizado
                 if request.user == _shipment_details.user or has_shipment_perm(request.user, 'add_package'):
@@ -866,11 +859,6 @@ def shipment_add(request):
             original_products = OriginalProduct.objects.none()
     else:
         original_products = OriginalProduct.objects.none()
-    billing = Billing.objects.first()
-    if billing:
-        billing_type = billing.type
-    else:
-        billing_type = 2  # por serviço
     ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
                                            widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
@@ -920,12 +908,7 @@ def shipment_add(request):
                         original_product = OriginalProduct.objects.get(pk=product.product_id)
                         product.receive_date = original_product.receive_date
                         shipment.total_products += product.quantity
-                    if billing_type == 2:
-                        shipment.cost = 0
-                    else:
-                        ignored_response, cost = calculate_shipment(products, request.user.id)
-                        if cost > 0:
-                            shipment.cost = cost
+                    shipment.cost = 0
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
                     shipment.save()
                     product_formset.instance = shipment
@@ -934,7 +917,7 @@ def shipment_add(request):
                     product_formset.save()
                     warehouses = warehouse_formset.save()
                     logger.debug('@@@@@@@@@@@@ SEND PDF 1 EMAIL @@@@@@@@@@@@@@')
-                    send_email_shipment_add(request, shipment, products, warehouses, billing_type)
+                    send_email_shipment_add(request, shipment, products, warehouses)
             return HttpResponseRedirect('%s?s=1' % reverse('shipment_add'))
         else:
             logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
@@ -953,7 +936,6 @@ def shipment_add(request):
     return render(request, 'shipment_add.html', {'title': _('Envio'), 'shipment_formset': shipment_formset,
                                                  'product_formset': product_formset,
                                                  'warehouse_formset': warehouse_formset,
-                                                 'billing_type': billing_type,
                                                  'max_time_period': max_time_period if max_time_period else 0})
 
 
@@ -971,11 +953,6 @@ def merchant_shipment_add(request):
             original_products = OriginalProduct.objects.none()
     else:
         original_products = OriginalProduct.objects.none()
-    billing = Billing.objects.first()
-    if billing:
-        billing_type = billing.type
-    else:
-        billing_type = 2  # por serviço
     ShipmentFormSet = modelformset_factory(Shipment, fields=('type',), min_num=1, max_num=1)
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
                                                                                                           'product'),
@@ -1017,18 +994,13 @@ def merchant_shipment_add(request):
                         original_product = OriginalProduct.objects.get(pk=product.product_id)
                         product.receive_date = original_product.receive_date
                         shipment.total_products += product.quantity
-                    if billing_type == 2:
-                        shipment.cost = 0
-                    else:
-                        ignored_response, cost = calculate_shipment(products, request.user.id)
-                        if cost > 0:
-                            shipment.cost = cost
+                    shipment.cost = 0
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
                     shipment.save()
                     product_formset.instance = shipment
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
                     product_formset.save()
-                    send_email_merchant_shipment_add(request, shipment, products, billing_type)
+                    send_email_merchant_shipment_add(request, shipment, products)
             return HttpResponseRedirect('%s?s=1' % reverse('merchant_shipment_add'))
         else:
             logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
@@ -1044,8 +1016,7 @@ def merchant_shipment_add(request):
             }
     return render(request, 'merchant_shipment_add.html', {'title': _('Envio Merchant'),
                                                           'shipment_formset': shipment_formset,
-                                                          'product_formset': product_formset,
-                                                          'billing_type': billing_type})
+                                                          'product_formset': product_formset})
 
 
 @login_required
@@ -1054,11 +1025,7 @@ def shipment_calculate(request):
     if has_shipment_perm(request.user, 'add_shipment') is False and \
                     has_shipment_perm(request.user, 'add_fbm_shipment') is False:
         return HttpResponseForbidden()
-    billing = Billing.objects.first()
-    if billing:
-        billing_type = billing.type
-    else:
-        billing_type = 2  # por serviço
+    billing_type = 2  # por serviço
     if billing_type == 2:
         return HttpResponseBadRequest()
     try:
@@ -1095,23 +1062,18 @@ def calculate_shipment(products, user_id, save_product_price=False):
         return HttpResponseBadRequest(), 0
     cost = 0
     quantity = 0
-    billing = Billing.objects.first()
-    if billing:
-        billing_type = billing.type
-    else:
-        billing_type = 2  # por serviço
     cost_formula = CostFormula.objects.first()
     if cost_formula:
         for product in products:
             formula = helper.resolve_formula(cost_formula.formula, partner, product,
-                                             save_product_price, billing_type)
+                                             save_product_price)
             logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
             logger.debug(formula)
             cost += helper.Calculate().evaluate(formula, variables={'x': product.quantity})
             quantity += product.quantity
     else:
         for product in products:
-            cost += product.quantity * (helper.resolve_price_value(product, billing_type) +
+            cost += product.quantity * (helper.resolve_price_value(product) +
                                         helper.resolve_partner_value(partner))
             quantity += product.quantity
     config = Config.objects.first()
@@ -1185,15 +1147,13 @@ def shipment_paypal_notification_success(request, _shipment_details, ipn_obj, pa
     send_email_shipment_paid(request, _shipment_details, async=True)
 
 
-def send_email_shipment_add(request, shipment, products, warehouses, billing_type):
+def send_email_shipment_add(request, shipment, products, warehouses):
     email_title = _('Cadastro de Envio %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 2 +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong>'
                            '<br> {} {}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] +
-                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
-                            '<strong>{}:</strong> U$ {}</p>'] if billing_type != 2 else []) +
                           ['<br>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
                            '<strong>{}:</strong> {}</p>'] * len(warehouses) +
@@ -1212,8 +1172,6 @@ def send_email_shipment_add(request, shipment, products, warehouses, billing_typ
              formats.date_format(etc(shipment.created_date, estimate='preparation'), "SHORT_DATE_FORMAT"),
              _('inclusive'),
              _('Quantidade de produtos'), shipment.total_products,)
-    if billing_type != 2:
-        texts += (_('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
 
     for warehouse in warehouses:
         texts += (_('Warehouse'), warehouse.name)
@@ -1234,15 +1192,13 @@ def send_email_shipment_add(request, shipment, products, warehouses, billing_typ
                                                 email_body, async=True)
 
 
-def send_email_merchant_shipment_add(request, shipment, products, billing_type):
+def send_email_merchant_shipment_add(request, shipment, products):
     email_title = _('Cadastro de Envio Merchant %(number)s') % {'number': shipment.id}
     html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] * 2 +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong>'
                            '<br> {} {}</p>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong> {}</p>'] +
-                          (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
-                            '<strong>{}:</strong> U$ {}</p>'] if billing_type != 2 else []) +
                           ['<br>'] +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">'
                            '<strong>{}:</strong> {}</p>'
@@ -1258,8 +1214,6 @@ def send_email_merchant_shipment_add(request, shipment, products, billing_type):
              formats.date_format(etc(shipment.created_date, estimate='preparation'), "SHORT_DATE_FORMAT"),
              _('inclusive'),
              _('Quantidade de produtos'), shipment.total_products,)
-    if billing_type != 2:
-        texts += (_('Valor total'), force_text(formats.number_format(shipment.cost, use_l10n=True, decimal_pos=2)),)
 
     for product in products:
         texts += (_('Produto'), product.product.name, _('Quantidade'), product.quantity)
