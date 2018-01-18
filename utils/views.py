@@ -73,6 +73,8 @@ def _shipment_products_cost(products, base_cost):
     cost = 0
     for product in products:
         price = product.cost
+        logger.debug('@@@@@@@@@@@@@ Product COST Product COST Product COST @@@@@@@@@@@@@@@@')
+        logger.debug(price)
         if price:
             cost += (base_cost + (price / 2)) * product.quantity
         else:
