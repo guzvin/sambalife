@@ -1,6 +1,6 @@
 from django import template
-from shipment.models import Package, Estimates, Shipment
-from service.models import Product, Config
+from shipment.models import Package, Estimates, Shipment, ProductService
+from service.models import Config
 from django.db.models import Q
 from django.utils import translation, formats
 from myauth.templatetags.users import has_user_perm
@@ -91,7 +91,7 @@ def open_mf_shipments(user):
 
 @register.filter
 def has_product_service(product):
-    return Product.objects.filter(product=product).exists()
+    return ProductService.objects.filter(product=product).exists()
 
 
 @register.inclusion_tag('minimum_value.html')

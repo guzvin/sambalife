@@ -203,10 +203,13 @@ class LotAdmin(admin.ModelAdmin):
             lot.voi_roi = (lot.voi_profit / lot.voi_cost) * 100 if lot.voi_cost > 0 else 0
             lot.save()
             if not change:
-                config = Config.objects.first()
-                if config:
-                    logger.info('@@@@@@@@@@@@@@@@@@@@@@@@@ ENVIAR EMAIL ASSINANTES @@@@@@@@@@@@@@@@@@@@@@@')
-                    users = get_user_model().objects.filter(groups=config.default_group)
+                lot_groups = lot.groups.all()
+                users = []
+                for lot_group in lot_groups:
+                    users += get_user_model().objects.filter(groups=lot_group)
+                logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS @@@@@@@@@@@@@@@@@@')
+                if users:
+                    logger.debug(users)
                     LotAdmin.email_users_new_lot(get_current_request(), lot, users)
 
     @staticmethod
