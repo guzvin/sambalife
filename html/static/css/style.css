@@ -1260,10 +1260,6 @@ label.titulo-pct span{
     font-size: 3em;
 }
 
-.main.loja{
-    border-left: 1px solid #dedede;
-}
-
 .filtros label{
     font-size: 18px;
 }
@@ -2046,6 +2042,13 @@ footer.fixed-footer{
     width: 100%;
 }
 
+.youtube-iframe{
+    margin: 0 auto;
+    display: block;
+    width: 835px;
+    height: 470px;
+}
+
 @media (max-width: 767px){
 
     .sistema .navbar-brand img:first-child{
@@ -2116,6 +2119,10 @@ footer.fixed-footer{
     .sistema .bandeira {
         top: 65px;
         right: 44px;
+    }
+
+    .youtube-iframe{
+        width: 100%;
     }
 
     .text-gg {
