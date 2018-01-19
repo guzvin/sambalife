@@ -297,7 +297,7 @@ def shipment_details(request, pid=None):
                 ignore_package_fields.append('width')
                 ignore_package_fields.append('length')
                 ignore_package_fields.append('shipment_tracking')
-            _services = Service.objects.filter(product__product__shipment__user_id=_shipment_details.user_id).distinct()
+            _services = Service.objects.filter(productservice__product__shipment__user_id=_shipment_details.user_id).distinct()
             context_data['services'] = _services
             if _shipment_details.status == 3:
                 # Pagamento Autorizado
@@ -335,8 +335,9 @@ def shipment_details(request, pid=None):
                             try:
                                 next_status = 3 if has_payment(_shipment_details) else 4
                                 with transaction.atomic():
+                                    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_shipment_details.user)
                                     updated_rows = Shipment.objects.select_for_update().filter(query)\
-                                        .update(status=next_status)
+                                        .update(status=next_status, is_sandbox=is_sandbox)
                                     if updated_rows == 0:
                                         logger.error('Zero rows updated.')
                                         raise Shipment.DoesNotExist('Zero rows updated.')

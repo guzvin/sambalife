@@ -2,8 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseForbidden
 from shipment.views import calculate_shipment
-from shipment.models import Shipment, Product as ShipmentProduct
-from service.models import Product
+from shipment.models import Shipment, Product as ShipmentProduct, ProductService
 from service.templatetags.services import has_service_perm
 from django.utils import formats
 from django.utils.encoding import force_text
@@ -22,7 +21,7 @@ def service_product(request, pid=None):
     product_services = 0
     if request.method == 'GET':
         puid = request.GET.get('puid')
-        services_product = Product.objects.filter(product_id=pid, product__uid=puid).order_by('service__name')
+        services_product = ProductService.objects.filter(product_id=pid, product__uid=puid).order_by('service__name')
         product_services = len(services_product)
         for _service_product in services_product:
             services_product_json.append({'service_id': _service_product.service_id,
@@ -35,12 +34,12 @@ def service_product(request, pid=None):
         shipment_product_uid = request.POST.get('shipment_product_uid')
         logger.debug(selected_services)
         ShipmentProduct.objects.get(id=pid, uid=uuid.UUID(shipment_product_uid))
-        Product.objects.filter(product_id=pid).delete()
+        ProductService.objects.filter(product_id=pid).delete()
         for selected_service in selected_services:
             service_price = request.POST.get('price' + selected_service)
             logger.debug(service_price)
-            Product.objects.bulk_create([
-                Product(product_id=pid, service_id=selected_service, price=service_price)
+            ProductService.objects.bulk_create([
+                ProductService(product_id=pid, service_id=selected_service, price=service_price)
             ])
         shipment = Shipment.objects.raw('select shipment_shipment.id as id, shipment_shipment.user_id as user_id '
                                         'from shipment_shipment '

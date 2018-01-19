@@ -27,7 +27,7 @@ from django.template import Context, Template
 from django.template.base import VariableNode
 from utils.models import Params
 from django.utils import translation
-from service.models import Product
+from shipment.models import ProductService
 from utils.templatetags.commons import timezone_name
 import pytz
 import threading
@@ -207,7 +207,7 @@ def resolve_price_value(product):
 
 
 def resolve_price_value_by_service(product):
-    services = Product.objects.filter(product=product)
+    services = ProductService.objects.filter(product=product)
     price = 0
     for service in services:
         price += service.price

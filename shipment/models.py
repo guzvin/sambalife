@@ -1,10 +1,13 @@
 from django.db import models
+from django.db.models import BigAutoField
 from django.db.models.fields import BigAutoField
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.core.validators import ValidationError
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+
+from service.models import Service
 from shipment.validators import validate_file_extension
 from product.models import Product as OriginalProduct
 from utils import helper
@@ -215,3 +218,14 @@ class Estimates(models.Model):
 
     def __str__(self):
         return str(_('Estimativas'))
+
+
+class ProductService(models.Model):
+    id = BigAutoField(primary_key=True)
+    product = models.ForeignKey('shipment.Product', on_delete=models.CASCADE, related_name='service_products')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    price = models.DecimalField(_('Preço'), max_digits=12, decimal_places=2)
+
+    class Meta:
+        verbose_name = _('Produto')
+        verbose_name_plural = _('Produtos')
