@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-
+{% load i18n %}
 {% block comoFunciona %}active{% endblock %}
 
 {% block conteudo %}
@@ -29,7 +29,7 @@
                         <li><i class="fa fa-fw fa-check-circle-o"></i> <span>Redirecionamento Grátis</span></li>
                     </ul>
                     <div class="contem-btn-ass">
-                         <a class="btn btn-primary" href="/pt/usuario/cadastro/"><i class="fa fa-fw fa-user-plus"></i> Assine Agora</a>
+                         <a class="btn btn-primary" href="/pt/usuario/cadastro/"><i class="fa fa-fw fa-user-plus"></i> {% trans "Cadastre-se" %}</a>
                     </div>
                 </div>
             </div>
