@@ -801,6 +801,11 @@ body {
     width: 200px;
 }
 
+.header-user .navbar-brand {
+    padding: 0;
+}
+
+
 .navbar-brand img:first-child{
     width: 55px;
     float: left;
@@ -1917,6 +1922,20 @@ footer.fixed-footer{
     font-weight: bold;
     color: #3C3E77;
 }
+/*
+.box-valor {
+border-bottom: 1px solid #eee;
+padding-bottom: 20px;
+}*/
+
+.box-cad-esquerda .box-valor .seja {
+    font-size: 17px;
+    line-height: 23px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+}
+
 
 .box-valor p{
     color: #3C3E77;
@@ -1934,6 +1953,10 @@ footer.fixed-footer{
 
 .box-valor p{
     line-height: 43px;
+}
+
+.box-cad-esquerda .box-valor p {
+    line-height: 24px;
 }
 
 .box-comparativo{
