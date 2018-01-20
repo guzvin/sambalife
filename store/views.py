@@ -289,10 +289,10 @@ def store_purchase(request):
 def store_paypal_notification(lot_id, ipn_obj):
     try:
         _lot_details = Lot.objects.select_for_update().get(pk=lot_id)
-        if str(_lot_details.lot_cost) != str(ipn_obj.payment_gross):
+        if str(_lot_details.lot_cost) != str(ipn_obj.mc_gross):
             texts = (_('Valor do pagamento não confere com o valor cobrado.'),
                      _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice},
-                     _('Valor pago: %(paid)s') % {'paid': ipn_obj.payment_gross},
+                     _('Valor pago: %(paid)s') % {'paid': ipn_obj.mc_gross},
                      _('Valor cobrado: %(charged)s') % {'charged': _lot_details.lot_cost})
             return None, texts
     except Lot.DoesNotExist:
@@ -348,9 +348,11 @@ def store_paypal_notification_post_transaction(request, user, ipn_obj, paypal_st
         texts = (_('Seu pagamento foi confirmado, obrigado! Os itens já se encontram em seu estoque.'),
                  ' ',
                  _('GARANTA A GRATUIDADE NO ENVIO DE SEUS PRODUTOS'),
-                 _('Para o usuário usufruir do redirecionamento grátis, o lote adquirido deverá ser enviado em sua '
-                   'totalidade em um prazo de até 3 dias úteis. Caso o tempo de envio supere a gratuidade serão '
-                   'apliadas as seguintes regras de cobrança ao envio:'),
+                 ' ',
+                 _('Para o usuário usufruir do redirecionamento grátis, todos os produtos do lote adquirido, deverão '
+                   'ser enviados para a amazon, em um prazo de até 3 dias úteis. Caso o tempo de envio supere a '
+                   'gratuidade, serão aplicadas as seguintes regras de cobrança para a realização do envio:'),
+                 ' ',
                  _('- Produto no estoque VOI S a partir do quarto dia até 10 dias: USD 1,29 por unidade do produto;'),
                  _('- Produto no estoque VOI S de 11 até 20 dias: USD 1,49 por unidade do produto;'),
                  _('- Produto no estoque VOI S de 21 até 30 dias: USD 1,99 por unidade do produto; e'),

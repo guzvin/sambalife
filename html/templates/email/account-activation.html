@@ -13,7 +13,10 @@
     </a>
     <div style="float: left; width: 97%; background: #eee; padding: 10px 20px 20px 20px;">
         <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Prezado(a)" %} {{ user_name }}</p>
-        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Sua conta foi ativada, clique abaixo para acessá-la." %}</p>
+        <p style="color:#858585;font:13px/120% 'Helvetica'">
+        {% blocktrans %}Seu cadastro foi realizado com sucesso, agora você está em nossa fila de espera de assinantes.<br>
+        Assim que sua vaga for liberada, você será notificado por email.{% endblocktrans %}
+        </p>
         <p>
             {% url 'login' as my_url %}
             <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}{{ my_url }}" style="font: 13px/120% 'Helvetica';display: block; background: #337ab7;width: 210px;color: #fff; height: 32px; margin: 0 auto;text-align: center;padding-top: 9px;font-size: 20px;text-decoration: none;font-weight: bold;border-radius: 10px;">{% trans "LOGIN" %}</a>

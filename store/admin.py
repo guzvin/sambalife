@@ -173,9 +173,28 @@ class LotAdmin(admin.ModelAdmin):
         redirect_cost = 0
         voi_cost = 0
         related_changed = False
+        # logger.debug('@@@@@@@@@@@@@@@@@@@ LOT CHANGED FIELDS LOT CHANGED FIELDS @@@@@@@@@@@@@@@@@@@@@@@@@@')
+        # lot_changes = {}
+        # form_changed_data = form.changed_data
+        # if form_changed_data:
+        #     lot_changes['lot'] = {}
+        #     for field_changed in form_changed_data:
+        #         lot_changes['lot'][field_changed] = form.cleaned_data[field_changed]
+        # logger.debug(lot_changes)
         form.save_m2m()
         for formset in formsets:
             products = formset.save()
+            # logger.debug('@@@@@@@@@@@@@@@@@@@ PRODUCT CHANGED FIELDS PRODUCT CHANGED FIELDS @@@@@@@@@@@@@@@@@@@@@@@@')
+            # for product_form in formset.forms:
+            #     product_form_changed_data = product_form.changed_data
+            #     if product_form_changed_data:
+            #         if 'products' not in lot_changes:
+            #             lot_changes['products'] = []
+            #         # for field_changed in form_changed_data:
+            #         lot_changes['products'].append({
+            #             product_form.cleaned_data['name']: product_form_changed_data
+            #         })
+            #     logger.debug(lot_changes)
             related_changed = len(products) > 0
         if related_changed:
             lot = form.save(commit=False)
@@ -202,14 +221,17 @@ class LotAdmin(admin.ModelAdmin):
             lot.voi_profit = lot.lot_cost - lot.voi_cost
             lot.voi_roi = (lot.voi_profit / lot.voi_cost) * 100 if lot.voi_cost > 0 else 0
             lot.save()
-            if not change:
-                lot_groups = lot.groups.all()
-                users = []
-                for lot_group in lot_groups:
-                    users += get_user_model().objects.filter(groups=lot_group)
-                logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS @@@@@@@@@@@@@@@@@@')
-                if users:
-                    logger.debug(users)
+            lot_groups = lot.groups.all()
+            users = []
+            for lot_group in lot_groups:
+                users += get_user_model().objects.filter(groups=lot_group)
+            if users:
+                logger.debug(users)
+                if change:
+                    logger.debug('@@@@@@@@@@@@@@@ CHANGE LOT USERS CHANGE LOT USERS CHANGE LOT USERS @@@@@@@@@@@@@@@@@@')
+                    LotAdmin.email_users_lot_changed(get_current_request(), lot, users)
+                else:
+                    logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS @@@@@@@@@@@@@@@@@@')
                     LotAdmin.email_users_new_lot(get_current_request(), lot, users)
 
     @staticmethod
@@ -244,6 +266,26 @@ class LotAdmin(admin.ModelAdmin):
                  _('Rank médio: %(lot_rank)s%%') % {'lot_rank': lot.average_rank})
         texts += (''.join(['https://', request.CURRENT_DOMAIN, helper.reverse('store_lot_details', args=[lot.id])]),
                   _('Clique aqui'), _('para acessar este lote agora mesmo!'),)
+        email_body = helper.format_html(html_format, *texts)
+        return helper.build_basic_template_email_tuple(request, user.first_name, [user.email], email_title,
+                                                       email_body)
+
+    @staticmethod
+    def email_users_lot_changed(request, lot, users):
+        emails = ()
+        for user in users:
+            emails += (LotAdmin.assemble_email_lot_changed(request, lot, user),)
+        if emails:
+            helper.send_email(emails, bcc_admins=True, async=True)
+
+    @staticmethod
+    def assemble_email_lot_changed(request, lot, user):
+        email_title = _('Lote alterado \'%(lot)s\'') % {'lot': lot.name}
+        html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                              ['<p><a href="{}">{}</a> {}</p>'])
+        texts = (_('Este lote sofreu alterações.'),)
+        texts += (''.join(['https://', request.CURRENT_DOMAIN, helper.reverse('store_lot_details', args=[lot.id])]),
+                  _('Clique aqui'), _('para visualizá-las.'),)
         email_body = helper.format_html(html_format, *texts)
         return helper.build_basic_template_email_tuple(request, user.first_name, [user.email], email_title,
                                                        email_body)

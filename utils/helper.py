@@ -497,6 +497,7 @@ def paypal_notification(sender, **kwargs):
 def paypal_status_message(ipn_obj):
     texts = (_('Notificação recebida do paypal.'),
              _('Status: %(status)s') % {'status': ipn_obj.payment_status},
+             _('Valor: %(paid)s') % {'paid': ipn_obj.mc_gross},
              _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice},
              _('Item: %(item)s') % {'item': ipn_obj.item_name},
              _('Nome do cliente: %(name)s') % {'name': ipn_obj.first_name},

@@ -1122,10 +1122,10 @@ def shipment_download_pdf(request, pdf=None, pid=None):
 def shipment_paypal_notification(user_id, shipment_id, ipn_obj):
     try:
         _shipment_details = Shipment.objects.select_related('user').get(pk=shipment_id, user_id=user_id)
-        if str(_shipment_details.cost) != str(ipn_obj.payment_gross):
+        if str(_shipment_details.cost) != str(ipn_obj.mc_gross):
             texts = (_('Valor do pagamento não confere com o valor cobrado.'),
                      _('Recibo: %(invoice)s') % {'invoice': ipn_obj.invoice},
-                     _('Valor pago: %(paid)s') % {'paid': ipn_obj.payment_gross},
+                     _('Valor pago: %(paid)s') % {'paid': ipn_obj.mc_gross},
                      _('Valor cobrado: %(charged)s') % {'charged': _shipment_details.cost})
             return None, texts
     except Shipment.DoesNotExist:
