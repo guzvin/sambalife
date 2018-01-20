@@ -60,6 +60,9 @@ class Lot(models.Model):
     class Meta:
         verbose_name = _('Lote')
         verbose_name_plural = _('Lotes')
+        permissions = (
+            ('view_purchased_lots', _('Pode visualizar lotes comprados')),
+        )
 
     def __str__(self):
         return self.name

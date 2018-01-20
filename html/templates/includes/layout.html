@@ -236,10 +236,12 @@
                                 </li>
                                 <li class="divider-fix divider"></li>
                             {% endif %}
+                            {% if user|has_store_perm:'view_purchased_lots' %}
                             <li class="{% block mypurchases %}{% endblock %}">
                                 <a href="{% url 'store_purchase' %}"><i class="fa fa-fw fa-shopping-basket"></i> {% trans "Minhas compras" %}</a>
                             </li>
                             <li class="divider"></li>
+                            {% endif %}
                             <li class="">
                                 <a href="{% url 'logout' %}"><i class="fa fa-fw fa-power-off"></i> {% trans "sair" %}</a>
                             </li>

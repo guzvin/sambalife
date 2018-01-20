@@ -17,20 +17,19 @@ logger = logging.getLogger('django')
 @require_http_methods(["GET", "POST"])
 def service_product(request, pid=None):
     cost = 0
-    services_product_json = []
-    product_services = 0
+    product_services_json = []
     if request.method == 'GET':
         puid = request.GET.get('puid')
-        services_product = ProductService.objects.filter(product_id=pid, product__uid=puid).order_by('service__name')
-        product_services = len(services_product)
-        for _service_product in services_product:
-            services_product_json.append({'service_id': _service_product.service_id,
-                                          'service_price': str(_service_product.price)})
+        product_services = ProductService.objects.filter(product_id=pid, product__uid=puid).order_by('service__name')
+        product_services_size = len(product_services)
+        for product_service in product_services:
+            product_services_json.append({'service_id': product_service.service_id,
+                                          'service_price': str(product_service.price)})
     elif has_service_perm(request.user, 'add_product') is False:
         return HttpResponseForbidden()
     else:
         selected_services = request.POST.getlist('service')
-        product_services = len(selected_services)
+        product_services_size = len(selected_services)
         shipment_product_uid = request.POST.get('shipment_product_uid')
         logger.debug(selected_services)
         ShipmentProduct.objects.get(id=pid, uid=uuid.UUID(shipment_product_uid))
@@ -52,5 +51,5 @@ def service_product(request, pid=None):
     return HttpResponse(json.dumps({'new_cost': force_text(formats.number_format(round(cost, 2), use_l10n=True,
                                                                                  decimal_pos=2)),
                                     'new_cost_raw': round(cost, 2),
-                                    'products': services_product_json, 'v': product_services}),
+                                    'products': product_services_json, 'v': product_services_size}),
                         content_type='application/json')

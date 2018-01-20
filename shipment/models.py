@@ -222,10 +222,10 @@ class Estimates(models.Model):
 
 class ProductService(models.Model):
     id = BigAutoField(primary_key=True)
-    product = models.ForeignKey('shipment.Product', on_delete=models.CASCADE, related_name='service_products')
+    product = models.ForeignKey('shipment.Product', on_delete=models.CASCADE, related_name='product_service')
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     price = models.DecimalField(_('Preço'), max_digits=12, decimal_places=2)
 
     class Meta:
-        verbose_name = _('Produto')
-        verbose_name_plural = _('Produtos')
+        verbose_name = _('Serviço Produto')
+        verbose_name_plural = _('Serviços Produtos')
