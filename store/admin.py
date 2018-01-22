@@ -3,10 +3,11 @@ from django.contrib import admin
 from django.contrib.admin.filters import DateFieldListFilter
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.admin.options import TO_FIELD_VAR
 from django.contrib.auth.models import Group
 from django.db.models import Sum
 from django.contrib.auth import get_user_model
-from store.models import Lot, Product, Config, LotReport
+from store.models import Lot, Product, Config, LotReport, lot_directory_path
 from store.admin_filters import UserFilter, AsinFilter
 from utils import helper
 from utils.models import Params
@@ -18,8 +19,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin.views.main import ChangeList
 from django.utils.html import format_html
 from django.core.urlresolvers import reverse
-from django.contrib.admin.utils import quote
+from django.contrib.admin.utils import quote, unquote
+from shutil import copy2
+from django.conf import settings
 from rangefilter.filter import DateRangeFilter
+import os
 import logging
 
 logger = logging.getLogger('django')
@@ -153,9 +157,10 @@ class LotAdmin(admin.ModelAdmin):
 
     search_fields = ('name', 'product__name',)
     list_display_links = ('id', 'name',)
-    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'duplicate_lot_action')
+    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'is_archived',
+                    'duplicate_lot_action')
     fieldsets = (
-        (None, {'fields': ('name', 'description', 'thumbnail', 'groups')}),
+        (None, {'fields': ('is_archived', 'name', 'description', 'thumbnail', 'groups')}),
     )
 
     def duplicate_lot_action(self, obj):
@@ -311,8 +316,32 @@ class LotAdmin(admin.ModelAdmin):
         return self.changeform_view(request, lid, '', context)
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        logger.debug('@@@@@@@@@@@@@@ DUP LOTE DUP LOTE DUP LOTE @@@@@@@@@@@@@@@@')
+        if request.method == 'POST':
+            new_thumbnail = request.FILES.get('thumbnail', None)
+            logger.debug('@@@@@@@@@@@@@@ NEW THUMBNAIL @@@@@@@@@@@@@@@@')
+            logger.debug(new_thumbnail)
+            if new_thumbnail is None:
+                to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
+                obj = self.get_object(request, unquote(object_id), to_field)
+                logger.debug('@@@@@@@@@@@@@@ OLD THUMBNAIL @@@@@@@@@@@@@@@@')
+                logger.debug(obj.thumbnail)
+                request.POST['_my_obj_thumbnail'] = str(obj.thumbnail)
         self.save_as = extra_context.get('my_show_save_as', False) if extra_context else False
         return super(LotAdmin, self).changeform_view(request, object_id, form_url, extra_context)
+
+    def response_add(self, request, obj, post_url_continue=None):
+        obj_thumbnail = request.POST.get('_my_obj_thumbnail', None)
+        if obj_thumbnail:
+            dir_name, file_name = os.path.split(obj_thumbnail)
+            file_path = lot_directory_path(obj, file_name)
+            obj.thumbnail = file_path
+            dir_name, file_name = os.path.split(file_path)
+            dir_name = os.path.join(settings.MEDIA_ROOT, dir_name)
+            os.makedirs(dir_name)
+            copy2(os.path.join(settings.MEDIA_ROOT, obj_thumbnail), dir_name)
+            obj.save()
+        return super(LotAdmin, self).response_add(request, obj, post_url_continue)
 
 admin_site.register(Lot, LotAdmin)
 

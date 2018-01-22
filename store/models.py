@@ -56,6 +56,7 @@ class Lot(models.Model):
     voi_cost = models.DecimalField(_('Custo VOI S'), max_digits=12, decimal_places=2, default=0)
     voi_profit = models.DecimalField(_('Lucro VOI S'), max_digits=12, decimal_places=2, default=0)
     voi_roi = models.DecimalField(_('ROI VOI S (%)'), max_digits=12, decimal_places=2, default=0)
+    is_archived = models.BooleanField(_('Arquivado'), default=False)
 
     class Meta:
         verbose_name = _('Lote')

@@ -70,6 +70,7 @@ def store_list(request):
     #                                      'INNER JOIN myauth_myuser_groups U1 ON (U0.id = U1.group_id) WHERE '
     #                                      'U1.myuser_id = %s)) OR NOT EXISTS (SELECT 1 FROM store_lot_groups WHERE '
     #                                      'store_lot.id = store_lot_groups.lot_id)'], params=[request.user.id])
+    queries.append(Q(is_archived=False))
     if queries:
         query = queries.pop()
         for item in queries:
@@ -144,7 +145,7 @@ def filter_resolver(filters):
 @require_http_methods(["GET"])
 def store_lot_details(request, pid=None):
     try:
-        _lot_details = Lot.objects.prefetch_related('product_set').get(pk=pid)
+        _lot_details = Lot.objects.prefetch_related('product_set').get(pk=pid, is_archived=False)
     except Lot.DoesNotExist as e:
         logger.error(e)
         return HttpResponseBadRequest()
@@ -172,7 +173,7 @@ def store_pay_form(request, pid=None):
         #                                         'SELECT 1 FROM store_lot_groups WHERE store_lot.id = '
         #                                         'store_lot_groups.lot_id)'], params=[request.user.id])\
         #     .get(pk=pid, payment_complete=False)
-        _lot_details = Lot.objects.get(pk=pid, payment_complete=False)
+        _lot_details = Lot.objects.get(pk=pid, payment_complete=False, is_archived=False)
     except Lot.DoesNotExist as e:
         logger.error(e)
         return HttpResponseBadRequest()
