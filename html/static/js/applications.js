@@ -816,6 +816,27 @@
             }
             $('form.form-filter').submit();
         });
+        $('a.pagination-page').click(function(e)
+        {
+            if($(this).hasClass('nosubmit'))
+            {
+                e.preventDefault();
+                return false;
+            }
+            $(this).addClass('nosubmit');
+            var data = $(this).data();
+            var selectedPage = $('input#selected-page');
+            if(selectedPage[0])
+            {
+                selectedPage.val(data.page);
+            }
+            else
+            {
+                var hidden = $('<input type="hidden" name="page" value="' + data.page + '" id="selected-page" />');
+                $('form.form-filter').append(hidden);
+            }
+            $('form.form-filter').submit();
+        });
         $('form.form-filter').find('button[type="submit"]').click(function(e)
         {
             e.preventDefault();
@@ -837,28 +858,6 @@
             $('form.form-filter').submit();
         });
     }
-
-    $('a.pagination-page').click(function(e)
-    {
-        if($(this).hasClass('nosubmit'))
-        {
-            e.preventDefault();
-            return false;
-        }
-        $(this).addClass('nosubmit');
-        var data = $(this).data();
-        var selectedPage = $('input#selected-page');
-        if(selectedPage[0])
-        {
-            selectedPage.val(data.page);
-        }
-        else
-        {
-            var hidden = $('<input type="hidden" name="page" value="' + data.page + '" id="selected-page" />');
-            $('form.form-filter').append(hidden);
-        }
-        $('form.form-filter').submit();
-    });
 
     if($('form#form-add-package')[0])
     {
