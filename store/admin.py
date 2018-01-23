@@ -125,7 +125,7 @@ class LotProductForm(forms.ModelForm):
             redirect_cost
         instance.profit_per_unit = instance.sell_price - instance.product_cost
         instance.total_profit = instance.profit_per_unit * instance.quantity
-        instance.roi = (instance.profit_per_unit / instance.product_cost) * 100
+        instance.roi = (instance.profit_per_unit / (instance.buy_price + redirect_cost)) * 100
         instance.save()
         return instance
 
@@ -218,7 +218,7 @@ class LotAdmin(admin.ModelAdmin):
             lot.products_quantity = products_quantity
             lot.products_cost = products_cost
             lot.profit = profit
-            lot.average_roi = (profit / products_cost) * 100
+            lot.average_roi = (profit / lot_cost) * 100
             lot.average_rank = (average_rank / len(products)) * 100
             lot.lot_cost = lot_cost
             lot.redirect_cost = redirect_cost
