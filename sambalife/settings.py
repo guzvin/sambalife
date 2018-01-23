@@ -317,6 +317,9 @@ PAYPAL_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_
 PAYPAL_PRIVATE_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_private.pem'))
 PAYPAL_PUBLIC_CERT_SANDBOX = os.path.join(PAYPAL_ROOT, os.path.join('sandbox', 'paypal_public.pem'))
 
+PAYPAL_SANDBOX_IMAGE = '/static/img/paypal_pay_btn.jpg'
+PAYPAL_IMAGE = '/static/img/paypal_pay_btn.jpg'
+
 CRONJOBS = [
     ('0 0 1 * *', 'utils.cron.archive_shipped_shipments'),
     # ('*/1 * * * *', 'utils.cron.reset_lots_sell_date'),

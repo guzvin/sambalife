@@ -61,8 +61,10 @@
                  </div>
               </div>
           </div>
+          {% for product in lot.product_set.all %}
+          {% if forloop.counter0|divisibleby:3 %}
           <div class="row lista itens">
-              {% for product in lot.product_set.all %}
+          {% endif %}
               <div class="col-md-4 item">
                   <div class="col-md-12">
                       <p class="nome"><strong>{% trans "Nome" %}:</strong><br> {{ product.name }}</p>
@@ -115,8 +117,10 @@
                       <p><strong>{% trans "ROI" %} (%):</strong><br> {{ product.roi|localize }}</p>
                   </div>
               </div>
-              {% endfor %}
+          {% if forloop.counter|divisibleby:3 or forloop.last %}
           </div>
+          {% endif %}
+          {% endfor %}
             {% if lot.payment_complete is False %}
                 <!-- Aparece apenas para usuarios comuns -->
                 <br><br>

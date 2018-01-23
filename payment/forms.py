@@ -67,9 +67,11 @@ class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
         return ciphertext
 
     def render_button(self, data=None):
+        from django.utils.safestring import mark_safe
         return format_html('<input type="image" src="{0}" id="payment_button" border="0" name="submit" '
-                           'alt="Buy it Now" data-origin="{1}" data-generic="{2}" />',
-                           self.get_image(), self.button_origin if self.button_origin else '', data if data else '')
+                           'alt="Buy it Now" data-origin="{1}" data-generic="{2}" {3} />',
+                           self.get_image(), self.button_origin if self.button_origin else '', data if data else '',
+                           mark_safe('style="width: 171px"') if self.test_mode() is False else '')
 
     def test_mode(self):
         logger.debug('@@@@@@@@@@@@ IS SANDBOX @@@@@@@@@@@@@@')
