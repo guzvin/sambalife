@@ -321,7 +321,7 @@ class LotAdmin(admin.ModelAdmin):
             new_thumbnail = request.FILES.get('thumbnail', None)
             logger.debug('@@@@@@@@@@@@@@ NEW THUMBNAIL @@@@@@@@@@@@@@@@')
             logger.debug(new_thumbnail)
-            if new_thumbnail is None:
+            if object_id and new_thumbnail is None:
                 to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
                 obj = self.get_object(request, unquote(object_id), to_field)
                 logger.debug('@@@@@@@@@@@@@@ OLD THUMBNAIL @@@@@@@@@@@@@@@@')
