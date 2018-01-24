@@ -10,7 +10,7 @@
 
   <div class="container-fluid">
       <div class="row">
-        {% if page_type == 1 and user|has_product_perm:'add_product' or page_type == 2 and user|has_product_perm:'change_product' %}
+        {% if request.session.impersonated is not None or page_type == 1 and user|has_product_perm:'add_product' or page_type == 2 and user|has_product_perm:'change_product' %}
         <div class="col-md-3 sidebar">
 
         </div>

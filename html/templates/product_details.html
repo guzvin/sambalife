@@ -4,7 +4,7 @@
 
 <div class="container-fluid">
       <div class="row">
-        {% if user|has_product_perm:'view_products' and product %}
+        {% if user|has_product_perm:'view_products' and product or request.session.impersonated is not None and product %}
         <div class="col-md-3 sidebar">
 
         </div>
