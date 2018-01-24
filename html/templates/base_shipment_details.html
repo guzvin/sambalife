@@ -69,6 +69,7 @@
                   {% if user|has_user_perm:'view_users' %}
                   <td>{{ shipment.user.first_name }}</td>
                   {% endif %}
+                  {% if shipment.status == 1 and user|has_service_perm:'add_product' or shipment.status > 1 %}
                   <td>
                   {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
                       <a class="btn btn-primary add-service-product-shipment" title="{% trans 'Atribuir serviços' %}" href="javascript:void(0);" data-shipment-product-id="{{product.id}}" data-shipment-product-uid="{{product.uid}}"><i class="fa fa-fw fa-cogs"></i></a>
@@ -77,6 +78,7 @@
                       <a class="btn btn-primary add-service-product-shipment" title="{% trans 'Visualizar serviços' %}" href="javascript:void(0);" data-shipment-product-id="{{product.id}}" data-shipment-product-uid="{{product.uid}}"><i class="fa fa-fw fa-cogs"></i></a>
                   {% endif %}
                   </td>
+                  {% endif %}
                   {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False %}
                   {% trans "Excluir" as delete %}
                   <td>
