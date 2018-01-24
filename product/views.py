@@ -120,10 +120,11 @@ def product_stock(request):
 @login_required
 @require_http_methods(["GET", "POST"])
 def product_add_edit(request, pid=None):
-    if pid is None and has_product_perm(request.user, 'add_product') is False:
-        return HttpResponseForbidden()
-    elif pid is not None and has_product_perm(request.user, 'change_product') is False:
-        return HttpResponseForbidden()
+    if request.session['impersonated'] is None:
+        if pid is None and has_product_perm(request.user, 'add_product') is False:
+            return HttpResponseForbidden()
+        elif pid is not None and has_product_perm(request.user, 'change_product') is False:
+            return HttpResponseForbidden()
     ProductFormSet = modelformset_factory(Product, fields=('name', 'asin', 'store', 'description', 'quantity',
                                                            'quantity_partial', 'send_date', 'edd_date', 'best_before',
                                                            'condition', 'actual_condition', 'condition_comments',

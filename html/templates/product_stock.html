@@ -76,7 +76,7 @@
                 </form>
               </div>
           </div><br><br>
-          {% if user|has_product_perm:'add_product' %}
+          {% if user|has_product_perm:'add_product' or request.session.impersonated is not None %}
             <a class="btn btn-default" href="{% url 'product_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
           {% endif %}
           {% if user|has_shipment_perm:'add_shipment' %}
