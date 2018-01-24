@@ -233,8 +233,9 @@ class LotAdmin(admin.ModelAdmin):
             if users:
                 logger.debug(users)
                 if change:
-                    logger.debug('@@@@@@@@@@@@@@@ CHANGE LOT USERS CHANGE LOT USERS CHANGE LOT USERS @@@@@@@@@@@@@@@@@@')
-                    LotAdmin.email_users_lot_changed(get_current_request(), lot, users)
+                    pass
+                    # logger.debug('@@@@@@@@@@@@@@@ CHANGE LOT USERS CHANGE LOT USERS CHANGE LOT USERS @@@@@@@@@@@@@@@@@@')
+                    # LotAdmin.email_users_lot_changed(get_current_request(), lot, users)
                 else:
                     logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS @@@@@@@@@@@@@@@@@@')
                     LotAdmin.email_users_new_lot(get_current_request(), lot, users)
