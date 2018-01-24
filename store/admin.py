@@ -372,6 +372,7 @@ class LotReportChangeList(ChangeList):
         self.voi_cost_sum = None
         self.voi_profit_sum = None
         self.voi_roi_sum = None
+        self.products_quantity_sum = None
         super(LotReportChangeList, self).__init__(request, model, list_display, list_display_links,
                                                   list_filter, date_hierarchy, search_fields, list_select_related,
                                                   list_per_page, list_max_show_all, list_editable, model_admin)
@@ -387,6 +388,8 @@ class LotReportChangeList(ChangeList):
         self.voi_profit_sum = q['voi_profit_sum']
         q = self.result_list.aggregate(voi_roi_sum=Sum('voi_roi'))
         self.voi_roi_sum = q['voi_roi_sum']
+        q = self.result_list.aggregate(products_quantity_sum=Sum('products_quantity'))
+        self.products_quantity_sum = q['products_quantity_sum']
 
     def url_for_result(self, result):
         pk = getattr(result, self.pk_attname)
@@ -416,7 +419,8 @@ class LotReportAdmin(admin.ModelAdmin):
     ]
 
     search_fields = ('name', 'product__name',)
-    list_display = ('id', 'name', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost', 'voi_profit', 'voi_roi')
+    list_display = ('id', 'name', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost', 'voi_profit', 'voi_roi',
+                    'products_quantity')
 
     def has_delete_permission(self, request, obj=None):
         return False
