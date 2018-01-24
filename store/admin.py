@@ -169,6 +169,12 @@ class LotAdmin(admin.ModelAdmin):
     duplicate_lot_action.short_description = _('Duplicar')
     duplicate_lot_action.allow_tags = True
 
+    def save_form(self, request, form, change):
+        lot_obj = super(LotAdmin, self).save_form(request, form, change)
+        if request.method == 'POST':
+            request.POST['_lot_obj'] = lot_obj
+        return lot_obj
+
     def save_related(self, request, form, formsets, change):
         products_quantity = 0
         products_cost = 0
@@ -188,7 +194,13 @@ class LotAdmin(admin.ModelAdmin):
         # logger.debug(lot_changes)
         form.save_m2m()
         for formset in formsets:
+            _deleted_forms = formset.deleted_forms
+            logger.debug('@@@@@@@@@@@@@@@@@@ DELETED OBJECTS @@@@@@@@@@@@@@@@@@@@@@')
+            logger.debug(_deleted_forms)
             products = formset.save()
+            related_changed = len(products) > 0 or len(_deleted_forms) > 0
+            if related_changed:
+                break
             # logger.debug('@@@@@@@@@@@@@@@@@@@ PRODUCT CHANGED FIELDS PRODUCT CHANGED FIELDS @@@@@@@@@@@@@@@@@@@@@@@@')
             # for product_form in formset.forms:
             #     product_form_changed_data = product_form.changed_data
@@ -200,10 +212,11 @@ class LotAdmin(admin.ModelAdmin):
             #             product_form.cleaned_data['name']: product_form_changed_data
             #         })
             #     logger.debug(lot_changes)
-            related_changed = len(products) > 0
         if related_changed:
-            lot = form.save(commit=False)
+            lot = request.POST.get('_lot_obj', form.save(commit=False))
             products = Product.objects.filter(lot=lot)
+            logger.debug('@@@@@@@@@@@@@@@@@@ RELATED QUERY RELATED QUERY RELATED QUERY @@@@@@@@@@@@@@@@@@@@@@')
+            logger.debug(len(products))
             for product in products:
                 product_redirect_cost = 0
                 for redirect_service in product.redirect_services.all():
