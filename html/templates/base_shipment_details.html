@@ -401,7 +401,7 @@
                     <i class="fa fa-fw fa-edit"></i> {% trans "Reativar Envio" %}
                  </a>
               {% else %}
-               {% if shipment.status == 4 and user|has_group:'admins' %}
+               {% if shipment.status == 4 and user|has_group:'admins' or request.session.impersonated is not None %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-final" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Enviar e Finalizar Envio" %}
                 </a>
