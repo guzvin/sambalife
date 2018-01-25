@@ -1,4 +1,7 @@
 from django import template
+import logging
+
+logger = logging.getLogger('django')
 
 register = template.Library()
 
@@ -33,3 +36,8 @@ def startswith(text, starts):
     if isinstance(text, (str, bytes)):
         return text.startswith(starts)
     return False
+
+
+@register.simple_tag
+def log_message(message):
+    logger.debug(message)

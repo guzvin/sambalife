@@ -76,9 +76,13 @@ def store_list(request):
         for item in queries:
             query &= item
         logger.debug(str(query))
-        _lot_list = Lot.objects.filter(query).order_by('status', '-sell_date', '-id')
-    else:
-        _lot_list = Lot.objects.all().order_by('status', '-sell_date', '-id')
+        # _lot_list_available = Lot.objects.filter(query & Q(status=1))
+        # _lot_list_sold = Lot.objects.filter(query & Q(status=2)).order_by('-sell_date')[:2]
+        # _lot_list = _lot_list_available.union(_lot_list_sold, all=True)
+        # _lot_list = Lot.objects.filter(query).order_by('status', '-sell_date')
+        _lot_list = Lot.objects.filter(query).order_by('status', '-sell_date')
+    # else:
+    #     _lot_list = Lot.objects.all().order_by('status', '-sell_date', '-id')
     page = request.GET.get('page', 1)
     paginator = Paginator(_lot_list, 20)
     try:

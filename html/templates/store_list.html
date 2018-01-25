@@ -98,8 +98,11 @@
             </form>
         </div>--><div class="col-md-1"></div>
         <div class="col-md-10 main loja">
+          {% log_message '@#@#@#@#@#@#@#@#@#@#@@#@#@#@#@#@#@#@#@' %}
+          {% for lot in lots %}
+          {% if forloop.counter0|divisibleby:4 %}
           <div class="row">
-              {% for lot in lots %}
+          {% endif %}
               <div class="box-container-lote">
                  <a href="{% url 'store_lot_details' lot.id %}" class="box-lote{% if lot.status == 2 %} vendido{% endif %}">
                      {% if lot.status == 2 %}
@@ -122,7 +125,11 @@
                      </div>
                  </a>
               </div>
-              {% endfor %}
+          {% if forloop.counter|divisibleby:4 or forloop.last %}
+          </div>
+          {% endif %}
+          {% endfor %}
+          <div class="row">
               <nav aria-label="...">
                 {% if lots.has_other_pages %}
                   <ul class="pagination">
