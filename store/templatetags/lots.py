@@ -17,7 +17,7 @@ def has_store_perm(user, perm):
 @register.inclusion_tag('admin/submit_line.html', takes_context=True)
 def my_submit_row(context, lot):
     ctx = original_submit_row(context)
-    if lot and lot.status == 2:
+    if lot and lot.status == 2 and lot.payment_complete:
         ctx.update({
             'show_save': False,
             'show_save_and_add_another': False,

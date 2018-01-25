@@ -160,7 +160,7 @@ class LotAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'is_archived',
                     'duplicate_lot_action')
     fieldsets = (
-        (None, {'fields': ('is_archived', 'name', 'description', 'thumbnail', 'groups')}),
+        (None, {'fields': ('is_archived', 'status', 'sell_date', 'payment_complete', 'name', 'description', 'thumbnail', 'groups')}),
     )
 
     def duplicate_lot_action(self, obj):

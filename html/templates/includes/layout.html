@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load i18n permissions products shipments services lots %}
+{% load i18n commons permissions products shipments services lots %}
 <html lang="{{ LANGUAGE_CODE }}">
 
 <head>
@@ -387,7 +387,8 @@
         </div>
     </div>
 
-    {% if user.terms_conditions is False %}
+    {% url 'terms' as termsandconditions %}
+    {% if user.terms_conditions is False and not request.path|startswith:termsandconditions %}
    <!-- Modal termos -->
     <div id="terms_conditions" class="modal fade">
         <div class="modal-dialog">
@@ -398,15 +399,8 @@
                 </div>
                 <div class="modal-body">
                     <p>{% trans "Olá" %}, {{ user.first_name }}</p>
-                    <p>{% trans "Os termos e condições de uso da nossa plataforma foram atualizados. <a href='/pt/termos-e-condicoes-de-uso.html' class='download' target='_blank'>Confira clicando aqui</a>. Duas informações importantes para você." %}</p>
-                    <p><strong>{% trans "Primeiro" %}:</strong><br />{% trans "Para uma maior agilidade e transparência no atendimento aos nossos usuários, a partir do dia 15/07/2017 os valores dos envios são calculados de acordo com o tempo de permanência conosco." %}</p><p><strong> {% trans "Seguem os valores" %}:</strong></p>
-                    <p>{% trans "Produto no estoque VOI até 45 dias: USD 1,29 por produto" %}</p>
-                    <p>{% trans "Produto no estoque VOI de 46 até 75 dias: USD 1,49 por produto" %}</p>
-                    <p>{% trans "Produto no estoque VOI de 76 até 90 dias: USD 1,99 por produto" %}</p>
-                    <p>{% trans "A partir do dia 91, o produto será considerado abandonado e retirado da lista do usuário." %}</p>
+                    <p>{% trans "Os termos e condições de uso da nossa plataforma foram atualizados. <a href='/pt/termos-e-condicoes-de-uso/' class='download' target='_blank'>Confira clicando aqui</a>." %}</p>
                     <p></p>
-                    <p><strong>{% trans "Segundo" %}:</strong> <br />
-                    {% trans "Para sua segurança e conforto, se você ainda não aceitou nossos termos, pode fazê-lo agora clicando no botão abaixo" %}:</p>
                     <a href="#" id="terms-conditions-acceptance" class="btn btn-primary"><i class="fa fa-fw fa-check-circle"></i> {% trans "Li e aceito os termos e condições de uso" %}</a>
                     <span>{% trans "É necessário aceitar os termos para poder continuar a utilizar a plataforma." %}</span>
                 </div>

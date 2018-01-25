@@ -26,3 +26,10 @@ def timezone_name(lang):
 @register.simple_tag
 def render_payment_button(paypal_form, data):
     return paypal_form.render_button(data=data)
+
+
+@register.filter
+def startswith(text, starts):
+    if isinstance(text, (str, bytes)):
+        return text.startswith(starts)
+    return False
