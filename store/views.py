@@ -351,18 +351,31 @@ def store_paypal_notification_post_transaction(request, user, ipn_obj, paypal_st
     elif ipn_obj.payment_status == ST_PP_COMPLETED:
         email_title = _('Pagamento CONFIRMADO pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
         texts = (_('Seu pagamento foi confirmado, obrigado! Os itens já se encontram em seu estoque.'),
-                 ' ',
+                 _('O endereço a ser inserido no FROM dos labels das caixas de seus produtos é:'),
+                 _('920 Lafayette Rd'),
+                 _('Seabrook, NH 03874'),
+                 _('Todo o procedimento desde a compra até o redirecionamento de seus produtos você encontra aqui:'),
+                 ''.join(['https://', request.CURRENT_DOMAIN,
+                          _('/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf')]),
+                 _('Tutorial Plataforma'),
                  _('GARANTA A GRATUIDADE NO ENVIO DE SEUS PRODUTOS'),
-                 ' ',
                  _('Para o usuário usufruir do redirecionamento grátis, todos os produtos do lote adquirido, deverão '
                    'ser enviados para a amazon, em um prazo de até 3 dias úteis. Caso o tempo de envio supere a '
                    'gratuidade, serão aplicadas as seguintes regras de cobrança para a realização do envio:'),
-                 ' ',
                  _('- Produto no estoque VOI S a partir do quarto dia até 10 dias: USD 1,29 por unidade do produto;'),
                  _('- Produto no estoque VOI S de 11 até 20 dias: USD 1,49 por unidade do produto;'),
                  _('- Produto no estoque VOI S de 21 até 30 dias: USD 1,99 por unidade do produto; e'),
                  _('- Após 30 dias entrar em contato com o nosso suporte.'),)
-        email_message = _(helper._html_format(*texts)) + paypal_status_message
+        html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
+                              ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}<br>{}<br>{}</p>'] +
+                              ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'
+                               '<br>'
+                               '<a href="{}">{}</a></p>'] +
+                              ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'
+                               '<br>'
+                               '<br>'
+                               '{}<br>{}<br>{}<br>{}<br>{}</p>'])
+        email_message = _(helper._html_format(*texts, custom_html_format=html_format)) + paypal_status_message
         helper.send_email_basic_template_bcc_admins(request, user.first_name, [user.email], email_title, email_message,
                                                     async=True)
     elif ipn_obj.payment_status == ST_PP_VOIDED:

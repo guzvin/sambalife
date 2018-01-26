@@ -507,10 +507,13 @@ def paypal_status_message(ipn_obj):
     return _html_format(*texts)
 
 
-def _html_format(*texts):
-    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'] +
-                          ['<br>{}'] * len(texts[1:]) +
-                          ['</p>'])
+def _html_format(*texts, custom_html_format=None):
+    if custom_html_format is None:
+        html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'] +
+                              ['<br>{}'] * len(texts[1:]) +
+                              ['</p>'])
+    else:
+        html_format = custom_html_format
     return format_html(html_format, *texts)
 
 
