@@ -36,6 +36,11 @@ def calculate_buy_price(product):
     return product.buy_price + product_redirect_cost
 
 
+@register.simple_tag
+def is_subscriber(user, **kwargs):
+    return set(user.groups.all()) & set(kwargs.pop('lot').groups.all())
+
+
 pagination_template = get_template('admin/store/lotreport/pagination.html')
 register.inclusion_tag(pagination_template)(pagination)
 

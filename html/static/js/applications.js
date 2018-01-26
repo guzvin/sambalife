@@ -1082,6 +1082,13 @@
         });
     }
 
+    $('a.not-subscriber').click(function(e)
+    {
+        e.preventDefault();
+        $('#modal-store-subscribe').modal('show');
+        return false;
+    });
+
     if($('a#send-btn-final')[0])
     {
         $('a#send-btn-final').on('click', function (e)
