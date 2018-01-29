@@ -116,10 +116,12 @@
                   <div class="col-md-6">
                       <p><strong>{% trans "ROI" %} (%):</strong><br> {{ product.roi|localize }}</p>
                   </div>
+                  {% if product.url %}
                   <!-- btn link para amazon -->
                   <div class="col-md-12">
-                        <a class="btn btn-default link-amz" target="_blank" href="#"><i class="fa fa-amazon"></i> Veja o Produto na Amazon</a>
+                        <a class="btn btn-default link-amz" target="_blank" href="product.url"><i class="fa fa-amazon"></i> {% trans 'Veja o Produto na Amazon' %}</a>
                   </div>
+                  {% endif %}
               </div>
           {% if forloop.counter|divisibleby:3 or forloop.last %}
           </div>
