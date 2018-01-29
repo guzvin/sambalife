@@ -57,6 +57,7 @@ class Lot(models.Model):
     voi_profit = models.DecimalField(_('Lucro VOI S'), max_digits=12, decimal_places=2, default=0)
     voi_roi = models.DecimalField(_('ROI VOI S (%)'), max_digits=12, decimal_places=2, default=0)
     is_archived = models.BooleanField(_('Arquivado'), default=False)
+    order_weight = models.IntegerField(_('Peso para ordenação'), default=0)
 
     class Meta:
         verbose_name = _('Lote')

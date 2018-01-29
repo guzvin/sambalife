@@ -80,7 +80,7 @@ def store_list(request):
         # _lot_list_sold = Lot.objects.filter(query & Q(status=2)).order_by('-sell_date')[:2]
         # _lot_list = _lot_list_available.union(_lot_list_sold, all=True)
         # _lot_list = Lot.objects.filter(query).order_by('status', '-sell_date')
-        _lot_list = Lot.objects.filter(query).order_by('status', '-sell_date', 'name')
+        _lot_list = Lot.objects.filter(query).order_by('status', '-order_weight', '-sell_date', 'name')
     # else:
     #     _lot_list = Lot.objects.all().order_by('status', '-sell_date', '-id')
     page = request.GET.get('page', 1)
