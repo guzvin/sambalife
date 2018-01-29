@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _
-from store.models import Lot
+from store.models import Lot, Product as LotProduct
 from product.models import Product, Tracking
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -384,3 +384,37 @@ def store_paypal_notification_post_transaction(request, user, ipn_obj, paypal_st
         email_message = paypal_status_message
         helper.send_email_basic_template_bcc_admins(request, user.first_name, [user.email], email_title, email_message,
                                                     async=True)
+
+
+@login_required
+@require_http_methods(["GET"])
+def product_name_autocomplete(request):
+    term = request.GET.get('term')
+    return _product_autocomplete(LotProduct.objects.filter(name__icontains=term).order_by('name'))
+
+
+@login_required
+@require_http_methods(["GET"])
+def product_asin_autocomplete(request):
+    term = request.GET.get('term')
+    return _product_autocomplete(LotProduct.objects.filter(identifier__icontains=term).order_by('name'))
+
+
+def _product_autocomplete(qs):
+    products_autocomplete = []
+    for product in qs:
+        products_autocomplete.append({'label': '-'.join([str(product.id), product.name]),
+                                      'name': product.name, 'identifier': product.identifier, 'url': product.url,
+                                      'buy_price': str(product.buy_price), 'sell_price': str(product.sell_price),
+                                      'quantity': product.quantity, 'fba_fee': str(product.fba_fee),
+                                      'amazon_fee': str(product.amazon_fee),
+                                      'shipping_cost': str(product.shipping_cost),
+                                      'product_cost': str(product.product_cost),
+                                      'profit_per_unit': str(product.profit_per_unit),
+                                      'total_profit': str(product.total_profit),
+                                      'roi': str(product.roi), 'rank': product.rank,
+                                      'voi_value': str(product.voi_value), 'condition': product.condition,
+                                      'redirect_services': [redirect_service.id for redirect_service in
+                                                            product.redirect_services.all()]})
+    return HttpResponse(json.dumps(products_autocomplete),
+                        content_type='application/json')

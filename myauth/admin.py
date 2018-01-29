@@ -247,7 +247,7 @@ class UserAdmin(BaseUserAdmin):
                                     'is_verified', 'is_active', 'password1', 'password2', 'groups')
         return super(UserAdmin, self).get_form(request, obj, **kwargs)
 
-    search_fields = ('id', 'email',)
+    search_fields = ('id', 'email', 'first_name', 'last_name')
     ordering = ('email',)
     filter_horizontal = ()
 

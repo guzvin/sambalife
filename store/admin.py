@@ -142,6 +142,18 @@ class LotProductInline(admin.StackedInline):
     def get_extra(self, request, obj=None, **kwargs):
         return self.extra if obj is None else 0
 
+    @property
+    def media(self):
+        extra = '' if settings.DEBUG else '.min'
+        js = ['vendor/jquery/jquery%s.js' % extra, 'jquery.init.js']
+        if self.filter_vertical or self.filter_horizontal:
+            js.extend(['SelectBox.js', 'SelectFilter2.js'])
+        if self.classes and 'collapse' in self.classes:
+            js.append('collapse%s.js' % extra)
+        js = ['admin/js/%s' % url for url in js]
+        js.append('js/specifics/store_inlines.js')
+        return forms.Media(js=js)
+
 
 class LotAdmin(admin.ModelAdmin):
     form = LotForm
@@ -151,6 +163,7 @@ class LotAdmin(admin.ModelAdmin):
     ]
 
     list_filter = [
+        'is_archived',
         'status',
         ('create_date', DateFieldListFilter),
     ]
@@ -247,7 +260,7 @@ class LotAdmin(admin.ModelAdmin):
                 logger.debug(users)
                 if change:
                     pass
-                    # logger.debug('@@@@@@@@@@@@@@@ CHANGE LOT USERS CHANGE LOT USERS CHANGE LOT USERS @@@@@@@@@@@@@@@@@@')
+                    # logger.debug('@@@@@@@@@@@@@ CHANGE LOT USERS CHANGE LOT USERS CHANGE LOT USERS @@@@@@@@@@@@@@@@@')
                     # LotAdmin.email_users_lot_changed(get_current_request(), lot, users)
                 else:
                     logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS @@@@@@@@@@@@@@@@@@')
@@ -356,6 +369,22 @@ class LotAdmin(admin.ModelAdmin):
             copy2(os.path.join(settings.MEDIA_ROOT, obj_thumbnail), dir_name)
             obj.save()
         return super(LotAdmin, self).response_add(request, obj, post_url_continue)
+
+    @property
+    def media(self):
+        extra = '' if settings.DEBUG else '.min'
+        js = [
+            'admin/js/core.js',
+            'admin/js/vendor/jquery/jquery%s.js' % extra,
+            'externo/jquery/jquery-ui.min.js',
+            'admin/js/jquery.init.js',
+            'admin/js/admin/RelatedObjectLookups.js',
+            'admin/js/actions%s.js' % extra,
+            'admin/js/urlify.js',
+            'admin/js/prepopulate%s.js' % extra,
+            'admin/js/vendor/xregexp/xregexp%s.js' % extra,
+        ]
+        return forms.Media(js=js)
 
 admin_site.register(Lot, LotAdmin)
 
