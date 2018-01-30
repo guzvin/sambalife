@@ -1,13 +1,12 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.admin.filters import DateFieldListFilter
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.admin.options import TO_FIELD_VAR
 from django.contrib.auth.models import Group
 from django.db.models import Sum
 from django.contrib.auth import get_user_model
-from store.models import Lot, Product, Config, LotReport, lot_directory_path
+from store.models import Lot, Product, Config, LotReport, lot_directory_path, Collaborator
 from store.admin_filters import UserFilter, AsinFilter
 from utils import helper
 from utils.models import Params
@@ -165,16 +164,18 @@ class LotAdmin(admin.ModelAdmin):
     list_filter = [
         'is_archived',
         'status',
-        ('create_date', DateFieldListFilter),
+        'is_fake',
+        ('create_date', DateRangeFilter),
+        ('sell_date', DateRangeFilter),
     ]
 
     search_fields = ('name', 'product__name',)
     list_display_links = ('id', 'name',)
-    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'is_archived',
-                    'duplicate_lot_action')
+    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'sell_date', 'is_archived',
+                    'is_fake', 'duplicate_lot_action')
     fieldsets = (
-        (None, {'fields': ('is_archived', 'status', 'sell_date', 'payment_complete', 'name', 'order_weight',
-                           'description', 'thumbnail', 'groups')}),
+        (None, {'fields': ('is_fake', 'is_archived', 'status', 'sell_date', 'payment_complete', 'name', 'order_weight',
+                           'description', 'collaborator', 'thumbnail', 'groups')}),
     )
 
     def duplicate_lot_action(self, obj):
@@ -200,12 +201,17 @@ class LotAdmin(admin.ModelAdmin):
         related_changed = False
         # logger.debug('@@@@@@@@@@@@@@@@@@@ LOT CHANGED FIELDS LOT CHANGED FIELDS @@@@@@@@@@@@@@@@@@@@@@@@@@')
         # lot_changes = {}
-        # form_changed_data = form.changed_data
-        # if form_changed_data:
-        #     lot_changes['lot'] = {}
-        #     for field_changed in form_changed_data:
+        is_archived_changed = False
+        form_changed_data = form.changed_data
+        if form_changed_data:
+            for field_changed in form_changed_data:
+                is_archived_changed = field_changed == 'is_archived'
+                if is_archived_changed:
+                    break
         #         lot_changes['lot'][field_changed] = form.cleaned_data[field_changed]
-        # logger.debug(lot_changes)
+        logger.debug('@@@@@@@@@@@@@@@@@@@ LOT ARCHIVED CHANGED LOT ARCHIVED CHANGED @@@@@@@@@@@@@@@@@@@@@@@@@@')
+        logger.debug(is_archived_changed)
+        logger.debug(change)
         form.save_m2m()
         for formset in formsets:
             _deleted_forms = formset.deleted_forms
@@ -226,8 +232,8 @@ class LotAdmin(admin.ModelAdmin):
             #             product_form.cleaned_data['name']: product_form_changed_data
             #         })
             #     logger.debug(lot_changes)
+        lot = request.POST.get('_lot_obj', form.save(commit=False))
         if related_changed:
-            lot = request.POST.get('_lot_obj', form.save(commit=False))
             products = Product.objects.filter(lot=lot)
             logger.debug('@@@@@@@@@@@@@@@@@@ RELATED QUERY RELATED QUERY RELATED QUERY @@@@@@@@@@@@@@@@@@@@@@')
             logger.debug(len(products))
@@ -253,17 +259,16 @@ class LotAdmin(admin.ModelAdmin):
             lot.voi_profit = lot.lot_cost - lot.voi_cost
             lot.voi_roi = (lot.voi_profit / lot.voi_cost) * 100 if lot.voi_cost > 0 else 0
             lot.save()
-            lot_groups = lot.groups.all()
-            users = []
-            for lot_group in lot_groups:
-                users += get_user_model().objects.filter(groups=lot_group)
-            if users:
-                logger.debug(users)
-                if change:
-                    pass
-                    # logger.debug('@@@@@@@@@@@@@ CHANGE LOT USERS CHANGE LOT USERS CHANGE LOT USERS @@@@@@@@@@@@@@@@@')
-                    # LotAdmin.email_users_lot_changed(get_current_request(), lot, users)
-                else:
+        logger.debug(lot.is_fake)
+        logger.debug(lot.is_archived)
+        if lot.is_fake is False and lot.is_archived is False:
+            if change is False or change and is_archived_changed:
+                lot_groups = lot.groups.all()
+                users = []
+                for lot_group in lot_groups:
+                    users += get_user_model().objects.filter(groups=lot_group)
+                if users:
+                    logger.debug(users)
                     logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS @@@@@@@@@@@@@@@@@@')
                     LotAdmin.email_users_new_lot(get_current_request(), lot, users)
 
@@ -456,6 +461,7 @@ class LotReportAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'name',)
     list_filter = [
         'status',
+        'is_fake',
         ('create_date', DateRangeFilter),
         ('sell_date', DateRangeFilter),
         UserFilter,
@@ -479,6 +485,12 @@ class LotReportAdmin(admin.ModelAdmin):
         return LotReportChangeList
 
 admin_site.register(LotReport, LotReportAdmin)
+
+
+class CollaboratorAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+admin_site.register(Collaborator, CollaboratorAdmin)
 
 
 native_lookup_field = utils.lookup_field
