@@ -39,19 +39,17 @@
                   {% endif %}
               </div>
           </div>
-          {% if lot.description %}
           <div class="row">
-              <div class="bs-example" id="lot-alert">
-                 <div class="alert alert-warning">
-                    <strong>{% trans "Fique atento" %}!</strong> {{ lot.description }}.
-                 </div>
-              </div>
-          </div>
-          {% endif %}
-          <div class="row">
-              <br><h3><i class="fa fa-list-ol"></i> {% trans "Produto(s)" %}</h3><br><br>
+              <br><h3><i class="fa fa-list-ol"></i> {% trans "Produto(s)" %}</h3><br />
+              {% if lot.description %}
+                  <div class="bs-example" id="lot-alert">
+                     <div class="alert alert-warning">
+                        <strong>{% trans "Fique atento" %}!</strong> {{ lot.description }}.
+                     </div>
+                  </div>
+              {% endif %}
               <div class="bs-example" id="alerta-valor-minimo">
-                 <div class="alert alert-warning">
+                 <div class="alert alert-info">
                    {% url 'terms' as terms_url %}
                    {% timezone mytz %}
                     {% blocktrans with lot_create_date=lot.create_date|date:'SHORT_DATE_FORMAT' %}
