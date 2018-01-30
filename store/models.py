@@ -21,6 +21,19 @@ def lot_directory_path(instance, filename):
     return 'lot_{0}/{1}'.format(instance.id, filename)
 
 
+class Collaborator(models.Model):
+    id = BigAutoField(primary_key=True)
+    name = models.CharField(_('Nome'), max_length=150)
+    email = models.CharField(_('E-mail'), max_length=150)
+    address_1 = models.CharField(_('Endereço linha 1'), max_length=60)
+    address_2 = models.CharField(_('Endereço linha 2'), max_length=60)
+    rating = models.PositiveSmallIntegerField(_('Avaliação'), null=True)
+
+    class Meta:
+        verbose_name = _('Colaborador')
+        verbose_name_plural = _('Colaboradores')
+
+
 class Lot(models.Model):
     id = BigAutoField(primary_key=True)
     name = models.CharField(_('Nome'), max_length=150)
@@ -58,6 +71,9 @@ class Lot(models.Model):
     voi_roi = models.DecimalField(_('ROI VOI S (%)'), max_digits=12, decimal_places=2, default=0)
     is_archived = models.BooleanField(_('Arquivado'), default=False)
     order_weight = models.IntegerField(_('Peso para ordenação'), default=0)
+    is_fake = models.BooleanField('Fake', default=False)
+    collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
+                                     blank=True)
 
     class Meta:
         verbose_name = _('Lote')
