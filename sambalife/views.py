@@ -348,8 +348,10 @@ def how_it_works(request):
 def help(request):
     return render(request, 'help.html')
 
+
 def faq(request):
     return render(request, 'faq.html')
+
 
 def terms(request):
     return render(request, 'terms.html')
