@@ -120,6 +120,10 @@
                         <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
                     </li>
 
+                    <li class="{% block faq %}{% endblock %}">
+                        <a href="/faq" class=""><i class="fa fa-question-circle"></i> {% trans "Perguntas Frequentes" %}</a>
+                    </li>
+
                     <li>
                         <a href="javascript: void(0);" id="contato-popup-link"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>

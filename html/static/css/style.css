@@ -2080,6 +2080,32 @@ padding-bottom: 20px;
     height: 470px;
 }
 
+.listaancora{
+    margin: 20px 0 50px 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.listaancora li{
+    margin-bottom: 10px;
+}
+
+.respostasfaq p{
+    line-height: 12px;
+    font-size: 15px;
+}
+
+.respostasfaq div{
+    padding: 35px 0 0 0;
+}
+
+ul.listaancora li a{
+    color: #DC3438;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
 @media (max-width: 767px){
 
     .sistema .navbar-brand img:first-child{

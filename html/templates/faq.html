@@ -1,0 +1,69 @@
+{% extends 'includes/layout.html' %}
+
+{% block faq %}active{% endblock %}
+
+{% block conteudo %}
+
+ <section>
+        <div class="container">
+            <div class="row">
+                <h1 class="page-header"><i class="fa fa-question-circle"></i> Perguntas Frequentes</h1>
+                <section id="ajuda">
+                   <ul class="nav nav-tabs" id="ajudatab">
+                       <li class="active"><a data-toggle="tab" href="#login">Dúvidas Sobre a Plataforma</a></li>
+                       <li><a data-toggle="tab" href="#enviarpst">Dúvidas sobre o Envio para Amazon dos seus produtos</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="login" class="tab-pane active">
+                            <ul class="listaancora">
+                                <li><a href="#l1">1. Quais meios de pagamento são aceitos?</a></li>
+                                <li><a href="#l2">2. O VOI Services oferece serviço de redirecionamento?</a></li>
+                            </ul>
+                            <div class="respostasfaq">
+                                <div id="l1">
+                                    <p><strong>1. Quais meios de pagamento são aceitos?</strong></p>
+                                    <p>Estamos trabalhando em outros meios de pagamento. Por enquanto aceitamos apenas Paypal.</p>
+                                </div>
+                                <div id="l2">
+                                    <p><strong>2. O VOI Services oferece serviço de redirecionamento?</strong></p>
+                                    <p>Não. Apenas enviamos os produtos comprados na nossa plataforma.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="enviarpst" class="tab-pane fade">
+                            <ul class="listaancora">
+                                <li><a href="#en1">1. Comprei meus produtos. E agora? Como envio para Amazon?</a></li>
+                                <li><a href="#en2">2. Como enviar para apenas uma warehouse da Amazon meus produtos?</a></li>
+                                <li><a href="#en3">3. Qual endereço devo colocar como "From" quando for criar o envio na Amazon?</a></li>
+                            </ul>
+                            <hr />
+                            <div class="respostasfaq">
+                                <div id="en1">
+                                    <p><strong>1. Comprei meus produtos. E agora? Como envio para amazon?</strong></p>
+                                    <p>Faça download do nosso guia para você que não sabe como enviar seus produtos na nossa plataforma.</p>
+                                    <a class="btn btn-default" target="_blank" href="https://voiservices.com/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf"><i class="fa fa-file-pdf-o"></i> Download Guia</a>
+                                </div>
+                                <div id="en2">
+                                    <p><strong>2. Como enviar para apenas uma warehouse da Amazon meus produtos?</strong></p>
+                                    <p>Você pode tentar enviar para apenas uma warehouse. Não é garantido que a Amazon vá modificar seu envio, mas recomendamos que você tente para que pague menos taxas enviando para menos lugares</p>
+                                    <p></p>
+                                </div>
+                                <div id="en3">
+                                    <p><strong>3. Qual endereço devo colocar como "From" quando for criar o envio na Amazon?</strong></p>
+                                    <p>Observe o endereço no email de confirmação da compra do lote. Lá constarão todas as informações necessárias para dar andamento ao seu envio.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+
+{% endblock %}
