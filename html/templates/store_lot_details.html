@@ -11,7 +11,23 @@
         <div class="col-md-10 main">
           <h1 class="page-header"><i class="fa fa-cart-arrow-down"></i> {{ lot.name }}</h1>
           <div class="row">
-              <div class="col-md-4">
+
+              <!-- bloco de informação do colaborador. Só aparece quando um colaborador fr o vendedor do lote -->
+
+              <div class="col-md-3 content-partner">
+                  <p>Produto vendido pelo colaborador:</p>
+                  <img src="/static/img/team/1.png" /><br /><br />
+                  <div class="infos-parceiro ">
+                      <p><strong>Felisberto</strong> </p>
+                      <div class="rating dois">
+                           <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
+                       </div><br /><br />
+                  </div>
+              </div>
+
+              <-- Fim do bloco novo-->
+
+              <div class="col-md-3">
                   <p><strong>{% trans "Situação" %}: </strong> {% if lot.status %}<strong>{{ lot.get_status_display  }}</strong>{% endif %}</p>
                   <p>
                   {% timezone mytz %}
@@ -23,14 +39,14 @@
 {% endcomment %}
                   <p><strong>{% trans "Lucro" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Lucros Totais&quot; dos produtos do lote.' %}"></span>: </strong> U$ {{ lot.profit|localize }}</p>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                   <p><strong>{% trans "ROI médio" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;ROI&quot; divididos pelo número de produtos do lote.' %}"></span>: </strong> {{ lot.average_roi|localize }}%</p>
 {% comment %}
                   <p><strong>{% trans "Redirecionamento" %} <span class="help help-tooltip help-icon" title="{% trans 'Este valor é somente informativo, ele será pago no processo de criação do envio por esta plataforma.' %}"></span>: </strong> U$ {{ lot.redirect_cost|localize }}</p>
 {% endcomment %}
                   <p><strong>{% trans "Total a pagar" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Valores de Compra&quot; multiplicados pela &quot;Quantidade&quot; de produtos de cada produto do lote.' %}"></span>: </strong> U$ {{ lot.lot_cost|localize }}</p>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                   {% if lot.payment_complete is False %}
                   <!-- Aparece apenas para usuarios comuns -->
                     <br><br>

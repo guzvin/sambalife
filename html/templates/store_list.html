@@ -103,7 +103,10 @@
           {% if forloop.counter0|divisibleby:4 %}
           <div class="row">
           {% endif %}
-              <div class="box-container-lote">
+
+              <!-- A classe parceiro deve ser inserida, como está abaixo, quando o box for de um lote de parceiro-->
+
+              <div class="box-container-lote parceiro">
                  {% is_subscriber user lot=lot as is_user_subscriber %}
                  {% if is_user_subscriber %}
                  <a href="{% url 'store_lot_details' lot.id %}" class="box-lote{% if lot.status == 2 %} vendido{% endif %}">
@@ -127,6 +130,21 @@
                         <p class="lucro-prod">{% trans "Lucro" %}: U$ {{ lot.profit|localize }}</p>
                         <p class="lucro-prod">{% trans "Número de Itens" %}: {{ lot.products_quantity }}</p>
                         <p class="lucro-prod">{% trans "ROI" %}: {{ lot.average_roi|localize }}% | Rank: {{ lot.average_rank|localize }}%</p>
+
+                        <!--Conteúdo novo -->
+                        <p class="lucro-prod parceiro-titulo"><strong>Vendido por:  </strong>Felisberto</p>
+
+                        <!--
+
+                        Esse conteúdo abaixo é o rating. Só deve aparecer nos lotes que são de parceiros
+                        abaixo coloquei uma classe pra data avaliacao. de um até cinco por extenso. cada classe vai mostrar o número de estrelas.
+                        -->
+
+                        <div class="rating dois">
+                            <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
+                        </div>
+
+                         <-- Fim conteúdo novo -->
                      </div>
                  </a>
               </div>
@@ -134,6 +152,7 @@
           </div>
           {% endif %}
           {% endfor %}
+
           <div class="row">
               <nav aria-label="...">
                 {% if lots.has_other_pages %}

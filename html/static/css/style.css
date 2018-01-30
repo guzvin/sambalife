@@ -1228,6 +1228,7 @@ label.titulo-pct span{
     border-right: 1px solid #e5e5e5;
     padding: 10px;
     margin-bottom: 10px;
+    height: 98%;
 }
 
 .box-container-lote:nth-child(4n) .box-lote{
@@ -1297,6 +1298,7 @@ label.titulo-pct span{
     float: left;
     width: 24%;
     margin-bottom: 20px;
+    height: 320px;
 }
 
 .box-lote img{
@@ -1375,6 +1377,109 @@ label.titulo-pct span{
     margin-bottom: 5px;
     font-size: 13px;
     color: #666;
+}
+
+.lucro-prod.parceiro-titulo{
+    color: #3C3E77;
+    font-weight: bold;
+    width: 70%;
+}
+
+.lucro-prod.parceiro-titulo strong, .parceiro .lucro-prod.parceiro-titulo strong{
+    color: #666;
+}
+
+.parceiro{
+  position: relative;
+  overflow: hidden;
+}
+
+.parceiro:before{
+    transform: rotate(-45deg);
+    transform-origin: 100% 0;
+    border-top: 30px solid #3C3E77;
+    content: '';
+    position: absolute;
+    top: -21px;
+    left: 171px;
+    right: -31%;
+    transform: rotate(45deg);
+    transform-origin: 0 0;
+}
+
+.parceiro:after{
+    transform: rotate(-45deg);
+    transform-origin: 100% 0;
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 189px;
+    right: -31%;
+    transform: rotate(45deg);
+    transform-origin: 0 0;
+    content: "Vendido por Parceiro";
+    text-align: left;
+    font-weight: bold;
+    color: #fff;
+    font-size: 13px;
+}
+
+/* star */
+
+.rating.cinco > span:before,
+.rating.quatro > span:nth-child(1):before, .rating.quatro > span:nth-child(2):before,
+.rating.quatro > span:nth-child(3):before, .rating.quatro > span:nth-child(4):before,
+.rating.tres > span:nth-child(1):before, .rating.tres > span:nth-child(2):before,
+.rating.tres > span:nth-child(3):before,.rating.dois > span:nth-child(1):before,
+.rating.dois > span:nth-child(2):before, .rating.um > span:nth-child(1):before{
+   content: "\2605";
+   position: absolute;
+   color: #f4d078;
+}
+
+.rating {
+  unicode-bidi: bidi-override;
+  direction: rtl;
+}
+
+.rating {
+  unicode-bidi: bidi-override;
+  direction: rtl;
+  width: 115px;
+  margin: 0 auto;
+}
+.rating > span {
+  display: inline-block;
+  position: relative;
+  width: 1.1em;
+  color: #f4d078;
+}
+
+.box-lote .rating span, .infos-parceiro .rating span{
+    background-image: none;
+    color: #f4d078;
+    margin: 5px 3px 0 0;
+    padding: 0;
+    font-size: 11px;
+}
+
+.infos-parceiro .rating span {
+    font-size: 18px;
+    float: left;
+}
+
+.infos-parceiro .rating{
+
+}
+
+.infos-parceiro p{
+    font-size: 19px;
+    margin: 0;
+}
+
+.content-partner{
+    text-align: center;
+    border-right: 1px solid #eee;
 }
 
 .box-lote span{
@@ -1717,7 +1822,6 @@ form small{
 }
 
 .en .navbar-brand img:first-child {
-    width: 200px;
     margin-top: 15px;
 }
 
@@ -1753,10 +1857,6 @@ form small{
 .navbar-default.affix .navbar-brand.logo-site{
     background: url('../img/logo-en.png') no-repeat 0 0;
     background-size: 250px;
-}
-
-.termos .page-header{
-    margin-top: 90px;
 }
 
 footer{
@@ -1839,7 +1939,7 @@ footer.fixed-footer{
     background-size: 86px 60px;
     position: absolute;
     right: 22px;
-    top: 22px;
+    top: 11px;
 }
 
 .sistema .bandeira {
