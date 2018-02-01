@@ -376,8 +376,8 @@ def store_paypal_notification_post_transaction(request, _lot_details, user, ipn_
                   _('- Após 30 dias entrar em contato com o nosso suporte.'),)
         html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                               ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}<br>{}<br>{}</p>'] +
-                              ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}<br>{}</p>']
-                              if collaborator_instructions else [] +
+                              (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}<br>{}</p>']
+                              if collaborator_instructions else []) +
                               ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'
                                '<br>'
                                '<a href="{}">{}</a></p>'] +
