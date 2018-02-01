@@ -2549,7 +2549,7 @@ msgstr "Separated by semicolons."
 
 #: utils/models.py:18
 msgid "Valor Fábio/Gustavo/Roberto"
-msgstr "Fábio/Gustavo/Roberto's Cost"
+msgstr "Fábio/Roberto's Cost"
 
 #: utils/models.py:19
 msgid "Valor Extra da Versão em Inglês"
