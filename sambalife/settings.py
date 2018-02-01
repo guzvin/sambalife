@@ -69,6 +69,8 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             PAYPAL_LIVE_USERS = key_value_pair[1].split(',')
         elif key_value_pair[0] == 'paypal_sandbox':
             PAYPAL_SANDBOX = (key_value_pair[1] == '1')
+        elif key_value_pair[0] == 'paypal_sandbox_endpoint_live':
+            PAYPAL_SANDBOX_ENDPOINT_LIVE = (key_value_pair[1] == '1')
         elif key_value_pair[0] == 'paypal_nvp_user':
             PAYPAL_NVP_USER = key_value_pair[1]
         elif key_value_pair[0] == 'paypal_nvp_pwd':

@@ -545,6 +545,7 @@ def shipment_pay_form(request, pid=None):
                         paypal_cert = settings.PAYPAL_CERT_SANDBOX
                         paypal_private_cert = settings.PAYPAL_PRIVATE_CERT_SANDBOX
                         paypal_public_cert = settings.PAYPAL_PUBLIC_CERT_SANDBOX
+                        is_sandbox = settings.PAYPAL_SANDBOX_ENDPOINT_LIVE is False
                     else:
                         invoice_id = '_'.join(['A', str(request.user.id), str(pid)])
                         paypal_business = settings.PAYPAL_BUSINESS
