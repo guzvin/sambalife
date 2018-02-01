@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-26 17:31-0200\n"
+"POT-Creation-Date: 2018-01-31 18:03-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,7 +43,7 @@ msgstr "Add"
 #: html/templates/admin/index.html:33
 #: html/templates/base_shipment_list.html:101
 #: html/templates/base_shipment_list.html:119
-#: html/templates/product_stock.html:132 html/templates/product_stock.html:258
+#: html/templates/product_stock.html:134 html/templates/product_stock.html:262
 msgid "Visualizar"
 msgstr "View"
 
@@ -58,13 +58,13 @@ msgstr "Canceled"
 
 #: html/templates/base_shipment_details.html:22
 #: html/templates/base_shipment_list.html:107
-#: html/templates/product_stock.html:54 html/templates/product_stock.html:202
-#: product/models.py:26 shipment/models.py:48 store/models.py:59
+#: html/templates/product_stock.html:54 html/templates/product_stock.html:204
+#: product/models.py:26 shipment/models.py:48 store/models.py:77
 msgid "Arquivado"
 msgstr "Filed"
 
 #: html/templates/base_shipment_details.html:33
-#: html/templates/base_shipment_details.html:101
+#: html/templates/base_shipment_details.html:105
 #: html/templates/base_shipment_list.html:19
 #: html/templates/merchant_shipment_add.html:54
 #: html/templates/product_details.html:15 html/templates/product_stock.html:20
@@ -73,15 +73,15 @@ msgid "ID"
 msgstr "ID"
 
 #: html/templates/base_shipment_details.html:34
-#: html/templates/base_shipment_details.html:102
+#: html/templates/base_shipment_details.html:106
 #: html/templates/merchant_shipment_add.html:55
 #: html/templates/product_details.html:21 html/templates/product_stock.html:25
-#: html/templates/shipment_add.html:55 html/templates/store_lot_details.html:71
+#: html/templates/shipment_add.html:55 html/templates/store_lot_details.html:83
 #: html/templates/store_purchase.html:19 html/templates/store_purchase.html:44
 #: html/templates/user_registration.html:85 myauth/admin.py:351
 #: myauth/models.py:23 partner/models.py:12 product/models.py:15
-#: sambalife/forms.py:8 sambalife/views.py:362 service/models.py:12
-#: store/models.py:26 store/models.py:107
+#: sambalife/forms.py:8 sambalife/views.py:366 service/models.py:12
+#: store/models.py:26 store/models.py:44 store/models.py:129
 msgid "Nome"
 msgstr "Name"
 
@@ -89,14 +89,14 @@ msgstr "Name"
 #: html/templates/merchant_shipment_add.html:56
 #: html/templates/product_details.html:33 html/templates/shipment_add.html:56
 #: html/templates/shipment_details.html:19 product/models.py:18
-#: shipment/models.py:130 store/models.py:27
+#: shipment/models.py:130 store/models.py:45
 msgid "Descrição"
 msgstr "Description"
 
 #: html/templates/base_shipment_details.html:36
 #: html/templates/merchant_shipment_add.html:57
-#: html/templates/product_stock.html:159 html/templates/shipment_add.html:57
-#: shipment/views.py:1184 shipment/views.py:1224
+#: html/templates/product_stock.html:161 html/templates/shipment_add.html:57
+#: shipment/views.py:1189 shipment/views.py:1229
 msgid "Validade"
 msgstr "Expiration Date"
 
@@ -109,9 +109,9 @@ msgstr "Time in stock"
 #: html/templates/base_shipment_list.html:95
 #: html/templates/merchant_shipment_add.html:58
 #: html/templates/product_details.html:53 html/templates/product_stock.html:115
-#: html/templates/shipment_add.html:59 html/templates/store_lot_details.html:87
-#: product/models.py:20 shipment/models.py:91 shipment/views.py:1180
-#: shipment/views.py:1220 store/models.py:112
+#: html/templates/shipment_add.html:59 html/templates/store_lot_details.html:99
+#: product/models.py:20 shipment/models.py:91 shipment/views.py:1185
+#: shipment/views.py:1225 store/models.py:134
 msgid "Quantidade"
 msgstr "Quantity"
 
@@ -124,67 +124,52 @@ msgstr "User"
 
 #: html/templates/base_shipment_details.html:43
 #: html/templates/includes/layout.html:93 service/models.py:17
-#: store/admin.py:89 store/admin.py:90
+#: store/admin.py:88 store/admin.py:89
 msgid "Serviços"
 msgstr "Services"
 
-#: html/templates/base_shipment_details.html:46
-#: html/templates/merchant_shipment_add.html:60
-#: html/templates/shipment_add.html:61
-msgid "Retirar"
-msgstr "Remove"
-
-#: html/templates/base_shipment_details.html:66
-#: html/templates/product_stock.html:185 html/templates/shipment_add.html:72
+#: html/templates/base_shipment_details.html:68
+#: html/templates/product_stock.html:187 html/templates/shipment_add.html:74
 msgid "dias"
 msgstr "days"
 
-#: html/templates/base_shipment_details.html:75
+#: html/templates/base_shipment_details.html:77
 msgid "Atribuir serviços"
 msgstr "Add services"
 
-#: html/templates/base_shipment_details.html:78
+#: html/templates/base_shipment_details.html:80
 msgid "Visualizar serviços"
 msgstr "View services"
 
-#: html/templates/base_shipment_details.html:83
-#: html/templates/product_details.html:157
-#: html/templates/product_details.html:186
-#: html/templates/product_details.html:205
-#: html/templates/store_lot_details.html:136
-#: html/templates/store_lot_details.html:176
-msgid "Excluir"
-msgstr "Delete"
-
-#: html/templates/base_shipment_details.html:98
+#: html/templates/base_shipment_details.html:102
 msgid "Informações do usuário"
 msgstr "User Information"
 
-#: html/templates/base_shipment_details.html:103
+#: html/templates/base_shipment_details.html:107
 msgid "Email"
 msgstr "Email"
 
-#: html/templates/base_shipment_details.html:104
+#: html/templates/base_shipment_details.html:108
 msgid "Acessar cadastro do usuário"
 msgstr "Access user record"
 
-#: html/templates/base_shipment_details.html:117
+#: html/templates/base_shipment_details.html:121
 #: html/templates/merchant_shipment_add.html:106
-#: html/templates/shipment_add.html:104
+#: html/templates/shipment_add.html:108
 msgid "Valores"
 msgstr "Details"
 
-#: html/templates/base_shipment_details.html:118
+#: html/templates/base_shipment_details.html:122
 #: html/templates/merchant_shipment_add.html:107
-#: html/templates/shipment_add.html:105 shipment/models.py:36
+#: html/templates/shipment_add.html:109 shipment/models.py:36
 msgid "Total de Produtos"
 msgstr "Total Products"
 
-#: html/templates/base_shipment_details.html:125 shipment/models.py:37
+#: html/templates/base_shipment_details.html:129 shipment/models.py:37
 msgid "Valor Total"
 msgstr "Amount Due"
 
-#: html/templates/base_shipment_details.html:127
+#: html/templates/base_shipment_details.html:131
 msgid ""
 "Este valor poderá ser alterado após inclusão dos serviços necessários para o "
 "preparo."
@@ -192,55 +177,55 @@ msgstr ""
 "The total amount due may suffer changes due to services used to prep your "
 "shipment."
 
-#: html/templates/base_shipment_details.html:136
+#: html/templates/base_shipment_details.html:140
 #: html/templates/base_shipment_list.html:50
 msgid "Data de Criação"
 msgstr "Created on"
 
-#: html/templates/base_shipment_details.html:157 shipment/models.py:138
-#: shipment/views.py:1245
+#: html/templates/base_shipment_details.html:161 shipment/models.py:138
+#: shipment/views.py:1250
 msgid "Peso"
 msgstr "Weight"
 
-#: html/templates/base_shipment_details.html:158 shipment/models.py:141
+#: html/templates/base_shipment_details.html:162 shipment/models.py:141
 msgid "L"
 msgstr "L"
 
-#: html/templates/base_shipment_details.html:159 shipment/models.py:140
+#: html/templates/base_shipment_details.html:163 shipment/models.py:140
 msgid "W"
 msgstr "W"
 
-#: html/templates/base_shipment_details.html:160 shipment/models.py:139
+#: html/templates/base_shipment_details.html:164 shipment/models.py:139
 msgid "H"
 msgstr "H"
 
-#: html/templates/base_shipment_details.html:165
+#: html/templates/base_shipment_details.html:169
 msgid "Informações dos pacote(s)"
 msgstr "Box Informations"
 
-#: html/templates/base_shipment_details.html:182
-#: html/templates/base_shipment_details.html:332 shipment/models.py:168
+#: html/templates/base_shipment_details.html:186
+#: html/templates/base_shipment_details.html:336 shipment/models.py:168
 msgid "Pacote"
 msgstr "Box"
 
-#: html/templates/base_shipment_details.html:186
+#: html/templates/base_shipment_details.html:190
 msgid "Informações do pacote"
 msgstr "Box Information"
 
-#: html/templates/base_shipment_details.html:187
+#: html/templates/base_shipment_details.html:191
 msgid "Dimensões"
 msgstr "Dimensions"
 
-#: html/templates/base_shipment_details.html:215
+#: html/templates/base_shipment_details.html:219
 msgid "Upload não permitido"
 msgstr "Upload not authorized"
 
-#: html/templates/base_shipment_details.html:222
+#: html/templates/base_shipment_details.html:226
 #: html/templates/shipment_details.html:41
 msgid "Alterar"
 msgstr "Change"
 
-#: html/templates/base_shipment_details.html:264
+#: html/templates/base_shipment_details.html:268
 #: html/templates/base_shipment_list.html:33
 #: html/templates/product_details.html:121 html/templates/product_stock.html:45
 #: html/templates/product_stock.html:127 product/models.py:29
@@ -248,161 +233,161 @@ msgstr "Change"
 msgid "Status"
 msgstr "Status"
 
-#: html/templates/base_shipment_details.html:264
+#: html/templates/base_shipment_details.html:268
 msgid "Acompanhe abaixo o status do envio"
 msgstr "Follow the status of your shipment below"
 
-#: html/templates/base_shipment_details.html:274
+#: html/templates/base_shipment_details.html:278
 #: html/templates/base_shipment_list.html:42 shipment/models.py:39
 msgid "Preparando para Envio"
 msgstr "Preparing Shipment"
 
-#: html/templates/base_shipment_details.html:280
-#: html/templates/base_shipment_details.html:302
+#: html/templates/base_shipment_details.html:284
+#: html/templates/base_shipment_details.html:306
 msgid "Previsão: Até"
 msgstr "ETC"
 
-#: html/templates/base_shipment_details.html:280
-#: html/templates/base_shipment_details.html:302 shipment/views.py:1174
-#: shipment/views.py:1216 shipment/views.py:1271
+#: html/templates/base_shipment_details.html:284
+#: html/templates/base_shipment_details.html:306 shipment/views.py:1179
+#: shipment/views.py:1221 shipment/views.py:1276
 msgid "inclusive"
 msgstr "included"
 
-#: html/templates/base_shipment_details.html:287
+#: html/templates/base_shipment_details.html:291
 #: html/templates/base_shipment_list.html:43 shipment/models.py:40
 msgid "Upload Etiqueta Caixa Autorizado"
 msgstr "Box Label Upload Authorized"
 
-#: html/templates/base_shipment_details.html:291
+#: html/templates/base_shipment_details.html:295
 #: html/templates/base_shipment_list.html:44 shipment/models.py:41
 msgid "Pagamento Autorizado"
 msgstr "Payment Authorized"
 
-#: html/templates/base_shipment_details.html:296
+#: html/templates/base_shipment_details.html:300
 #: html/templates/base_shipment_list.html:45 shipment/models.py:42
 msgid "Checagens Finais"
 msgstr "Final Checkings"
 
-#: html/templates/base_shipment_details.html:309
+#: html/templates/base_shipment_details.html:313
 #: html/templates/base_shipment_list.html:46 shipment/models.py:43
 msgid "Enviado"
 msgstr "Shipped"
 
-#: html/templates/base_shipment_details.html:315
+#: html/templates/base_shipment_details.html:319
 msgid "Área Administrativa"
 msgstr "Admin"
 
-#: html/templates/base_shipment_details.html:324
+#: html/templates/base_shipment_details.html:328
 msgid "Informações do(s) pacote(s)"
 msgstr "Box Informations"
 
-#: html/templates/base_shipment_details.html:342
-#: html/templates/base_shipment_details.html:349
-#: html/templates/base_shipment_details.html:356
-#: html/templates/base_shipment_details.html:363
+#: html/templates/base_shipment_details.html:346
+#: html/templates/base_shipment_details.html:353
+#: html/templates/base_shipment_details.html:360
+#: html/templates/base_shipment_details.html:367
 msgid "em"
 msgstr "in"
 
-#: html/templates/base_shipment_details.html:379
+#: html/templates/base_shipment_details.html:383
 msgid "Adicionar Pacote ao Envio"
 msgstr "Add a box to this shipment"
 
-#: html/templates/base_shipment_details.html:405
+#: html/templates/base_shipment_details.html:409
 msgid "Reativar Envio"
 msgstr "Restore Shipment"
 
-#: html/templates/base_shipment_details.html:410
+#: html/templates/base_shipment_details.html:414
 msgid "Enviar e Finalizar Envio"
 msgstr "Send and Complete Shipment"
 
-#: html/templates/base_shipment_details.html:415
-#: html/templates/base_shipment_details.html:421
-#: html/templates/base_shipment_details.html:427
-#: html/templates/base_shipment_details.html:545
+#: html/templates/base_shipment_details.html:419
+#: html/templates/base_shipment_details.html:425
+#: html/templates/base_shipment_details.html:431
+#: html/templates/base_shipment_details.html:549
 #: html/templates/merchant_shipment_add.html:112
 #: html/templates/product_add_edit.html:212
-#: html/templates/product_stock.html:239 html/templates/shipment_add.html:156
+#: html/templates/product_stock.html:241 html/templates/shipment_add.html:160
 #: html/templates/user_edit.html:72 html/templates/user_registration.html:468
 #: html/templates/user_reset_password.html:93
 msgid "Salvar"
 msgstr "Save"
 
-#: html/templates/base_shipment_details.html:433
+#: html/templates/base_shipment_details.html:437
 msgid "Pular etapa"
 msgstr "Move step forward"
 
-#: html/templates/base_shipment_details.html:439
+#: html/templates/base_shipment_details.html:443
 msgid "Voltar etapa"
 msgstr "Move step backwards"
 
-#: html/templates/base_shipment_details.html:447
+#: html/templates/base_shipment_details.html:451
 msgid "Arquivar Envio"
 msgstr "File Shipment"
 
-#: html/templates/base_shipment_details.html:460
+#: html/templates/base_shipment_details.html:464
 msgid "Cancelar Envio"
 msgstr "Cancel Shipment"
 
-#: html/templates/base_shipment_details.html:465
+#: html/templates/base_shipment_details.html:469
 #: html/templates/error/400_shipment.html:10
 #: html/templates/merchant_shipment_add.html:113
 #: html/templates/product_add_edit.html:213
-#: html/templates/product_details.html:169 html/templates/shipment_add.html:157
-#: html/templates/store_lot_details.html:139 html/templates/user_edit.html:73
+#: html/templates/product_details.html:169 html/templates/shipment_add.html:161
+#: html/templates/store_lot_details.html:157 html/templates/user_edit.html:73
 #: html/templates/user_registration.html:474
 #: utils/templates/admin/utils/accounting/change_form.html:9
 msgid "Voltar"
 msgstr "Back"
 
-#: html/templates/base_shipment_details.html:479
+#: html/templates/base_shipment_details.html:483
 msgid "Confirmação"
 msgstr "Confirmation"
 
-#: html/templates/base_shipment_details.html:482
+#: html/templates/base_shipment_details.html:486
 msgid "Confirma a conclusão do processo de envio?"
 msgstr "Confirm shipment completion?"
 
-#: html/templates/base_shipment_details.html:485
-#: html/templates/base_shipment_details.html:508
-#: html/templates/product_details.html:192
-#: html/templates/store_lot_details.html:162
-#: html/templates/store_lot_details.html:182
+#: html/templates/base_shipment_details.html:489
+#: html/templates/base_shipment_details.html:512
+#: html/templates/product_details.html:192 html/templates/store_list.html:198
+#: html/templates/store_lot_details.html:180
+#: html/templates/store_lot_details.html:200
 msgid "Sim"
 msgstr "Yes"
 
-#: html/templates/base_shipment_details.html:486
-#: html/templates/base_shipment_details.html:509
-#: html/templates/base_shipment_details.html:547
+#: html/templates/base_shipment_details.html:490
+#: html/templates/base_shipment_details.html:513
+#: html/templates/base_shipment_details.html:551
 #: html/templates/includes/layout-footer.html:231
 #: html/templates/includes/layout-footer.html:260
-#: html/templates/includes/layout.html:347
-#: html/templates/includes/layout.html:364
-#: html/templates/includes/layout.html:383
-#: html/templates/includes/layout.html:407 html/templates/login.html:132
+#: html/templates/includes/layout.html:352
+#: html/templates/includes/layout.html:369
+#: html/templates/includes/layout.html:388
+#: html/templates/includes/layout.html:412 html/templates/login.html:132
 #: html/templates/product_details.html:193
 #: html/templates/product_details.html:217
-#: html/templates/product_stock.html:240
-#: html/templates/store_lot_details.html:163
-#: html/templates/store_lot_details.html:183 html/templates/user_edit.html:94
+#: html/templates/product_stock.html:242 html/templates/store_list.html:199
+#: html/templates/store_lot_details.html:181
+#: html/templates/store_lot_details.html:201 html/templates/user_edit.html:94
 #: html/templates/user_registration.html:541
 #: html/templates/user_registration.html:560
 #: html/templates/user_reset_password.html:147
 msgid "Fechar"
 msgstr "Close"
 
-#: html/templates/base_shipment_details.html:501
+#: html/templates/base_shipment_details.html:505
 msgid "Cancelar"
 msgstr "Cancel"
 
-#: html/templates/base_shipment_details.html:504
+#: html/templates/base_shipment_details.html:508
 msgid "Confirma o cancelamento deste envio?"
 msgstr "Confirm shipment cancelation?"
 
-#: html/templates/base_shipment_details.html:505
+#: html/templates/base_shipment_details.html:509
 msgid "Esta ação não poderá ser desfeita."
 msgstr "This action cannot be undone."
 
-#: html/templates/base_shipment_details.html:526
+#: html/templates/base_shipment_details.html:530
 msgid "Composição do preço de redirecionamento"
 msgstr "Pricing"
 
@@ -464,8 +449,8 @@ msgstr "No shipments found."
 #: html/templates/user_registration.html:13
 #: html/templates/user_reset_password.html:13
 #: html/templates/user_validation.html:13 myauth/models.py:119
-#: sambalife/views.py:105 sambalife/views.py:258 utils/helper.py:84
-#: utils/helper.py:150
+#: sambalife/views.py:105 sambalife/views.py:258 utils/helper.py:83
+#: utils/helper.py:149
 msgid "Vendedor Online Internacional"
 msgstr "VOI Services"
 
@@ -559,7 +544,7 @@ msgid "Pagamentos"
 msgstr "Payments"
 
 #: html/templates/includes/layout-footer.html:81
-#: html/templates/includes/layout.html:99 store/models.py:63
+#: html/templates/includes/layout.html:99 store/models.py:85
 #: store/templates/admin/store/lotreport/pagination.html:9
 msgid "Lotes"
 msgstr "Lots"
@@ -567,17 +552,17 @@ msgstr "Lots"
 #: html/templates/includes/layout-footer.html:87
 #: html/templates/includes/layout.html:116
 #: html/templates/product_details.html:47 html/templates/product_stock.html:64
-#: product/models.py:17 store/apps.py:7 store/views.py:94 store/views.py:156
+#: product/models.py:17 store/apps.py:7 store/views.py:93 store/views.py:155
 msgid "Loja"
 msgstr "Store"
 
 #: html/templates/includes/layout-footer.html:90 product/models.py:52
-#: shipment/models.py:99 store/admin.py:140 store/models.py:147
+#: shipment/models.py:99 store/admin.py:139 store/models.py:169
 msgid "Produtos"
 msgstr "Products"
 
 #: html/templates/includes/layout-footer.html:94
-#: html/templates/includes/layout.html:248
+#: html/templates/includes/layout.html:252
 #: html/templates/store_purchase.html:13
 msgid "Minhas compras"
 msgstr "Purchase history"
@@ -587,13 +572,12 @@ msgid "/pt/ajuda/"
 msgstr "/en/help/"
 
 #: html/templates/includes/layout-footer.html:99
-#: html/templates/includes/layout.html:128 store/views.py:360
-#: store/views.py:398
+#: html/templates/includes/layout.html:132 store/views.py:368
 msgid "Tutorial Plataforma"
 msgstr "Tutorial"
 
 #: html/templates/includes/layout-footer.html:103
-#: html/templates/includes/layout.html:230 html/templates/product_stock.html:14
+#: html/templates/includes/layout.html:234 html/templates/product_stock.html:14
 #: product/views.py:115 shipment/views.py:162
 msgid "Estoque"
 msgstr "Inventory"
@@ -624,23 +608,23 @@ msgstr "New Shipment"
 
 #: html/templates/includes/layout-footer.html:158
 #: html/templates/includes/layout-footer.html:246
-#: html/templates/includes/layout.html:220
-#: html/templates/includes/layout.html:400
+#: html/templates/includes/layout.html:224
+#: html/templates/includes/layout.html:405
 msgid "Olá"
 msgstr "Hi"
 
 #: html/templates/includes/layout-footer.html:161
-#: html/templates/includes/layout.html:224 html/templates/user_edit.html:14
+#: html/templates/includes/layout.html:228 html/templates/user_edit.html:14
 msgid "Editar cadastro"
 msgstr "Edit Profile"
 
 #: html/templates/includes/layout-footer.html:165
-#: html/templates/includes/layout.html:253
+#: html/templates/includes/layout.html:257
 msgid "sair"
 msgstr "Exit"
 
 #: html/templates/includes/layout-footer.html:180
-#: html/templates/includes/layout.html:290
+#: html/templates/includes/layout.html:294
 #: html/templates/user_registration.html:482
 #: html/templates/user_reset_password.html:107
 #: html/templates/user_validation.html:86
@@ -655,25 +639,25 @@ msgid "<a href='/pt/termos-e-condicoes-de-uso.html'>Termos e Condições de Uso"
 msgstr "<a href='/en/terms-and-conditions.html'>Terms and Conditions"
 
 #: html/templates/includes/layout-footer.html:200
-#: html/templates/includes/layout.html:312 html/templates/login.html:100
+#: html/templates/includes/layout.html:317 html/templates/login.html:100
 #: html/templates/user_registration.html:504
 msgid "Sucesso"
 msgstr "Success"
 
 #: html/templates/includes/layout-footer.html:203
-#: html/templates/includes/layout.html:315 html/templates/login.html:103
+#: html/templates/includes/layout.html:320 html/templates/login.html:103
 #: html/templates/user_registration.html:507
 #: html/templates/user_reset_password.html:129
 msgid "Erro"
 msgstr "Error"
 
 #: html/templates/includes/layout-footer.html:226
-#: html/templates/includes/layout.html:340
+#: html/templates/includes/layout.html:345
 msgid "Não foi possível concluir sua ação."
 msgstr "Unable to process your request."
 
 #: html/templates/includes/layout-footer.html:243
-#: html/templates/includes/layout.html:397
+#: html/templates/includes/layout.html:402
 msgid "Importante!"
 msgstr "Important!"
 
@@ -742,7 +726,7 @@ msgid "Aceito os termos e condições de uso"
 msgstr "I have read and accept the terms and conditions"
 
 #: html/templates/includes/layout-footer.html:257
-#: html/templates/includes/layout.html:404
+#: html/templates/includes/layout.html:409
 msgid ""
 "É necessário aceitar os termos para poder continuar a utilizar a plataforma."
 msgstr ""
@@ -750,7 +734,7 @@ msgstr ""
 "platform."
 
 #: html/templates/includes/layout-footer.html:268
-#: html/templates/includes/layout.html:439 html/templates/login.html:139
+#: html/templates/includes/layout.html:444 html/templates/login.html:139
 #: html/templates/user_registration.html:567
 #: html/templates/user_reset_password.html:154
 msgid "Carregando"
@@ -769,59 +753,71 @@ msgid "Como Funciona"
 msgstr "How it works"
 
 #: html/templates/includes/layout.html:124
+msgid "Perguntas Frequentes"
+msgstr "FAQ"
+
+#: html/templates/includes/layout.html:128
 msgid "Contato"
 msgstr "Contact us"
 
-#: html/templates/includes/layout.html:128 store/views.py:359
-#: store/views.py:397
+#: html/templates/includes/layout.html:132 store/views.py:367
 msgid "/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf"
 msgstr "/en/help/voi-services-da-compra-ao-envio-para-amazon.pdf"
 
-#: html/templates/includes/layout.html:238
+#: html/templates/includes/layout.html:242
 msgid "Envios Amazon"
 msgstr "Amazon Shipments"
 
-#: html/templates/includes/layout.html:240
+#: html/templates/includes/layout.html:244
 msgid "Envios em aberto"
 msgstr "Open Shipments"
 
-#: html/templates/includes/layout.html:294
+#: html/templates/includes/layout.html:298
 #: html/templates/user_registration.html:486
 #: html/templates/user_reset_password.html:111
 #: html/templates/user_validation.html:90
 msgid "PrepShip Tool"
 msgstr "VOI Services"
 
-#: html/templates/includes/layout.html:299
-msgid "Termos e Condições de Uso"
-msgstr "Terms and Conditions"
+#: html/templates/includes/layout.html:299 myauth/admin.py:161
+#: myauth/models.py:129
+msgid "Endereço"
+msgstr "Street address"
 
-#: html/templates/includes/layout.html:300
+#: html/templates/includes/layout.html:299 sambalife/views.py:366
+msgid "Telefone"
+msgstr "Phone"
+
+#: html/templates/includes/layout.html:304
+msgid "Termos"
+msgstr ""
+
+#: html/templates/includes/layout.html:305
 msgid "Ajuda"
 msgstr "Help"
 
-#: html/templates/includes/layout.html:358
+#: html/templates/includes/layout.html:363
 msgid "Fale Conosco"
 msgstr "Contact us"
 
-#: html/templates/includes/layout.html:361
+#: html/templates/includes/layout.html:366
 msgid ""
 "Para entrar em contato com nosso suporte e nossos canais de atendimento, "
 "envie um email para <a class='download' hre='mailto:support@voiservices."
 "com'>support@voiservices.com</a>. Retornaremos o mais breve possível."
 msgstr ""
 
-#: html/templates/includes/layout.html:375
+#: html/templates/includes/layout.html:380
 msgid "Endereço VOI"
 msgstr "VOI Services address"
 
-#: html/templates/includes/layout.html:378
+#: html/templates/includes/layout.html:383
 msgid ""
 "Veja abaixo o nosso endereço para o qual você deve enviar seus produtos "
 "antes que eles sejam enviados para Amazon/Ebay."
 msgstr "Address to send your products to before they are sent to Amazon/Ebay."
 
-#: html/templates/includes/layout.html:401
+#: html/templates/includes/layout.html:406
 msgid ""
 "Os termos e condições de uso da nossa plataforma foram atualizados. <a "
 "href='/pt/termos-e-condicoes-de-uso/' class='download' "
@@ -830,7 +826,7 @@ msgstr ""
 "Our terms and conditions have been updated. <a href='/en/terms-and-"
 "conditions/' class='download' target='_blank'>Click here</a> to read it."
 
-#: html/templates/includes/layout.html:403
+#: html/templates/includes/layout.html:408
 #: html/templates/user_registration.html:458
 msgid "Li e aceito os termos e condições de uso"
 msgstr "I have read and accept the terms and conditions"
@@ -900,6 +896,10 @@ msgstr "Add more products to this shipment"
 msgid "Digite o nome do Produto"
 msgstr "Product's name"
 
+#: html/templates/merchant_shipment_add.html:60
+msgid "Retirar"
+msgstr "Remove"
+
 #: html/templates/merchant_shipment_add.html:94
 msgid "Canal de venda"
 msgstr "Retailer"
@@ -916,8 +916,8 @@ msgstr "eBay"
 msgid "Outro"
 msgstr "Other"
 
-#: html/templates/merchant_shipment_details.html:4 shipment/views.py:968
-#: shipment/views.py:1018
+#: html/templates/merchant_shipment_details.html:4 shipment/views.py:973
+#: shipment/views.py:1023
 msgid "Envio Merchant"
 msgstr "Merchant Shipment"
 
@@ -971,50 +971,50 @@ msgid "Previsão de entrega"
 msgstr "Estimated Delivery Date"
 
 #: html/templates/product_add_edit.html:109
-#: html/templates/product_details.html:71 html/templates/product_stock.html:209
+#: html/templates/product_details.html:71 html/templates/product_stock.html:211
 #: product/models.py:42
 msgid "Data de Validade"
 msgstr "Expiration Date"
 
 #: html/templates/product_add_edit.html:128
 #: html/templates/product_add_edit.html:150
-#: html/templates/product_stock.html:223 product/models.py:31
-#: store/models.py:135
+#: html/templates/product_stock.html:225 product/models.py:31
+#: store/models.py:157
 msgid "New"
 msgstr "New"
 
 #: html/templates/product_add_edit.html:129
 #: html/templates/product_add_edit.html:151
-#: html/templates/product_stock.html:224 product/models.py:32
-#: store/models.py:136
+#: html/templates/product_stock.html:226 product/models.py:32
+#: store/models.py:158
 msgid "Refurbished"
 msgstr "Refurbished"
 
 #: html/templates/product_add_edit.html:130
 #: html/templates/product_add_edit.html:152
-#: html/templates/product_stock.html:225 product/models.py:33
-#: store/models.py:137
+#: html/templates/product_stock.html:227 product/models.py:33
+#: store/models.py:159
 msgid "Used Like New"
 msgstr "Used Like New"
 
 #: html/templates/product_add_edit.html:131
 #: html/templates/product_add_edit.html:153
-#: html/templates/product_stock.html:226 product/models.py:34
-#: store/models.py:138
+#: html/templates/product_stock.html:228 product/models.py:34
+#: store/models.py:160
 msgid "Used Very Good"
 msgstr "Used Very Good"
 
 #: html/templates/product_add_edit.html:132
 #: html/templates/product_add_edit.html:154
-#: html/templates/product_stock.html:227 product/models.py:35
-#: store/models.py:139
+#: html/templates/product_stock.html:229 product/models.py:35
+#: store/models.py:161
 msgid "Used Good"
 msgstr "Used Good"
 
 #: html/templates/product_add_edit.html:133
 #: html/templates/product_add_edit.html:155
-#: html/templates/product_stock.html:228 product/models.py:36
-#: store/models.py:140
+#: html/templates/product_stock.html:230 product/models.py:36
+#: store/models.py:162
 msgid "Used Acceptable"
 msgstr "Used Acceptable"
 
@@ -1037,8 +1037,8 @@ msgstr "Code"
 msgid "ASIN"
 msgstr ""
 
-#: html/templates/product_details.html:40 html/templates/product_stock.html:142
-#: html/templates/product_stock.html:236 product/models.py:46
+#: html/templates/product_details.html:40 html/templates/product_stock.html:144
+#: html/templates/product_stock.html:238 product/models.py:46
 #: shipment/models.py:137
 msgid "Localização na Warehouse"
 msgstr "Pick ticket"
@@ -1052,7 +1052,7 @@ msgid "Previsão de Entrega"
 msgstr "Estimated Delivery Date"
 
 #: html/templates/product_details.html:77 product/models.py:43
-#: store/models.py:34
+#: store/models.py:52
 msgid "Data de Cadastro"
 msgstr "Registration date"
 
@@ -1061,19 +1061,19 @@ msgid "Horário de Brasília"
 msgstr "Brasilia Time"
 
 #: html/templates/product_details.html:127
-#: html/templates/product_stock.html:222
-#: html/templates/store_lot_details.html:80 product/models.py:38
-#: store/models.py:142
+#: html/templates/product_stock.html:224
+#: html/templates/store_lot_details.html:92 product/models.py:38
+#: store/models.py:164
 msgid "Condição"
 msgstr "Condition"
 
 #: html/templates/product_details.html:133
-#: html/templates/product_stock.html:214 product/models.py:39
+#: html/templates/product_stock.html:216 product/models.py:39
 msgid "Condição no Recebimento"
 msgstr "Receiving Condition"
 
 #: html/templates/product_details.html:139
-#: html/templates/product_stock.html:232 product/models.py:41
+#: html/templates/product_stock.html:234 product/models.py:41
 msgid "Comentários da Condição"
 msgstr "Condition Comments"
 
@@ -1083,9 +1083,17 @@ msgid "Rastreamento"
 msgstr "Tracking"
 
 #: html/templates/product_details.html:154
-#: html/templates/store_lot_details.html:133
+#: html/templates/store_lot_details.html:151
 msgid "Editar"
 msgstr "Edit"
+
+#: html/templates/product_details.html:157
+#: html/templates/product_details.html:186
+#: html/templates/product_details.html:205
+#: html/templates/store_lot_details.html:154
+#: html/templates/store_lot_details.html:194
+msgid "Excluir"
+msgstr "Delete"
 
 #: html/templates/product_details.html:161
 #, python-format
@@ -1137,12 +1145,12 @@ msgstr[1] ""
 "shipments IDs: %(shipments_id)s\n"
 "                    "
 
-#: html/templates/product_stock.html:52 html/templates/product_stock.html:200
+#: html/templates/product_stock.html:52 html/templates/product_stock.html:202
 #: product/models.py:24
 msgid "Encaminhado VOI"
 msgstr "Forwarded"
 
-#: html/templates/product_stock.html:53 html/templates/product_stock.html:201
+#: html/templates/product_stock.html:53 html/templates/product_stock.html:203
 #: product/models.py:25
 msgid "Em Estoque VOI"
 msgstr "In hand"
@@ -1163,14 +1171,7 @@ msgstr "New Merchant Shipment"
 msgid "Ordenar pelo nome"
 msgstr "Order by name"
 
-#: html/templates/product_stock.html:130 html/templates/shipment_details.html:4
-#: shipment/apps.py:7 shipment/models.py:65 shipment/models.py:212
-#: shipment/views.py:200 shipment/views.py:878 shipment/views.py:937
-#: shipment/views.py:1168 shipment/views.py:1210
-msgid "Envio"
-msgstr "Shipment"
-
-#: html/templates/product_stock.html:152
+#: html/templates/product_stock.html:154
 #, python-format
 msgid ""
 "Este produto se encontra associado a um ou mais envios ainda em andamento. "
@@ -1179,33 +1180,40 @@ msgstr ""
 "This product is associated with one or more ongoing shipments. ID: "
 "%(associated_shipments)s"
 
-#: html/templates/product_stock.html:199
+#: html/templates/product_stock.html:201
 msgid "Alterar Status"
 msgstr "Edit Status"
 
-#: html/templates/product_stock.html:205
+#: html/templates/product_stock.html:207
 msgid "Quantidade Recebida"
 msgstr "Received Quantity"
 
-#: html/templates/product_stock.html:265
+#: html/templates/product_stock.html:269
 msgid "Nenhum produto encontrado."
 msgstr "No products found."
 
-#: html/templates/shipment_add.html:109 html/templates/shipment_details.html:36
+#: html/templates/shipment_add.html:113 html/templates/shipment_details.html:36
 msgid "Upload/Download Arquivos"
 msgstr "Upload/Download Files"
 
-#: html/templates/shipment_add.html:121 html/templates/shipment_details.html:11
+#: html/templates/shipment_add.html:125 html/templates/shipment_details.html:11
 msgid "Informações sobre destino dos produtos (Warehouses)"
 msgstr "Informations about destination (Warehouses)"
 
-#: html/templates/shipment_add.html:134
+#: html/templates/shipment_add.html:138
 msgid "Local de envio dos produtos..."
 msgstr "Shipping destination..."
 
-#: html/templates/shipment_add.html:151 shipment/views.py:874
+#: html/templates/shipment_add.html:155 shipment/views.py:879
 msgid "Adicionar warehouse"
 msgstr "Add warehouse"
+
+#: html/templates/shipment_details.html:4 shipment/apps.py:7
+#: shipment/models.py:65 shipment/models.py:212 shipment/views.py:200
+#: shipment/views.py:883 shipment/views.py:942 shipment/views.py:1173
+#: shipment/views.py:1215
+msgid "Envio"
+msgstr "Shipment"
 
 #: html/templates/shipment_details.html:37
 msgid "Etiqueta do produto"
@@ -1253,8 +1261,8 @@ msgstr "$ 500.00 to $ 1000.00"
 msgid "Acima de $ 1000.00"
 msgstr "$ 1000.00 & Above"
 
-#: html/templates/store_list.html:45 html/templates/store_lot_details.html:74
-#: html/templates/store_purchase.html:48 store/models.py:132
+#: html/templates/store_list.html:45 html/templates/store_lot_details.html:86
+#: html/templates/store_purchase.html:48 store/models.py:154
 msgid "Rank"
 msgstr "Rank"
 
@@ -1278,9 +1286,9 @@ msgstr "3%% to 5%%"
 msgid "Acima de 5%%"
 msgstr "5%% & Above"
 
-#: html/templates/store_list.html:72 html/templates/store_list.html:124
-#: html/templates/store_lot_details.html:118
-#: html/templates/store_purchase.html:47 store/models.py:131
+#: html/templates/store_list.html:72 html/templates/store_list.html:132
+#: html/templates/store_lot_details.html:130
+#: html/templates/store_purchase.html:47 store/models.py:153
 msgid "ROI"
 msgstr "ROI"
 
@@ -1299,51 +1307,70 @@ msgstr "50%% to 70%%"
 msgid "Acima de 70%%"
 msgstr "70%% & Above"
 
-#: html/templates/store_list.html:109 store/models.py:30
+#: html/templates/store_list.html:117 store/models.py:48
 msgid "Vendido"
 msgstr "Sold"
 
-#: html/templates/store_list.html:121
+#: html/templates/store_list.html:129
 msgid "Somente Assinantes"
 msgstr "Only for subscribers"
 
-#: html/templates/store_list.html:122 html/templates/store_lot_details.html:24
-#: store/models.py:49
+#: html/templates/store_list.html:130 html/templates/store_lot_details.html:39
+#: store/models.py:67
 msgid "Lucro"
 msgstr "Profit"
 
-#: html/templates/store_list.html:123
+#: html/templates/store_list.html:131
 msgid "Número de Itens"
 msgstr "Items' quantity"
 
-#: html/templates/store_lot_details.html:15 store/models.py:32
+#: html/templates/store_list.html:135
+msgid "Vendido por"
+msgstr "Sold by"
+
+#: html/templates/store_list.html:188 html/templates/store_lot_details.html:169
+msgid "Acesso à compra de lotes"
+msgstr ""
+
+#: html/templates/store_list.html:192
+msgid ""
+"\n"
+"                        Conteúdo somente para assinantes.\n"
+"                        "
+msgstr ""
+
+#: html/templates/store_lot_details.html:17
+msgid "Produto vendido pelo colaborador"
+msgstr ""
+
+#: html/templates/store_lot_details.html:30 store/models.py:50
 msgid "Situação"
 msgstr "Condition"
 
-#: html/templates/store_lot_details.html:18
+#: html/templates/store_lot_details.html:33
 msgid "Data venda"
 msgstr "Sold Date"
 
-#: html/templates/store_lot_details.html:24
+#: html/templates/store_lot_details.html:39
 msgid "Soma de todos os &quot;Lucros Totais&quot; dos produtos do lote."
 msgstr "The sum of &quot;Profit&quot; of all products on this lot."
 
-#: html/templates/store_lot_details.html:27
+#: html/templates/store_lot_details.html:42
 msgid "ROI médio"
 msgstr "Average ROI"
 
-#: html/templates/store_lot_details.html:27
+#: html/templates/store_lot_details.html:42
 msgid ""
 "Soma de todos os &quot;ROI&quot; divididos pelo número de produtos do lote."
 msgstr ""
 "The sum of the &quot;ROI&quot; of all products divided by the number of "
 "products on this lot."
 
-#: html/templates/store_lot_details.html:31
+#: html/templates/store_lot_details.html:46
 msgid "Total a pagar"
 msgstr "Amount Due"
 
-#: html/templates/store_lot_details.html:31
+#: html/templates/store_lot_details.html:46
 msgid ""
 "Soma de todos os &quot;Valores de Compra&quot; multiplicados pela &quot;"
 "Quantidade&quot; de produtos de cada produto do lote."
@@ -1351,15 +1378,15 @@ msgstr ""
 "The sum of all &quot;Buying Price&quot; multiplied by the &quot;"
 "Quantity&quot; of products for each product on this lot."
 
-#: html/templates/store_lot_details.html:47
-msgid "Fique atento"
-msgstr "Important"
-
-#: html/templates/store_lot_details.html:53
+#: html/templates/store_lot_details.html:58
 msgid "Produto(s)"
 msgstr "Products"
 
-#: html/templates/store_lot_details.html:58
+#: html/templates/store_lot_details.html:62
+msgid "Fique atento"
+msgstr "Important"
+
+#: html/templates/store_lot_details.html:70
 #, python-format
 msgid ""
 "\n"
@@ -1374,41 +1401,41 @@ msgid ""
 "                    "
 msgstr ""
 
-#: html/templates/store_lot_details.html:77
+#: html/templates/store_lot_details.html:89
 msgid "UPC / CODIGO IDENTIFICADOR"
 msgstr "UPC / ASIN"
 
-#: html/templates/store_lot_details.html:84 store/models.py:110
+#: html/templates/store_lot_details.html:96
 msgid "Valor de Compra"
 msgstr "Buying Price"
 
-#: html/templates/store_lot_details.html:90 store/models.py:111
+#: html/templates/store_lot_details.html:102
 msgid "Valor de Venda"
 msgstr "Selling Price"
 
-#: html/templates/store_lot_details.html:93 store/models.py:113
+#: html/templates/store_lot_details.html:105
 msgid "Tarifa FBA"
 msgstr "FBA Fee"
 
-#: html/templates/store_lot_details.html:101 store/models.py:51
+#: html/templates/store_lot_details.html:113 store/models.py:69
 #: utils/admin.py:21
 msgid "Redirecionamento"
 msgstr "Prep & Ship"
 
-#: html/templates/store_lot_details.html:101
+#: html/templates/store_lot_details.html:113
 msgid "Grátis"
 msgstr "Free"
 
-#: html/templates/store_lot_details.html:104 store/models.py:116
+#: html/templates/store_lot_details.html:116 store/models.py:138
 #: utils/models.py:17
 msgid "Custo de Envio para Amazon"
 msgstr "Ship to Amazon Fee"
 
-#: html/templates/store_lot_details.html:112
+#: html/templates/store_lot_details.html:124
 msgid "Lucro Líquido por Unidade"
 msgstr "Net profit per unit"
 
-#: html/templates/store_lot_details.html:112
+#: html/templates/store_lot_details.html:124
 msgid ""
 "Valor informativo que é composto por: &quot;Valor de Venda&quot; menos &quot;"
 "Custo do Produto&quot;."
@@ -1416,11 +1443,11 @@ msgstr ""
 "Informative value that consists of: &quot;Selling Price&quot; minus &quot;"
 "Product cost&quot;."
 
-#: html/templates/store_lot_details.html:115 store/models.py:130
+#: html/templates/store_lot_details.html:127 store/models.py:152
 msgid "Lucro Total"
 msgstr "Total Profit"
 
-#: html/templates/store_lot_details.html:115
+#: html/templates/store_lot_details.html:127
 msgid ""
 "Valor informativo que é composto por: &quot;Lucro líquido por Unidade&quot; "
 "vezes &quot;Quantidade&quot;."
@@ -1428,11 +1455,11 @@ msgstr ""
 "Informative value that consist of: &quot;Net profit per unit&quot; "
 "multiplied by the &quot;Quantity&quot;."
 
-#: html/templates/store_lot_details.html:151
-msgid "Acesso à compra de lotes"
+#: html/templates/store_lot_details.html:135
+msgid "Veja o Produto na Amazon"
 msgstr ""
 
-#: html/templates/store_lot_details.html:155
+#: html/templates/store_lot_details.html:173
 msgid ""
 "\n"
 "                        Você está em nossa fila de espera de assinantes."
@@ -1442,7 +1469,7 @@ msgid ""
 "                        "
 msgstr ""
 
-#: html/templates/store_lot_details.html:179
+#: html/templates/store_lot_details.html:197
 msgid "Confirma a exclusão do lote?"
 msgstr "Delete lot?"
 
@@ -1532,12 +1559,13 @@ msgid "Tenha acesso a todas as vantagens de ser um assinante VOI Services"
 msgstr "Get access to all advantages of being a VOI Services subscriber"
 
 #: html/templates/user_registration.html:73
+#, python-format
 msgid ""
 "Leia <a href=\"%(terms_url)s\" class=\"download\">aqui</a> nossos termos e "
 "condições de uso da plataforma."
 msgstr ""
-"Read <a href=\"%(terms_url)s\" class='download'>here</a> our "
-"terms and conditions."
+"Read <a href=\"%(terms_url)s\" class='download'>here</a> our terms and "
+"conditions."
 
 #: html/templates/user_registration.html:75
 msgid ""
@@ -1548,12 +1576,13 @@ msgstr ""
 "help/' class='download'>click here</a>."
 
 #: html/templates/user_registration.html:78
+#, python-format
 msgid ""
 "Veja aqui as vantagens de se tornar um assinante <a href="
 "\"%(how_it_works_url)s\" class=\"download\">Clique aqui</a>."
 msgstr ""
-"<a href=\"%(how_it_works_url)s\" class='download'>Click here</a> and check all "
-"the advantages of being a subscriber."
+"<a href=\"%(how_it_works_url)s\" class='download'>Click here</a> and check "
+"all the advantages of being a subscriber."
 
 #: html/templates/user_registration.html:86
 msgid "Digite o nome"
@@ -1570,7 +1599,7 @@ msgstr "Last name"
 
 #: html/templates/user_registration.html:101 myauth/models.py:25
 #: sambalife/forms.py:10 sambalife/forms.py:51 sambalife/views.py:269
-#: sambalife/views.py:362
+#: sambalife/views.py:366 store/models.py:27
 msgid "E-mail"
 msgstr "Email"
 
@@ -1638,9 +1667,9 @@ msgstr "Password successfully changed."
 
 #: html/templates/user_reset_password.html:64
 #: html/templates/user_validation.html:75 product/views.py:431
-#: sambalife/views.py:271 shipment/views.py:1189 shipment/views.py:1229
-#: shipment/views.py:1252 shipment/views.py:1296 shipment/views.py:1314
-#: shipment/views.py:1329 store/admin.py:287 store/admin.py:307
+#: sambalife/views.py:271 shipment/views.py:1194 shipment/views.py:1234
+#: shipment/views.py:1257 shipment/views.py:1301 shipment/views.py:1319
+#: shipment/views.py:1334 store/admin.py:306 store/admin.py:326
 #: utils/cron.py:180 utils/cron.py:192
 msgid "Clique aqui"
 msgstr "Click here"
@@ -1709,11 +1738,11 @@ msgstr "to receive the email with validation link again."
 msgid "Lembre-se que o código tem validade de %(expiry)s dias."
 msgstr "Remember that the code is valid for %(expiry)s days"
 
-#: myauth/admin.py:24 myauth/admin.py:346 myauth/admin.py:387 store/admin.py:35
+#: myauth/admin.py:24 myauth/admin.py:346 myauth/admin.py:387 store/admin.py:34
 msgid "Todos usuários"
 msgstr "All users"
 
-#: myauth/admin.py:26 myauth/admin.py:348 myauth/admin.py:388 store/admin.py:37
+#: myauth/admin.py:26 myauth/admin.py:348 myauth/admin.py:388 store/admin.py:36
 msgid "Administradores do sistema"
 msgstr "System Admins"
 
@@ -1723,7 +1752,7 @@ msgstr "Password Confirmation"
 
 #: myauth/admin.py:39 myauth/admin.py:40 myauth/admin.py:88 myauth/admin.py:89
 #: myauth/admin.py:223 myauth/admin.py:273 myauth/admin.py:286
-#: store/admin.py:51 store/admin.py:52
+#: store/admin.py:50 store/admin.py:51
 msgid "Grupos"
 msgstr "Groups"
 
@@ -1779,10 +1808,6 @@ msgstr "City*"
 msgid "Tipo*"
 msgstr "Type*"
 
-#: myauth/admin.py:161 myauth/models.py:129
-msgid "Endereço"
-msgstr "Street address"
-
 #: myauth/admin.py:162
 msgid "Endereços"
 msgstr "Address"
@@ -1808,8 +1833,8 @@ msgstr "Profile"
 msgid "Permissões"
 msgstr "Permissions"
 
-#: myauth/admin.py:258 sambalife/views.py:273 store/views.py:349
-#: utils/helper.py:482
+#: myauth/admin.py:258 sambalife/views.py:273 store/views.py:347
+#: utils/helper.py:481
 msgid "Administrador"
 msgstr "Admin"
 
@@ -1821,8 +1846,8 @@ msgstr "My users"
 msgid "CPF"
 msgstr "Document number"
 
-#: myauth/models.py:29 shipment/models.py:60 shipment/views.py:1169
-#: shipment/views.py:1211
+#: myauth/models.py:29 shipment/models.py:60 shipment/views.py:1174
+#: shipment/views.py:1216
 msgid "Data de criação"
 msgstr "Created on"
 
@@ -1956,8 +1981,8 @@ msgid "Data de Recebimento"
 msgstr "Received Date"
 
 #: product/models.py:51 product/views.py:354 product/views.py:360
-#: product/views.py:377 shipment/models.py:98 shipment/views.py:1180
-#: shipment/views.py:1220 store/admin.py:139 store/models.py:146
+#: product/views.py:377 shipment/models.py:98 shipment/views.py:1185
+#: shipment/views.py:1225 store/admin.py:138 store/models.py:168
 msgid "Produto"
 msgstr "Product"
 
@@ -2166,13 +2191,9 @@ msgstr ""
 msgid "^how-it-works"
 msgstr ""
 
-#: sambalife/urls.py:88
+#: sambalife/urls.py:89
 msgid "^termos-e-condicoes-de-uso"
 msgstr "terms-and-conditions"
-
-#: sambalife/urls.py:89
-msgid "^teste"
-msgstr ""
 
 #: sambalife/views.py:77
 msgid ""
@@ -2227,22 +2248,18 @@ msgstr "There is a new registration waiting for activation."
 msgid "para acessar a administração de usuários."
 msgstr "to access users admin."
 
-#: sambalife/views.py:357
+#: sambalife/views.py:361
 #, python-format
 msgid "Fale conosco %(user_name)s - Vendedor Online Internacional"
 msgstr "Contact us - %(user_name)s - VOI Services"
 
-#: sambalife/views.py:362
-msgid "Telefone"
-msgstr "Phone"
-
-#: sambalife/views.py:362
+#: sambalife/views.py:366
 msgid "Mensagem"
 msgstr "Message"
 
 #: service/admin.py:17 service/admin.py:19 service/models.py:28
-#: service/models.py:32 store/admin.py:367 store/admin.py:369
-#: store/models.py:162 store/models.py:166
+#: service/models.py:32 store/admin.py:402 store/admin.py:404
+#: store/models.py:184 store/models.py:188
 msgid "Configuração"
 msgstr "Settings"
 
@@ -2262,7 +2279,7 @@ msgstr "Per unit"
 msgid "Preço mínimo total"
 msgstr "Minimum amount due"
 
-#: service/models.py:29 store/models.py:163
+#: service/models.py:29 store/models.py:185
 msgid "Configurações"
 msgstr "Settings"
 
@@ -2327,7 +2344,7 @@ msgstr "Inform a number less than the quantity in inventory (%(quantity)s)."
 msgid "Problema para validar o produto selecionado."
 msgstr "We had a problem validating the selected product"
 
-#: shipment/models.py:129 shipment/models.py:136 shipment/views.py:1178
+#: shipment/models.py:129 shipment/models.py:136 shipment/views.py:1183
 msgid "Warehouse"
 msgstr "Warehouse"
 
@@ -2464,92 +2481,92 @@ msgstr "Delete a box"
 msgid "Envio %(number)s"
 msgstr "Shipment %(number)s"
 
-#: shipment/views.py:873 shipment/views.py:964
+#: shipment/views.py:878 shipment/views.py:969
 msgid "Adicionar produto"
 msgstr "Add a product"
 
-#: shipment/views.py:873 shipment/views.py:964
+#: shipment/views.py:878 shipment/views.py:969
 msgid "Remover produto"
 msgstr "Delete product"
 
-#: shipment/views.py:874
+#: shipment/views.py:879
 msgid "Remover warehouse"
 msgstr "Delete warehouse"
 
-#: shipment/views.py:879 shipment/views.py:969
+#: shipment/views.py:884 shipment/views.py:974
 msgid "Envio inserido com sucesso."
 msgstr "Shipment successfully created."
 
-#: shipment/views.py:1126 store/views.py:298
+#: shipment/views.py:1131 store/views.py:297
 msgid "Valor do pagamento não confere com o valor cobrado."
 msgstr "Payment amount does not match amount due."
 
-#: shipment/views.py:1127 shipment/views.py:1132 store/views.py:299
-#: store/views.py:304 utils/helper.py:424 utils/helper.py:501
+#: shipment/views.py:1132 shipment/views.py:1137 store/views.py:298
+#: store/views.py:303 utils/helper.py:423 utils/helper.py:500
 #, python-format
 msgid "Recibo: %(invoice)s"
 msgstr "Invoice: %(invoice)s"
 
-#: shipment/views.py:1128 store/views.py:300
+#: shipment/views.py:1133 store/views.py:299
 #, python-format
 msgid "Valor pago: %(paid)s"
 msgstr "Amount paid: %(paid)s"
 
-#: shipment/views.py:1129 store/views.py:301
+#: shipment/views.py:1134 store/views.py:300
 #, python-format
 msgid "Valor cobrado: %(charged)s"
 msgstr "Amount charged: %(charged)s"
 
-#: shipment/views.py:1132 store/views.py:304
+#: shipment/views.py:1137 store/views.py:303
 msgid "Dados do recibo são inválidos."
 msgstr "Invalid invoice data."
 
-#: shipment/views.py:1144
+#: shipment/views.py:1149
 #, python-format
 msgid "Pagamento confirmado pelo PayPal para o %(item)s"
 msgstr "Payment confirmed by PayPal for %(item)s"
 
-#: shipment/views.py:1152
+#: shipment/views.py:1157
 #, python-format
 msgid "Cadastro de Envio %(number)s"
 msgstr "Shipment %(number)s sucessfully created"
 
-#: shipment/views.py:1167 shipment/views.py:1209
+#: shipment/views.py:1172 shipment/views.py:1214
 msgid "Seu envio foi cadastrado com sucesso. Seguem abaixo os dados do envio:"
 msgstr ""
 "Your shipment was successfully created. Check shipment information below:"
 
-#: shipment/views.py:1172 shipment/views.py:1214
+#: shipment/views.py:1177 shipment/views.py:1219
 msgid "Previsão de cadastro do(s) pacote(s)"
 msgstr "Estimated time to enter box informations"
 
-#: shipment/views.py:1175 shipment/views.py:1217
+#: shipment/views.py:1180 shipment/views.py:1222
 msgid "Quantidade de produtos"
 msgstr "Products quantity"
 
-#: shipment/views.py:1190
+#: shipment/views.py:1195
 msgid "para acessar sua lista de envios."
 msgstr "to access your shipments."
 
-#: shipment/views.py:1197
+#: shipment/views.py:1202
 #, python-format
 msgid "Cadastro de Envio Merchant %(number)s"
 msgstr "Merchant Shipment %(number)s sucessfully created"
 
-#: shipment/views.py:1230
+#: shipment/views.py:1235
 msgid "para acessar sua lista de envios merchant."
 msgstr "to access your merchant shipments."
 
-#: shipment/views.py:1237 shipment/views.py:1321
+#: shipment/views.py:1242 shipment/views.py:1326
 #, python-format
 msgid "Notificação de mudança de status do Envio %(number)s"
 msgstr "Status change notification for Shipment %(number)s"
 
-#: shipment/views.py:1243
+#: shipment/views.py:1248
 msgid "Os seguintes pacotes foram cadastrado para o seu envio:"
 msgstr "The following boxes were added to your shipment:"
 
-#: shipment/views.py:1248
+#: shipment/views.py:1253
 #, python-format
 msgid ""
 "Agora faça o upload da etiqueta da caixa para dar continuidade com o seu "
@@ -2560,11 +2577,11 @@ msgid_plural ""
 msgstr[0] "Upload your box's label to continue with your shipment %(id)s."
 msgstr[1] "Upload your boxes' label to continue with your shipment %(id)s."
 
-#: shipment/views.py:1252
+#: shipment/views.py:1257
 msgid "para acessar seu envio e efetuar o upload."
 msgstr "to access your shipment and upload your labels."
 
-#: shipment/views.py:1259
+#: shipment/views.py:1264
 #, python-format
 msgid ""
 "Obrigado, agora realize o pagamento para dar continuidade com o seu envio "
@@ -2573,15 +2590,15 @@ msgstr ""
 "Thank you. Please proceed with your payment in order to continue with your "
 "shipment %(id)s."
 
-#: shipment/views.py:1260
+#: shipment/views.py:1265
 msgid "Valor total"
 msgstr "Total amount"
 
-#: shipment/views.py:1262
+#: shipment/views.py:1267
 msgid "para acessar seu envio e efetuar o pagamento."
 msgstr "to access and pay for your shipment."
 
-#: shipment/views.py:1267
+#: shipment/views.py:1272
 #, python-format
 msgid ""
 "Obrigado, agora é só aguardar que, assim que fizermos as checagens finais e "
@@ -2592,31 +2609,31 @@ msgstr ""
 "is okay, we will send you an email to inform you of completion of your "
 "shipment %(id)s."
 
-#: shipment/views.py:1269
+#: shipment/views.py:1274
 msgid "Previsão para conclusão"
 msgstr "ETC"
 
-#: shipment/views.py:1272 shipment/views.py:1296 shipment/views.py:1314
+#: shipment/views.py:1277 shipment/views.py:1301 shipment/views.py:1319
 msgid "para acessar seu envio."
 msgstr "to access your shipment."
 
-#: shipment/views.py:1277
+#: shipment/views.py:1282
 #, python-format
 msgid "Seu envio %(number)s foi concluído"
 msgstr "Shipment %(number)s successfully completed"
 
-#: shipment/views.py:1284
+#: shipment/views.py:1289
 #, python-format
 msgid "Seu envio %(id)s foi concluído com sucesso, obrigado."
 msgstr "Thanks, your shipment %(id)s has been successfully completed."
 
-#: shipment/views.py:1286 shipment/views.py:1308
+#: shipment/views.py:1291 shipment/views.py:1313
 msgid "Segue o código de postagem do seu envio:"
 msgid_plural "Seguem os códigos de postagem do seu envio:"
 msgstr[0] "Tracking number for your shipment:"
 msgstr[1] "Tracking numbers for your shipment:"
 
-#: shipment/views.py:1290 shipment/views.py:1311
+#: shipment/views.py:1295 shipment/views.py:1316
 #, python-format
 msgid ""
 "Warehouse: <strong>%(warehouse)s</strong> / Código: <strong>%(code)s</"
@@ -2625,202 +2642,247 @@ msgstr ""
 "Warehouse: <strong>%(warehouse)s</strong> / Tracking number: <strong>"
 "%(code)s</strong>."
 
-#: shipment/views.py:1292
+#: shipment/views.py:1297
 #, python-format
 msgid ""
 "No caso de qualquer dúvida é só nos enviar uma mensagem através do <a href="
 "\"%(url)s\">fale conosco</a>."
 msgstr "If you have any questions <a href=\"%(url)s\">contact us</a>."
 
-#: shipment/views.py:1304
+#: shipment/views.py:1309
 #, python-format
 msgid "Código de postagem do envio %(number)s atualizado"
 msgstr "Tracking number updated for your shipment %(number)s"
 
-#: store/admin.py:53 store/models.py:42
+#: store/admin.py:52 store/models.py:60
 msgid ""
 "Grupos aos quais este lote pertence. Deixe em branco para não restringir o "
 "acesso à ele."
 msgstr ""
 "Groups this lot belongs to. Leave this empty to not block the access to it."
 
-#: store/admin.py:91 store/models.py:123
+#: store/admin.py:90 store/models.py:145
 msgid "Serviços utilizados na preparação do envio."
 msgstr "Services used"
 
-#: store/admin.py:168
+#: store/admin.py:183
 msgid "Duplicar lote"
 msgstr "Duplicate"
 
-#: store/admin.py:169
+#: store/admin.py:184
 msgid "Duplicar"
 msgstr "Duplicate"
 
-#: store/admin.py:266
+#: store/admin.py:285
 #, python-format
 msgid "Novo lote cadastrado no sistema '%(lot)s'"
 msgstr "A new lot is available '%(lot)s'"
 
-#: store/admin.py:271
+#: store/admin.py:290
 #, python-format
 msgid "Lote %(lot_name)s"
 msgstr "Lot %(lot_name)s"
 
-#: store/admin.py:272
+#: store/admin.py:291
 #, python-format
 msgid "Valor: U$ %(lot_cost)s"
 msgstr "Price: U$ %(lot_cost)s"
 
-#: store/admin.py:276
+#: store/admin.py:295
 #, python-format
 msgid "Lucro: U$ %(lot_profit)s"
 msgstr "Profit: U$ %(lot_profit)s"
 
-#: store/admin.py:280
+#: store/admin.py:299
 #, python-format
 msgid "Número de itens: %(lot_items)s"
 msgstr "Items' quantity: %(lot_items)s"
 
-#: store/admin.py:281
+#: store/admin.py:300
 #, python-format
 msgid "ROI médio: %(lot_roi)s%%"
 msgstr "Average ROI: %(lot_roi)s%%"
 
-#: store/admin.py:285
+#: store/admin.py:304
 #, python-format
 msgid "Rank médio: %(lot_rank)s%%"
 msgstr "Average Rank: %(lot_rank)s%%"
 
-#: store/admin.py:287
+#: store/admin.py:306
 msgid "para acessar este lote agora mesmo!"
 msgstr "to access this lot right away!"
 
-#: store/admin.py:302
+#: store/admin.py:321
+#, python-format
 msgid "Lote alterado '%(lot)s'"
 msgstr "Lot changed '%(lot)s'"
 
-#: store/admin.py:305
+#: store/admin.py:324
 msgid "Este lote sofreu alterações."
 msgstr "This lot has changed"
 
-#: store/admin.py:307
+#: store/admin.py:326
 msgid "para visualizá-las."
 msgstr "to view them."
 
-#: store/admin.py:393
+#: store/admin.py:428
 msgid "Relatório de Lotes"
 msgstr "Lots Report"
 
-#: store/admin.py:420
+#: store/admin.py:455
 msgid "From date"
 msgstr ""
 
-#: store/admin.py:420
+#: store/admin.py:455
 msgid "To date"
 msgstr ""
 
+#: store/models.py:28
+msgid "Endereço linha 1"
+msgstr "Address line 1"
+
 #: store/models.py:29
+msgid "Endereço linha 2"
+msgstr "Address line 2"
+
+#: store/models.py:30
+msgid "Avaliação"
+msgstr "Ratings"
+
+#: store/models.py:31
+msgid "Instruções em Português"
+msgstr "Instructions in Portuguese"
+
+#: store/models.py:32
+msgid "Instruções em Inglês"
+msgstr "Instructions in English"
+
+#: store/models.py:35 store/models.py:80
+msgid "Colaborador"
+msgstr "Collaborator"
+
+#: store/models.py:36
+msgid "Colaboradores"
+msgstr "Collaborators"
+
+#: store/models.py:47
 msgid "Não vendido"
 msgstr "Not sold"
 
-#: store/models.py:33
+#: store/models.py:51
 msgid "Pago"
 msgstr "Paid"
 
-#: store/models.py:35
+#: store/models.py:53
 msgid "Data da Venda"
 msgstr "Sold date"
 
-#: store/models.py:39
+#: store/models.py:57
 msgid "groups"
 msgstr "groups"
 
-#: store/models.py:47
+#: store/models.py:65
 msgid "Quantidade de Produtos"
 msgstr "Products quantity"
 
-#: store/models.py:48
+#: store/models.py:66
 msgid "Custo dos Produtos"
 msgstr "Products cost"
 
-#: store/models.py:50
+#: store/models.py:68
 msgid "ROI Médio"
 msgstr "Average ROI"
 
-#: store/models.py:52
+#: store/models.py:70
 msgid "Valor do Lote"
 msgstr "Lot price"
 
-#: store/models.py:53
+#: store/models.py:71
 msgid "Rank Médio"
 msgstr "Average Rank"
 
-#: store/models.py:54
+#: store/models.py:72
 msgid "Imagem"
 msgstr "Image"
 
-#: store/models.py:56
+#: store/models.py:74
 msgid "Custo VOI S"
 msgstr "VOI S cost"
 
-#: store/models.py:57
+#: store/models.py:75
 msgid "Lucro VOI S"
 msgstr "VOI S profit"
 
-#: store/models.py:58
+#: store/models.py:76
 msgid "ROI VOI S (%)"
 msgstr "VOI S ROI (%)"
 
-#: store/models.py:62 store/templates/admin/store/lotreport/pagination.html:9
+#: store/models.py:78
+msgid "Peso para ordenação"
+msgstr "Order"
+
+#: store/models.py:84 store/templates/admin/store/lotreport/pagination.html:9
 msgid "Lote"
 msgstr "Lot"
 
-#: store/models.py:65
+#: store/models.py:87
 msgid "Pode visualizar lotes comprados"
 msgstr "Can view purchased lots"
 
-#: store/models.py:108
+#: store/models.py:130
 msgid "ASIN / UPC"
 msgstr "ASIN / UPC"
 
-#: store/models.py:109
+#: store/models.py:131
 msgid "URL do Produto"
 msgstr "Product URL"
 
-#: store/models.py:114 utils/models.py:16
+#: store/models.py:132
+msgid "Valor Cliente"
+msgstr "Customer price"
+
+#: store/models.py:133
+msgid "Valor Buy Box"
+msgstr "Buy box price"
+
+#: store/models.py:135
+msgid "FBA Fee"
+msgstr ""
+
+#: store/models.py:136 utils/models.py:16
 msgid "Tarifa Amazon"
 msgstr "Amazon per order selling Fee"
 
-#: store/models.py:120
+#: store/models.py:142
 msgid "services"
 msgstr ""
 
-#: store/models.py:128
+#: store/models.py:150
 msgid "Custo do Produto"
 msgstr "Product cost"
 
-#: store/models.py:129
+#: store/models.py:151
 msgid "Lucro por Unidade"
 msgstr "Profit per unit"
 
-#: store/models.py:133
-msgid "Valor item VOI S"
-msgstr "Item value VOI S"
+#: store/models.py:155
+msgid "Custo VOI Services"
+msgstr "VOI Services cost"
 
-#: store/models.py:154
+#: store/models.py:176
 msgid "Grupo padrão"
 msgstr "Default group"
 
-#: store/models.py:157
+#: store/models.py:179
 msgid ""
 "Grupo ao qual os lotes e os usuários assinantes serão associados por padrão."
 msgstr "Group to which lots and subscribers will be associated by default."
 
-#: store/models.py:172
+#: store/models.py:194
 msgid "Relatório"
 msgstr "Report"
 
-#: store/models.py:173
+#: store/models.py:195
 msgid "Relatórios"
 msgstr "Reports"
 
@@ -2845,11 +2907,11 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: store/views.py:288
+#: store/views.py:287
 msgid "Loja - Minhas Compras"
 msgstr "Store - Purchase History"
 
-#: store/views.py:319
+#: store/views.py:318
 #, python-format
 msgid ""
 "Usuário do pagamento (%(pay_user)s) não confere com o usuário da autorização "
@@ -2858,21 +2920,21 @@ msgstr ""
 "Payment user (%(pay_user)s) does not match with authorization user "
 "(%(auth_user)s)."
 
-#: store/views.py:326
+#: store/views.py:325
 #, python-format
 msgid "Produto comprado pela Plataforma. '%(lot)s'"
 msgstr "Product bought from us. '%(lot)s'"
 
-#: store/views.py:330
+#: store/views.py:329
 msgid "VOI"
 msgstr "VOI"
 
-#: store/views.py:345
+#: store/views.py:343
 #, python-format
 msgid "Pagamento PENDENTE pelo PayPal para o item '%(item)s'"
 msgstr "Pending payment by PayPal for '%(item)s'"
 
-#: store/views.py:346
+#: store/views.py:344
 msgid ""
 "Foi enviada solicitação para o PayPal completar este pagamento, caso um e-"
 "mail de confirmação não chegue nos próximos minutos verifique se ocorreu "
@@ -2882,41 +2944,47 @@ msgstr ""
 "you do not receive a confirmation email in the next few minutes check if "
 "something went wrong."
 
-#: store/views.py:352 store/views.py:390
+#: store/views.py:351
 #, python-format
 msgid "Pagamento CONFIRMADO pelo PayPal para o item '%(item)s'"
 msgstr "Payment confirmed by PayPal for '%(item)s'"
 
-#: store/views.py:353 store/views.py:391
+#: store/views.py:352
 msgid ""
 "Seu pagamento foi confirmado, obrigado! Os itens já se encontram em seu "
 "estoque."
 msgstr "Payment completed thanks! Items are now available in your stock."
 
-#: store/views.py:354 store/views.py:392
+#: store/views.py:353
 msgid ""
 "O endereço a ser inserido no FROM dos labels das caixas de seus produtos é:"
 msgstr ""
 
-#: store/views.py:355 store/views.py:393
+#: store/views.py:354
 msgid "920 Lafayette Rd"
 msgstr ""
 
-#: store/views.py:356 store/views.py:394
+#: store/views.py:355
 msgid "Seabrook, NH 03874"
 msgstr ""
 
-#: store/views.py:357 store/views.py:395
+#: store/views.py:360
+msgid "Seguem algumas instruções do colaborador:"
+msgstr "Collaborator's instructions"
+
+#: store/views.py:365
 msgid ""
 "Todo o procedimento desde a compra até o redirecionamento de seus produtos "
 "você encontra aqui:"
-msgstr "All steps from the lot purchase to the shipping of your products you can find it here:"
+msgstr ""
+"All steps from the lot purchase to the shipping of your products you can "
+"find it here:"
 
-#: store/views.py:361 store/views.py:399
+#: store/views.py:369
 msgid "GARANTA A GRATUIDADE NO ENVIO DE SEUS PRODUTOS"
 msgstr "DON'T MISS YOUR FREE SHIPPING"
 
-#: store/views.py:362 store/views.py:400
+#: store/views.py:370
 msgid ""
 "Para o usuário usufruir do redirecionamento grátis, todos os produtos do "
 "lote adquirido, deverão ser enviados para a amazon, em um prazo de até 3 "
@@ -2927,21 +2995,21 @@ msgstr ""
 "days. In case you miss free shipping date the following will apply to your "
 "shipment:"
 
-#: store/views.py:365 store/views.py:403
+#: store/views.py:373
 msgid ""
 "- Produto no estoque VOI S a partir do quarto dia até 10 dias: USD 1,29 por "
 "unidade do produto;"
 msgstr ""
 "- Products in VOI Services' stock from day 4 to day 10: $1.29 per product;"
 
-#: store/views.py:366 store/views.py:404
+#: store/views.py:374
 msgid ""
 "- Produto no estoque VOI S de 11 até 20 dias: USD 1,49 por unidade do "
 "produto;"
 msgstr ""
 "- Products in VOI Services' stock from day 11 to day 20: $1.49 per product;"
 
-#: store/views.py:367 store/views.py:405
+#: store/views.py:375
 msgid ""
 "- Produto no estoque VOI S de 21 até 30 dias: USD 1,99 por unidade do "
 "produto; e"
@@ -2949,11 +3017,11 @@ msgstr ""
 "- Products in VOI Services' stock from day 21 to day 30: $1.99 per product; "
 "and"
 
-#: store/views.py:368 store/views.py:406
+#: store/views.py:376
 msgid "- Após 30 dias entrar em contato com o nosso suporte."
 msgstr "- After 30 days contact us."
 
-#: store/views.py:382
+#: store/views.py:392
 #, python-format
 msgid "CANCELAMENTO do pagamento confirmado pelo PayPal para o item '%(item)s'"
 msgstr "Payment cancellation confirmed by PayPal for '%(item)s'"
@@ -3043,31 +3111,31 @@ msgstr "terms-and-conditions.html"
 msgid "para acessar nossos termos e condições de uso."
 msgstr "to access our terms and conditions."
 
-#: utils/helper.py:151
+#: utils/helper.py:150
 msgid "<no-reply@vendedorinternacional.net>"
 msgstr "<no-reply@voiservices.com>"
 
-#: utils/helper.py:230
+#: utils/helper.py:229
 msgid "Adicionar"
 msgstr "Add"
 
-#: utils/helper.py:231
+#: utils/helper.py:230
 msgid "Remover"
 msgstr "Remove"
 
-#: utils/helper.py:275
+#: utils/helper.py:274
 msgid "Apagar"
 msgstr "Delete"
 
-#: utils/helper.py:423
+#: utils/helper.py:422
 msgid "Valor do campo 'recibo' (invoice) não está no formato esperado."
 msgstr "Invoice field is not in the correct format."
 
-#: utils/helper.py:425 utils/helper.py:480
+#: utils/helper.py:424 utils/helper.py:479
 msgid "<em branco>"
 msgstr "<blank>"
 
-#: utils/helper.py:436
+#: utils/helper.py:435
 msgid ""
 "E-mail da conta paypal recebedora não confere com o e-mail configurado no "
 "sistema."
@@ -3075,21 +3143,21 @@ msgstr ""
 "The email from paypal's receiver account does not match the email configured "
 "in our system."
 
-#: utils/helper.py:437
+#: utils/helper.py:436
 #, python-format
 msgid "E-mail recebido pelo paypal: %(paypal)s"
 msgstr "Email received from Paypal: %(paypal)s"
 
-#: utils/helper.py:438
+#: utils/helper.py:437
 #, python-format
 msgid "E-mail configurado no sistema: %(system)s"
 msgstr "Email configured in our system: %(system)s"
 
-#: utils/helper.py:441
+#: utils/helper.py:440
 msgid "Usuário inválido, ID: %(user_id)."
 msgstr "Invalid user. ID: %(user_id)."
 
-#: utils/helper.py:473
+#: utils/helper.py:472
 #, python-format
 msgid ""
 "Para mais informações consulte a área <a href=\"%(url)s\">administrativa de "
@@ -3098,17 +3166,17 @@ msgstr ""
 "For more information please refer to the <a href=\"%(url)s\">payment admin</"
 "a> section."
 
-#: utils/helper.py:479
+#: utils/helper.py:478
 #, python-format
 msgid "Informações sobre o pagamento do item '%(item)s', recibo %(invoice)s"
 msgstr "Information about the payment of %(item)s, invoice %(invoice)s"
 
-#: utils/helper.py:488
+#: utils/helper.py:487
 #, python-format
 msgid "'%(item)s' indisponível"
 msgstr "'%(item)s' out of stock"
 
-#: utils/helper.py:489
+#: utils/helper.py:488
 msgid ""
 "Foi enviada solicitação para o PayPal cancelar seu pagamento, nenhum valor "
 "será cobrado da sua conta."
@@ -3116,35 +3184,36 @@ msgstr ""
 "A payment cancellation was sent to PayPal, nothing will be charged from your "
 "account."
 
-#: utils/helper.py:498
+#: utils/helper.py:497
 msgid "Notificação recebida do paypal."
 msgstr "Notification received from paypal."
 
-#: utils/helper.py:499
+#: utils/helper.py:498
 #, python-format
 msgid "Status: %(status)s"
 msgstr "Status: %(status)s"
 
-#: utils/helper.py:500
+#: utils/helper.py:499
+#, python-format
 msgid "Valor: %(paid)s"
 msgstr "Amount: %(paid)s"
 
-#: utils/helper.py:502
+#: utils/helper.py:501
 #, python-format
 msgid "Item: %(item)s"
 msgstr "Item: %(item)s"
 
-#: utils/helper.py:503
+#: utils/helper.py:502
 #, python-format
 msgid "Nome do cliente: %(name)s"
 msgstr "Customer name: %(name)s"
 
-#: utils/helper.py:504
+#: utils/helper.py:503
 #, python-format
 msgid "Sobrenome do cliente: %(surname)s"
 msgstr "Customer last name: %(surname)s"
 
-#: utils/helper.py:505
+#: utils/helper.py:504
 #, python-format
 msgid "Data do pagamento: %(date)s"
 msgstr "Payment date: %(date)s"
@@ -3297,6 +3366,9 @@ msgstr "(Sandbox) Accounting"
 msgid "(Sandbox) Simular fechamento"
 msgstr "(Sandbox) Simulate accounting"
 
+#~ msgid "Termos e Condições de Uso"
+#~ msgstr "Terms and Conditions"
+
 #~ msgid "Sua conta foi ativada, clique abaixo para acessá-la."
 #~ msgstr "Account activated, click below to login."
 
@@ -3413,9 +3485,6 @@ msgstr "(Sandbox) Simulate accounting"
 #~ msgstr ""
 #~ "Type at least 1 lowercase letter, 1 uppercase letter, 1 number and 1 "
 #~ "special character"
-
-#~ msgid "Consulte as instruções de formato válido"
-#~ msgstr "See instructions for valid format"
 
 #~ msgid "Informações enviadas com sucesso."
 #~ msgstr "Informations successfully sent."

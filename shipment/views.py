@@ -851,15 +851,20 @@ def cancel_shipment(_shipment_details):
 def shipment_add(request):
     if has_shipment_perm(request.user, 'add_shipment') is False:
         return HttpResponseForbidden()
+    # if request.method == 'POST':
+    #     if request.POST.get('save_shipment') is None:
+    #         preselected_products = request.POST.getlist('shipment_product')
+    #         original_products = OriginalProduct.objects.select_related('lot_product')\
+    #             .filter(user=request.user, status=2, quantity__gt=0, pk__in=preselected_products).order_by('id')
+    #     else:
+    #         original_products = OriginalProduct.objects.none()
+    # else:
+    #     original_products = OriginalProduct.objects.none()
     if request.method == 'POST':
-        if request.POST.get('save_shipment') is None:
-            preselected_products = request.POST.getlist('shipment_product')
-            original_products = OriginalProduct.objects.select_related('lot_product')\
-                .filter(user=request.user, status=2, quantity__gt=0, pk__in=preselected_products).order_by('id')
-        else:
-            original_products = OriginalProduct.objects.none()
-    else:
         original_products = OriginalProduct.objects.none()
+    else:
+        original_products = OriginalProduct.objects.select_related('lot_product')\
+                    .filter(user=request.user, status=2, quantity_partial__gt=0).order_by('id')
     ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
                                            widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',

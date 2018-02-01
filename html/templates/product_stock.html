@@ -125,9 +125,11 @@
                       {% trans "Ordenar pelo status" as order_status %}
                       <a title="{{ order_status }}" href="javascript:void(0);">{% trans "Status" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
+{% comment %}
                   {% if user|has_shipment_perm:'add_shipment' or user|has_shipment_perm:'add_fbm_shipment' %}
                   <th class="center">{% trans "Envio" %}</th>
                   {% endif %}
+{% endcomment %}
                   <th class="center"> {% trans "Visualizar" %}</th>
                 </tr>
               </thead>
@@ -244,6 +246,7 @@
                       <!-- fim box -->
                       {% endif %}
                   </td>
+{% comment %}
                   {% if user|has_shipment_perm:'add_shipment' or user|has_shipment_perm:'add_fbm_shipment' %}
                       <td class="center">
                           {% if product.status == 2 and product.user == request.user %}
@@ -253,6 +256,7 @@
                           {% endif %}
                       </td>
                   {% endif %}
+{% endcomment %}
                   <td class="center">
                       <a class=" download" href="{% url 'product_details' product.id %}"><i class="fa fa-pencil-square"></i>  {% trans "Visualizar" %}</a>
                   </td>

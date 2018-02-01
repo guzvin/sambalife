@@ -278,7 +278,7 @@ class LotAdmin(admin.ModelAdmin):
         for user in users:
             emails += (LotAdmin.assemble_email_new_lot(request, lot, user),)
         if emails:
-            helper.send_email(emails, bcc_admins=True, async=True)
+            helper.send_email(emails, bcc_admins=False, async=True)
 
     @staticmethod
     def assemble_email_new_lot(request, lot, user):
@@ -461,7 +461,6 @@ class LotReportAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'name',)
     list_filter = [
         'status',
-        'is_fake',
         ('create_date', DateRangeFilter),
         ('sell_date', DateRangeFilter),
         UserFilter,
@@ -483,6 +482,11 @@ class LotReportAdmin(admin.ModelAdmin):
 
     def get_changelist(self, request, **kwargs):
         return LotReportChangeList
+
+    def get_queryset(self, request):
+        qs = super(LotReportAdmin, self).get_queryset(request)
+        qs = qs.filter(is_fake=False)
+        return qs
 
 admin_site.register(LotReport, LotReportAdmin)
 

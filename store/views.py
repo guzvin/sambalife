@@ -3,18 +3,17 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _
 from store.models import Lot, Product as LotProduct
-from product.models import Product, Tracking
+from product.models import Product
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from utils import helper
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from django.forms import DateField
 from django.urls import reverse
 from paypal.standard.models import ST_PP_COMPLETED, ST_PP_PENDING, ST_PP_VOIDED
-from django.db import transaction
-from store.models import Config
+from django.utils import translation
 from bisect import bisect
 import time
 import datetime
@@ -323,14 +322,13 @@ def store_paypal_notification_success(_lot_details, user_id, ipn_obj):
         _lot_details.save(update_fields=['payment_complete'])
         products = _lot_details.product_set.all()
         for product in products:
-            p = Product.objects.create(name=product.name, description=_('Produto comprado pela Plataforma. '
-                                                                        '\'%(lot)s\'') % {'lot': _lot_details.name},
-                                       quantity=product.quantity, quantity_partial=product.quantity, status=2,
-                                       user_id=user_id, send_date=pytz.utc.localize(datetime.datetime.today()),
-                                       receive_date=pytz.utc.localize(datetime.datetime.today()), store=_('VOI'),
-                                       condition=product.condition, actual_condition=product.condition,
-                                       lot_product=product, asin=product.identifier)
-            # Tracking.objects.create(track_number=product.identifier, product=p)
+            Product.objects.create(name=product.name, description=_('Produto comprado pela Plataforma. '
+                                                                    '\'%(lot)s\'') % {'lot': _lot_details.name},
+                                   quantity=product.quantity, quantity_partial=product.quantity, status=2,
+                                   user_id=user_id, send_date=pytz.utc.localize(datetime.datetime.today()),
+                                   receive_date=pytz.utc.localize(datetime.datetime.today()), store=_('VOI'),
+                                   condition=product.condition, actual_condition=product.condition,
+                                   lot_product=product, asin=product.identifier)
     elif ipn_obj.payment_status == ST_PP_VOIDED and str(_lot_details.user_id) == str(user_id):
         _lot_details.user = None
         _lot_details.status = 1
@@ -339,7 +337,7 @@ def store_paypal_notification_success(_lot_details, user_id, ipn_obj):
         _lot_details.save(update_fields=['user', 'status', 'sell_date', 'payment_complete'])
 
 
-def store_paypal_notification_post_transaction(request, user, ipn_obj, paypal_status_message):
+def store_paypal_notification_post_transaction(request, _lot_details, user, ipn_obj, paypal_status_message):
     if ipn_obj.payment_status == ST_PP_PENDING:
         ipn_obj.complete_authorization()
         email_title = _('Pagamento PENDENTE pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
@@ -349,25 +347,37 @@ def store_paypal_notification_post_transaction(request, user, ipn_obj, paypal_st
         helper.send_email_basic_template_bcc_admins(request, _('Administrador'), None, email_title, email_message,
                                                     async=True)
     elif ipn_obj.payment_status == ST_PP_COMPLETED:
+        collaborator_instructions, lang = False, translation.get_language()
         email_title = _('Pagamento CONFIRMADO pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
         texts = (_('Seu pagamento foi confirmado, obrigado! Os itens já se encontram em seu estoque.'),
                  _('O endereço a ser inserido no FROM dos labels das caixas de seus produtos é:'),
-                 _('920 Lafayette Rd'),
-                 _('Seabrook, NH 03874'),
-                 _('Todo o procedimento desde a compra até o redirecionamento de seus produtos você encontra aqui:'),
-                 ''.join(['https://', request.CURRENT_DOMAIN,
-                          _('/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf')]),
-                 _('Tutorial Plataforma'),
-                 _('GARANTA A GRATUIDADE NO ENVIO DE SEUS PRODUTOS'),
-                 _('Para o usuário usufruir do redirecionamento grátis, todos os produtos do lote adquirido, deverão '
-                   'ser enviados para a amazon, em um prazo de até 3 dias úteis. Caso o tempo de envio supere a '
-                   'gratuidade, serão aplicadas as seguintes regras de cobrança para a realização do envio:'),
-                 _('- Produto no estoque VOI S a partir do quarto dia até 10 dias: USD 1,29 por unidade do produto;'),
-                 _('- Produto no estoque VOI S de 11 até 20 dias: USD 1,49 por unidade do produto;'),
-                 _('- Produto no estoque VOI S de 21 até 30 dias: USD 1,99 por unidade do produto; e'),
-                 _('- Após 30 dias entrar em contato com o nosso suporte.'),)
+                 _('920 Lafayette Rd') if _lot_details.collaborator is None else _lot_details.collaborator.address_1,
+                 _('Seabrook, NH 03874') if _lot_details.collaborator is None else _lot_details.collaborator.address_2,)
+        if _lot_details.collaborator and \
+                (lang == 'pt' and _lot_details.collaborator.instructions) or \
+                (lang != 'pt' and _lot_details.collaborator.instructions_en):
+            collaborator_instructions = True
+            texts += (_('Seguem algumas instruções do colaborador:'),)
+            if lang == 'pt':
+                texts += (_lot_details.collaborator.instructions,)
+            else:
+                texts += (_lot_details.collaborator.instructions_en,)
+        texts += (_('Todo o procedimento desde a compra até o redirecionamento de seus produtos você encontra aqui:'),
+                  ''.join(['https://', request.CURRENT_DOMAIN,
+                           _('/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf')]),
+                  _('Tutorial Plataforma'),
+                  _('GARANTA A GRATUIDADE NO ENVIO DE SEUS PRODUTOS'),
+                  _('Para o usuário usufruir do redirecionamento grátis, todos os produtos do lote adquirido, deverão '
+                    'ser enviados para a amazon, em um prazo de até 3 dias úteis. Caso o tempo de envio supere a '
+                    'gratuidade, serão aplicadas as seguintes regras de cobrança para a realização do envio:'),
+                  _('- Produto no estoque VOI S a partir do quarto dia até 10 dias: USD 1,29 por unidade do produto;'),
+                  _('- Produto no estoque VOI S de 11 até 20 dias: USD 1,49 por unidade do produto;'),
+                  _('- Produto no estoque VOI S de 21 até 30 dias: USD 1,99 por unidade do produto; e'),
+                  _('- Após 30 dias entrar em contato com o nosso suporte.'),)
         html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                               ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}<br>{}<br>{}</p>'] +
+                              ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}<br>{}</p>']
+                              if collaborator_instructions else [] +
                               ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'
                                '<br>'
                                '<a href="{}">{}</a></p>'] +

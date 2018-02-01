@@ -40,6 +40,22 @@ def calculate_buy_price(product):
 def is_subscriber(user, **kwargs):
     return set(user.groups.all()) & set(kwargs.pop('lot').groups.all())
 
+stars_map = {
+    1: 'um',
+    2: 'dois',
+    3: 'tres',
+    4: 'quatro',
+    5: 'cinco',
+}
+
+
+@register.simple_tag
+def stars(number_stars):
+    try:
+        return stars_map[number_stars]
+    except KeyError:
+        return ''
+
 
 pagination_template = get_template('admin/store/lotreport/pagination.html')
 register.inclusion_tag(pagination_template)(pagination)

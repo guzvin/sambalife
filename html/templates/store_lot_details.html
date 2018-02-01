@@ -11,22 +11,21 @@
         <div class="col-md-10 main">
           <h1 class="page-header"><i class="fa fa-cart-arrow-down"></i> {{ lot.name }}</h1>
           <div class="row">
-
+              {% if lot.collaborator %}
               <!-- bloco de informação do colaborador. Só aparece quando um colaborador fr o vendedor do lote -->
-
               <div class="col-md-3 content-partner">
-                  <p>Produto vendido pelo colaborador:</p>
+                  <p>{% trans "Produto vendido pelo colaborador" %}:</p>
                   <img src="/static/img/team/1.png" /><br /><br />
                   <div class="infos-parceiro ">
-                      <p><strong>Felisberto</strong> </p>
-                      <div class="rating dois">
+                      <p><strong>{{ lot.collaborator.name }}</strong> </p>
+                      {% stars lot.collaborator.rating as stars_rating %}
+                      <div class="rating {{ stars_rating }}">
                            <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
                        </div><br /><br />
                   </div>
               </div>
-
-              <-- Fim do bloco novo-->
-
+              <!-- Fim do bloco novo-->
+              {% endif %}
               <div class="col-md-3">
                   <p><strong>{% trans "Situação" %}: </strong> {% if lot.status %}<strong>{{ lot.get_status_display  }}</strong>{% endif %}</p>
                   <p>

@@ -1,4 +1,3 @@
-from django.utils import translation
 from django.utils.translation import string_concat, ugettext as _
 from django.core.mail import EmailMessage, get_connection
 from django.conf import settings
@@ -414,7 +413,7 @@ class PaymentException(Exception):
 
 
 def paypal_notification(sender, **kwargs):
-    ipn_obj, invalid_data, entity, texts, invoice = sender, [], None, None, None
+    ipn_obj, invalid_data, entity, current_user, texts, invoice = sender, [], None, None, None, None
     logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')
     logger.debug(ipn_obj)
     invoice = ipn_obj.invoice.split('_')
@@ -463,7 +462,7 @@ def paypal_notification(sender, **kwargs):
                 logger.info('@@@@@@@@@@@@ PAYMENT STATUS @@@@@@@@@@@@@@')
                 raise PaymentException()
         if invoice[0] == 'B':
-            store_paypal_notification_post_transaction(request, current_user, ipn_obj,
+            store_paypal_notification_post_transaction(request, entity, current_user, ipn_obj,
                                                        _(paypal_status_message(ipn_obj)))
     except PaymentException as pe:
         if pe.args:

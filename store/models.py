@@ -28,10 +28,15 @@ class Collaborator(models.Model):
     address_1 = models.CharField(_('Endereço linha 1'), max_length=60)
     address_2 = models.CharField(_('Endereço linha 2'), max_length=60)
     rating = models.PositiveSmallIntegerField(_('Avaliação'), null=True)
+    instructions = models.TextField(_('Instruções em Português'), null=True, blank=True)
+    instructions_en = models.TextField(_('Instruções em Inglês'), null=True, blank=True)
 
     class Meta:
         verbose_name = _('Colaborador')
         verbose_name_plural = _('Colaboradores')
+
+    def __str__(self):
+        return self.name
 
 
 class Lot(models.Model):
@@ -124,10 +129,10 @@ class Product(models.Model):
     name = models.CharField(_('Nome'), max_length=150)
     identifier = models.CharField(_('ASIN / UPC'), max_length=50)
     url = models.URLField(_('URL do Produto'), max_length=500, null=True, blank=True)
-    buy_price = models.DecimalField(_('Valor de Compra'), max_digits=12, decimal_places=2)
-    sell_price = models.DecimalField(_('Valor de Venda'), max_digits=12, decimal_places=2)
+    buy_price = models.DecimalField(_('Valor Cliente'), max_digits=12, decimal_places=2)
+    sell_price = models.DecimalField(_('Valor Buy Box'), max_digits=12, decimal_places=2)
     quantity = models.PositiveIntegerField(_('Quantidade'))
-    fba_fee = models.DecimalField(_('Tarifa FBA'), max_digits=12, decimal_places=2)
+    fba_fee = models.DecimalField(_('FBA Fee'), max_digits=12, decimal_places=2)
     amazon_fee = models.DecimalField(_('Tarifa Amazon'), max_digits=12, decimal_places=2,
                                      default=0)
     shipping_cost = models.DecimalField(_('Custo de Envio para Amazon'), max_digits=12, decimal_places=2,
@@ -147,7 +152,7 @@ class Product(models.Model):
     total_profit = models.DecimalField(_('Lucro Total'), max_digits=12, decimal_places=2, default=0)
     roi = models.DecimalField(_('ROI'), max_digits=12, decimal_places=2, default=0)
     rank = models.IntegerField(_('Rank'), default=0)
-    voi_value = models.DecimalField(_('Valor item VOI S'), max_digits=12, decimal_places=2, default=0)
+    voi_value = models.DecimalField(_('Custo VOI Services'), max_digits=12, decimal_places=2, default=0)
     CONDITION_CHOICES = (
         (1, _('New')),
         (2, _('Refurbished')),
