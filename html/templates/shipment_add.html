@@ -57,11 +57,9 @@
                   <th>{% trans "Validade" %}</th>
                   <th class="center">{% trans "Tempo em estoque" %}</th>
                   <th class="center">{% trans "Quantidade" %}</th>
-{% comment %}
                   {% if user|has_shipment_perm:'delete_product' %}
                   <th>{% trans "Retirar" %}</th>
                   {% endif %}
-{% endcomment %}
                 </tr>
               </thead>
               <tbody>
@@ -86,7 +84,6 @@
                       {{ product_form.id }}
                       {{ product_form.shipment }}
                   </td>
-{% comment %}
                   {% if user|has_shipment_perm:'delete_product' %}
                   <td>
                       {% if product_formset.can_delete %}
@@ -94,7 +91,6 @@
                       {% endif %}
                   </td>
                   {% endif %}
-{% endcomment %}
                 </tr>
               {% endfor %}
               </tbody>
