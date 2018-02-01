@@ -1463,6 +1463,11 @@ label.titulo-pct span{
     font-size: 11px;
 }
 
+.descricao-lote-prod .rating{
+    float: left;
+    width: 78px;
+}
+
 .infos-parceiro .rating span {
     font-size: 18px;
     float: left;
