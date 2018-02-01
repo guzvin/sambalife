@@ -40,7 +40,7 @@
 <tr class="{% cycle 'row1' 'row2' as class_row %}">{% for item in result|slice:"1:" %}{{ item }}{% endfor %}</tr>
 {% endfor %}
 <tr class="{% cycle class_row %}">
-    <td colspan="5">TOTAIS</td>
+    <td colspan="6">TOTAIS</td>
     <td>{{ cl.lot_cost_sum }}</td>
     <td>{{ cl.voi_cost_sum }}</td>
     <td>{{ cl.voi_profit_sum }}</td>

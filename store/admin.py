@@ -470,6 +470,7 @@ class LotReportAdmin(admin.ModelAdmin):
 
     list_display_links = ('id', 'name',)
     list_filter = [
+        'collaborator',
         'status',
         ('create_date', DateRangeFilter),
         ('sell_date', DateRangeFilter),
@@ -478,7 +479,7 @@ class LotReportAdmin(admin.ModelAdmin):
     ]
 
     search_fields = ('name', 'product__name',)
-    list_display = ('id', 'name', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost', 'voi_profit', 'voi_roi',
+    list_display = ('id', 'name', 'collaborator', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost', 'voi_profit', 'voi_roi',
                     'products_quantity')
 
     def has_delete_permission(self, request, obj=None):
