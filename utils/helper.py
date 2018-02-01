@@ -153,7 +153,10 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         bcc = get_admins_emails()
 
     connection = get_connection(fail_silently=False)
-    connection.use_ssl = True
+    if settings.EMAIL_USE_TLS:
+        connection.use_tls = True
+    else:
+        connection.use_ssl = True
     email = EmailThread(
         email_data_tuple,
         email_from,
