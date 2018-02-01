@@ -26,7 +26,7 @@
               </div>
               <!-- Fim do bloco novo-->
               {% endif %}
-              <div class="col-md-3">
+              <div class="col-md-4">
                   <p><strong>{% trans "Situação" %}: </strong> {% if lot.status %}<strong>{{ lot.get_status_display  }}</strong>{% endif %}</p>
                   <p>
                   {% timezone mytz %}
@@ -45,7 +45,7 @@
 {% endcomment %}
                   <p><strong>{% trans "Total a pagar" %} <span class="help help-tooltip help-icon" title="{% trans 'Soma de todos os &quot;Valores de Compra&quot; multiplicados pela &quot;Quantidade&quot; de produtos de cada produto do lote.' %}"></span>: </strong> U$ {{ lot.lot_cost|localize }}</p>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                   {% if lot.payment_complete is False %}
                   <!-- Aparece apenas para usuarios comuns -->
                     <br><br>
