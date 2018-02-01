@@ -183,7 +183,7 @@ def store_pay_form(request, pid=None):
     has_access = set(request.user.groups.all()) & set(_lot_details.groups.all())
     if not has_access:
         return HttpResponse(json.dumps({'modal': 'subscribe'}), content_type='application/json')
-    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_lot_details.user)
+    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(request.user)
     if is_sandbox:
         invoice_id = '_'.join(['B', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
         paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
