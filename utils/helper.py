@@ -113,6 +113,10 @@ class EmailThread(threading.Thread):
         messages = []
         recipients = []
         for subject, message, recipient in self.email_data_tuple:
+            if settings.SYS_SU_USER in recipient:
+                del recipient[recipient.index(settings.SYS_SU_USER)]
+            if not recipient and not self.bcc:
+                continue
             msg = EmailMessage(subject,
                                message,
                                from_email=self.email_from,
