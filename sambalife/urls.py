@@ -86,6 +86,7 @@ urlpatterns += i18n_patterns(
     url(_(r'^how-it-works'), how_it_works, name='how_it_works'),
     url(r'^ajuda', help, name='help'),
     url(r'^faq', faq, name='faq'),
+    url(r'^seja-colaborador', colab, name='colab'),
     url(_(r'^termos-e-condicoes-de-uso'), terms, name='terms'),
     url(r'^store/product_name/autocomplete[/]$', product_name_autocomplete, name='store_product_name_autocomplete'),
     url(r'^store/product_asin/autocomplete[/]$', product_asin_autocomplete, name='store_product_asin_autocomplete'),

@@ -112,6 +112,13 @@
                     </li>
                     {% endif %}
 
+                    <li class="seja-parceiro-menu {% block partner %}{% endblock %}">
+                       <a href="{% url 'colab' %}">
+                          <i class="fa fa-street-view"></i> Seja um colaborador
+                          <span title="Seja colaborador" class="suspenso">Novo</span>
+                       </a>
+                    </li>
+
                     <li class="{% block storelist %}{% endblock %}">
                         <a href="{% url 'store' %}" class="logo-marca-link operacional-conf"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</a>
                     </li>

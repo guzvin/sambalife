@@ -1650,6 +1650,12 @@ label.titulo-pct span{
     color: #fff;
 }
 
+.seja-parceiro-menu .suspenso{
+    top: -14px;
+    width: 51px;
+    left: 176px;
+}
+
 .content-partner.info-envio-partner img{
     width: 60px;
 }
@@ -2043,11 +2049,22 @@ footer.fixed-footer{
     border-radius: 3px;
 }
 
-.box-valor .seja{
+.box-valor .seja, .seja{
     font-size: 26px;
     font-weight: bold;
     color: #3C3E77;
 }
+
+.col-md-6 .partner.seja {
+    font-size: 16px;
+}
+
+.img-pt{
+    display: block;
+    width: 100%;
+    margin: 110px 0 0 0;
+}
+
 /*
 .box-valor {
 border-bottom: 1px solid #eee;

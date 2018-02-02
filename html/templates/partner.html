@@ -1,0 +1,69 @@
+{% extends 'includes/layout.html' %}
+{% load i18n l10n permissions users commons lots %}
+{% block partner %}active{% endblock %}
+
+{% block conteudo %}
+
+<div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1 sidebar">
+
+        </div>
+        <div class="col-md-10 main">
+          <h1 class="page-header"><i class="fa fa-street-view"></i> {% trans "Seja um colaborador VOI Services" %}</h1>
+          <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-4 box-cad-esquerda">
+                <img src="/static/img/colaborador.png" class="img-pt">
+
+            </div>
+            <div class="col-md-6">
+                <div>
+                    <p class="seja partner">{% trans "Se você mora nos Estados unidos, sabe como funciona retail arbitrage, compra em leilões ou whole sale, e também realiza prep & ship para a Amazon, esta pode ser uma ótima oportunidade de parceria. Torne-se um colaborador Voi Services e coloque seus produtos para vender em nossa plataforma. Nós estamos sempre buscando a melhor forma de oferecer os melhores produtos para nossos clientes e você poderá obter um maior giro de venda em seus produtos, ou seja, todo mundo ganha!.</p><p class='seja partner'>Preencha o formulário abaixo e saiba mais detalhes de como funciona." %}</p>
+                </div>
+                <hr>
+                <form action="" method="post" class="form-cad-cliente" id="form-add-colab" novalidate="novalidate">
+                  <div class="form-group">
+                    <label for="nome">{% trans 'Nome completo' %}*</label>
+
+                    <input type="text" class="form-control" id="nome" aria-describedby="nome" name="first_name" placeholder="{% trans 'Digite o nome' %}..." value="">
+
+                  </div>
+                  <div class="form-group">
+                    <label for="email">{% trans 'E-mail' %}*</label>
+
+                    <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email" placeholder="{% trans 'Digite o e-mail' %}..." value="">
+
+                  </div>
+                  <div class="form-group">
+                    <label for="celular">{% trans 'Telefone' %}*</label>
+
+                    <input type="number" class="form-control" id="celular" name="cell_phone" placeholder="{% trans 'Digite o telefone, celular de preferência' %}..." value="">
+
+                  </div>
+
+                  <div class="form-group">
+                    <label for="mesg">{% trans 'Mensagem' %}*</label>
+
+                      <textarea type="password" class="form-control" style="min-height: 200px;" id="mesg" name="password_confirmation" placeholder="{% trans 'Diga-nos um pouco sobre o que você faz, onde você mora e como costuma adquirir produtos' %}..."></textarea>
+
+                  </div>
+
+
+
+                  <button type="submit" id="send-btn" class="btn btn-primary"><i class="fa fa-fw fa-paper-plane"></i> {% trans 'Enviar' %}</button><br><br>
+                </form>
+            </div>
+            <div class="col-md-1">
+            </div><br><br>
+            <div class="col-md-12">
+                <a href="/"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans 'Voltar' %}</a><br><br><br><br>
+            </div>
+        </div>
+        </div>
+      </div>
+</div>
+
+
+{% endblock %}
