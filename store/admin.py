@@ -169,7 +169,7 @@ class LotAdmin(admin.ModelAdmin):
         ('sell_date', DateRangeFilter),
     ]
 
-    search_fields = ('name', 'product__name',)
+    search_fields = ('name', 'product__name', 'product__identifier',)
     list_display_links = ('id', 'name',)
     list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'sell_date', 'is_archived',
                     'is_fake', 'duplicate_lot_action')

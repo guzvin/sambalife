@@ -69,6 +69,8 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             PAYPAL_LIVE_USERS = key_value_pair[1].split(',')
         elif key_value_pair[0] == 'paypal_sandbox':
             PAYPAL_SANDBOX = (key_value_pair[1] == '1')
+        elif key_value_pair[0] == 'paypal_sandbox_endpoint_live':
+            PAYPAL_SANDBOX_ENDPOINT_LIVE = (key_value_pair[1] == '1')
         elif key_value_pair[0] == 'paypal_nvp_user':
             PAYPAL_NVP_USER = key_value_pair[1]
         elif key_value_pair[0] == 'paypal_nvp_pwd':
@@ -95,9 +97,9 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             DEFAULT_FGR_COST = key_value_pair[1]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.voiservices.com', '.ppst.com', '.prepshiptool.com', '733e9b7e.ngrok.io']
+ALLOWED_HOSTS = ['localhost', '.voiservices.com', '.ppst.com', '.prepshiptool.com', 'ed8d8f91.ngrok.io']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -174,15 +176,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sambalife.wsgi.application'
 
-#CHANNEL_LAYERS = {
- #   "default": {
-  #      "BACKEND": "asgi_redis.RedisChannelLayer",
-   #     "ROUTING": "sambalife.routing.channel_routing",
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "ROUTING": "sambalife.routing.channel_routing",
         # "CONFIG": {
         #     "hosts": [("redis-channel-1", 6379), ("redis-channel-2", 6379)],
         # },
-    #},
-#}
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
@@ -260,16 +262,11 @@ LANGUAGES = [
 
 STATIC_URL = '/static/'
 
-#STATICFILES_DIRS = [
- #   os.path.join(BASE_DIR, 'html'),
-#]
-
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    '/Users/fabio/Documents/projects/voiservices/source/sambalife/html/static',
+    os.path.join(BASE_DIR, 'html'),
 ]
 
-STATIC_ROOT = os.path.join(os.path.join(BASE_DIR, 'assets'), 'static')
+STATIC_ROOT = os.path.join(os.path.join(BASE_DIR, 'html'), 'static')
 
 CORS_ORIGIN_ALLOW_ALL = True
 
