@@ -58,10 +58,12 @@ def product_stock(request):
         }
         try:
             int(filter_collaborator)
+            selected_collaborator = Collaborator.objects.get(pk=filter_collaborator)
             queries.append(Q(collaborator_id=filter_collaborator))
-        except (ValueError, TypeError):
+            filter_collaborator = selected_collaborator
+        except (ValueError, TypeError, Collaborator.DoesNotExist):
             queries.append(Q(collaborator=None))
-            filter_collaborator = 'vois'
+            filter_collaborator = None
         filter_values['collaborator'] = filter_collaborator
         if filter_id:
             queries.append(Q(pk__startswith=filter_id))

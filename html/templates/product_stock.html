@@ -22,7 +22,7 @@
                         <select class="form-control" id="collaborator-filter" name="collaborator">
                           <option value="vois">{% trans "VOI Services" %}</option>
                           {% for c in collaborators %}
-                            <option value="{{ c.id }}" {% ifequal c.id|slugify filter_values.collaborator %}selected="selected"{% endifequal %}>{{ c.name }}</option>
+                            <option value="{{ c.id }}" {% if filter_values.collaborator and c.id == filter_values.collaborator.id %}selected="selected"{% endif %}>{{ c.name }}</option>
                           {% endfor %}
                         </select>
                     </div>
@@ -85,7 +85,21 @@
                     </div>
                 </form>
               </div>
-          </div><br><br>
+          </div>
+          <div class="col-md-12">
+          <strong>FROM:</strong>
+          <br>
+          {% if filter_values.collaborator %}
+          {{filter_values.collaborator.address_1}}
+          <br>
+          {{filter_values.collaborator.address_2}}
+          {% else %}
+          920 Lafayette Rd
+          <br>
+          Seabrook, NH 03874
+          {% endif %}
+          <br><br>
+          </div>
           {% if user|has_product_perm:'add_product' or request.session.impersonated is not None %}
             <a class="btn btn-default" href="{% url 'product_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
           {% endif %}
