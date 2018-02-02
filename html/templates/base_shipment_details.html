@@ -20,6 +20,37 @@
         </div>
         <div class="col-md-10 main">
           <h1 class="page-header"><i class="fa fa-archive"></i> {% block details_title %}{% endblock %} {{ shipment.id }}{% if shipment.is_canceled %} ({% trans "Cancelado" %}){% elif shipment.is_archived %} ({% trans "Arquivado" %}){% endif %}</h1>
+
+          <!-- bloco com as infos do endereço e colaborador -->
+
+            <div class="row">
+                <div class="col-md-3 content-partner info-envio-partner">
+                   <p>Esse envio será feito pelo colaborador:</p>
+                   <img src="/static/img/team/1.png"><br>
+                   <div class="infos-parceiro ">
+                      <p><strong>Alexandre</strong></p>
+                      <div class="rating cinco">
+                           <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
+                       </div><br><br>
+                   </div>
+                 </div>
+                <div class="col-md-4 content-partner info-envio-partner">
+                     <i class="fa fa-4x fa-info-circle"></i><br>
+                     <p><strong>Não se esqueça que para esse envio você deve colocar como "FROM" na Amazon o endereço ao lado.  </strong><br></p><br>
+                </div>
+                <div class="col-md-3">
+                    <i class="fa fa-3x fa-map-marker"></i>
+                    <p><strong>Endereço From:</strong><br><br>
+                        920 Lafayette Rd
+                        <br>
+                        Seabrook, NH 03874
+                    </p>
+                </div>
+            </div>
+
+           <!-- fim do bloco -->
+
+
           {% if shipment.status != 1 %}
           <form action="" method="post" id="form-upload-file" enctype="multipart/form-data">
           {% endif %}
@@ -30,6 +61,7 @@
             <table class="table table-striped">
               <thead>
                 <tr>
+                  <th>{% trans "Link Amazon" %}</th>
                   <th>{% trans "ID" %}</th>
                   <th>{% trans "Nome" %}</th>
                   <th>{% trans "Descrição" %}</th>
@@ -52,6 +84,10 @@
               <tbody>
               {% for product in products %}
                 <tr>
+                  <!-- btn amazon -->
+                  <td>
+                      <a class="btn btn-default link-amz-s" target="_blank" href="#"><i class="fa fa-fw fa-amazon"></i></a>
+                  </td>
                   <td>{{ product.product.id }}</td>
                   <td>{{ product.product.name }}</td>
                   <td>{{ product.product.description }}</td>
@@ -450,6 +486,12 @@
                  </a>
                {% endif %}
               {% endif %}
+
+                 <!-- Botao stand by -->
+                 <a class="btn btn-primary filtar-btn alterar-status" id="standby-btn" href="#">
+                    <i class="fa fa-fw fa-phone"></i> {% trans "Colocar em Stand by" %}
+                 </a>
+
               {% if shipment.status < 5 %}
 
                  <form class="left" action="{% if shipment.is_archived %}{% url 'shipment_archive' shipment.id '1' %}{% else %}{% url 'shipment_archive' shipment.id '2' %}{% endif %}" method="post" id="form-archive-shipment">

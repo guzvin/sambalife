@@ -1267,7 +1267,7 @@ label.titulo-pct span{
 }
 
 .filtros label{
-    font-size: 18px;
+    font-size: 15px;
 }
 
 .banner-lote h2:nth-child(3){
@@ -1643,6 +1643,19 @@ label.titulo-pct span{
     padding: 11px;
     background: #000;
     color: #fff;
+}
+
+.link-amz-s{
+    background: #000;
+    color: #fff;
+}
+
+.content-partner.info-envio-partner img{
+    width: 60px;
+}
+
+.content-partner.info-envio-partner .infos-parceiro p {
+    font-size: 16px;
 }
 
 .produto{

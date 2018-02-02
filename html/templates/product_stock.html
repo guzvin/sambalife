@@ -9,23 +9,14 @@
         {% if user|has_product_perm:'view_products' %}
         <div class="col-md-1 sidebar">
 
-        </div>
+        </div><i class="fas fa-info-circle"></i>
         <div class="col-md-11 main">
           <h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Estoque" %}</h1>
           <div class="row">
               <div class="filtros col-md-12">
                 <h3><i class="fa fa-filter"></i> {% trans "Filtros" %}</h3>  <br>
                 <form action="" method="get" id="form-filter-product" class="form-filter">
-                    <div class="form-group col-md-12">
-                        {% trans "Colaborador" as collaborator %}
-                        <label for="collaborator-filter">{{ collaborator }} *</label>
-                        <select class="form-control" id="collaborator-filter" name="collaborator">
-                          <option value="vois">{% trans "VOI Services" %}</option>
-                          {% for c in collaborators %}
-                            <option value="{{ c.id }}" {% if filter_values.collaborator and c.id == filter_values.collaborator.id %}selected="selected"{% endif %}>{{ c.name }}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
+
                     <div class="form-group col-md-2">
                         {% trans "ID" as id %}
                         <label for="filtro-id">{{ id }}</label>
@@ -75,6 +66,16 @@
                         <label for="filtro-Loja">{{ store_label }}</label>
                         <input type="text" class="form-control" id="filtro-Loja" name="store" placeholder="{{ store_label }}..." value="{{ filter_values.store }}">
                     </div>
+                    <div class="form-group col-md-4">
+                        {% trans "Colaborador" as collaborator %}
+                        <label for="collaborator-filter">{{ collaborator }} *</label>
+                        <select class="form-control" id="collaborator-filter" name="collaborator">
+                          <option value="vois">{% trans "VOI Services" %}</option>
+                          {% for c in collaborators %}
+                            <option value="{{ c.id }}" {% if filter_values.collaborator and c.id == filter_values.collaborator.id %}selected="selected"{% endif %}>{{ c.name }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
                     <div class="col-md-12">
                         <label for="filtro-arquivado">
                             <input type="checkbox" class="" id="filtro-arquivado" name="archived" {{ filter_values.archived }}> {% trans "Exibir produtos arquivados" %}
@@ -86,19 +87,21 @@
                 </form>
               </div>
           </div>
-          <div class="col-md-12">
-          <strong>FROM:</strong>
-          <br>
-          {% if filter_values.collaborator %}
-          {{filter_values.collaborator.address_1}}
-          <br>
-          {{filter_values.collaborator.address_2}}
-          {% else %}
-          920 Lafayette Rd
-          <br>
-          Seabrook, NH 03874
-          {% endif %}
-          <br><br>
+          <div class="bs-example col-md-12" id="alerta-valor-minimo">
+             <div class="alert alert-warning">
+                 <p><strong>Importante!!</strong> A partir de agora, os envios devem ser criados sempre com produtos dos mesmos colaboradores. Para os produtos listados abaixo, você deve cadastrar como <strong>"FROM"</strong> na Amazon o Seguinte endereço:<br>
+                     <br>
+                     {% if filter_values.collaborator %}
+                      {{filter_values.collaborator.address_1}}
+                      <br>
+                      {{filter_values.collaborator.address_2}}
+                      {% else %}
+                      920 Lafayette Rd
+                      <br>
+                      Seabrook, NH 03874
+                      {% endif %}
+                 </p>
+             </div>
           </div>
           {% if user|has_product_perm:'add_product' or request.session.impersonated is not None %}
             <a class="btn btn-default" href="{% url 'product_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
