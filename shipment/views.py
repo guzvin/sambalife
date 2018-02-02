@@ -166,6 +166,10 @@ def list_shipment(request, template_name, has_perm):
         context_data['modal_title'] = _('Mensagem importante!')
         context_data['modal_message'] = _('O envio foi removido, pois seus produtos não estavam mais disponíveis em '
                                           'estoque.')
+    elif request.GET.get('s') == '1':
+        context_data['custom_modal'] = True
+        context_data['modal_title'] = _('Envio')
+        context_data['modal_message'] = _('Envio inserido com sucesso.')
     return render(request, template_name, context_data)
 
 
@@ -880,15 +884,6 @@ def shipment_add(request):
     kwargs_w = {'addText': _('Adicionar warehouse'), 'deleteText': _('Remover warehouse')}
     logger.debug('@@@@@@@@@@@@ REQUEST METHOD @@@@@@@@@@@@@@')
     logger.debug(request.method)
-    if request.method == 'GET' and request.GET.get('s') == '1':
-        return render(request, 'shipment_add.html', {'title': _('Envio'), 'success': True,
-                                                     'success_message': _('Envio inserido com sucesso.'),
-                                                     'shipment_formset':
-                                                         ShipmentFormSet(queryset=Shipment.objects.none()),
-                                                     'product_formset':
-                                                         ProductFormSet(prefix='product_set', **kwargs_p),
-                                                     'warehouse_formset':
-                                                         WarehouseFormSet(prefix='warehouse_set', **kwargs_w)})
     logger.debug(str(request.method == 'POST' and request.POST.get('save_shipment')))
     if request.method == 'POST' and request.POST.get('save_shipment'):
         shipment_formset = ShipmentFormSet(request.POST, request.FILES, queryset=Shipment.objects.none())
@@ -925,7 +920,7 @@ def shipment_add(request):
                     warehouses = warehouse_formset.save()
                     logger.debug('@@@@@@@@@@@@ SEND PDF 1 EMAIL @@@@@@@@@@@@@@')
                     send_email_shipment_add(request, shipment, products, warehouses)
-            return HttpResponseRedirect('%s?s=1' % reverse('shipment_add'))
+            return HttpResponseRedirect('%s?s=1' % reverse('shipment'))
         else:
             logger.warning('@@@@@@@@@@@@ FORM ERRORS @@@@@@@@@@@@@@')
             logger.warning(shipment_formset.errors)

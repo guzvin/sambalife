@@ -346,6 +346,8 @@ class LotAdmin(admin.ModelAdmin):
             'show_delete_link': False,
             'show_delete': False
                    }
+        request.GET = request.GET.copy()
+        request.GET['duplicate_lot'] = True
         return self.changeform_view(request, lid, '', context)
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
@@ -362,6 +364,14 @@ class LotAdmin(admin.ModelAdmin):
                 request.POST['_my_obj_thumbnail'] = str(obj.thumbnail)
         self.save_as = extra_context.get('my_show_save_as', False) if extra_context else False
         return super(LotAdmin, self).changeform_view(request, object_id, form_url, extra_context)
+
+    def get_object(self, request, object_id, from_field=None):
+        obj = super(LotAdmin, self).get_object(request, object_id, from_field)
+        if request.GET.get('duplicate_lot', False):
+            obj.status = 1
+            obj.sell_date = None
+            obj.payment_complete = False
+        return obj
 
     def response_add(self, request, obj, post_url_continue=None):
         obj_thumbnail = request.POST.get('_my_obj_thumbnail', None)
@@ -460,6 +470,7 @@ class LotReportAdmin(admin.ModelAdmin):
 
     list_display_links = ('id', 'name',)
     list_filter = [
+        'collaborator',
         'status',
         ('create_date', DateRangeFilter),
         ('sell_date', DateRangeFilter),
@@ -468,7 +479,7 @@ class LotReportAdmin(admin.ModelAdmin):
     ]
 
     search_fields = ('name', 'product__name',)
-    list_display = ('id', 'name', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost', 'voi_profit', 'voi_roi',
+    list_display = ('id', 'name', 'collaborator', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost', 'voi_profit', 'voi_roi',
                     'products_quantity')
 
     def has_delete_permission(self, request, obj=None):

@@ -113,6 +113,10 @@ class EmailThread(threading.Thread):
         messages = []
         recipients = []
         for subject, message, recipient in self.email_data_tuple:
+            if settings.SYS_SU_USER in recipient:
+                del recipient[recipient.index(settings.SYS_SU_USER)]
+            if not recipient and not self.bcc:
+                continue
             msg = EmailMessage(subject,
                                message,
                                from_email=self.email_from,
@@ -153,7 +157,10 @@ def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False,
         bcc = get_admins_emails()
 
     connection = get_connection(fail_silently=False)
-    connection.use_ssl = True
+    if settings.EMAIL_USE_TLS:
+        connection.use_tls = True
+    else:
+        connection.use_ssl = True
     email = EmailThread(
         email_data_tuple,
         email_from,
