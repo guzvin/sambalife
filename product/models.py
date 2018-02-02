@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.validators import ValidationError
 from datetime import datetime
 from django.utils import timezone
+from store.models import Collaborator
 import logging
 
 logger = logging.getLogger('django')
@@ -46,6 +47,8 @@ class Product(models.Model):
     pick_ticket = models.CharField(_('Localização na Warehouse'), max_length=200, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     lot_product = models.ForeignKey('store.Product', null=True)
+    collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
+                                     blank=True)
 
     class Meta:
         verbose_name = _('Produto')

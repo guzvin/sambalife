@@ -12,7 +12,7 @@ from django.utils import formats, timezone
 from django.forms import modelformset_factory, inlineformset_factory
 from django.urls import reverse
 from utils.helper import MyBaseInlineFormSet, ObjectView, send_email_basic_template_bcc_admins, get_max_time_period
-from utils.models import Params
+from store.models import Collaborator
 from product.templatetags.products import has_product_perm
 from myauth.templatetags.users import has_user_perm
 from django.utils.html import format_html, mark_safe
@@ -35,6 +35,8 @@ def product_stock(request):
         logger.debug('@@@@@@@@@@@@ PRODUCT STOCK FILTERS @@@@@@@@@@@@@@')
         logger.debug(settings.DEBUG)
         logger.debug(settings.PAYPAL_TEST)
+        filter_collaborator = request.GET.get('collaborator')
+        logger.debug(str(filter_collaborator))
         filter_id = request.GET.get('id')
         logger.debug(str(filter_id))
         filter_name = request.GET.get('name')
@@ -54,6 +56,13 @@ def product_stock(request):
         filter_values = {
             'status': '',
         }
+        try:
+            int(filter_collaborator)
+            queries.append(Q(collaborator_id=filter_collaborator))
+        except (ValueError, TypeError):
+            queries.append(Q(collaborator=None))
+            filter_collaborator = 'vois'
+        filter_values['collaborator'] = filter_collaborator
         if filter_id:
             queries.append(Q(pk__startswith=filter_id))
             filter_values['id'] = filter_id
@@ -114,7 +123,8 @@ def product_stock(request):
     max_time_period = get_max_time_period()
     return render(request, 'product_stock.html', {'title': _('Estoque'), 'products': products,
                                                   'filter_values': ObjectView(filter_values),
-                                                  'max_time_period': max_time_period if max_time_period else 0})
+                                                  'max_time_period': max_time_period if max_time_period else 0,
+                                                  'collaborators': Collaborator.objects.all().order_by('name')})
 
 
 @login_required

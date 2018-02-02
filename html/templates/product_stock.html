@@ -16,6 +16,16 @@
               <div class="filtros col-md-12">
                 <h3><i class="fa fa-filter"></i> {% trans "Filtros" %}</h3>  <br>
                 <form action="" method="get" id="form-filter-product" class="form-filter">
+                    <div class="form-group col-md-12">
+                        {% trans "Colaborador" as collaborator %}
+                        <label for="collaborator-filter">{{ collaborator }} *</label>
+                        <select class="form-control" id="collaborator-filter" name="collaborator">
+                          <option value="vois">{% trans "VOI Services" %}</option>
+                          {% for c in collaborators %}
+                            <option value="{{ c.id }}" {% ifequal c.id|slugify filter_values.collaborator %}selected="selected"{% endifequal %}>{{ c.name }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
                     <div class="form-group col-md-2">
                         {% trans "ID" as id %}
                         <label for="filtro-id">{{ id }}</label>
@@ -79,6 +89,7 @@
           {% if user|has_product_perm:'add_product' or request.session.impersonated is not None %}
             <a class="btn btn-default" href="{% url 'product_add' %}"><i class="fa fa-fw fa-plus-square"></i> {% trans "Adicionar Produto" %}</a>
           {% endif %}
+          {% if products.paginator.count > 0 %}
           {% if user|has_shipment_perm:'add_shipment' %}
             <a class="btn btn-default" id="btn-add-shipment" data-action-url="{% url 'shipment_add' %}"><i class="fa fa-amazon"></i> {% trans "Criar Envio para Amazon" %}</a>
           {% endif %}
@@ -96,7 +107,6 @@
           {% endif %}
           <div class="table-responsive">
             <br>
-            {% if products.paginator.count > 0 %}
             <table class="table table-striped table-bordered">
               <thead>
                 <tr>
@@ -264,10 +274,12 @@
                 {% endfor %}
               </tbody>
             </table>
-            {% else %}
-              <p>{% trans "Nenhum produto encontrado." %}</p>
-            {% endif %}
           </div>
+          {% else %}
+          <br>
+          <br>
+          <p>{% trans "Nenhum produto encontrado." %}</p>
+          {% endif %}
           <nav aria-label="...">
             {% if products.has_other_pages %}
               <ul class="pagination">

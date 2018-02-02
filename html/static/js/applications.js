@@ -700,7 +700,7 @@
         });
         $('#btn-add-shipment, #btn-add-merchant-shipment').click(function()
         {
-            var get = true;
+            var get = false;
             for(var shipmentProduct in shipmentProducts)
             {
                 var checkedProduct = $('<input type="hidden" name="shipment_product"></input>');
@@ -708,6 +708,10 @@
                 checkedProduct.appendTo(shipmentForm);
                 get = false;
             }
+            var selectedCollaborator = $('<input type="hidden" name="shipment_collaborator"></input>');
+            selectedCollaborator.val($('select#collaborator-filter').val());
+            selectedCollaborator.appendTo(shipmentForm);
+
             if(get)
             {
                 window.location.href = $(this).data('action-url');
