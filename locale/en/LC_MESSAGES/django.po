@@ -636,7 +636,7 @@ msgstr ""
 #: html/templates/user_reset_password.html:117
 #: html/templates/user_validation.html:96
 msgid "<a href='/pt/termos-e-condicoes-de-uso.html'>Termos e Condições de Uso"
-msgstr "<a href='/en/terms-and-conditions.html'>Terms of Use"
+msgstr "<a href='/en/terms-and-conditions.html'>Terms and Conditions"
 
 #: html/templates/includes/layout-footer.html:200
 #: html/templates/includes/layout.html:317 html/templates/login.html:100
@@ -668,7 +668,7 @@ msgid ""
 "target='_blank'>Confira clicando aqui</a>. Duas informações importantes para "
 "você."
 msgstr ""
-"Our terms of use have been updated. <a href='/en/terms-and-"
+"Our terms and conditions have been updated. <a href='/en/terms-and-"
 "conditions.html' class='download' target='_blank'>Click here</a> to read it. "
 "We have two important info for you."
 
@@ -723,14 +723,14 @@ msgstr ""
 
 #: html/templates/includes/layout-footer.html:256
 msgid "Aceito os termos e condições de uso"
-msgstr "I have read and accept the terms of use"
+msgstr "I have read and accept the terms and conditions"
 
 #: html/templates/includes/layout-footer.html:257
 #: html/templates/includes/layout.html:409
 msgid ""
 "É necessário aceitar os termos para poder continuar a utilizar a plataforma."
 msgstr ""
-"It is mandatory to accept the terms of use to be able to use the "
+"It is mandatory to accept the terms and conditions to be able to use the "
 "platform."
 
 #: html/templates/includes/layout-footer.html:268
@@ -823,13 +823,13 @@ msgid ""
 "href='/pt/termos-e-condicoes-de-uso/' class='download' "
 "target='_blank'>Confira clicando aqui</a>."
 msgstr ""
-"Our terms of use have been updated. <a href='/en/terms-and-"
+"Our terms and conditions have been updated. <a href='/en/terms-and-"
 "conditions/' class='download' target='_blank'>Click here</a> to read it."
 
 #: html/templates/includes/layout.html:408
 #: html/templates/user_registration.html:458
 msgid "Li e aceito os termos e condições de uso"
-msgstr "I have read and accept the terms of use"
+msgstr "I have read and accept the terms and conditions"
 
 #: html/templates/login.html:21 html/templates/user_reset_password.html:53
 #: html/templates/user_validation.html:50 sambalife/forms.py:41
@@ -1866,7 +1866,7 @@ msgstr "Partner"
 
 #: myauth/models.py:33
 msgid "Termos e Condições"
-msgstr "Terms of use"
+msgstr "Terms and Conditions"
 
 #: myauth/models.py:34
 msgid "Idioma"
@@ -3109,7 +3109,7 @@ msgstr "terms-and-conditions.html"
 
 #: utils/cron.py:192
 msgid "para acessar nossos termos e condições de uso."
-msgstr "to access our terms of use."
+msgstr "to access our terms and conditions."
 
 #: utils/helper.py:150
 msgid "<no-reply@vendedorinternacional.net>"
@@ -3367,7 +3367,7 @@ msgid "(Sandbox) Simular fechamento"
 msgstr "(Sandbox) Simulate accounting"
 
 #~ msgid "Termos e Condições de Uso"
-#~ msgstr "Terms of use"
+#~ msgstr "Terms and Conditions"
 
 #~ msgid "Sua conta foi ativada, clique abaixo para acessá-la."
 #~ msgstr "Account activated, click below to login."
@@ -3397,7 +3397,7 @@ msgstr "(Sandbox) Simulate accounting"
 #~ msgstr "support@prepshiptool.com"
 
 #~ msgid "<a href='/pt/termos-e-condicoes-de-uso/'>Termos e Condições de Uso"
-#~ msgstr "<a href='/en/terms-and-conditions/'>Terms of Use"
+#~ msgstr "<a href='/en/terms-and-conditions/'>Terms and Conditions"
 
 #~ msgid "com poucos cliques seus produtos já estarão no seu inventário Amazon"
 #~ msgstr "with a few clicks your products will be in your inventory"
@@ -3499,7 +3499,7 @@ msgstr "(Sandbox) Simulate accounting"
 #~ "Veja nossos termos <a href='/termos-e-condicoes-de-uso.html' "
 #~ "class='download'>clicando aqui</a>"
 #~ msgstr ""
-#~ "Read our terms of use <a href='/terms-and-conditions.html' "
+#~ "Read our terms and conditions <a href='/terms-and-conditions.html' "
 #~ "class='download'>here</a>"
 
 #~ msgid "pt"
