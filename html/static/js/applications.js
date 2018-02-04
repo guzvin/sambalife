@@ -655,6 +655,18 @@
         }
     }
 
+    if($('#form-standby-shipment')[0])
+    {
+        if($('#standby-btn')[0])
+        {
+            $('#standby-btn').click(function()
+            {
+                $('.loading').show();
+                $('#form-standby-shipment').submit();
+            });
+        }
+    }
+
     $('.privatebtn').click(function()
     {
         $('#portfolioModal1').modal('show');

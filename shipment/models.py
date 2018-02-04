@@ -60,6 +60,7 @@ class Shipment(models.Model):
     created_date = models.DateTimeField(_('Data de criação'), auto_now_add=True, null=True)
     information = models.TextField(_('Informações adicionais'), null=True, blank=True)
     payment_date = models.DateTimeField(_('Data de pagamento'), null=True)
+    is_standby = models.BooleanField(_('Aguardando resposta'), default=False)
 
     class Meta:
         verbose_name = _('Envio')

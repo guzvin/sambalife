@@ -9,7 +9,7 @@
         {% if user|has_product_perm:'view_products' %}
         <div class="col-md-1 sidebar">
 
-        </div><i class="fas fa-info-circle"></i>
+        </div><i class="fa fa-info-circle"></i>
         <div class="col-md-11 main">
           <h1 class="page-header"><i class="fa fa-archive"></i> {% trans "Estoque" %}</h1>
           <div class="row">
@@ -89,17 +89,17 @@
           </div>
           <div class="bs-example col-md-12" id="alerta-valor-minimo">
              <div class="alert alert-warning">
-                 <p><strong>Importante!!</strong> A partir de agora, os envios devem ser criados sempre com produtos dos mesmos colaboradores. Para os produtos listados abaixo, você deve cadastrar como <strong>"FROM"</strong> na Amazon o Seguinte endereço:<br>
+                 <p><strong>{% trans "Importante" %}!!</strong> {% trans "A partir de agora, os envios devem ser criados sempre com produtos dos mesmos colaboradores. Para os produtos listados abaixo, você deve cadastrar como <strong>&quot;FROM&quot;</strong> na Amazon o seguinte endereço" %}:<br>
                      <br>
                      {% if filter_values.collaborator %}
-                      {{filter_values.collaborator.address_1}}
+                      {{ filter_values.collaborator.address_1 }}
                       <br>
-                      {{filter_values.collaborator.address_2}}
+                      {{ filter_values.collaborator.address_2 }}
                       {% else %}
                       920 Lafayette Rd
                       <br>
                       Seabrook, NH 03874
-                      {% endif %}
+                     {% endif %}
                  </p>
              </div>
           </div>

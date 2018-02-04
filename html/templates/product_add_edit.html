@@ -43,6 +43,14 @@
                   <textarea class="form-control" id="{{ form.description.id_for_label }}" name="{{ form.description.html_name }}" placeholder="{{ description }}...">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
                 </div><br>
                 <div class="form-group col-md-12">
+                  <label for="{{ form.url.id_for_label }}">{{ form.url.label }}</label>
+                    {% blocktrans asvar az_url with az_url_label=form.url.label %}Digite a {{ az_url_label }}{% endblocktrans %}
+                  <input type="text" class="form-control" id="{{ form.url.id_for_label }}" aria-describedby="url" name="{{ form.url.html_name }}" placeholder="{{ az_url }}..." value="{% if form.url.value %}{{ form.url.value }}{% endif %}">
+                  {% for error in form.url.errors %}
+                    <label id="url-error" class="error" for="{{ form.url.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
+                <div class="form-group col-md-12">
                   <label for="{{ form.store.id_for_label }}">{{ form.store.label }}</label>
                     {% blocktrans asvar store with store_label=form.store.label %}Digite a {{ store_label }}{% endblocktrans %}
                   <input type="text" class="form-control" id="{{ form.store.id_for_label }}" aria-describedby="store" name="{{ form.store.html_name }}" placeholder="{{ store }}..." value="{% if form.store.value %}{{ form.store.value }}{% endif %}">

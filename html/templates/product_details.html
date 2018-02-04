@@ -35,6 +35,12 @@
                         <p>{{ product.description }}</p>
                     </div>
               </div>
+              <div class="form-group">
+                    <label class="control-label col-xs-3">{% trans "URL do Produto" %}:</label>
+                    <div class="col-xs-9">
+                        <p>{% if product.url %}{{ product.url }}{% endif %}</p>
+                    </div>
+              </div>
               {% if user|has_product_perm:'change_product_status' %}
               <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Localização na Warehouse" %}:</label>

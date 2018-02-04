@@ -352,9 +352,9 @@ def help(request):
 def faq(request):
     return render(request, 'faq.html')
 
+
 def colab(request):
     return render(request, 'partner.html')
-
 
 
 def terms(request):
