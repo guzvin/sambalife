@@ -176,15 +176,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sambalife.wsgi.application'
 
-#CHANNEL_LAYERS = {
-    #"default": {
-   #     "BACKEND": "asgi_redis.RedisChannelLayer",
-  #      "ROUTING": "sambalife.routing.channel_routing",
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "ROUTING": "sambalife.routing.channel_routing",
         # "CONFIG": {
         #     "hosts": [("redis-channel-1", 6379), ("redis-channel-2", 6379)],
         # },
- #   },
-#}
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
@@ -260,18 +260,13 @@ LANGUAGES = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-#STATICFILES_DIRS = [
- #   os.path.join(BASE_DIR, 'html'),
-#]
-
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    '/Users/fabio/Documents/projects/voiservices/source/sambalife/html/static',
+    os.path.join(BASE_DIR, 'html'),
 ]
 
-STATIC_ROOT = os.path.join(os.path.join(BASE_DIR, 'assets'), 'static')
+STATIC_ROOT = os.path.join(os.path.join(BASE_DIR, 'html'), 'static')
 
 CORS_ORIGIN_ALLOW_ALL = True
 
