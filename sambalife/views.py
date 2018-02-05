@@ -354,7 +354,27 @@ def faq(request):
 
 
 def colab(request):
-    return render(request, 'partner.html')
+    if request.method == 'POST':
+        texts = (_('Nome'), request.POST.get('collab_name'),
+                 _('E-mail'), request.POST.get('collab_email'),
+                 _('Telefone'), request.POST.get('collab_phone'),
+                 _('Mensagem'), request.POST.get('collab_message'),)
+        send_email_collaborator(request, *texts)
+        return HttpResponseRedirect('%s?s=1' % reverse('colab'))
+    context_data = {}
+    if request.GET.get('s') == '1':
+        context_data['custom_modal'] = True
+        context_data['modal_title'] = _('Colaborador')
+        context_data['modal_message'] = _('Formulário enviado com sucesso.')
+    return render(request, 'partner.html', context_data)
+
+
+def send_email_collaborator(request, *texts):
+    email_title = _('Formulário novo colaborador')
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}: {}'] * 4)
+    email_body = format_html(html_format, *texts)
+    send_email_basic_template_bcc_admins(request, _('Administrador'), None, email_title, email_body,
+                                         raise_exception=True)
 
 
 def terms(request):
