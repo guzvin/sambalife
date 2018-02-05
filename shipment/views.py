@@ -205,7 +205,8 @@ def shipment_details(request, pid=None):
         max_time_period = helper.get_max_time_period()
         context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products,
                         'warehouses': _shipment_warehouses,
-                        'max_time_period': max_time_period if max_time_period else 0}
+                        'max_time_period': max_time_period if max_time_period else 0,
+                        'collaborator': _shipment_products[0].product.collaborator}
         custom_error_messages = {'required': _('Campo obrigatório.'), 'invalid': _('Informe um número maior que zero.')}
 
         ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
@@ -747,6 +748,16 @@ def shipment_status(request, pid=None, op=None):
                     shipment.update(status=F('status') - next_status, payment_date=None)
                 else:
                     shipment.update(status=F('status') - 1)
+    return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
+
+
+@login_required
+@require_http_methods(["POST"])
+def shipment_standby(request, pid=None, op='0'):
+    if op == '1':
+        Shipment.objects.filter(pk=pid).update(is_standby=False)
+    elif op == '2':
+        Shipment.objects.filter(pk=pid).update(is_standby=True)
     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
 
 

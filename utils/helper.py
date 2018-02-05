@@ -72,9 +72,10 @@ class ObjectView(object):
         self.__dict__ = d
 
 
-def send_email_basic_template_bcc_admins(request, user_name, user_email, email_title, email_body, async=False):
+def send_email_basic_template_bcc_admins(request, user_name, user_email, email_title, email_body, async=False,
+                                         raise_exception=False):
     email_tuple = build_basic_template_email_tuple(request, user_name, user_email, email_title, email_body)
-    send_email((email_tuple,), bcc_admins=True, async=async)
+    send_email((email_tuple,), bcc_admins=True, async=async, raise_exception=raise_exception)
 
 
 def build_basic_template_email_tuple(request, user_name, user_email, email_title, email_body):
@@ -113,7 +114,7 @@ class EmailThread(threading.Thread):
         messages = []
         recipients = []
         for subject, message, recipient in self.email_data_tuple:
-            if settings.SYS_SU_USER in recipient:
+            if recipient and settings.SYS_SU_USER in recipient:
                 del recipient[recipient.index(settings.SYS_SU_USER)]
             if not recipient and not self.bcc:
                 continue

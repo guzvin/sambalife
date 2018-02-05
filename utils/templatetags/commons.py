@@ -42,3 +42,8 @@ def startswith(text, starts):
 def log_message(message):
     logger.debug(message)
     return ''
+
+
+@register.simple_tag
+def assign(value):
+    return value

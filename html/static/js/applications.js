@@ -655,6 +655,18 @@
         }
     }
 
+    if($('#form-standby-shipment')[0])
+    {
+        if($('#standby-btn')[0])
+        {
+            $('#standby-btn').click(function()
+            {
+                $('.loading').show();
+                $('#form-standby-shipment').submit();
+            });
+        }
+    }
+
     $('.privatebtn').click(function()
     {
         $('#portfolioModal1').modal('show');
@@ -1492,6 +1504,56 @@
         $(this).parent().parent().find(".link-download-pdf").show();
     });
 
+        $('form#form-add-colab').validate(
+        {
+            submitHandler: function(form)
+            {
+                $('.loading').show();
+                form.submit()
+            },
+//            invalidHandler: function(event, validator)
+//            {
+//                $('button#send-btn').removeClass('nosubmit');
+//                $('.send-btn-error').remove();
+//                $('<label class="error send-btn-error" for="send-btn">' + gettext('Fix the errors above and try again.') + '</label>').insertAfter('button#send-btn');
+//            },
+            onfocusout: false,
+            onkeyup: false,
+            onclick: false
+        });
 
+        $('input#collab_name').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+            });
+        });
+
+        $('input#collab_email').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+                email: true,
+            });
+        });
+
+        $('input#collab_phone').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+                positiveNumber: true,
+            });
+        });
+
+        $('textarea#collab_message').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true,
+            });
+        });
 
 })(jQuery); // End of use strict

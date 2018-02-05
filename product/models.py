@@ -49,6 +49,7 @@ class Product(models.Model):
     lot_product = models.ForeignKey('store.Product', null=True)
     collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
                                      blank=True)
+    url = models.URLField(_('URL do Produto'), max_length=500, null=True, blank=True)
 
     class Meta:
         verbose_name = _('Produto')

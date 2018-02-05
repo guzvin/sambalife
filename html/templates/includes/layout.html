@@ -114,8 +114,8 @@
 
                     <li class="seja-parceiro-menu {% block partner %}{% endblock %}">
                        <a href="{% url 'colab' %}">
-                          <i class="fa fa-street-view"></i> Seja um colaborador
-                          <span title="Seja colaborador" class="suspenso">Novo</span>
+                          <i class="fa fa-street-view"></i> {% trans "Seja um colaborador" %}
+                          <span title="{% trans 'Seja um colaborador' %}" class="suspenso">{% trans "Novo" %}</span>
                        </a>
                     </li>
 
