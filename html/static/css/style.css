@@ -653,11 +653,12 @@ footer {
   text-align: center;
 }
 footer span.copyright {
-  line-height: 40px;
+  line-height: 22px;
   font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-transform: uppercase;
   text-transform: none;
 }
+
 footer ul.quicklinks {
   margin-bottom: 0;
   line-height: 40px;
@@ -668,6 +669,7 @@ footer ul.quicklinks {
 ul.social-buttons {
   margin-bottom: 0;
 }
+
 ul.social-buttons li a {
   display: block;
   background-color: #3C3E77;
