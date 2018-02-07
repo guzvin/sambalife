@@ -444,7 +444,8 @@ class UserLotReportAdmin(admin.ModelAdmin):
         LotNoPurchaseFilter,
     ]
 
-    search_fields = ('first_name', 'last_name', 'email')
+    #  DO NOTHING CHECK get_search_results FOR SEARCH FIELDS
+    search_fields = ('first_name', 'last_name', 'email', 'lot__name')
     list_display = ('id', 'user_name', 'email', 'user_date_joined', 'lot_name', 'lot_sell_date', 'lot_cost',)
 
     def user_name(self, obj):
@@ -491,6 +492,31 @@ class UserLotReportAdmin(admin.ModelAdmin):
                     'lot_cost': 'store_lot.lot_cost'}
         ).order_by('first_name', 'last_name', '-lot__sell_date')
         return qs
+
+    def get_search_results(self, request, queryset, search_term):
+        if search_term:
+            for bit in search_term.split():
+                queryset = queryset.extra(where=['UPPER(myauth_myuser.first_name::text) LIKE UPPER(%s) OR '
+                                                 'UPPER(myauth_myuser.last_name::text) LIKE UPPER(%s) OR '
+                                                 'UPPER(myauth_myuser.email::text) LIKE UPPER(%s) OR '
+                                                 'UPPER(store_lot.name::text) LIKE UPPER(%s)'],
+                                          params=['%{}%'.format(bit),
+                                                  '%{}%'.format(bit),
+                                                  '%{}%'.format(bit),
+                                                  '%{}%'.format(bit)])
+            # for bit in search_term.split():
+            #     if where_clauses:
+            #         where_clauses.append('OR')
+            #     where_clauses.append('UPPER(myauth_myuser.first_name::text) LIKE UPPER(%s) OR '
+            #                          'UPPER(myauth_myuser.last_name::text) LIKE UPPER(%s) OR '
+            #                          'UPPER(myauth_myuser.email::text) LIKE UPPER(%s) OR '
+            #                          'UPPER(store_lot.name::text) LIKE UPPER(%s)')
+            #     where_params.append('%{}%'.format(bit))
+            #     where_params.append('%{}%'.format(bit))
+            #     where_params.append('%{}%'.format(bit))
+            #     where_params.append('%{}%'.format(bit))
+            # queryset = queryset.extra(where=[' '.join(where_clauses)], params=where_params)
+        return queryset, True
 
 admin_site.register(UserLotReport, UserLotReportAdmin)
 
