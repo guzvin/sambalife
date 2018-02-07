@@ -802,9 +802,11 @@ msgstr "Contact us"
 #: html/templates/includes/layout.html:366
 msgid ""
 "Para entrar em contato com nosso suporte e nossos canais de atendimento, "
-"envie um email para <a class='download' hre='mailto:support@voiservices."
+"envie um email para <a class='download' href='mailto:support@voiservices."
 "com'>support@voiservices.com</a>. Retornaremos o mais breve possível."
 msgstr ""
+"Send us an email to <a class='download' href='mailto:support@voiservices."
+"com'>support@voiservices.com</a>."
 
 #: html/templates/includes/layout.html:380
 msgid "Endereço VOI"
@@ -1466,7 +1468,7 @@ msgstr ""
 
 #: html/templates/store_lot_details.html:135
 msgid "Veja o Produto na Amazon"
-msgstr ""
+msgstr "Link to Amazon"
 
 #: html/templates/store_lot_details.html:173
 msgid ""

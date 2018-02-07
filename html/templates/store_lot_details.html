@@ -56,6 +56,7 @@
           </div>
           <div class="row">
               <br><h3><i class="fa fa-list-ol"></i> {% trans "Produto(s)" %}</h3><br />
+{% if LANGUAGE_CODE == 'pt' %}
               {% if lot.description %}
                   <div class="bs-example" id="lot-alert">
                      <div class="alert alert-warning">
@@ -73,6 +74,7 @@
                    {% endtimezone %}
                  </div>
               </div>
+{% endif %}
           </div>
           {% for product in lot.product_set.all %}
           {% if forloop.counter0|divisibleby:3 %}

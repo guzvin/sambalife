@@ -111,14 +111,14 @@
                         </ul>
                     </li>
                     {% endif %}
-
+{% if LANGUAGE_CODE == 'pt' %}
                     <li class="seja-parceiro-menu {% block partner %}{% endblock %}">
                        <a href="{% url 'colab' %}">
                           <i class="fa fa-street-view"></i> {% trans "Seja um colaborador" %}
                           <span title="{% trans 'Seja um colaborador' %}" class="suspenso">{% trans "Novo" %}</span>
                        </a>
                     </li>
-
+{% endif %}
                     <li class="{% block storelist %}{% endblock %}">
                         <a href="{% url 'store' %}" class="logo-marca-link operacional-conf"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</a>
                     </li>
@@ -126,11 +126,11 @@
                     <li class="{% block comoFunciona %}{% endblock %}">
                         <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
                     </li>
-
+{% if LANGUAGE_CODE == 'pt' %}
                     <li class="{% block faq %}{% endblock %}">
                         <a href="{% url 'faq' %}" class=""><i class="fa fa-question-circle"></i> {% trans "Perguntas Frequentes" %}</a>
                     </li>
-
+{% endif %}
                     <li>
                         <a href="javascript: void(0);" id="contato-popup-link"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
@@ -371,7 +371,7 @@
                     <h4 class="modal-title">{% trans "Fale Conosco" %}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>{% trans "Para entrar em contato com nosso suporte e nossos canais de atendimento, envie um email para <a class='download' hre='mailto:support@voiservices.com'>support@voiservices.com</a>. Retornaremos o mais breve possível." %}</p>
+                    <p>{% trans "Para entrar em contato com nosso suporte e nossos canais de atendimento, envie um email para <a class='download' href='mailto:support@voiservices.com'>support@voiservices.com</a>. Retornaremos o mais breve possível." %}</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>

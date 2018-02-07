@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 from paypal.standard.forms import PayPalStandardBaseForm
 from paypal.standard.forms import PayPalEncryptedPaymentsForm
+from paypal.standard.conf import (
+    SUBSCRIPTION_SANDBOX_IMAGE, SANDBOX_IMAGE, DONATION_SANDBOX_IMAGE, SUBSCRIPTION_IMAGE,
+    IMAGE, DONATION_IMAGE
+)
 from payment.models import MyPayPalIPN
 from utils import helper
 from django.conf import settings
 from django.utils.html import format_html
+from django.utils import translation
 import logging
 
 logger = logging.getLogger('django')
@@ -65,6 +70,18 @@ class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
         logger.debug('@@@@@@@@@@@@ CIPHERTEXT @@@@@@@@@@@@@@')
         logger.debug(ciphertext)
         return ciphertext
+
+    def get_image(self):
+        lang = translation.get_language()
+        return {
+            (True, self.SUBSCRIBE): SUBSCRIPTION_SANDBOX_IMAGE,
+            (True, self.BUY): SANDBOX_IMAGE if lang == 'pt' else 'https://www.sandbox.paypal.com/en_US/i/btn/'
+                                                                 'btn_buynowCC_LG.gif',
+            (True, self.DONATE): DONATION_SANDBOX_IMAGE,
+            (False, self.SUBSCRIBE): SUBSCRIPTION_IMAGE,
+            (False, self.BUY): IMAGE if lang == 'pt' else 'https://images.paypal.com/images/x-click-but01.gif',
+            (False, self.DONATE): DONATION_IMAGE,
+        }[self.test_mode(), self.button_type]
 
     def render_button(self, data=None):
         from django.utils.safestring import mark_safe
