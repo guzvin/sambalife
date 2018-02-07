@@ -41,7 +41,7 @@
 {% endfor %}
 <tr class="{% cycle class_row %}">
     <td colspan="6">TOTAIS</td>
-    <td>{{ cl.lot_cost_sum }}</td>
+    <td>{% if cl.lot_cost_sum %}{{ cl.lot_cost_sum }}{% else %}0{% endif %}</td>
 </tr>
 </tbody>
 </table>
