@@ -86,7 +86,7 @@ class PaymentAdmin(admin.ModelAdmin):
     #     "__unicode__", "flag", "flag_info", "invoice", "custom",
     #     "payment_status", "created_at"
     # ]
-    search_fields = ('invoice', 'item_name')
+    search_fields = ('invoice', 'item_name', 'txn_id', 'subscr_id', 'recurring_payment_id')
     list_display = ('__unicode__', 'mc_gross', 'payment_status', 'invoice', 'item_name', 'first_name', 'last_name',
                     'payment_date')
     readonly_fields = ('business', 'charset', 'custom', 'notify_version', 'parent_txn_id', 'receiver_email',

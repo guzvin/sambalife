@@ -493,8 +493,8 @@ def paypal_notification(sender, **kwargs):
         logger.info('@@@@@@@@@@@@ VOID PAYMENT @@@@@@@@@@@@@@')
         logger.info(ipn_obj.void_authorization())
         email_title = _('\'%(item)s\' indisponível') % {'item': ipn_obj.item_name}
-        texts = (_('Foi enviada solicitação para o PayPal cancelar seu pagamento, nenhum valor será cobrado da sua '
-                   'conta.'),)
+        texts = (_('O Lote arrematado não está mais disponível para compra, seu pagamento será cancelado junto ao '
+                   'PayPal. Nenhum valor será cobrado de sua conta.'),)
         email_message = _(_html_format(*texts))
         send_email_basic_template_bcc_admins(request, entity.user.first_name, [entity.user.email], email_title,
                                              email_message,  async=True)
