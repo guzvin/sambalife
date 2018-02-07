@@ -269,7 +269,7 @@ class UserAdmin(BaseUserAdmin):
             this_extra_context.update(system_user_extra_context)
         if not request.user.is_superuser:
             self.list_display = ('id', 'email', 'date_joined', 'is_active', 'is_verified', 'partner')
-            self.list_filter = ('is_active', 'is_verified', 'partner')
+            self.list_filter = ('groups', 'is_active', 'is_verified', 'partner')
             self.fieldsets = (
                 (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
                                    'password1', 'password2')}),
@@ -282,7 +282,7 @@ class UserAdmin(BaseUserAdmin):
     def changelist_view(self, request, extra_context=None):
         if not request.user.is_superuser:
             self.list_display = ('id', 'email', 'date_joined', 'is_active', 'is_verified', 'partner')
-            self.list_filter = ('is_active', 'is_verified', 'partner')
+            self.list_filter = ('groups', 'is_active', 'is_verified', 'partner')
             self.fieldsets = (
                 (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
                                    'password1', 'password2')}),
