@@ -217,7 +217,7 @@ class UserAdmin(BaseUserAdmin):
     # that reference specific fields on auth.User.
     list_display = ('id', 'email', 'date_joined', 'is_superuser', 'is_active', 'is_verified', 'partner')
     list_display_links = ('id', 'email',)
-    list_filter = ('is_superuser', 'is_active', 'is_verified', 'partner')
+    list_filter = ('groups', 'is_superuser', 'is_active', 'is_verified', 'partner')
     readonly_fields = ('date_joined',)
     fieldsets = (
         (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',

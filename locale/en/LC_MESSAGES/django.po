@@ -1555,7 +1555,7 @@ msgstr "Registration"
 msgid ""
 "Faça seu cadastro para entrar em nossa fila de espera de assinantes. Assim "
 "que sua vaga for liberada, você será notificado."
-msgstr ""
+msgstr "Make your registration to enter in our list of subscribers."
 
 #: html/templates/user_registration.html:69
 msgid "54,90"
