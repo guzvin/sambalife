@@ -1,7 +1,5 @@
 from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
-from django.contrib.admin.templatetags.admin_list import result_list, pagination
 from django import template
-from django.template.loader import get_template
 import logging
 
 logger = logging.getLogger('django')
@@ -55,10 +53,3 @@ def stars(number_stars):
         return stars_map[number_stars]
     except KeyError:
         return ''
-
-
-pagination_template = get_template('admin/store/lotreport/pagination.html')
-register.inclusion_tag(pagination_template)(pagination)
-
-result_list_template = get_template('admin/store/lotreport/change_list_results.html')
-register.inclusion_tag(result_list_template)(result_list)
