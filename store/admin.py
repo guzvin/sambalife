@@ -479,8 +479,8 @@ class LotReportAdmin(admin.ModelAdmin):
     ]
 
     search_fields = ('name', 'product__name',)
-    list_display = ('id', 'name', 'collaborator', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost', 'voi_profit', 'voi_roi',
-                    'products_quantity')
+    list_display = ('id', 'name', 'collaborator', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost',
+                    'voi_profit', 'voi_roi', 'products_quantity')
 
     def has_delete_permission(self, request, obj=None):
         return False

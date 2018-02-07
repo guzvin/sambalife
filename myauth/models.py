@@ -138,3 +138,10 @@ class UserAddress(models.Model):
     )
     type = models.SmallIntegerField(_('Tipo'), choices=TYPE_CHOICES)  # 1: entrega / 2: cobranca / 3: 1 e 2
     default = models.BooleanField(_('Padrão'))
+
+
+class UserLotReport(MyUser):
+    class Meta:
+        proxy = True
+        verbose_name = _('Relatório Usuário x Lote')
+        verbose_name_plural = _('Relatório Usuário x Lote')

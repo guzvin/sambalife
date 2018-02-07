@@ -5,14 +5,18 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
 from django.contrib.admin.utils import unquote
 from django.contrib.admin import utils
 from django.core.exceptions import ObjectDoesNotExist
-from myauth.models import MyUser, UserAddress
+from myauth.models import MyUser, UserAddress, UserLotReport
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.db.models import Q
 from utils.sites import admin_site
+from myauth.admin_filters import LotSellDateFilter, LotNoPurchaseFilter
+from django.contrib.admin.views.main import ChangeList
+from django.db.models import Sum
+
 import logging
 
 logger = logging.getLogger('django')
@@ -406,6 +410,90 @@ class GroupAdmin(admin.ModelAdmin):
 
 # Register the new Group ModelAdmin.
 admin_site.register(Group, GroupAdmin)
+
+
+class UserLotReportChangeList(ChangeList):
+    def __init__(self, request, model, list_display, list_display_links,
+                 list_filter, date_hierarchy, search_fields, list_select_related,
+                 list_per_page, list_max_show_all, list_editable, model_admin):
+        self.lot_cost_sum = None
+        super(UserLotReportChangeList, self).__init__(request, model, list_display, list_display_links,
+                                                      list_filter, date_hierarchy, search_fields, list_select_related,
+                                                      list_per_page, list_max_show_all, list_editable, model_admin)
+        self.title = _('Relatório Usuário x Lote')
+
+    def get_results(self, *args, **kwargs):
+        super(UserLotReportChangeList, self).get_results(*args, **kwargs)
+        q = self.result_list.aggregate(lot_cost_sum=Sum('lot__lot_cost'))
+        self.lot_cost_sum = q['lot_cost_sum']
+
+
+class UserLotReportForm(forms.ModelForm):
+    class Meta:
+        model = UserLotReport
+        exclude = []
+
+
+class UserLotReportAdmin(admin.ModelAdmin):
+    form = UserLotReportForm
+
+    # list_display_links = ('id', 'name',)
+    list_filter = [
+        'groups',
+        ('lot__sell_date', LotSellDateFilter),
+        LotNoPurchaseFilter,
+    ]
+
+    search_fields = ('first_name', 'last_name', 'email')
+    list_display = ('id', 'user_name', 'email', 'user_date_joined', 'lot_name', 'lot_sell_date', 'lot_cost',)
+
+    def user_name(self, obj):
+        return ' '.join([obj.first_name, obj.last_name])
+
+    user_name.short_description = _('Nome usuário')
+
+    def user_date_joined(self, obj):
+        return obj.date_joined
+
+    user_date_joined.short_description = _('Data de cadastro do usuário')
+
+    def lot_name(self, obj):
+        return obj.lot_name
+
+    lot_name.short_description = _('Lote')
+
+    def lot_sell_date(self, obj):
+        return obj.lot_sell_date
+
+    lot_sell_date.short_description = _('Data de compra do lote')
+
+    def lot_cost(self, obj):
+        return obj.lot_cost
+
+    lot_cost.short_description = _('Valor de compra do lote')
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_add_permission(self, request):
+        return False
+
+    def get_changelist(self, request, **kwargs):
+        return UserLotReportChangeList
+
+    def get_queryset(self, request):
+        qs = super(UserLotReportAdmin, self).get_queryset(request)
+        qs = qs.filter(Q(lot__name__isnull=True) | Q(lot__is_fake=False)).extra(
+            select={'lot_name': 'store_lot.name', 'lot_sell_date': 'store_lot.sell_date',
+                    'lot_cost': 'store_lot.lot_cost'}
+        ).order_by('first_name', 'last_name', '-lot__sell_date')
+        return qs
+
+admin_site.register(UserLotReport, UserLotReportAdmin)
+
 
 native_lookup_field = utils.lookup_field
 

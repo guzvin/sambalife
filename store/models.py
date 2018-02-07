@@ -191,5 +191,5 @@ class Config(models.Model):
 class LotReport(Lot):
     class Meta:
         proxy = True
-        verbose_name = _('Relatório')
-        verbose_name_plural = _('Relatórios')
+        verbose_name = _('Relatório de Lotes')
+        verbose_name_plural = _('Relatório de Lotes')
