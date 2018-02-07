@@ -42,11 +42,15 @@ class LotNoPurchaseFilter(admin.SimpleListFilter):
     parameter_name = 'lot_purchase'
 
     def lookups(self, request, model_admin):
-        return [('1', _('Yes'))]
+        return [('1', _('Yes')), ('0', _('No'))]
 
     def queryset(self, request, queryset):
         if self.value() == '1':
             return queryset.extra(
                         where=['store_lot.sell_date is null']
-                    )
+            )
+        elif self.value() == '0':
+            return queryset.extra(
+                        where=['store_lot.sell_date is not null']
+            )
         return queryset
