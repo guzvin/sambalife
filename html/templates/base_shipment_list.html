@@ -115,7 +115,13 @@
                   <td>{{ shipment.created_date|date:'SHORT_DATE_FORMAT' }}</td>
                   {% endtimezone %}
                   <td class="center">{{ shipment.total_products }}</td>
-                  <td class="center"> {{ shipment.get_status_display  }}</td>
+                  <td class="center">
+                    {{ shipment.get_status_display  }}
+                    {% if shipment.is_standby%}
+                      <br>
+                      ({% trans "Aguardando resposta do usuário" %})
+                    {% endif %}
+                  </td>
                   <td class="center"><a class="download" href="{% url 'shipment_details' shipment.id %}"><i class="fa fa-pencil-square"></i> {% trans "Visualizar" %}</a></td>
                 </tr>
               {% endfor %}
