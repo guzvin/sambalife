@@ -134,10 +134,11 @@
                     <li>
                         <a href="javascript: void(0);" id="contato-popup-link"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
-
+{% if LANGUAGE_CODE == 'pt' %}
                     <li class="tutorial">
                         <a href="{% trans '/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf' %}" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
                     </li>
+{% endif %}
 {% comment %}
                     <li class="tutorial adress">
                         <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fa fa-map-marker"></i> {% trans "Ver Endereço VOI" %}</a>
