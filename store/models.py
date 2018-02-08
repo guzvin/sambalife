@@ -8,6 +8,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from utils.storage import OverWriteStorage
 from service.models import Service
+from stock.models import Product as ProductStock
 from PIL import Image
 import logging
 
@@ -163,6 +164,8 @@ class Product(models.Model):
     )
     condition = models.SmallIntegerField(_('Condição'), choices=CONDITION_CHOICES, null=True, blank=False)
     lot = models.ForeignKey(Lot, on_delete=models.CASCADE)
+    product_stock = models.ForeignKey(ProductStock, on_delete=models.CASCADE, null=True, blank=True,
+                                      related_name='stock_product')
 
     class Meta:
         verbose_name = _('Produto')

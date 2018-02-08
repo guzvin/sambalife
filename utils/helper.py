@@ -224,7 +224,7 @@ def resolve_price_value_by_service(product):
 class RequiredBaseInlineFormSet(BaseInlineFormSet):
     def _construct_form(self, i, **kwargs):
         form = super(RequiredBaseInlineFormSet, self)._construct_form(i, **kwargs)
-        form.empty_permitted = True
+        form.empty_permitted = False
         return form
 
 
