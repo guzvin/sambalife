@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _
-from store.models import Lot, Product as LotProduct
+from store.models import Lot
 from product.models import Product
+from stock.models import Product as StockProduct
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from utils import helper
@@ -402,20 +403,21 @@ def store_paypal_notification_post_transaction(request, _lot_details, user, ipn_
 @require_http_methods(["GET"])
 def product_name_autocomplete(request):
     term = request.GET.get('term')
-    return _product_autocomplete(LotProduct.objects.filter(name__icontains=term).order_by('name'))
+    return _product_autocomplete(StockProduct.objects.filter(name__icontains=term).order_by('name'))
 
 
 @login_required
 @require_http_methods(["GET"])
 def product_asin_autocomplete(request):
     term = request.GET.get('term')
-    return _product_autocomplete(LotProduct.objects.filter(identifier__icontains=term).order_by('name'))
+    return _product_autocomplete(StockProduct.objects.filter(identifier__icontains=term).order_by('name'))
 
 
 def _product_autocomplete(qs):
     products_autocomplete = []
     for product in qs:
-        products_autocomplete.append({'label': '-'.join([str(product.id), product.name]),
+        products_autocomplete.append({'label': ' - '.join([str(product.id), product.identifier, product.name]),
+                                      'id': str(product.id),
                                       'name': product.name, 'identifier': product.identifier, 'url': product.url,
                                       'buy_price': str(product.buy_price), 'sell_price': str(product.sell_price),
                                       'quantity': product.quantity, 'fba_fee': str(product.fba_fee),

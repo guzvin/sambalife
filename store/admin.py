@@ -2,12 +2,15 @@ from django import forms
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.forms.widgets import HiddenInput
 from django.contrib.admin.options import TO_FIELD_VAR
 from django.contrib.auth.models import Group
 from django.db.models import Sum
 from django.contrib.auth import get_user_model
 from store.models import Lot, Product, Config, LotReport, lot_directory_path, Collaborator
 from store.admin_filters import UserFilter, AsinFilter
+from stock.models import Product as ProductStock
+from store.widgets import NameTextInput, IdentifierTextInput
 from utils import helper
 from utils.models import Params
 from utils.sites import admin_site
@@ -22,6 +25,8 @@ from django.contrib.admin.utils import quote, unquote
 from shutil import copy2
 from django.conf import settings
 from rangefilter.filter import DateRangeFilter
+from django.core.validators import ValidationError
+from django.utils.functional import cached_property
 import os
 import logging
 
@@ -69,18 +74,65 @@ class LotForm(forms.ModelForm):
         model = Lot
         exclude = []
 
-    def save(self, *args, **kwargs):
-        logger.debug('@@@@@@@@@@@@@@@ LOT SAVE @@@@@@@@@@@@@@@@@')
-        instance = super(LotForm, self).save(commit=False)
-        if instance.pk is None:
-            instance.save()
-        instance.groups = self.cleaned_data['groups']
 
-        instance.save()
-        return instance
+class LotProductFormSet(helper.RequiredBaseInlineFormSet):
+    def clean(self):
+        logger.debug('@!@!@!@!#@#@#@#@#@#!@#!@#!@#!@#!@#!@#!@#!@#@!#!@#!@#!@#@!#')
+        super(LotProductFormSet, self).clean()
+        stock_product_quantity_dict = {}
+        errors_dict = {}
+        for form in self.forms:
+            if not form.cleaned_data:
+                continue
+            stock_product_id = form['product_stock'].value()
+            if len(stock_product_id) == 0:
+                continue
+            stock_product_quantity = None
+            if str(stock_product_id) in stock_product_quantity_dict:
+                stock_product_quantity = stock_product_quantity_dict[str(stock_product_id)]
+            else:
+                stock_product = ProductStock.objects.filter(pk=stock_product_id)
+                if stock_product:
+                    stock_product_quantity = stock_product[0].quantity
+                    stock_product_quantity_dict[str(stock_product_id)] = stock_product_quantity
+            logger.debug(stock_product_quantity)
+            if stock_product_quantity is None:
+                continue
+            product_qty = form.inline_initial_data('quantity')
+            logger.debug(product_qty)
+            if product_qty is None:
+                continue
+            if form.cleaned_data.get('DELETE'):
+                stock_product_quantity_dict[str(stock_product_id)] = stock_product_quantity + product_qty[0]
+                continue
+            logger.debug(product_qty[0])
+            logger.debug(product_qty[1])
+            if product_qty[0]:
+                if product_qty[0] == product_qty[1]:
+                    continue
+                if product_qty[0] < product_qty[1]:
+                    product_qty = product_qty[0], product_qty[1] - product_qty[0]
+                else:
+                    stock_product_quantity_dict[str(stock_product_id)] = \
+                        stock_product_quantity + product_qty[0] - product_qty[1]
+                    continue
+            if product_qty[1] > stock_product_quantity:
+                if str(stock_product_id) not in errors_dict:
+                    errors_dict[str(stock_product_id)] = [_('Quantidade em estoque menor que a informada para '
+                                                            'o produto de ASIN: %(asin)s.') % {
+                        'asin': form.cleaned_data.get('identifier')
+                    }]
+                form.add_error('quantity', _('Verifique esta quantidade!'))
+            stock_product_quantity_dict[str(stock_product_id)] = stock_product_quantity - product_qty[1]
+        if errors_dict:
+            raise ValidationError([m for k, m in errors_dict.items()])
+        else:
+            for key, qty in stock_product_quantity_dict.items():
+                ProductStock.objects.filter(pk=key).update(quantity=qty)
 
 
 class LotProductForm(forms.ModelForm):
+    stock_product_quantity = {}
     redirect_services = ServiceModelMultipleChoiceField(
         queryset=Service.objects.all(),
         required=True,
@@ -92,8 +144,13 @@ class LotProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
+        widgets = {
+            'product_stock': HiddenInput(),
+            'name': NameTextInput(),
+            'identifier': IdentifierTextInput()
+        }
         fields = ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'rank', 'quantity', 'fba_fee', 'amazon_fee',
-                  'shipping_cost', 'redirect_services', 'condition', 'voi_value')
+                  'shipping_cost', 'redirect_services', 'condition', 'voi_value', 'product_stock')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor
@@ -128,10 +185,29 @@ class LotProductForm(forms.ModelForm):
         instance.save()
         return instance
 
+    def inline_initial_data(self, field_name):
+        name, field = field_name, self.fields[field_name]
+        prefixed_name = self.add_prefix(name)
+        data_value = field.widget.value_from_datadict(self.data, self.files, prefixed_name)
+        if not field.show_hidden_initial:
+            initial_value = self.initial.get(name, field.initial)
+            if callable(initial_value):
+                initial_value = initial_value()
+        else:
+            initial_prefixed_name = self.add_initial_prefix(name)
+            hidden_widget = field.hidden_widget()
+            try:
+                initial_value = field.to_python(hidden_widget.value_from_datadict(
+                    self.data, self.files, initial_prefixed_name))
+            except ValidationError:
+                # Always assume data has changed if validation fails.
+                return None
+        return initial_value, int(data_value)
+
 
 class LotProductInline(admin.StackedInline):
     model = Product
-    formset = helper.RequiredBaseInlineFormSet
+    formset = LotProductFormSet
     form = LotProductForm
     can_delete = True
     extra = 1
@@ -345,7 +421,7 @@ class LotAdmin(admin.ModelAdmin):
             'show_save_and_continue': False,
             'show_delete_link': False,
             'show_delete': False
-                   }
+        }
         request.GET = request.GET.copy()
         request.GET['duplicate_lot'] = True
         return self.changeform_view(request, lid, '', context)

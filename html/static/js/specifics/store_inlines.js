@@ -64,6 +64,7 @@
                         var to = $(item).remove();
                         $('#id_'+prefix+'-redirect_services_from').append(to);
                     });
+                    $('#id_'+prefix+'-product_stock').val(ui.item.id);
                     $('#id_'+prefix+'-name').val(ui.item.name);
                     $('#id_'+prefix+'-identifier').val(ui.item.identifier);
                     $('#id_'+prefix+'-url').val(ui.item.url);
@@ -94,7 +95,38 @@
                 .append( '<div>' + item.label + '</div>' )
                 .appendTo( ul );
             };
-        }
+        };
+        var clearSelection = function(element)
+        {
+            element.click(function(e)
+            {
+                    var prefix = element.closest('div.dynamic-product_set')[0].id;
+                    var options = $('#id_'+prefix+'-redirect_services_to').children('option');
+                    options.each(function(index, item)
+                    {
+                        var to = $(item).remove();
+                        $('#id_'+prefix+'-redirect_services_from').append(to);
+                    });
+                    $('#id_'+prefix+'-product_stock').val('');
+                    $('#id_'+prefix+'-name').val('');
+                    $('#id_'+prefix+'-identifier').val('');
+                    $('#id_'+prefix+'-url').val('');
+                    $('#id_'+prefix+'-buy_price').val('');
+                    $('#id_'+prefix+'-sell_price').val('');
+                    $('#id_'+prefix+'-quantity').val('');
+                    $('#id_'+prefix+'-fba_fee').val('');
+                    $('#id_'+prefix+'-amazon_fee').val('');
+                    $('#id_'+prefix+'-shipping_cost').val('');
+                    $('#id_'+prefix+'-product_cost').val('');
+                    $('#id_'+prefix+'-profit_per_unit').val('');
+                    $('#id_'+prefix+'-total_profit').val('');
+                    $('#id_'+prefix+'-roi').val('');
+                    $('#id_'+prefix+'-rank').val('');
+                    $('#id_'+prefix+'-voi_value').val('');
+                    $('#id_'+prefix+'-condition').val('');
+                    return false;
+            });
+        };
         var totalForms = $("#id_" + options.prefix + "-TOTAL_FORMS").prop("autocomplete", "off");
         var nextIndex = parseInt(totalForms.val(), 10);
         var maxForms = $("#id_" + options.prefix + "-MAX_NUM_FORMS").prop("autocomplete", "off");
@@ -104,10 +136,45 @@
         $this.each(function(i) {
             $(this).not("." + options.emptyCssClass).addClass(options.formCssClass);
         });
-        enableAutocomplete($('input#id_'+options.prefix+'-0-name'),
-                            '/' + gettext('en') + '/store/product_name/autocomplete/');
-        enableAutocomplete($('input#id_'+options.prefix+'-0-identifier'),
-                            '/' + gettext('en') + '/store/product_asin/autocomplete/');
+        var forms = $("." + options.formCssClass);
+        for (var i = 0, formCount = forms.length; i < formCount; i++)
+        {
+            enableAutocomplete($(forms.get(i)).find('input.enable-autocomplete-name'),
+                                '/' + gettext('en') + '/store/product_name/autocomplete/');
+            enableAutocomplete($(forms.get(i)).find('input.enable-autocomplete-asin'),
+                                '/' + gettext('en') + '/store/product_asin/autocomplete/');
+            clearSelection($(forms.get(i)).find('a.selection-clear'));
+            $(forms.get(i)).find("a." + options.deleteCssClass).click(function(e1)
+            {
+                e1.preventDefault();
+                var row = $(this).closest('div.dynamic-product_set');
+                // Remove the parent form containing this button:
+                row.remove();
+                nextIndex -= 1;
+                // If a post-delete callback was provided, call it with the deleted form:
+                if (options.removed) {
+                    options.removed(row);
+                }
+                $(document).trigger('formset:removed', [row, options.prefix]);
+                // Update the TOTAL_FORMS form count.
+                var forms = $("." + options.formCssClass);
+                $("#id_" + options.prefix + "-TOTAL_FORMS").val(forms.length);
+                // Show add button again once we drop below max
+                if ((maxForms.val() === '') || (maxForms.val() - forms.length) > 0) {
+                    addButton.parent().show();
+                }
+                // Also, update names and ids for all remaining form controls
+                // so they remain in sequence:
+                var i, formCount;
+                var updateElementCallback = function() {
+                    updateElementIndex(this, options.prefix, i);
+                };
+                for (i = 0, formCount = forms.length; i < formCount; i++) {
+                    updateElementIndex($(forms).get(i), options.prefix, i);
+                    $(forms.get(i)).find("*").each(updateElementCallback);
+                }
+            });
+        }
         if ($this.length && showAddButton) {
             var addButton;
             if ($this.prop("tagName") === "TR") {
@@ -151,6 +218,7 @@
                                     '/' + gettext('en') + '/store/product_name/autocomplete/');
                 enableAutocomplete($('input#id_'+row[0].id+'-identifier'),
                                     '/' + gettext('en') + '/store/product_asin/autocomplete/');
+                clearSelection($('a#id_'+row[0].id+'-clear'));
 
                 // Update number of total forms
                 $(totalForms).val(parseInt(totalForms.val(), 10) + 1);
