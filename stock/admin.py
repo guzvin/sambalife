@@ -29,7 +29,7 @@ class StockProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'rank', 'quantity', 'fba_fee', 'amazon_fee',
-                  'shipping_cost', 'redirect_services', 'condition', 'voi_value')
+                  'shipping_cost', 'redirect_services', 'condition', 'voi_value', 'notes')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor

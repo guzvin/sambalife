@@ -163,6 +163,7 @@ class Product(models.Model):
         (6, _('Used Acceptable')),
     )
     condition = models.SmallIntegerField(_('Condição'), choices=CONDITION_CHOICES, null=True, blank=False)
+    notes = models.TextField(_('Observação'), null=True, blank=True)
     lot = models.ForeignKey(Lot, on_delete=models.CASCADE)
     product_stock = models.ForeignKey(ProductStock, on_delete=models.CASCADE, null=True, blank=True,
                                       related_name='stock_product')

@@ -47,6 +47,7 @@ class Product(models.Model):
         (6, _('Used Acceptable')),
     )
     condition = models.SmallIntegerField(_('Condição'), choices=CONDITION_CHOICES, null=True, blank=False)
+    notes = models.TextField(_('Observação'), null=True, blank=True)
 
     class Meta:
         verbose_name = _('Produto')

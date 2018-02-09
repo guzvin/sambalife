@@ -81,6 +81,7 @@
                     $('#id_'+prefix+'-rank').val(ui.item.rank);
                     $('#id_'+prefix+'-voi_value').val(ui.item.voi_value);
                     $('#id_'+prefix+'-condition').val(ui.item.condition);
+                    $('#id_'+prefix+'-notes').val(ui.item.notes);
                     ui.item.redirect_services.forEach(function(item, index)
                     {
                         var from = $('#id_'+prefix+'-redirect_services_from').children('option[value='+item+']').remove();
@@ -124,6 +125,7 @@
                     $('#id_'+prefix+'-rank').val('');
                     $('#id_'+prefix+'-voi_value').val('');
                     $('#id_'+prefix+'-condition').val('');
+                    $('#id_'+prefix+'-notes').val('');
                     return false;
             });
         };

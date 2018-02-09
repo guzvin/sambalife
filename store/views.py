@@ -429,6 +429,7 @@ def _product_autocomplete(qs):
                                       'roi': str(product.roi), 'rank': product.rank,
                                       'voi_value': str(product.voi_value), 'condition': product.condition,
                                       'redirect_services': [redirect_service.id for redirect_service in
-                                                            product.redirect_services.all()]})
+                                                            product.redirect_services.all()],
+                                      'notes': product.notes})
     return HttpResponse(json.dumps(products_autocomplete),
                         content_type='application/json')
