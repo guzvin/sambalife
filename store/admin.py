@@ -122,7 +122,9 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
                                                             'o produto de ASIN: %(asin)s.') % {
                         'asin': form.cleaned_data.get('identifier')
                     }]
-                form.add_error('quantity', _('Verifique esta quantidade!'))
+                form.add_error('quantity', _('Verifique esta quantidade! Quantidade em estoque: %(qty)s.') % {
+                    'qty': stock_product_quantity
+                })
             stock_product_quantity_dict[str(stock_product_id)] = stock_product_quantity - product_qty[1]
         if errors_dict:
             raise ValidationError([m for k, m in errors_dict.items()])
