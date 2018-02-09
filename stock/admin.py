@@ -67,6 +67,7 @@ class StockProductForm(forms.ModelForm):
 
 class ProductAdmin(admin.ModelAdmin):
     form = StockProductForm
-    list_display = ('name',)
+    search_fields = ('name', 'identifier',)
+    list_display = ('identifier', 'name', 'quantity',)
 
 admin_site.register(Product, ProductAdmin)
