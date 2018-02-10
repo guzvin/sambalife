@@ -84,17 +84,33 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
         for form in self.forms:
             if not form.cleaned_data:
                 continue
+            stock_product, stock_product_quantity = None, None
             stock_product_id = form['product_stock'].value()
             if len(stock_product_id) == 0:
-                continue
-            stock_product_quantity = None
+                stock_product = ProductStock.objects.filter(identifier=form.cleaned_data.get('identifier'))
+                if stock_product:
+                    stock_product_id = stock_product[0].id
+                    form.instance.product_stock = stock_product[0]
+                else:
+                    error_key = ''.join(['asin', form.cleaned_data.get('identifier')])
+                    if error_key not in errors_dict:
+                        errors_dict[error_key] = [_('Produto, ASIN: %(asin)s, não existe no estoque. Primeiro faça o '
+                                                    'cadastro dele lá para depois adicioná-lo a algum lote.') % {
+                            'asin': form.cleaned_data.get('identifier')
+                        }]
+                    continue
             if str(stock_product_id) in stock_product_quantity_dict:
                 stock_product_quantity = stock_product_quantity_dict[str(stock_product_id)]
             else:
-                stock_product = ProductStock.objects.filter(pk=stock_product_id)
+                if stock_product is None:
+                    stock_product = ProductStock.objects.filter(pk=stock_product_id)
                 if stock_product:
                     stock_product_quantity = stock_product[0].quantity
                     stock_product_quantity_dict[str(stock_product_id)] = stock_product_quantity
+                else:
+                    raise ValidationError([_('Ocorreu um erro de inconsistência! Saia e entre desta operação para '
+                                             'tentar novamente e, caso o problema persista, entre em contato com '
+                                             'os responsáveis pelo sistema.')])
             logger.debug(stock_product_quantity)
             if stock_product_quantity is None:
                 continue
