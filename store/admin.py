@@ -26,7 +26,6 @@ from shutil import copy2
 from django.conf import settings
 from rangefilter.filter import DateRangeFilter
 from django.core.validators import ValidationError
-from django.utils.functional import cached_property
 import os
 import logging
 
@@ -74,24 +73,50 @@ class LotForm(forms.ModelForm):
         model = Lot
         exclude = []
 
+    def inline_initial_data(self, field_name):
+        name, field = field_name, self.fields[field_name]
+        prefixed_name = self.add_prefix(name)
+        data_value = field.widget.value_from_datadict(self.data, self.files, prefixed_name)
+        if not field.show_hidden_initial:
+            initial_value = self.initial.get(name, field.initial)
+            if callable(initial_value):
+                initial_value = initial_value()
+        else:
+            initial_prefixed_name = self.add_initial_prefix(name)
+            hidden_widget = field.hidden_widget()
+            try:
+                initial_value = field.to_python(hidden_widget.value_from_datadict(
+                    self.data, self.files, initial_prefixed_name))
+            except ValidationError:
+                # Always assume data has changed if validation fails.
+                return None
+        return initial_value, data_value
+
 
 class LotProductFormSet(helper.RequiredBaseInlineFormSet):
     def clean(self):
         logger.debug('@!@!@!@!#@#@#@#@#@#!@#!@#!@#!@#!@#!@#!@#!@#@!#!@#!@#!@#@!#')
         super(LotProductFormSet, self).clean()
         stock_product_quantity_dict = {}
+        new_product_quantity_dict = {}
         errors_dict = {}
+        forms_dict = {}
         for form in self.forms:
+            logger.debug(form.data.get('_ignore_stock', False))
+            logger.debug(form.data.get('_return_to_stock', False))
+            logger.debug(form.data.get('_get_from_stock', False))
+            if form.data.get('_ignore_stock', False):
+                continue
             if not form.cleaned_data:
                 continue
-            stock_product, stock_product_quantity = None, None
+            stock_product = None
             stock_product_id = form['product_stock'].value()
             if len(stock_product_id) == 0:
                 stock_product = ProductStock.objects.filter(identifier=form.cleaned_data.get('identifier'))
                 if stock_product:
                     stock_product_id = stock_product[0].id
                     form.instance.product_stock = stock_product[0]
-                else:
+                elif form.data.get('_return_to_stock', False) is False:
                     error_key = ''.join(['asin', form.cleaned_data.get('identifier')])
                     if error_key not in errors_dict:
                         errors_dict[error_key] = [_('Produto, ASIN: %(asin)s, não existe no estoque. Primeiro faça o '
@@ -99,54 +124,66 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
                             'asin': form.cleaned_data.get('identifier')
                         }]
                     continue
-            if str(stock_product_id) in stock_product_quantity_dict:
-                stock_product_quantity = stock_product_quantity_dict[str(stock_product_id)]
-            else:
+            product_qty = form.inline_initial_data('quantity')
+            logger.debug(product_qty)
+            if product_qty is None or len(product_qty[1]) == 0:
+                stock_product_quantity_dict = {}
+                new_product_quantity_dict = {}
+                errors_dict = {}
+                forms_dict = {}
+                break
+            product_qty = product_qty[0], int(product_qty[1])
+            logger.debug(product_qty[0])
+            logger.debug(product_qty[1])
+            if product_qty[1] == 0:
+                form.add_error('quantity', _('This field is required.'))
+            if str(stock_product_id) not in stock_product_quantity_dict:
                 if stock_product is None:
                     stock_product = ProductStock.objects.filter(pk=stock_product_id)
                 if stock_product:
-                    stock_product_quantity = stock_product[0].quantity
-                    stock_product_quantity_dict[str(stock_product_id)] = stock_product_quantity
-                else:
+                    stock_product_quantity_dict[str(stock_product_id)] = stock_product[0].quantity
+                elif form.data.get('_return_to_stock', False) is False:
                     raise ValidationError([_('Ocorreu um erro de inconsistência! Saia e entre desta operação para '
                                              'tentar novamente e, caso o problema persista, entre em contato com '
                                              'os responsáveis pelo sistema.')])
-            logger.debug(stock_product_quantity)
-            if stock_product_quantity is None:
-                continue
-            product_qty = form.inline_initial_data('quantity')
-            logger.debug(product_qty)
-            if product_qty is None:
-                continue
             if form.cleaned_data.get('DELETE'):
-                stock_product_quantity_dict[str(stock_product_id)] = stock_product_quantity + product_qty[0]
-                continue
-            logger.debug(product_qty[0])
-            logger.debug(product_qty[1])
-            if product_qty[0]:
-                if product_qty[0] == product_qty[1]:
-                    continue
-                if product_qty[0] < product_qty[1]:
-                    product_qty = product_qty[0], product_qty[1] - product_qty[0]
-                else:
+                if form.data.get('_get_from_stock', False) is False and product_qty[0]:
                     stock_product_quantity_dict[str(stock_product_id)] = \
-                        stock_product_quantity + product_qty[0] - product_qty[1]
-                    continue
-            if product_qty[1] > stock_product_quantity:
-                if str(stock_product_id) not in errors_dict:
-                    errors_dict[str(stock_product_id)] = [_('Quantidade em estoque menor que a informada para '
-                                                            'o produto de ASIN: %(asin)s.') % {
-                        'asin': form.cleaned_data.get('identifier')
+                        stock_product_quantity_dict[str(stock_product_id)] + product_qty[0]
+                continue
+            if str(stock_product_id) not in forms_dict:
+                forms_dict[str(stock_product_id)] = [form]
+            else:
+                forms_dict[str(stock_product_id)].append(form)
+            if form.data.get('_get_from_stock', False) is False and product_qty[0]:
+                stock_product_quantity_dict[str(stock_product_id)] = \
+                    stock_product_quantity_dict[str(stock_product_id)] + product_qty[0]
+            if str(stock_product_id) in new_product_quantity_dict:
+                new_product_quantity_dict[str(stock_product_id)] = \
+                    new_product_quantity_dict[str(stock_product_id)] + product_qty[1]
+            else:
+                new_product_quantity_dict[str(stock_product_id)] = product_qty[1]
+        for key, form in forms_dict.items():
+            stock_quantity = stock_product_quantity_dict[key]
+            if form[0].data.get('_return_to_stock', False):
+                ProductStock.objects.filter(pk=key).update(quantity=stock_quantity)
+                continue
+            products_quantity = new_product_quantity_dict[key]
+            if stock_quantity < products_quantity:
+                if key not in errors_dict:
+                    errors_dict[key] = [_('Quantidade em estoque (%(qty)s) menor que a informada (%(qty2)s) para o '
+                                          'produto de ASIN: %(asin)s.') % {
+                        'qty': stock_quantity,
+                        'qty2': products_quantity,
+                        'asin': form[0].cleaned_data.get('identifier')
                     }]
-                form.add_error('quantity', _('Verifique esta quantidade! Quantidade em estoque: %(qty)s.') % {
-                    'qty': stock_product_quantity
-                })
-            stock_product_quantity_dict[str(stock_product_id)] = stock_product_quantity - product_qty[1]
+                for f in form:
+                    f.add_error('quantity', _('Verifique esta quantidade!'))
+            stock_product_quantity_dict[key] = stock_quantity - products_quantity
         if errors_dict:
             raise ValidationError([m for k, m in errors_dict.items()])
-        else:
-            for key, qty in stock_product_quantity_dict.items():
-                ProductStock.objects.filter(pk=key).update(quantity=qty)
+        for key, qty in stock_product_quantity_dict.items():
+            ProductStock.objects.filter(pk=key).update(quantity=qty)
 
 
 class LotProductForm(forms.ModelForm):
@@ -220,10 +257,11 @@ class LotProductForm(forms.ModelForm):
             except ValidationError:
                 # Always assume data has changed if validation fails.
                 return None
-        return initial_value, int(data_value)
+        return initial_value, data_value
 
 
 class LotProductInline(admin.StackedInline):
+    template = 'admin/edit_inline/store/lot/stacked.html'
     model = Product
     formset = LotProductFormSet
     form = LotProductForm
@@ -280,8 +318,31 @@ class LotAdmin(admin.ModelAdmin):
 
     def save_form(self, request, form, change):
         lot_obj = super(LotAdmin, self).save_form(request, form, change)
+        logger.debug('@@@@@@@@@@!!!!!!!!!!SAVE FORM!!!!!!!!@@@@@@@@@@@@@@@')
         if request.method == 'POST':
             request.POST['_lot_obj'] = lot_obj
+            # situacoes: (1)nao era fake nem arquivado e passou a ser ;; (2)era fake e/ou arquivado e deixou de ser
+            # (0)se fake e/ou arquivado se mantem nao mexe no estoque _ignore_stock
+            # (1)tem produtos do estoque que precisam ser devolvidos ao estoque _return_to_stock
+            # (2)precisa fazer a verificacao/retirada dos produtos do estoque _get_from_stock
+            if lot_obj.payment_complete or change is False:
+                request.POST['_ignore_stock'] = form.instance.is_fake or form.instance.is_archived \
+                                                or lot_obj.payment_complete
+            else:
+                initial_fake = form.inline_initial_data('is_fake')
+                initial_archived = form.inline_initial_data('is_archived')
+                logger.debug(initial_fake[0] is True)
+                logger.debug(initial_fake[1] is True)
+                logger.debug(initial_archived[0] is True)
+                logger.debug(initial_archived[1] is True)
+                if initial_fake[0] is False and initial_archived[0] is False and (initial_fake[1]
+                                                                                  or initial_archived[1]):
+                    request.POST['_return_to_stock'] = True
+                elif initial_fake[1] is False and initial_archived[1] is False and (initial_fake[0]
+                                                                                    or initial_archived[0]):
+                    request.POST['_get_from_stock'] = True
+                elif (initial_fake[0] or initial_archived[0]) and (initial_fake[1] or initial_archived[1]):
+                    request.POST['_ignore_stock'] = True
         return lot_obj
 
     def save_related(self, request, form, formsets, change):

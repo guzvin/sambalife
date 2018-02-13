@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from store.validators import validate_file_extension
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, pre_delete
 from django.dispatch import receiver
 from utils.storage import OverWriteStorage
 from service.models import Service
@@ -171,6 +171,16 @@ class Product(models.Model):
     class Meta:
         verbose_name = _('Produto')
         verbose_name_plural = _('Produtos')
+
+    def __str__(self):
+        return self.name
+
+
+@receiver(pre_delete, sender=Product)
+def update_stock(sender, instance, **kwargs):
+    if instance.lot.payment_complete is False and instance.lot.is_fake is False and instance.lot.is_archived is False:
+        ProductStock.objects.filter(pk=instance.product_stock_id).\
+            update(quantity=models.F('quantity') + instance.quantity)
 
 
 class Config(models.Model):
