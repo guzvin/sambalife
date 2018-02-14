@@ -353,6 +353,9 @@ def faq(request):
     return render(request, 'faq.html')
 
 
+def politicas(request):
+    return render(request, 'politics.html')
+
 def colab(request):
     if request.method == 'POST':
         texts = (_('Nome'), request.POST.get('collab_name'),

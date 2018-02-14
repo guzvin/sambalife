@@ -86,6 +86,7 @@ urlpatterns += i18n_patterns(
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     url(_(r'^how-it-works'), how_it_works, name='how_it_works'),
     url(r'^ajuda', help, name='help'),
+    url(r'^politicas-de-privacidade', politicas, name='politicas'),
     url(r'^faq', faq, name='faq'),
     url(_(r'^seja-um-colaborador'), colab, name='colab'),
     url(_(r'^termos-e-condicoes-de-uso'), terms, name='terms'),
