@@ -76,11 +76,6 @@ class LotForm(forms.ModelForm):
         model = Lot
         exclude = []
 
-    def save(self, commit=True):
-        if self.instance.schedule_date:
-            self.instance.is_archived = True
-        return super(LotForm, self).save(commit=commit)
-
     def inline_initial_data(self, field_name):
         name, field = field_name, self.fields[field_name]
         prefixed_name = self.add_prefix(name)
@@ -351,8 +346,7 @@ class LotAdmin(admin.ModelAdmin):
             )
         }),
         (_('Agendamento'), {
-            'description': _('Os lotes agendados são criados arquivados automaticamente e somente ficam ativos na data '
-                             'agendada.'),
+            'description': _('Os lotes agendados somente ficam disponíveis na lista na data agendada.'),
             'fields': (
                 'schedule_date',
             )

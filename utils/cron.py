@@ -204,4 +204,4 @@ def check_scheduled_lots():
     for lot in lots:
         LotAdmin.email_new_lot(lot)
     if lots:
-        lots.update(schedule_date=None, is_archived=False)
+        lots.update(schedule_date=None)
