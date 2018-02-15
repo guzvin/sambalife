@@ -18,13 +18,13 @@ class ParamsAdmin(admin.ModelAdmin):
                 'amazon_fee', 'shipping_cost', 'fgr_cost', 'contact_us_mail_to'
             ]
         }),
-        (_('Redirecionamento'), {
-            'description': _('Configuração do redirecionamento.'),
-            'fields': [
-                'redirect_factor', 'time_period_one', 'redirect_factor_two',
-                'time_period_two', 'redirect_factor_three', 'time_period_three'
-            ]
-        }),
+        # (_('Redirecionamento'), {
+        #     'description': _('Configuração do redirecionamento.'),
+        #     'fields': [
+        #         'redirect_factor', 'time_period_one', 'redirect_factor_two',
+        #         'time_period_two', 'redirect_factor_three', 'time_period_three'
+        #     ]
+        # }),
     )
 
     def translated_name(self, obj):

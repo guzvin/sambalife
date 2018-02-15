@@ -16,6 +16,7 @@ class Params(models.Model):
     amazon_fee = models.DecimalField(_('Tarifa Amazon'), max_digits=12, decimal_places=2, default=0.99)
     shipping_cost = models.DecimalField(_('Custo de Envio para Amazon'), max_digits=12, decimal_places=2, default=0.30)
     fgr_cost = models.DecimalField(_('Valor Repasse'), max_digits=12, decimal_places=2, default=0.20)
+    paypal_fee = models.DecimalField(_('Desconto PayPal'), max_digits=12, decimal_places=2, default=4.40)
     redirect_factor = models.DecimalField(_('Valor Base'), max_digits=12, decimal_places=2, default=1.29)
     time_period_one = models.SmallIntegerField(_('Período Base'), null=True, blank=True,
                                                default=30, help_text=_('Em dias.'),
