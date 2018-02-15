@@ -1,14 +1,23 @@
 from django.contrib import admin
 from utils.sites import admin_site
-from stock.models import Product
+from stock.models import Product, Invoice
 from utils.models import Params
-from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.admin.widgets import FilteredSelectMultiple, RelatedFieldWidgetWrapper
 from django import forms
 from service.models import Service
 from django.utils.translation import ugettext as _
 import logging
 
 logger = logging.getLogger('django')
+
+
+class RelatedAdminTextInputWidget(forms.TextInput):
+    def __init__(self, attrs=None):
+        self.attrs = {'class': 'vTextField'}
+        self.choices = ()
+        if attrs is not None:
+            self.attrs.update(attrs)
+        super(RelatedAdminTextInputWidget, self).__init__(attrs=self.attrs)
 
 
 class ServiceModelMultipleChoiceField(forms.ModelMultipleChoiceField):
@@ -25,11 +34,19 @@ class StockProductForm(forms.ModelForm):
         label=_('Serviços'),
         help_text=_('Serviços utilizados na preparação do envio.')
     )
+    invoices = forms.ModelMultipleChoiceField(
+        queryset=Invoice.objects.all(),
+        required=True,
+        # Use the pretty 'filter_horizontal widget'.
+        widget=FilteredSelectMultiple('Invoices', False),
+        label='Invoices',
+        help_text=_('Invoices aos quais este produto pertence.')
+    )
 
     class Meta:
         model = Product
         fields = ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'rank', 'quantity', 'fba_fee', 'amazon_fee',
-                  'shipping_cost', 'redirect_services', 'condition', 'voi_value', 'notes')
+                  'shipping_cost', 'redirect_services', 'condition', 'voi_value', 'notes', 'invoices')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor
@@ -40,8 +57,11 @@ class StockProductForm(forms.ModelForm):
                 self.fields['amazon_fee'].initial = params.amazon_fee
                 self.fields['shipping_cost'].initial = params.shipping_cost
         else:
+
             # Populate the redirect_services field with the current Services.
             self.fields['redirect_services'].initial = self.instance.redirect_services.all()
+            # self.fields['invoices'].queryset = Invoice.objects.filter(pk=self.instance.pk)
+            self.fields['invoices'].initial = self.instance.invoices.all()
         # self.fields['condition'].required = True
 
     def save(self, *args, **kwargs):
@@ -65,9 +85,45 @@ class StockProductForm(forms.ModelForm):
         return instance
 
 
+class MyRelatedFieldWidgetWrapper(RelatedFieldWidgetWrapper):
+    def render(self, name, value, *args, **kwargs):
+        logger.debug('RRRRRRRRRRRRRRREEEEEEEEEEEEEEEEEEENNNNNNNNNNNNNNNNNNDDDDDDDDDDDDDDER')
+        return ''
+
+    def id_for_label(self, id_):
+        logger.debug('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
+        return self.widget.id_for_label(id_)
+
+
 class ProductAdmin(admin.ModelAdmin):
     form = StockProductForm
     search_fields = ('name', 'identifier',)
     list_display = ('identifier', 'name', 'quantity',)
 
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        field = super(ProductAdmin, self).formfield_for_dbfield(db_field, request, **kwargs)
+        logger.debug('1@@@@@@@@@@@@@@@###############@@@@@@@@@@@@@@@@@################@@@@@@@@@@@@@@@@@')
+        logger.debug(field)
+        logger.debug(field.widget)
+        if db_field.name == 'invoices':
+            logger.debug('2@@@@@@@@@@@@@@@###############@@@@@@@@@@@@@@@@@################@@@@@@@@@@@@@@@@@')
+            field.widget = MyRelatedFieldWidgetWrapper(
+                field.widget.widget, db_field.remote_field, self.admin_site,
+                can_add_related=True, can_change_related=True, can_delete_related=True
+            )
+            logger.debug(field)
+            logger.debug(field.widget)
+        return field
+
 admin_site.register(Product, ProductAdmin)
+
+
+class InvoiceAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = [
+        'store',
+        'origin',
+    ]
+
+admin_site.register(Invoice, InvoiceAdmin)

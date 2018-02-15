@@ -9,6 +9,21 @@ import logging
 logger = logging.getLogger('django')
 
 
+class Invoice(models.Model):
+    id = BigAutoField(primary_key=True)
+    name = models.CharField(_('Nome'), max_length=150)
+    date = models.DateField(_('Data'))
+    store = models.CharField(_('Loja'), max_length=150)
+    origin = models.CharField(_('Origem'), max_length=150)
+
+    class Meta:
+        verbose_name = 'Invoice'
+        verbose_name_plural = 'Invoices'
+
+    def __str__(self):
+        return self.name
+
+
 class Product(models.Model):
     id = BigAutoField(primary_key=True)
     name = models.CharField(_('Nome'), max_length=150)
@@ -48,6 +63,16 @@ class Product(models.Model):
     )
     condition = models.SmallIntegerField(_('Condição'), choices=CONDITION_CHOICES, null=True, blank=False)
     notes = models.TextField(_('Observação'), null=True, blank=True)
+    invoices = models.ManyToManyField(
+        Invoice,
+        verbose_name=_('invoices'),
+        blank=True,
+        help_text=_(
+            'Invoices aos quais este produto pertence.'  # 'The invoices this product belongs to.'
+        ),
+        related_name="stock_product_set",
+        related_query_name="stock_product",
+    )
 
     class Meta:
         verbose_name = _('Produto')

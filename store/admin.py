@@ -112,16 +112,19 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
             stock_product = None
             stock_product_id = form['product_stock'].value()
             if len(stock_product_id) == 0:
-                stock_product = ProductStock.objects.filter(identifier=form.cleaned_data.get('identifier'))
+                identifier = form.cleaned_data.get('identifier')
+                if identifier is None:
+                    continue
+                stock_product = ProductStock.objects.filter(identifier=identifier)
                 if stock_product:
                     stock_product_id = stock_product[0].id
                     form.instance.product_stock = stock_product[0]
                 elif form.data.get('_return_to_stock', False) is False:
-                    error_key = ''.join(['asin', form.cleaned_data.get('identifier')])
+                    error_key = ''.join(['asin', identifier])
                     if error_key not in errors_dict:
                         errors_dict[error_key] = [_('Produto, ASIN: %(asin)s, não existe no estoque. Primeiro faça o '
                                                     'cadastro dele lá para depois adicioná-lo a algum lote.') % {
-                            'asin': form.cleaned_data.get('identifier')
+                            'asin': identifier
                         }]
                     continue
             product_qty = form.inline_initial_data('quantity')
