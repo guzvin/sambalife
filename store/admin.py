@@ -464,7 +464,7 @@ class LotAdmin(admin.ModelAdmin):
             lot.save()
         logger.debug(lot.is_fake)
         logger.debug(lot.is_archived)
-        if lot.is_fake is False and lot.is_archived is False:
+        if lot.is_fake is False and lot.is_archived is False and lot.status == 1 and lot.payment_complete is False:
             if change is False or change and is_archived_changed:
                 LotAdmin.email_new_lot(lot)
 

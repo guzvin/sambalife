@@ -202,6 +202,7 @@ def check_scheduled_lots():
         request.CURRENT_DOMAIN = _('vendedorinternacional.net')
         ThreadLocalMiddleware.process_request(request)
     for lot in lots:
-        LotAdmin.email_new_lot(lot)
+        if lot.is_fake is False and lot.is_archived is False and lot.status == 1 and lot.payment_complete is False:
+            LotAdmin.email_new_lot(lot)
     if lots:
         lots.update(schedule_date=None)
