@@ -27,7 +27,7 @@ class Invoice(models.Model):
 class Product(models.Model):
     id = BigAutoField(primary_key=True)
     name = models.CharField(_('Nome'), max_length=150)
-    identifier = models.CharField(_('ASIN / UPC'), max_length=50)
+    identifier = models.CharField(_('ASIN / UPC'), max_length=50, unique=True)
     url = models.URLField(_('URL do Produto'), max_length=500, null=True, blank=True)
     buy_price = models.DecimalField(_('Valor Cliente'), max_digits=12, decimal_places=2)
     sell_price = models.DecimalField(_('Valor Buy Box'), max_digits=12, decimal_places=2)

@@ -6,6 +6,8 @@ from django.contrib.admin.widgets import FilteredSelectMultiple, RelatedFieldWid
 from django import forms
 from service.models import Service
 from django.utils.translation import ugettext as _
+from django.db.utils import IntegrityError
+
 import logging
 
 logger = logging.getLogger('django')
@@ -66,22 +68,25 @@ class StockProductForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         instance = super(StockProductForm, self).save(commit=False)
-        if instance.pk is None:
+        try:
+            if instance.pk is None:
+                instance.save()
+            redirect_cost = 0
+            instance.redirect_services = self.cleaned_data['redirect_services']
+            logger.debug('@@@@@@@@@@@@@ REDIRECT COST @@@@@@@@@@@@@@@@')
+            logger.debug(instance.redirect_services)
+            for redirect_service in instance.redirect_services.all():
+                logger.debug(redirect_service.price)
+                redirect_cost += redirect_service.price
+            logger.debug(redirect_cost)
+            instance.product_cost = instance.buy_price + instance.amazon_fee + instance.fba_fee + \
+                instance.shipping_cost + redirect_cost
+            instance.profit_per_unit = instance.sell_price - instance.product_cost
+            instance.total_profit = instance.profit_per_unit * instance.quantity
+            instance.roi = (instance.profit_per_unit / (instance.buy_price + redirect_cost)) * 100
             instance.save()
-        redirect_cost = 0
-        instance.redirect_services = self.cleaned_data['redirect_services']
-        logger.debug('@@@@@@@@@@@@@ REDIRECT COST @@@@@@@@@@@@@@@@')
-        logger.debug(instance.redirect_services)
-        for redirect_service in instance.redirect_services.all():
-            logger.debug(redirect_service.price)
-            redirect_cost += redirect_service.price
-        logger.debug(redirect_cost)
-        instance.product_cost = instance.buy_price + instance.amazon_fee + instance.fba_fee + instance.shipping_cost + \
-            redirect_cost
-        instance.profit_per_unit = instance.sell_price - instance.product_cost
-        instance.total_profit = instance.profit_per_unit * instance.quantity
-        instance.roi = (instance.profit_per_unit / (instance.buy_price + redirect_cost)) * 100
-        instance.save()
+        except IntegrityError:
+            pass  # o proprio django faz o tratamento da mensagem
         return instance
 
 
