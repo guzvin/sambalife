@@ -9,8 +9,9 @@ from shipment.views import cancel_shipment
 from product.models import Product
 from utils.models import Params
 from store.models import Lot
+from store.admin import LotAdmin
 from utils import helper
-from django.db.models import Q
+from utils.middleware.thread_local import ThreadLocalMiddleware
 import datetime
 import logging
 
@@ -194,6 +195,13 @@ def _send_email_abandoned(request, product, days, user):
     return helper.build_basic_template_email_tuple(request, user.first_name, [user.email], email_title, email_body)
 
 
-def reset_lots_sell_date():
-    date_limit = datetime.datetime.now() - datetime.timedelta(minutes=5)
-    Lot.objects.filter(Q(sell_date__lte=date_limit) & Q(payment_complete=False)).update(sell_date=None, user=None)
+def check_scheduled_lots():
+    lots = Lot.objects.filter(schedule_date__lte=datetime.datetime.now(datetime.timezone.utc))
+    if lots:
+        request = HttpRequest()
+        request.CURRENT_DOMAIN = _('vendedorinternacional.net')
+        ThreadLocalMiddleware.process_request(request)
+    for lot in lots:
+        LotAdmin.email_new_lot(lot)
+    if lots:
+        lots.update(schedule_date=None, is_archived=False)

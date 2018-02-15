@@ -52,6 +52,7 @@ class Lot(models.Model):
     payment_complete = models.BooleanField(_('Pago'), default=False)
     create_date = models.DateField(_('Data de Cadastro'), auto_now_add=True)
     sell_date = models.DateTimeField(_('Data da Venda'), null=True, blank=True)
+    schedule_date = models.DateTimeField(_('Data de Agendamento'), null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     groups = models.ManyToManyField(
         Group,

@@ -26,8 +26,10 @@ from shutil import copy2
 from django.conf import settings
 from rangefilter.filter import DateRangeFilter
 from django.core.validators import ValidationError
+from django.utils import translation
 import os
 import logging
+import datetime
 
 logger = logging.getLogger('django')
 
@@ -73,6 +75,11 @@ class LotForm(forms.ModelForm):
     class Meta:
         model = Lot
         exclude = []
+
+    def save(self, commit=True):
+        if self.instance.schedule_date:
+            self.instance.is_archived = True
+        return super(LotForm, self).save(commit=commit)
 
     def inline_initial_data(self, field_name):
         name, field = field_name, self.fields[field_name]
@@ -333,8 +340,28 @@ class LotAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'sell_date', 'is_archived',
                     'is_fake', 'duplicate_lot_action')
     fieldsets = (
-        (None, {'fields': ('is_fake', 'is_archived', 'status', 'sell_date', 'payment_complete', 'name', 'order_weight',
-                           'description', 'collaborator', 'thumbnail', 'groups')}),
+        (_('Status'), {
+            'fields': (
+                'is_fake', 'is_archived',
+            )
+        }),
+        (_('Situação'), {
+            'fields': (
+                'status', 'sell_date', 'payment_complete',
+            )
+        }),
+        (_('Agendamento'), {
+            'description': _('Os lotes agendados são criados arquivados automaticamente e somente ficam ativos na data '
+                             'agendada.'),
+            'fields': (
+                'schedule_date',
+            )
+        }),
+        (_('Informações'), {
+            'fields': (
+                'name', 'order_weight', 'description', 'collaborator', 'thumbnail', 'groups'
+            )
+        }),
     )
 
     def duplicate_lot_action(self, obj):
@@ -445,20 +472,30 @@ class LotAdmin(admin.ModelAdmin):
         logger.debug(lot.is_archived)
         if lot.is_fake is False and lot.is_archived is False:
             if change is False or change and is_archived_changed:
-                lot_groups = lot.groups.all()
-                users = []
-                for lot_group in lot_groups:
-                    users += get_user_model().objects.filter(groups=lot_group)
-                if users:
-                    logger.debug(users)
-                    logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS @@@@@@@@@@@@@@@@@@')
-                    LotAdmin.email_users_new_lot(get_current_request(), lot, users)
+                LotAdmin.email_new_lot(lot)
+
+    @staticmethod
+    def email_new_lot(lot):
+        lot_groups = lot.groups.all()
+        users = set()
+        for lot_group in lot_groups:
+            uu = get_user_model().objects.filter(groups=lot_group)
+            for u in uu:
+                users.add(u)
+        if users:
+            logger.debug(users)
+            logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS @@@@@@@@@@@@@@@@@@')
+            LotAdmin.email_users_new_lot(get_current_request(), lot, users)
 
     @staticmethod
     def email_users_new_lot(request, lot, users):
         emails = ()
+        original_language = translation.get_language()
         for user in users:
+            translation.activate(user.language_code)
+            request.LANGUAGE_CODE = translation.get_language()
             emails += (LotAdmin.assemble_email_new_lot(request, lot, user),)
+        translation.activate(original_language)
         if emails:
             helper.send_email(emails, bcc_admins=False, async=True)
 
