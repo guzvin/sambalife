@@ -12,10 +12,12 @@
   <h3><b>{{ inline_admin_formset.opts.verbose_name|capfirst }}:</b>&nbsp;<span class="inline_label">{% if inline_admin_form.original %}{{ inline_admin_form.original }}{% if inline_admin_form.model_admin.show_change_link and inline_admin_form.model_admin.has_registered_model %} <a href="{% url inline_admin_form.model_admin.opts|admin_urlname:'change' inline_admin_form.original.pk|admin_urlquote %}" class="inlinechangelink">{% trans "Change" %}</a>{% endif %}
 {% else %}#{{ forloop.counter }}{% endif %}</span>
       {% if inline_admin_form.show_url %}<a href="{{ inline_admin_form.absolute_url }}">{% trans "View on site" %}</a>{% endif %}
+    {% if original and original.status != 2 and original.payment_complete is False %}
     {% if inline_admin_formset.formset.can_delete and inline_admin_form.original and forloop.first is False %}
       <span class="delete">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</span>
     {% elif inline_admin_formset.formset.can_delete and forloop.first is False %}
       <span><a class="inline-deletelink" href="#">{{ inline_admin_form.deletion_field.label_tag }}</a></span>
+    {% endif %}
     {% endif %}
   </h3>
   {% if inline_admin_form.form.non_field_errors %}{{ inline_admin_form.form.non_field_errors }}{% endif %}

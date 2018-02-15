@@ -608,7 +608,7 @@ class LotAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         page_readonly_fields = self.readonly_fields
         if obj and obj.status == 2 and obj.payment_complete:
-            page_readonly_fields += ('is_fake', 'status', 'sell_date', 'payment_complete', 'name',
+            page_readonly_fields += ('is_fake', 'status', 'sell_date', 'payment_complete', 'schedule_date', 'name',
                                      'order_weight', 'description', 'collaborator', 'thumbnail', 'groups')
         return page_readonly_fields
 
