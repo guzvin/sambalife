@@ -86,10 +86,10 @@ urlpatterns += i18n_patterns(
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     url(_(r'^how-it-works'), how_it_works, name='how_it_works'),
     url(r'^ajuda', help, name='help'),
-    url(r'^politicas-de-privacidade', politicas, name='politicas'),
     url(r'^faq', faq, name='faq'),
     url(_(r'^seja-um-colaborador'), colab, name='colab'),
     url(_(r'^termos-e-condicoes-de-uso'), terms, name='terms'),
+    url(_(r'^politicas-de-privacidade'), privacy_policy, name='privacy_policy'),
     url(r'^store/product_name/autocomplete[/]$', product_name_autocomplete, name='store_product_name_autocomplete'),
     url(r'^store/product_asin/autocomplete[/]$', product_asin_autocomplete, name='store_product_asin_autocomplete'),
 )

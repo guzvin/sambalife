@@ -188,7 +188,7 @@ def _send_email_abandoned(request, product, days, user):
                           ['<p><a href="{}">{}</a> {}</p>'])
     texts = (_('Este produto, ID %(id)s, não consta mais em sua lista, ele foi considerado abandonado, pois já '
                'se encontra há %(days)s dias no estoque VOI.') % {'id': product.id, 'days': days},)
-    texts += (''.join(['https://', request.CURRENT_DOMAIN, '/', _('termos-e-condicoes-de-uso.html')]),
+    texts += (''.join(['https://', request.CURRENT_DOMAIN, '/', _('termos-e-condicoes-de-uso/')]),
               _('Clique aqui'), _('para acessar nossos termos e condições de uso.'),)
     email_body = format_html(html_format, *texts)
     return helper.build_basic_template_email_tuple(request, user.first_name, [user.email], email_title, email_body)

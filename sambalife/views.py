@@ -309,36 +309,16 @@ def update_user_language(user_id):
     return True
 
 
-def cadastroLote(request):
-    return render(request, 'lote_cadastro.html')
-
-
-def lotes(request):
-    return render(request, 'lista_lotes.html')
-
-
-def lotesAdmin(request):
-    return render(request, 'lista_lotes_admin.html')
-
-
-def detalheLote(request):
-    return render(request, 'detalhe_lote.html')
-
-
-def minhasCompras(request):
-    return render(request, 'minhas_compras.html')
-
-
-def enviosBrasil(request):
-    return render(request, 'lista_envio_brasil.html')
-
-
-def envioBrasilCadastro(request):
-    return render(request, 'envio_brasil_cadastro.html')
-
-
-def envioBrasilDetalhe(request):
-    return render(request, 'detalhe_envio_brasil.html')
+# def enviosBrasil(request):
+#     return render(request, 'lista_envio_brasil.html')
+#
+#
+# def envioBrasilCadastro(request):
+#     return render(request, 'envio_brasil_cadastro.html')
+#
+#
+# def envioBrasilDetalhe(request):
+#     return render(request, 'detalhe_envio_brasil.html')
 
 
 def how_it_works(request):
@@ -353,8 +333,9 @@ def faq(request):
     return render(request, 'faq.html')
 
 
-def politicas(request):
-    return render(request, 'politics.html')
+def privacy_policy(request):
+    return render(request, 'privacy_policy.html')
+
 
 def colab(request):
     if request.method == 'POST':
