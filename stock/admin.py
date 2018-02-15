@@ -38,7 +38,7 @@ class StockProductForm(forms.ModelForm):
     )
     invoices = forms.ModelMultipleChoiceField(
         queryset=Invoice.objects.all(),
-        required=True,
+        required=False,
         # Use the pretty 'filter_horizontal widget'.
         widget=FilteredSelectMultiple('Invoices', False),
         label='Invoices',
