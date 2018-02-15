@@ -14,5 +14,6 @@
 &rsaquo; {% if add or original is None %}{% blocktrans with name=opts.verbose_name %}Add {{ name }}{% endblocktrans %}{% else %}{{ original|truncatewords:"18" }}{% endif %}
 </div>
 {% endblock %}
-
+{% comment %}
 {% block submit_buttons_bottom %}{% my_submit_row original %}{% endblock %}
+{% endcomment %}

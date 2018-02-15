@@ -61,7 +61,8 @@ class LotForm(forms.ModelForm):
         super(LotForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             # Populate the groups field with the current Groups.
-            self.fields['groups'].initial = self.instance.groups.all()
+            if 'groups' in self.fields:
+                self.fields['groups'].initial = self.instance.groups.all()
         else:
             config = Config.objects.first()
             if config:
@@ -216,30 +217,37 @@ class LotProductForm(forms.ModelForm):
         if self.instance.pk is None:
             params = Params.objects.first()
             if params:
-                self.fields['amazon_fee'].initial = params.amazon_fee
-                self.fields['shipping_cost'].initial = params.shipping_cost
+                if 'amazon_fee' in self.fields:
+                    self.fields['amazon_fee'].initial = params.amazon_fee
+                if 'shipping_cost' in self.fields:
+                    self.fields['shipping_cost'].initial = params.shipping_cost
         else:
+            if self.instance.lot.status == 2 and self.instance.lot.payment_complete:
+                del self.fields['redirect_services']
             # Populate the redirect_services field with the current Services.
-            self.fields['redirect_services'].initial = self.instance.redirect_services.all()
+            if 'redirect_services' in self.fields:
+                self.fields['redirect_services'].initial = self.instance.redirect_services.all()
         # self.fields['condition'].required = True
 
     def save(self, *args, **kwargs):
         instance = super(LotProductForm, self).save(commit=False)
         if instance.pk is None:
             instance.save()
-        redirect_cost = 0
-        instance.redirect_services = self.cleaned_data['redirect_services']
-        logger.debug('@@@@@@@@@@@@@ REDIRECT COST @@@@@@@@@@@@@@@@')
-        logger.debug(instance.redirect_services)
-        for redirect_service in instance.redirect_services.all():
-            logger.debug(redirect_service.price)
-            redirect_cost += redirect_service.price
-        logger.debug(redirect_cost)
-        instance.product_cost = instance.buy_price + instance.amazon_fee + instance.fba_fee + instance.shipping_cost + \
-            redirect_cost
-        instance.profit_per_unit = instance.sell_price - instance.product_cost
-        instance.total_profit = instance.profit_per_unit * instance.quantity
-        instance.roi = (instance.profit_per_unit / (instance.buy_price + redirect_cost)) * 100
+        if 'redirect_services' in self.fields:
+            redirect_cost = 0
+            logger.debug(self.fields)
+            instance.redirect_services = self.cleaned_data['redirect_services']
+            logger.debug('@@@@@@@@@@@@@ REDIRECT COST @@@@@@@@@@@@@@@@')
+            logger.debug(instance.redirect_services)
+            for redirect_service in instance.redirect_services.all():
+                logger.debug(redirect_service.price)
+                redirect_cost += redirect_service.price
+            logger.debug(redirect_cost)
+            instance.product_cost = instance.buy_price + instance.amazon_fee + instance.fba_fee + \
+                instance.shipping_cost + redirect_cost
+            instance.profit_per_unit = instance.sell_price - instance.product_cost
+            instance.total_profit = instance.profit_per_unit * instance.quantity
+            instance.roi = (instance.profit_per_unit / (instance.buy_price + redirect_cost)) * 100
         instance.save()
         return instance
 
@@ -287,6 +295,22 @@ class LotProductInline(admin.StackedInline):
         js = ['admin/js/%s' % url for url in js]
         js.append('js/specifics/store_inlines.js')
         return forms.Media(js=js)
+
+    def get_fields(self, request, obj=None):
+        if self.fields:
+            return self.fields
+        form = self.get_formset(request, obj, fields=None).form
+        if obj and obj.status == 2 and obj.payment_complete:
+            del form.base_fields['redirect_services']
+        return list(form.base_fields) + list(self.get_readonly_fields(request, obj))
+
+    def get_readonly_fields(self, request, obj=None):
+        page_readonly_fields = self.readonly_fields
+        if obj and obj.status == 2 and obj.payment_complete:
+            page_readonly_fields += ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'rank', 'quantity',
+                                     'fba_fee', 'amazon_fee', 'shipping_cost', 'redirect_services', 'condition',
+                                     'notes', 'product_stock')
+        return page_readonly_fields
 
 
 class LotAdmin(admin.ModelAdmin):
@@ -543,6 +567,13 @@ class LotAdmin(admin.ModelAdmin):
             copy2(os.path.join(settings.MEDIA_ROOT, obj_thumbnail), dir_name)
             obj.save()
         return super(LotAdmin, self).response_add(request, obj, post_url_continue)
+
+    def get_readonly_fields(self, request, obj=None):
+        page_readonly_fields = self.readonly_fields
+        if obj and obj.status == 2 and obj.payment_complete:
+            page_readonly_fields += ('is_fake', 'status', 'sell_date', 'payment_complete', 'name',
+                                     'order_weight', 'description', 'collaborator', 'thumbnail', 'groups')
+        return page_readonly_fields
 
     @property
     def media(self):
