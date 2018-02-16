@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n l10n static lots %}
 {% if result_hidden_fields %}
 <div class="hiddenfields">{# DIV for HTML validation #}
 {% for item in result_hidden_fields %}{{ item }}{% endfor %}
@@ -46,6 +46,9 @@
     <td>{{ cl.voi_profit_sum }}</td>
     <td>{{ cl.voi_roi_sum }}</td>
     <td>{{ cl.products_quantity_sum }}</td>
+    <td>{{ cl.paypal_value_sum|floatformat:2|localize }}</td>
+    <td>{{ cl.transfer_value_sum|floatformat:2|localize }}</td>
+    <td>{{ cl.net_value_sum|floatformat:2|localize }}</td>
 </tr>
 </tbody>
 </table>

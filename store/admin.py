@@ -5,7 +5,8 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.forms.widgets import HiddenInput
 from django.contrib.admin.options import TO_FIELD_VAR
 from django.contrib.auth.models import Group
-from django.db.models import Sum
+from django.db.models import Sum, F
+from django.db.models.fields import FloatField
 from django.contrib.auth import get_user_model
 from store.models import Lot, Product, Config, LotReport, lot_directory_path, Collaborator
 from store.admin_filters import UserFilter, AsinFilter
@@ -29,7 +30,6 @@ from django.core.validators import ValidationError
 from django.utils import translation
 import os
 import logging
-import datetime
 
 logger = logging.getLogger('django')
 
@@ -334,6 +334,13 @@ class LotAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'name',)
     list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'sell_date', 'is_archived',
                     'is_fake', 'duplicate_lot_action')
+
+    def duplicate_lot_action(self, obj):
+        return format_html('<a class="button" href="{}">{}</a>', reverse('admin:duplicate_lot',
+                                                                         args=[obj.pk]), _('Duplicar lote'))
+    duplicate_lot_action.short_description = _('Duplicar')
+    duplicate_lot_action.allow_tags = True
+
     fieldsets = (
         (_('Status'), {
             'fields': (
@@ -357,12 +364,6 @@ class LotAdmin(admin.ModelAdmin):
             )
         }),
     )
-
-    def duplicate_lot_action(self, obj):
-        return format_html('<a class="button" href="{}">{}</a>', reverse('admin:duplicate_lot',
-                                                                         args=[obj.pk]), _('Duplicar lote'))
-    duplicate_lot_action.short_description = _('Duplicar')
-    duplicate_lot_action.allow_tags = True
 
     def save_form(self, request, form, change):
         lot_obj = super(LotAdmin, self).save_form(request, form, change)
@@ -652,6 +653,9 @@ class LotReportChangeList(ChangeList):
         self.voi_profit_sum = None
         self.voi_roi_sum = None
         self.products_quantity_sum = None
+        self.paypal_value_sum = None
+        self.transfer_value_sum = None
+        self.net_value_sum = None
         super(LotReportChangeList, self).__init__(request, model, list_display, list_display_links,
                                                   list_filter, date_hierarchy, search_fields, list_select_related,
                                                   list_per_page, list_max_show_all, list_editable, model_admin)
@@ -669,6 +673,19 @@ class LotReportChangeList(ChangeList):
         self.voi_roi_sum = q['voi_roi_sum']
         q = self.result_list.aggregate(products_quantity_sum=Sum('products_quantity'))
         self.products_quantity_sum = q['products_quantity_sum']
+        params = Params.objects.first()
+        if params:
+            q = self.result_list.aggregate(paypal_value_sum=Sum((F('lot_cost') * params.paypal_fee) / 100,
+                                           output_field=FloatField()))
+            self.paypal_value_sum = q['paypal_value_sum']
+            q = self.result_list.aggregate(transfer_value_sum=Sum(F('products_quantity') * params.fgr_cost,
+                                           output_field=FloatField()))
+            self.transfer_value_sum = q['transfer_value_sum']
+            q = self.result_list.aggregate(net_value_sum=Sum(F('lot_cost') -
+                                                             ((F('lot_cost') * params.paypal_fee) / 100) -
+                                                             (F('products_quantity') * params.fgr_cost),
+                                                             output_field=FloatField()))
+            self.net_value_sum = q['net_value_sum']
 
     def url_for_result(self, result):
         pk = getattr(result, self.pk_attname)
@@ -700,7 +717,30 @@ class LotReportAdmin(admin.ModelAdmin):
 
     search_fields = ('name', 'product__name',)
     list_display = ('id', 'name', 'collaborator', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost',
-                    'voi_profit', 'voi_roi', 'products_quantity')
+                    'voi_profit', 'voi_roi', 'products_quantity', 'paypal_value', 'transfer_value', 'net_value')
+
+    def paypal_value(self, obj):
+        params = Params.objects.first()
+        if params:
+            return round((obj.lot_cost * params.paypal_fee) / 100, 2)
+        return _('É preciso cadastrar os parâmetros da aplicação.')
+    paypal_value.short_description = _('Desconto PayPal')
+
+    def transfer_value(self, obj):
+        params = Params.objects.first()
+        if params:
+            return obj.products_quantity * params.fgr_cost
+        return _('É preciso cadastrar os parâmetros da aplicação.')
+    transfer_value.short_description = _('Valor de Repasse')
+
+    def net_value(self, obj):
+        paypal_value = self.paypal_value(obj)
+        transfer_value = self.transfer_value(obj)
+        if paypal_value == _('É preciso cadastrar os parâmetros da aplicação.') or \
+                transfer_value == _('É preciso cadastrar os parâmetros da aplicação.'):
+            return _('É preciso cadastrar os parâmetros da aplicação.')
+        return obj.lot_cost - paypal_value - transfer_value
+    net_value.short_description = _('Valor Real')
 
     def has_delete_permission(self, request, obj=None):
         return False
