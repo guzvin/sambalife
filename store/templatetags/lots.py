@@ -53,3 +53,10 @@ def stars(number_stars):
         return stars_map[number_stars]
     except KeyError:
         return ''
+
+
+@register.filter
+def exists_lot_associated(product):
+    if product.lot_product:
+        return product.lot_product.lot.id
+    return None

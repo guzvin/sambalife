@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n permissions products users shipments commons %}
+{% load i18n permissions products users shipments commons lots %}
 {% block productlist %}active{% endblock %}
 
 {% block conteudo %}
@@ -170,7 +170,18 @@
                       <span class="help help-tooltip fa fa-thumb-tack" title="{% blocktrans %}Localização na Warehouse{% endblocktrans %}: {{ product.pick_ticket }}"></span>
                       {% endif %}
                   </td>
-                  <td class="center">{% if product.asin %}{{ product.asin }}{% endif %}</td>
+                  <td class="center">
+                      {% if product.asin %}
+                      {{ product.asin }}
+                      {% endif %}
+                      {% if user|has_user_perm:'view_users' %}
+                      {% with associated_lots=product|exists_lot_associated %}
+                      {% if associated_lots %}
+                      <span class="help help-tooltip help-icon" title="{% blocktrans with associated_lots=associated_lots %}Este produto se encontra associado ao lote, ID: {{ associated_lots }}{% endblocktrans %}"></span>
+                      {% endif %}
+                      {% endwith %}
+                      {% endif %}
+                  </td>
                   <td class="center row-quantity" data-current-qty="{{ product.quantity }}">
                       <span class="row-quantity-display">
                       {{ product.quantity }}{% if product.quantity_partial is not None and product.quantity != product.quantity_partial %} ({{ product.quantity_partial }}){% endif %}
