@@ -60,3 +60,8 @@ def exists_lot_associated(product):
     if product.lot_product:
         return product.lot_product.lot.id
     return None
+
+
+@register.simple_tag
+def total_voi_roi(profit, cost):
+    return profit / cost * 100

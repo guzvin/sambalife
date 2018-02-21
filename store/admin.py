@@ -651,7 +651,6 @@ class LotReportChangeList(ChangeList):
         self.lot_cost_sum = None
         self.voi_cost_sum = None
         self.voi_profit_sum = None
-        self.voi_roi_sum = None
         self.products_quantity_sum = None
         self.paypal_value_sum = None
         self.transfer_value_sum = None
@@ -669,8 +668,6 @@ class LotReportChangeList(ChangeList):
         self.voi_cost_sum = q['voi_cost_sum']
         q = self.result_list.aggregate(voi_profit_sum=Sum('voi_profit'))
         self.voi_profit_sum = q['voi_profit_sum']
-        q = self.result_list.aggregate(voi_roi_sum=Sum('voi_roi'))
-        self.voi_roi_sum = q['voi_roi_sum']
         q = self.result_list.aggregate(products_quantity_sum=Sum('products_quantity'))
         self.products_quantity_sum = q['products_quantity_sum']
         params = Params.objects.first()

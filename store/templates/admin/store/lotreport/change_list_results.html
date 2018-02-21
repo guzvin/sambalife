@@ -44,7 +44,10 @@
     <td>{{ cl.lot_cost_sum }}</td>
     <td>{{ cl.voi_cost_sum }}</td>
     <td>{{ cl.voi_profit_sum }}</td>
-    <td>{{ cl.voi_roi_sum }}</td>
+    <td>
+        {% total_voi_roi cl.voi_profit_sum cl.voi_cost_sum as voi_roi_total %}
+        {{ voi_roi_total|floatformat:2|localize }}
+    </td>
     <td>{{ cl.products_quantity_sum }}</td>
     <td>{{ cl.paypal_value_sum|floatformat:2|localize }}</td>
     <td>{{ cl.transfer_value_sum|floatformat:2|localize }}</td>
