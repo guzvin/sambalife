@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.utils.translation import ugettext_lazy as _, ugettext
 from myauth.my_user_manager import MyUserManager
 from django.conf import settings
-from django.template import loader, Context
+from django.template import loader
 from django.utils import translation
 from django.http import HttpRequest
 from utils.helper import send_email
@@ -110,7 +110,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
 
     def _send_email(self, template_name):
-        ctx = Context({'user_name': self.first_name, 'protocol': 'https'})
+        ctx = {'user_name': self.first_name, 'protocol': 'https'}
         translation.activate(self.language_code)
         request = HttpRequest()
         request.LANGUAGE_CODE = translation.get_language()

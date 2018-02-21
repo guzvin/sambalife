@@ -72,7 +72,7 @@ class StockProductForm(forms.ModelForm):
             if instance.pk is None:
                 instance.save()
             redirect_cost = 0
-            instance.redirect_services = self.cleaned_data['redirect_services']
+            instance.redirect_services.set(self.cleaned_data['redirect_services'])
             logger.debug('@@@@@@@@@@@@@ REDIRECT COST @@@@@@@@@@@@@@@@')
             logger.debug(instance.redirect_services)
             for redirect_service in instance.redirect_services.all():

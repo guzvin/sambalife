@@ -12,7 +12,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
-from django.template import loader, Context
+from django.template import loader
 from django.views.decorators.http import require_http_methods, require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.i18n import set_language
@@ -99,8 +99,7 @@ def user_forgot_password(request):
                 token = default_token_generator.make_token(user)
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 message = loader.get_template('email/forgot-password.html').render(
-                    Context({'user_name': user.first_name, 'uid': uid, 'token': token,
-                             'protocol': 'https'}), request)
+                    {'user_name': user.first_name, 'uid': uid, 'token': token, 'protocol': 'https'}, request)
                 str1 = _('Esqueci Senha')
                 str2 = _('Vendedor Online Internacional')
                 email_tuple = (string_concat(str1, ' - ', str2), message, [user.email])
@@ -251,8 +250,8 @@ def user_validation_resend(request, uidb64=None):
 
 
 def send_validation_email(request, user, uid, token):
-    ctx = Context({'user_name': user.first_name, 'user_validation_url': 'user_validation', 'uid': uid,
-                   'token': token, 'protocol': 'https'})
+    ctx = {'user_name': user.first_name, 'user_validation_url': 'user_validation', 'uid': uid,
+           'token': token, 'protocol': 'https'}
     message = loader.get_template('email/registration-validation.html').render(ctx, request)
     str1 = _('Cadastro')
     str2 = _('Vendedor Online Internacional')
@@ -373,7 +372,7 @@ def send_email_contact_us(request, name, email, tel, message, async=False):
                   '<p>{}: <strong>{}</strong></p>'
     texts = (_('Nome'), name, _('E-mail'), email, _('Telefone'), tel, _('Mensagem'), message)
     email_body = format_html(html_format, *texts)
-    ctx = Context({'protocol': 'https', 'email_body': email_body})
+    ctx = {'protocol': 'https', 'email_body': email_body}
     message = loader.get_template('email/contact-us.html').render(ctx, request)
     params = Params.objects.first()
     if params:

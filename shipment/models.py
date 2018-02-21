@@ -90,7 +90,7 @@ class Product(models.Model):
     id = BigAutoField(primary_key=True)
     uid = models.UUIDField(default=uuid.uuid4, editable=False)
     quantity = models.PositiveIntegerField(_('Quantidade'))
-    product = models.ForeignKey('product.Product')
+    product = models.ForeignKey('product.Product', on_delete=models.CASCADE)
     receive_date = models.DateTimeField(_('Data de Recebimento'), null=True)
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)
     cost = models.DecimalField(_('Valor de Pagamento'), max_digits=12, decimal_places=2, null=True)

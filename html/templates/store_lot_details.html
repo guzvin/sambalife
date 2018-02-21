@@ -134,7 +134,7 @@
 
                    <!-- Campo observação-->
                   <div class="col-md-12">
-                        <p><strong>{% trans "Observação" %}:</strong><br> {{product.notes}}.</p>
+                        <p><strong>{% trans "Observação" %}:</strong><br> {% if product.notes %}{{ product.notes }}{% endif %}</p>
                   </div>
 
                   {% if product.url %}

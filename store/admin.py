@@ -21,7 +21,7 @@ from django.contrib.admin import utils
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin.views.main import ChangeList
 from django.utils.html import format_html
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.admin.utils import quote, unquote
 from shutil import copy2
 from django.conf import settings
@@ -238,7 +238,7 @@ class LotProductForm(forms.ModelForm):
         if 'redirect_services' in self.fields:
             redirect_cost = 0
             logger.debug(self.fields)
-            instance.redirect_services = self.cleaned_data['redirect_services']
+            instance.redirect_services.set(self.cleaned_data['redirect_services'])
             logger.debug('@@@@@@@@@@@@@ REDIRECT COST @@@@@@@@@@@@@@@@')
             logger.debug(instance.redirect_services)
             for redirect_service in instance.redirect_services.all():
@@ -295,7 +295,6 @@ class LotProductInline(admin.StackedInline):
         if self.classes and 'collapse' in self.classes:
             js.append('collapse%s.js' % extra)
         js = ['admin/js/%s' % url for url in js]
-        js.append('js/specifics/store_inlines.js')
         return forms.Media(js=js)
 
     def get_fields(self, request, obj=None):
@@ -369,6 +368,7 @@ class LotAdmin(admin.ModelAdmin):
         lot_obj = super(LotAdmin, self).save_form(request, form, change)
         logger.debug('@@@@@@@@@@!!!!!!!!!!SAVE FORM!!!!!!!!@@@@@@@@@@@@@@@')
         if request.method == 'POST':
+            request.POST = request.POST.copy()
             request.POST['_lot_obj'] = lot_obj
             # situacoes: (1)nao era fake nem arquivado e passou a ser ;; (2)era fake e/ou arquivado e deixou de ser
             # (0)se fake e/ou arquivado se mantem nao mexe no estoque _ignore_stock
@@ -575,6 +575,7 @@ class LotAdmin(admin.ModelAdmin):
                 obj = self.get_object(request, unquote(object_id), to_field)
                 logger.debug('@@@@@@@@@@@@@@ OLD THUMBNAIL @@@@@@@@@@@@@@@@')
                 logger.debug(obj.thumbnail)
+                request.POST = request.POST.copy()
                 request.POST['_my_obj_thumbnail'] = str(obj.thumbnail)
         self.save_as = extra_context.get('my_show_save_as', False) if extra_context else False
         return super(LotAdmin, self).changeform_view(request, object_id, form_url, extra_context)
@@ -620,6 +621,7 @@ class LotAdmin(admin.ModelAdmin):
             'admin/js/urlify.js',
             'admin/js/prepopulate%s.js' % extra,
             'admin/js/vendor/xregexp/xregexp%s.js' % extra,
+            'js/specifics/store_inlines.js',
         ]
         return forms.Media(js=js)
 

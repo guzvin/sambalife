@@ -71,7 +71,7 @@ class UserCreationForm(forms.ModelForm):
         user = super(UserCreationForm, self).save(commit=False)
         user.set_password(self.cleaned_data['password1'])
         user.save()
-        user.groups = self.cleaned_data['groups']
+        user.groups.set(self.cleaned_data['groups'])
         if commit:
             user.save()
         return user
@@ -134,7 +134,7 @@ class UserChangeForm(forms.ModelForm):
         if password and password != '':
             instance.set_password(password)
         # Add the users to the Group.
-        instance.groups = self.cleaned_data['groups']
+        instance.groups.set(self.cleaned_data['groups'])
         # Call save.
         instance.save()
         return instance

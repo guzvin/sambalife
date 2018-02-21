@@ -193,6 +193,7 @@ class Config(models.Model):
         help_text=_(
             'Grupo ao qual os lotes e os usuários assinantes serão associados por padrão.'
         ),
+        on_delete=models.CASCADE
     )
 
     class Meta:

@@ -22,7 +22,7 @@ from django.db import transaction
 from shipment.views import shipment_paypal_notification, shipment_paypal_notification_success
 from store.views import store_paypal_notification, store_paypal_notification_success,\
     store_paypal_notification_post_transaction
-from django.template import Context, Template
+from django.template import Template, Context
 from django.template.base import VariableNode
 from utils.models import Params
 from django.utils import translation
@@ -79,7 +79,7 @@ def send_email_basic_template_bcc_admins(request, user_name, user_email, email_t
 
 
 def build_basic_template_email_tuple(request, user_name, user_email, email_title, email_body):
-    ctx = Context({'user_name': user_name, 'protocol': 'https', 'email_body': email_body})
+    ctx = {'user_name': user_name, 'protocol': 'https', 'email_body': email_body}
     message = loader.get_template('email/basic-template.html').render(ctx, request)
     str2 = _('Vendedor Online Internacional')
     email_tuple = (string_concat(email_title, ' - ', str2), message, user_email)

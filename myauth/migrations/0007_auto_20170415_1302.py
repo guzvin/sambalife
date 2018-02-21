@@ -14,7 +14,7 @@ def add_system_superuser(apps, schema_editor):
                                                        settings.SYS_SU_PASSWORD)
     system_superuser.is_active = True
     system_superuser.is_verified = True
-    system_superuser.groups = Group.objects.filter(Q(name='admins') | Q(name='all_users'))
+    system_superuser.groups.set(Group.objects.filter(Q(name='admins') | Q(name='all_users')))
     system_superuser.save()
 
 
