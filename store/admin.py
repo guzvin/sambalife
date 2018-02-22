@@ -108,7 +108,7 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
             logger.debug(form.data.get('_ignore_stock', False))
             logger.debug(form.data.get('_return_to_stock', False))
             logger.debug(form.data.get('_get_from_stock', False))
-            if form.data.get('_ignore_stock', False):
+            if form.data.get('_ignore_stock', False) or form.data.get('_lot_obj', None) is None:
                 continue
             if not form.cleaned_data:
                 continue
@@ -368,7 +368,9 @@ class LotAdmin(admin.ModelAdmin):
     def save_form(self, request, form, change):
         lot_obj = super(LotAdmin, self).save_form(request, form, change)
         logger.debug('@@@@@@@@@@!!!!!!!!!!SAVE FORM!!!!!!!!@@@@@@@@@@@@@@@')
+        logger.debug(form.is_valid())
         if request.method == 'POST':
+            request.POST = request.POST.copy()
             request.POST['_lot_obj'] = lot_obj
             # situacoes: (1)nao era fake nem arquivado e passou a ser ;; (2)era fake e/ou arquivado e deixou de ser
             # (0)se fake e/ou arquivado se mantem nao mexe no estoque _ignore_stock
