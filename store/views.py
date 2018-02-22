@@ -166,7 +166,7 @@ def current_milli_time(): return int(round(time.time() * 1000))
 
 @require_http_methods(["GET"])
 def store_pay_form(request, pid=None):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return HttpResponse(json.dumps({'redirect': reverse('user_registration')}), content_type='application/json')
     try:
         # _lot_details = Lot.objects.extra(where=['EXISTS (SELECT 1 FROM store_lot_groups '

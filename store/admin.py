@@ -193,7 +193,7 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
 
 
 class LotProductForm(forms.ModelForm):
-    stock_product_quantity = {}
+    is_duplicating = False
     redirect_services = ServiceModelMultipleChoiceField(
         queryset=Service.objects.all(),
         required=True,
@@ -224,7 +224,7 @@ class LotProductForm(forms.ModelForm):
                 if 'shipping_cost' in self.fields:
                     self.fields['shipping_cost'].initial = params.shipping_cost
         else:
-            if self.instance.lot.status == 2 and self.instance.lot.payment_complete:
+            if self.is_duplicating is False and self.instance.lot.status == 2 and self.instance.lot.payment_complete:
                 del self.fields['redirect_services']
             # Populate the redirect_services field with the current Services.
             if 'redirect_services' in self.fields:
@@ -297,6 +297,11 @@ class LotProductInline(admin.StackedInline):
         js = ['admin/js/%s' % url for url in js]
         js.append('js/specifics/store_inlines.js')
         return forms.Media(js=js)
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super(LotProductInline, self).get_formset(request, obj, **kwargs)
+        formset.form.is_duplicating = request.GET.get('duplicate_lot', False)
+        return formset
 
     def get_fields(self, request, obj=None):
         if self.fields:
