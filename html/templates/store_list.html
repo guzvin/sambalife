@@ -9,7 +9,7 @@
             <h2><i class="fa fa-credit-card"></i><span class="text-gg">{% trans "Chega" %}</span> {% trans "de problemas para pagar com seu cartão de crédito do Brasil" %}</h2>
             <h2><img src="/static/img/sale-img.png" width="100%" /> </h2>
             <h2><i class="fa fa-motorcycle"></i><span class="text-gg">{% trans "Agora" %}</span> {% trans "Você não paga mais redirecionamento." %} <strong>{% trans "Com a gente é grátis" %}</strong></h2>
-            <h2><i class="fa fa-line-chart"></i><span class="text-gg">{% trans "Agora" %}</span> {% trans "preocupe-se apenas com o crescimento do seu negócio. Nós pensamos tudo pra você" %}</h2>
+            <h2><i class="fa fa-chart-line"></i><span class="text-gg">{% trans "Agora" %}</span> {% trans "preocupe-se apenas com o crescimento do seu negócio. Nós pensamos tudo pra você" %}</h2>
         </div>
     </div>
     <div class="container-fluid">
@@ -143,7 +143,26 @@
                         </div>
                          <!-- Fim conteúdo novo -->
                         {% endif %}
+
+                          <!-- selo vip. Só vai aparecer quando o lote estiver nas primeiras 24 horas-->
+                            <img class="img-vip" src="/static/img/vip.png" width="" />
+                         <!-- Fim selo -->
+
+
                      </div>
+
+
+                     <!-- Bloco com o contador. Muda a cor e o texto de acordo com as primeiras 24/48Hrs
+                           para isso, quando passar pra publico, muda a classe da div abaixo de "tempo privado" para "tempo publico".
+
+                           quando estiver publico, mudar o texto para "Tempo para o lote ser retirado".
+                     -->
+                     <div class="tempo privado">
+                         <p class="lucro-prod">Tempo para o lote se tornar público</p>
+                         <p class="lucro-prod"><i class="far fa-clock"></i> 23h 59m 59s</p>
+                     </div>
+
+
                  </a>
               </div>
           {% if forloop.counter|divisibleby:4 or forloop.last %}
