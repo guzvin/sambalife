@@ -1290,6 +1290,41 @@ label.titulo-pct span{
     text-decoration: none;
 }
 
+.tempo{
+    width: 100%;
+    margin: 0 auto;
+    border-top: 1px solid #eee;
+    clear: both;
+    padding-top: 5px;
+    background: #3C3E77;
+    float: left;
+}
+
+.descricao-lote-prod{
+    min-height: 192px;
+    position: relative;
+}
+
+.tempo.publico{
+    background: #c9302c;
+}
+
+.box-lote img.img-vip{
+    height: 70px;
+    width: 70px;
+    margin: 0;
+    left: -9px;
+    position: absolute;
+    top: -111px;
+}
+
+.img-vip{
+    width: 70px;
+    height: 70px;
+    position: absolute;
+    top: 0;
+}
+
 .box-lote:hover h6{
     color: #DC3438;
     font-weight: bold;
@@ -1300,7 +1335,7 @@ label.titulo-pct span{
     float: left;
     width: 24%;
     margin-bottom: 20px;
-    height: 320px;
+    height: 365px;
 }
 
 .box-lote img{
@@ -1379,6 +1414,17 @@ label.titulo-pct span{
     margin-bottom: 5px;
     font-size: 13px;
     color: #666;
+}
+
+.tempo .lucro-prod{
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+}
+
+.tempo .lucro-prod:last-child{
+    font-size: 22px;
+    line-height: 15px;
 }
 
 .lucro-prod.parceiro-titulo{
