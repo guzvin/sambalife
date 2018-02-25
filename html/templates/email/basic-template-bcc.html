@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% load i18n l10n %}
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Vendedor Online Internacional" %}</title>
+</head>
+<body>
+
+<div id="template-email" style="background: #fff; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
+    <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/" style="text-decoration: none;">
+        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_sup.png" width="55" style="float: left;margin: 11px 0 0 0;"/><span style="display: block;margin: 27px 0 0 2px;margin-left: 0;font-size: 17px;font-weight: bold;color: #3C3E77;font-family: sans-serif;float: left;">VOI </span><span style="display: block;margin: 27px 0 0 2px;margin-left: 0;font-size: 17px;font-weight: bold;color: #DC3438;font-family: sans-serif;float: left;">SERVICES</span>
+    </a>
+    <div style="float: left; width: 97%; background: #eee; padding: 10px 20px 20px 20px;">
+        <p style="color:#858585;font:13px/120% 'Helvetica'">{% trans "Prezado(a)" %}</p>
+        {{ email_body|safe }}
+    </div>
+    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Caso você não reconheça esta ação nos avise através do e-mail" %} <a href="mailto:{% trans 'support@voiservices.com' %}">{% trans "support@voiservices.com" %}</a>.</small>
+    <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Este é um e-mail automático disparado pelo sistema. Favor não respondê-lo, pois esta conta não é monitorada." %}</small>
+</div>
+
+</body>
+</html>

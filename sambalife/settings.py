@@ -326,6 +326,7 @@ PAYPAL_IMAGE = '/static/img/paypal_pay_btn.jpg'
 CRONJOBS = [
     ('0 0 1 * *', 'utils.cron.archive_shipped_shipments'),
     ('*/1 * * * *', 'utils.cron.check_scheduled_lots'),
+    ('*/1 * * * *', 'utils.cron.check_lifecycle_lots'),
     # ('0 1 * * *', 'utils.cron.price_warning'),
     # ('0   4 * * *', 'django.core.management.call_command', ['clearsessions']),
 ]

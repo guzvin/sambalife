@@ -28,6 +28,8 @@ from django.conf import settings
 from rangefilter.filter import DateRangeFilter
 from django.core.validators import ValidationError
 from django.utils import translation
+import datetime
+import pytz
 import os
 import logging
 
@@ -331,6 +333,7 @@ class LotAdmin(admin.ModelAdmin):
         'is_archived',
         'status',
         'is_fake',
+        'lifecycle',
         ('create_date', DateRangeFilter),
         ('sell_date', DateRangeFilter),
     ]
@@ -349,7 +352,7 @@ class LotAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('Status'), {
             'fields': (
-                'is_fake', 'is_archived',
+                'is_fake', 'is_archived', 'lifecycle',
             )
         }),
         (_('Situação'), {
@@ -373,8 +376,14 @@ class LotAdmin(admin.ModelAdmin):
     def save_form(self, request, form, change):
         lot_obj = super(LotAdmin, self).save_form(request, form, change)
         logger.debug('@@@@@@@@@@!!!!!!!!!!SAVE FORM!!!!!!!!@@@@@@@@@@@@@@@')
-        logger.debug(form.is_valid())
         if request.method == 'POST':
+            initial_lifecycle = form.inline_initial_data('lifecycle')
+            if initial_lifecycle[0] != initial_lifecycle[1]:
+                if initial_lifecycle[1] == '2':
+                    lot_obj.lifecycle_date = pytz.utc.localize(datetime.datetime.today())
+                else:
+                    lot_obj.lifecycle_date = None
+                    lot_obj.lifecycle_open = False
             request.POST = request.POST.copy()
             request.POST['_lot_obj'] = lot_obj
             # situacoes: (1)nao era fake nem arquivado e passou a ser ;; (2)era fake e/ou arquivado e deixou de ser
@@ -479,30 +488,38 @@ class LotAdmin(admin.ModelAdmin):
     @staticmethod
     def email_new_lot(lot):
         lot_groups = lot.groups.all()
-        users = set()
+        users_emails_pt = set()
+        users_emails_en = set()
         for lot_group in lot_groups:
-            uu = get_user_model().objects.filter(groups=lot_group)
+            uu = get_user_model().objects.filter(is_active=True, groups=lot_group)
             for u in uu:
-                users.add(u)
-        if users:
-            logger.debug(users)
-            logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS @@@@@@@@@@@@@@@@@@')
-            LotAdmin.email_users_new_lot(get_current_request(), lot, users)
+                if u.language_code == 'pt':
+                    users_emails_pt.add(u.email)
+                else:
+                    users_emails_en.add(u.email)
+        if users_emails_pt:
+            logger.debug(users_emails_pt)
+            logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS PT @@@@@@@@@@@@@@@@@@')
+            LotAdmin.email_users_new_lot(get_current_request(), lot, users_emails_pt, 'pt')
+        if users_emails_en:
+            logger.debug(users_emails_en)
+            logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS EN @@@@@@@@@@@@@@@@@@')
+            LotAdmin.email_users_new_lot(get_current_request(), lot, users_emails_en, 'en')
 
     @staticmethod
-    def email_users_new_lot(request, lot, users):
+    def email_users_new_lot(request, lot, users_emails, language_code):
         emails = ()
         original_language = translation.get_language()
-        for user in users:
-            translation.activate(user.language_code)
+        if users_emails:
+            translation.activate(language_code)
             request.LANGUAGE_CODE = translation.get_language()
-            emails += (LotAdmin.assemble_email_new_lot(request, lot, user),)
+            emails += (LotAdmin.assemble_email_new_lot(request, lot),)
         translation.activate(original_language)
         if emails:
-            helper.send_email(emails, bcc_admins=False, async=True)
+            helper.send_email(emails, bcc_admins=False, async=True, bcc=users_emails)
 
     @staticmethod
-    def assemble_email_new_lot(request, lot, user):
+    def assemble_email_new_lot(request, lot):
         email_title = _('Novo lote cadastrado no sistema \'%(lot)s\'') % {'lot': lot.name}
         html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'] +
                               ['<br>{}'] * 5 +
@@ -526,8 +543,52 @@ class LotAdmin(admin.ModelAdmin):
         texts += (''.join(['https://', request.CURRENT_DOMAIN, helper.reverse('store_lot_details', args=[lot.id])]),
                   _('Clique aqui'), _('para acessar este lote agora mesmo!'),)
         email_body = helper.format_html(html_format, *texts)
-        return helper.build_basic_template_email_tuple(request, user.first_name, [user.email], email_title,
-                                                       email_body)
+        return helper.build_basic_template_email_tuple_bcc(request, email_title, email_body)
+
+    @staticmethod
+    def email_lifecycle_lot(lot):
+        users_emails_pt = set()
+        users_emails_en = set()
+        uu = get_user_model().objects.filter(is_active=True)
+        for u in uu:
+            if u.language_code == 'pt':
+                users_emails_pt.add(u.email)
+            else:
+                users_emails_en.add(u.email)
+        if users_emails_pt:
+            logger.debug(users_emails_pt)
+            logger.debug('@@@@@@@@@@@ LIFECYCLE LOT USERS LIFECYCLE LOT USERS LIFECYCLE LOT USERS PT @@@@@@@@@@@@@@')
+            LotAdmin.email_users_lifecycle_lot(get_current_request(), lot, users_emails_pt, 'pt')
+        if users_emails_en:
+            logger.debug(users_emails_en)
+            logger.debug('@@@@@@@@@@@ LIFECYCLE LOT USERS LIFECYCLE LOT USERS LIFECYCLE LOT USERS EN @@@@@@@@@@@@@@')
+            LotAdmin.email_users_lifecycle_lot(get_current_request(), lot, users_emails_en, 'en')
+
+    @staticmethod
+    def email_users_lifecycle_lot(request, lot, users_emails, language_code):
+        emails = ()
+        original_language = translation.get_language()
+        if users_emails:
+            translation.activate(language_code)
+            request.LANGUAGE_CODE = translation.get_language()
+            emails += (LotAdmin.assemble_email_lifecycle_lot(request, lot),)
+        translation.activate(original_language)
+        if emails:
+            helper.send_email(emails, bcc_admins=False, async=True, bcc=users_emails)
+
+    @staticmethod
+    def assemble_email_lifecycle_lot(request, lot):
+        email_title = _('Lote disponível para compra: \'%(lot)s\'') % {'lot': lot.name}
+        html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'] +
+                              ['</p>'] +
+                              ['<p><a href="{}">{}</a> {}</p>'])
+        texts = _('o lote \'%(lot_name)s\' está disponível para ser arrematado por TODOS os usuários da plataforma e '
+                  'não apenas para os assinantes. Aproveite que em 48 horas este lote será repassado caso ele não seja '
+                  'arrematado.') % {'lot_name': lot.name},
+        texts += (''.join(['https://', request.CURRENT_DOMAIN, helper.reverse('store_lot_details', args=[lot.id])]),
+                  _('Clique aqui'), _('para acessar este lote agora mesmo!'),)
+        email_body = helper.format_html(html_format, *texts)
+        return helper.build_basic_template_email_tuple_bcc(request, email_title, email_body)
 
     @staticmethod
     def email_users_lot_changed(request, lot, users):

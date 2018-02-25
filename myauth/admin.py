@@ -175,7 +175,7 @@ class UserAdmin(BaseUserAdmin):
         AddressInline,
     ]
 
-    actions = ['make_active']
+    actions = ['make_active', 'make_inactive']
 
     def make_active(self, request, queryset):
         rows_updated = queryset.update(is_active=True)
@@ -185,6 +185,15 @@ class UserAdmin(BaseUserAdmin):
             message_bit = _('%s usuários foram ativados.') % rows_updated
         self.message_user(request, message_bit)
     make_active.short_description = _('Ativar Usuários selecionados')
+
+    def make_inactive(self, request, queryset):
+        rows_updated = queryset.update(is_active=False)
+        if rows_updated == 1:
+            message_bit = _('1 usuário foi desativado.')
+        else:
+            message_bit = _('%s usuários foram desativados.') % rows_updated
+        self.message_user(request, message_bit)
+    make_inactive.short_description = _('Desativar Usuários selecionados')
 
     def get_readonly_fields(self, request, obj=None):
         page_readonly_fields = self.readonly_fields

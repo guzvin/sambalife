@@ -36,7 +36,8 @@ def calculate_buy_price(product):
 
 @register.simple_tag
 def is_subscriber(user, **kwargs):
-    return set(user.groups.all()) & set(kwargs.pop('lot').groups.all())
+    lot = kwargs.pop('lot')
+    return set(user.groups.all()) & set(lot.groups.all()) or (lot.lifecycle_open and user.is_authenticated)
 
 stars_map = {
     1: 'um',

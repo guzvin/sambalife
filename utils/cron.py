@@ -1,4 +1,4 @@
-from django.db import transaction
+from django.db import transaction, models
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils import translation
@@ -10,6 +10,7 @@ from product.models import Product
 from utils.models import Params
 from store.models import Lot
 from store.admin import LotAdmin
+from stock.models import Product as ProductStock
 from utils import helper
 from utils.middleware.thread_local import ThreadLocalMiddleware
 import datetime
@@ -196,13 +197,42 @@ def _send_email_abandoned(request, product, days, user):
 
 
 def check_scheduled_lots():
-    lots = Lot.objects.filter(schedule_date__lte=datetime.datetime.now(datetime.timezone.utc))
+    lots = Lot.objects.filter(schedule_date__lte=datetime.datetime.now(datetime.timezone.utc), is_fake=False,
+                              is_archived=False, status=1, payment_complete=False)
     if lots:
         request = HttpRequest()
         request.CURRENT_DOMAIN = _('vendedorinternacional.net')
         ThreadLocalMiddleware.process_request(request)
     for lot in lots:
-        if lot.is_fake is False and lot.is_archived is False and lot.status == 1 and lot.payment_complete is False:
-            LotAdmin.email_new_lot(lot)
+        LotAdmin.email_new_lot(lot)
     if lots:
         lots.update(schedule_date=None)
+
+
+def check_lifecycle_lots():
+    current_date = datetime.datetime.now(datetime.timezone.utc)
+    one_day = current_date - datetime.timedelta(days=1)
+    three_days = current_date - datetime.timedelta(days=3)
+    # one_day = current_date - datetime.timedelta(minutes=2)
+    # three_days = current_date - datetime.timedelta(minutes=4)
+    lots = Lot.objects.filter(lifecycle_date__lte=three_days, lifecycle=2, lifecycle_open=True, is_fake=False,
+                              is_archived=False, status=1, payment_complete=False)
+    if lots:
+        products_list = []
+        for lot in lots:
+            products_list.append(lot.product_set.all())
+        lots.update(lifecycle_date=None, lifecycle=3, lifecycle_open=False, is_archived=True)
+        for products in products_list:
+            for product in products:
+                ProductStock.objects.filter(pk=product.product_stock_id)\
+                    .update(quantity=models.F('quantity') + product.quantity)
+    lots = Lot.objects.filter(lifecycle_date__lte=one_day, lifecycle=2, lifecycle_open=False, is_fake=False,
+                              is_archived=False, status=1, payment_complete=False)
+    if lots:
+        request = HttpRequest()
+        request.CURRENT_DOMAIN = _('vendedorinternacional.net')
+        ThreadLocalMiddleware.process_request(request)
+    for lot in lots:
+        LotAdmin.email_lifecycle_lot(lot)
+    if lots:
+        lots.update(lifecycle_open=True)

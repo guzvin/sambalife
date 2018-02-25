@@ -81,6 +81,14 @@ class Lot(models.Model):
     is_fake = models.BooleanField('Fake', default=False)
     collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
                                      blank=True)
+    LIFECYCLE_CHOICES = (
+        (1, _('Desligado')),  # Off
+        (2, _('Ligado')),  # On
+        (3, _('Terminado')),  # On
+    )
+    lifecycle = models.SmallIntegerField('Lifecycle', choices=LIFECYCLE_CHOICES, default=1)
+    lifecycle_date = models.DateTimeField(_('Data do lifecycle'), null=True, blank=True)
+    lifecycle_open = models.BooleanField(_('Lifecycle aberto'), default=False)
 
     class Meta:
         verbose_name = _('Lote')

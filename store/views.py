@@ -153,6 +153,9 @@ def store_lot_details(request, pid=None):
     except Lot.DoesNotExist as e:
         logger.error(e)
         return HttpResponseBadRequest()
+    has_access = set(request.user.groups.all()) & set(_lot_details.groups.all())
+    if not has_access and not (_lot_details.lifecycle_open and request.user.is_authenticated):
+        return HttpResponseBadRequest()
     context_data = {'title': _('Loja'), 'lot': _lot_details}
     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_lot_details.user)
     context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
@@ -182,7 +185,7 @@ def store_pay_form(request, pid=None):
         logger.error(e)
         return HttpResponseBadRequest()
     has_access = set(request.user.groups.all()) & set(_lot_details.groups.all())
-    if not has_access:
+    if not has_access and not (_lot_details.lifecycle_open  and request.user.is_authenticated):
         return HttpResponse(json.dumps({'modal': 'subscribe'}), content_type='application/json')
     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(request.user)
     if is_sandbox:

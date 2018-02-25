@@ -86,15 +86,25 @@ def build_basic_template_email_tuple(request, user_name, user_email, email_title
     return email_tuple
 
 
+def build_basic_template_email_tuple_bcc(request, email_title, email_body):
+    ctx = Context({'protocol': 'https', 'email_body': email_body})
+    message = loader.get_template('email/basic-template-bcc.html').render(ctx, request)
+    str2 = _('Vendedor Online Internacional')
+    email_tuple = (string_concat(email_title, ' - ', str2), message, None)
+    return email_tuple
+
+
 def get_admins_emails():
     user_model = get_user_model()
     admins = user_model.objects.filter(groups__name='admins')
-    admins_email = [user.email for user in admins]
-    if settings.SYS_SU_USER in admins_email:
-        del admins_email[admins_email.index(settings.SYS_SU_USER)]
+    admins_emails = set()
+    for user in admins:
+        admins_emails.add(user.email)
+    if settings.SYS_SU_USER in admins_emails:
+        admins_emails -= {settings.SYS_SU_USER}
     logger.debug('@@@@@@@@@@@@ ADMINS EMAIL @@@@@@@@@@@@@@')
-    logger.debug(admins_email)
-    return admins_email
+    logger.debug(admins_emails)
+    return admins_emails
 
 
 class EmailThread(threading.Thread):
@@ -149,13 +159,13 @@ class EmailThread(threading.Thread):
                 raise err
 
 
-def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False, raise_exception=False, reply_to=None):
+def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False, raise_exception=False, reply_to=None,
+               bcc=set()):
     if email_from is None:
         email_from = string_concat(_('Vendedor Online Internacional'), ' ',
                                    _('<no-reply@vendedorinternacional.net>'))
-    bcc = None
     if bcc_admins:
-        bcc = get_admins_emails()
+        bcc.update(get_admins_emails())
 
     connection = get_connection(fail_silently=False)
     if settings.EMAIL_USE_TLS:
