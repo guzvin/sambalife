@@ -159,7 +159,8 @@ class EmailThread(threading.Thread):
                 raise err
 
 
-def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False, raise_exception=False, reply_to=None,
+def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False, raise_exception=False,
+               reply_to=('support@voiservices.com',),
                bcc=set()):
     if email_from is None:
         email_from = string_concat(_('Vendedor Online Internacional'), ' ',
