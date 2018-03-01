@@ -1,3 +1,5 @@
+from django.utils.translation import ugettext as _
+from django.http import HttpRequest
 from django.utils.deprecation import MiddlewareMixin
 from threading import local
 import logging
@@ -7,7 +9,12 @@ _thread_local = local()
 
 
 def get_current_request():
-    return getattr(_thread_local, 'request', None)
+    request = getattr(_thread_local, 'request', None)
+    if request is None:
+        request = HttpRequest()
+        request.CURRENT_DOMAIN = 'voiservices.com'
+        logger.debug(_('vendedorinternacional.net'))
+    return request
 
 
 def get_current_user():

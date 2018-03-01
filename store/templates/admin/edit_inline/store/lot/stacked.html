@@ -13,11 +13,15 @@
 {% else %}#{{ forloop.counter }}{% endif %}</span>
       {% if inline_admin_form.show_url %}<a href="{{ inline_admin_form.absolute_url }}">{% trans "View on site" %}</a>{% endif %}
     {% if original and original.status == 1 and original.payment_complete is False %}
-    {% if inline_admin_formset.formset.can_delete and inline_admin_form.original and forloop.first is False %}
-      <span class="delete">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</span>
-    {% elif inline_admin_formset.formset.can_delete and forloop.first is False %}
-      <span><a class="inline-deletelink" href="#">{{ inline_admin_form.deletion_field.label_tag }}</a></span>
-    {% endif %}
+      {% if inline_admin_formset.formset.can_delete and inline_admin_form.original and forloop.first is False %}
+          <span class="delete">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</span>
+      {% elif inline_admin_formset.formset.can_delete and forloop.first is False and forloop.last is False %}
+          <span><a class="inline-deletelink" href="#">{{ inline_admin_form.deletion_field.label_tag }}</a></span>
+      {% endif %}
+    {% elif original is None %}
+      {% if inline_admin_formset.formset.can_delete and forloop.first is False and forloop.last is False %}
+          <span><a class="inline-deletelink" href="#">{{ inline_admin_form.deletion_field.label_tag }}</a></span>
+      {% endif %}
     {% endif %}
   </h3>
   {% if inline_admin_form.form.non_field_errors %}{{ inline_admin_form.form.non_field_errors }}{% endif %}

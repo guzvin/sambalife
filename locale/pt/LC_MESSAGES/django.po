@@ -2061,7 +2061,7 @@ msgstr ""
 #: myauth/templates/admin/myauth/userlotreport/change_list_results.html:17
 #: store/templates/admin/store/lotreport/change_list_results.html:17
 msgid "Remove from sorting"
-msgstr ""
+msgstr "Remover da ordenação"
 
 #: myauth/templates/admin/myauth/userlotreport/change_list_results.html:18
 #: store/templates/admin/store/lotreport/change_list_results.html:18

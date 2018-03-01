@@ -78,7 +78,37 @@ class LotForm(forms.ModelForm):
         model = Lot
         exclude = []
 
+    def is_valid(self):
+        request = get_current_request()
+        if request.method == 'POST':
+            request.POST = request.POST.copy()
+            # situacoes: (1)nao era fake nem arquivado e passou a ser ;; (2)era fake e/ou arquivado e deixou de ser
+            # (0)se fake e/ou arquivado se mantem nao mexe no estoque _ignore_stock
+            # (1)tem produtos do estoque que precisam ser devolvidos ao estoque _return_to_stock
+            # (2)precisa fazer a verificacao/retirada dos produtos do estoque _get_from_stock
+            initial_fake = self.inline_initial_data('is_fake')
+            initial_archived = self.inline_initial_data('is_archived')
+            logger.debug(self.instance.pk)
+            logger.debug(initial_fake[0] is True)
+            logger.debug(initial_fake[1] is True)
+            logger.debug(initial_archived[0] is True)
+            logger.debug(initial_archived[1] is True)
+            if self.instance.pk is None:
+                request.POST['_ignore_stock'] = initial_fake[1] or initial_archived[1]
+            else:
+                if initial_fake[0] is False and initial_archived[0] is False and (initial_fake[1]
+                                                                                  or initial_archived[1]):
+                    request.POST['_return_to_stock'] = True
+                elif initial_fake[1] is False and initial_archived[1] is False and (initial_fake[0]
+                                                                                    or initial_archived[0]):
+                    request.POST['_get_from_stock'] = True
+                elif (initial_fake[0] or initial_archived[0]) and (initial_fake[1] or initial_archived[1]):
+                    request.POST['_ignore_stock'] = True
+        return super(LotForm, self).is_valid()
+
     def inline_initial_data(self, field_name):
+        if field_name not in self.fields:
+            return None, None
         name, field = field_name, self.fields[field_name]
         prefixed_name = self.add_prefix(name)
         data_value = field.widget.value_from_datadict(self.data, self.files, prefixed_name)
@@ -106,14 +136,16 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
         new_product_quantity_dict = {}
         errors_dict = {}
         forms_dict = {}
+        forms_valid = True
         for form in self.forms:
             logger.debug(form.data.get('_ignore_stock', False))
             logger.debug(form.data.get('_return_to_stock', False))
             logger.debug(form.data.get('_get_from_stock', False))
-            if form.data.get('_ignore_stock', False) or form.data.get('_lot_obj', None) is None:
+            if form.data.get('_ignore_stock', False) or not form.cleaned_data:
                 continue
-            if not form.cleaned_data:
-                continue
+            if forms_valid and (form.is_valid() is False or form.data.get('_lot_obj', None) is None):
+                forms_valid = False
+            old_stock_product_id = None
             stock_product = None
             stock_product_id = form['product_stock'].value()
             if len(stock_product_id) == 0:
@@ -154,8 +186,12 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
                     raise ValidationError([_('Ocorreu um erro de inconsistência! Saia e entre desta operação para '
                                              'tentar novamente e, caso o problema persista, entre em contato com '
                                              'os responsáveis pelo sistema.')])
+            old_stock_product_id = LotProductFormSet.switch_products(form, new_product_quantity_dict,
+                                                                     old_stock_product_id, product_qty,
+                                                                     stock_product_quantity_dict)
             if form.cleaned_data.get('DELETE'):
-                if form.data.get('_get_from_stock', False) is False and product_qty[0]:
+                form.instance.custom = 'IGNORE ON DELETE SIGNAL'
+                if old_stock_product_id is None and form.data.get('_get_from_stock', False) is False and product_qty[0]:
                     stock_product_quantity_dict[str(stock_product_id)] = \
                         stock_product_quantity_dict[str(stock_product_id)] + product_qty[0]
                 continue
@@ -163,7 +199,7 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
                 forms_dict[str(stock_product_id)] = [form]
             else:
                 forms_dict[str(stock_product_id)].append(form)
-            if form.data.get('_get_from_stock', False) is False and product_qty[0]:
+            if old_stock_product_id is None and form.data.get('_get_from_stock', False) is False and product_qty[0]:
                 stock_product_quantity_dict[str(stock_product_id)] = \
                     stock_product_quantity_dict[str(stock_product_id)] + product_qty[0]
             if str(stock_product_id) in new_product_quantity_dict:
@@ -174,7 +210,8 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
         for key, form in forms_dict.items():
             stock_quantity = stock_product_quantity_dict[key]
             if form[0].data.get('_return_to_stock', False):
-                ProductStock.objects.filter(pk=key).update(quantity=stock_quantity)
+                if forms_valid:
+                    ProductStock.objects.filter(pk=key).update(quantity=stock_quantity)
                 continue
             products_quantity = new_product_quantity_dict[key]
             if stock_quantity < products_quantity:
@@ -190,8 +227,27 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
             stock_product_quantity_dict[key] = stock_quantity - products_quantity
         if errors_dict:
             raise ValidationError([m for k, m in errors_dict.items()])
-        for key, qty in stock_product_quantity_dict.items():
-            ProductStock.objects.filter(pk=key).update(quantity=qty)
+        if forms_valid:
+            for key, qty in stock_product_quantity_dict.items():
+                ProductStock.objects.filter(pk=key).update(quantity=qty)
+
+    @staticmethod
+    def switch_products(form, new_product_quantity_dict, old_stock_product_id, product_qty,
+                        stock_product_quantity_dict):
+        product_identifier = form.inline_initial_data('identifier')
+        logger.debug(product_identifier)
+        if product_identifier[0] and product_identifier[0] != product_identifier[1]:
+            old_stock_product = ProductStock.objects.filter(identifier=product_identifier[0])
+            if old_stock_product:
+                old_stock_product_id = old_stock_product[0].id
+                if str(old_stock_product_id) not in stock_product_quantity_dict:
+                    stock_product_quantity_dict[str(old_stock_product_id)] = old_stock_product[0].quantity
+                if form.data.get('_get_from_stock', False) is False and product_qty[0]:
+                    stock_product_quantity_dict[str(old_stock_product_id)] = \
+                        stock_product_quantity_dict[str(old_stock_product_id)] + product_qty[0]
+                if str(old_stock_product_id) not in new_product_quantity_dict:
+                    new_product_quantity_dict[str(old_stock_product_id)] = 0
+        return old_stock_product_id
 
 
 class LotProductForm(forms.ModelForm):
@@ -340,8 +396,8 @@ class LotAdmin(admin.ModelAdmin):
 
     search_fields = ('name', 'product__name', 'product__identifier',)
     list_display_links = ('id', 'name',)
-    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'sell_date', 'is_archived',
-                    'is_fake', 'duplicate_lot_action')
+    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'sell_date',
+                    'schedule_date','is_archived', 'is_fake', 'duplicate_lot_action')
 
     def duplicate_lot_action(self, obj):
         return format_html('<a class="button" href="{}">{}</a>', reverse('admin:duplicate_lot',
@@ -352,7 +408,7 @@ class LotAdmin(admin.ModelAdmin):
     fieldsets = (
         (_('Status'), {
             'fields': (
-                'is_fake', 'is_archived', 'lifecycle',
+                'is_fake', 'is_archived'  #, 'lifecycle',
             )
         }),
         (_('Situação'), {
@@ -386,28 +442,6 @@ class LotAdmin(admin.ModelAdmin):
                     lot_obj.lifecycle_open = False
             request.POST = request.POST.copy()
             request.POST['_lot_obj'] = lot_obj
-            # situacoes: (1)nao era fake nem arquivado e passou a ser ;; (2)era fake e/ou arquivado e deixou de ser
-            # (0)se fake e/ou arquivado se mantem nao mexe no estoque _ignore_stock
-            # (1)tem produtos do estoque que precisam ser devolvidos ao estoque _return_to_stock
-            # (2)precisa fazer a verificacao/retirada dos produtos do estoque _get_from_stock
-            if lot_obj.payment_complete or change is False:
-                request.POST['_ignore_stock'] = form.instance.is_fake or form.instance.is_archived \
-                                                or lot_obj.payment_complete
-            else:
-                initial_fake = form.inline_initial_data('is_fake')
-                initial_archived = form.inline_initial_data('is_archived')
-                logger.debug(initial_fake[0] is True)
-                logger.debug(initial_fake[1] is True)
-                logger.debug(initial_archived[0] is True)
-                logger.debug(initial_archived[1] is True)
-                if initial_fake[0] is False and initial_archived[0] is False and (initial_fake[1]
-                                                                                  or initial_archived[1]):
-                    request.POST['_return_to_stock'] = True
-                elif initial_fake[1] is False and initial_archived[1] is False and (initial_fake[0]
-                                                                                    or initial_archived[0]):
-                    request.POST['_get_from_stock'] = True
-                elif (initial_fake[0] or initial_archived[0]) and (initial_fake[1] or initial_archived[1]):
-                    request.POST['_ignore_stock'] = True
         return lot_obj
 
     def save_related(self, request, form, formsets, change):
@@ -481,7 +515,8 @@ class LotAdmin(admin.ModelAdmin):
             lot.save()
         logger.debug(lot.is_fake)
         logger.debug(lot.is_archived)
-        if lot.is_fake is False and lot.is_archived is False and lot.status == 1 and lot.payment_complete is False:
+        if lot.is_fake is False and lot.is_archived is False and lot.status == 1 and lot.payment_complete is False \
+                and (lot.schedule_date is None or lot.schedule_date <= datetime.datetime.now(datetime.timezone.utc)):
             if change is False or change and is_archived_changed:
                 LotAdmin.email_new_lot(lot)
 
@@ -492,11 +527,7 @@ class LotAdmin(admin.ModelAdmin):
         users_emails_en = set()
         for lot_group in lot_groups:
             uu = get_user_model().objects.filter(is_active=True, groups=lot_group)
-            for u in uu:
-                if u.language_code == 'pt':
-                    users_emails_pt.add(u.email)
-                else:
-                    users_emails_en.add(u.email)
+            LotAdmin.assemble_group_users(users_emails_en, users_emails_pt, uu)
         if users_emails_pt:
             logger.debug(users_emails_pt)
             logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS PT @@@@@@@@@@@@@@@@@@')
@@ -505,6 +536,16 @@ class LotAdmin(admin.ModelAdmin):
             logger.debug(users_emails_en)
             logger.debug('@@@@@@@@@@@@@@@ NEW LOT USERS NEW LOT USERS NEW LOT USERS EN @@@@@@@@@@@@@@@@@@')
             LotAdmin.email_users_new_lot(get_current_request(), lot, users_emails_en, 'en')
+
+    @staticmethod
+    def assemble_group_users(users_emails_en, users_emails_pt, uu):
+        for u in uu:
+            if settings.SYS_SU_USER == u.email:
+                continue
+            if u.language_code == 'pt':
+                users_emails_pt.add(u.email)
+            else:
+                users_emails_en.add(u.email)
 
     @staticmethod
     def email_users_new_lot(request, lot, users_emails, language_code):
@@ -550,11 +591,7 @@ class LotAdmin(admin.ModelAdmin):
         users_emails_pt = set()
         users_emails_en = set()
         uu = get_user_model().objects.filter(is_active=True)
-        for u in uu:
-            if u.language_code == 'pt':
-                users_emails_pt.add(u.email)
-            else:
-                users_emails_en.add(u.email)
+        LotAdmin.assemble_group_users(users_emails_en, users_emails_pt, uu)
         if users_emails_pt:
             logger.debug(users_emails_pt)
             logger.debug('@@@@@@@@@@@ LIFECYCLE LOT USERS LIFECYCLE LOT USERS LIFECYCLE LOT USERS PT @@@@@@@@@@@@@@')

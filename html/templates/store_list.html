@@ -143,25 +143,36 @@
                         </div>
                          <!-- Fim conteúdo novo -->
                         {% endif %}
-
+                        {% is_vip lot as is_lot_vip %}
+                        {% if is_lot_vip %}
                           <!-- selo vip. Só vai aparecer quando o lote estiver nas primeiras 24 horas-->
                             <img class="img-vip" src="/static/img/vip.png" width="" />
                          <!-- Fim selo -->
-
+                        {% endif %}
 
                      </div>
 
-
+{% comment %}
                      <!-- Bloco com o contador. Muda a cor e o texto de acordo com as primeiras 24/48Hrs
                            para isso, quando passar pra publico, muda a classe da div abaixo de "tempo privado" para "tempo publico".
 
                            quando estiver publico, mudar o texto para "Tempo para o lote ser retirado".
                      -->
+{% endcomment %}
+                     {% lot_countdown user lot as lot_countdown_time %}
+                     {% if lot_countdown_time %}
                      <div class="tempo privado">
-                         <p class="lucro-prod">Tempo para o lote se tornar público</p>
-                         <p class="lucro-prod"><i class="far fa-clock"></i> 23h 59m 59s</p>
+                         <p class="lucro-prod">
+                             {% is_vip lot as is_lot_vip %}
+                             {% if is_lot_vip %}
+                             {% trans "Tempo para deixar de ser VIP" %}
+                             {% else %}
+                             {% trans "Tempo para ser retirado" %}
+                             {% endif %}
+                         </p>
+                         <p class="lucro-prod countdown" data-countdown="{{ lot_countdown_time }}" data-var="v{{ lot.id }}"> </p>
                      </div>
-
+                     {% endif %}
 
                  </a>
               </div>

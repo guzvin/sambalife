@@ -12,7 +12,6 @@ from store.models import Lot
 from store.admin import LotAdmin
 from stock.models import Product as ProductStock
 from utils import helper
-from utils.middleware.thread_local import ThreadLocalMiddleware
 import datetime
 import logging
 
@@ -199,10 +198,6 @@ def _send_email_abandoned(request, product, days, user):
 def check_scheduled_lots():
     lots = Lot.objects.filter(schedule_date__lte=datetime.datetime.now(datetime.timezone.utc), is_fake=False,
                               is_archived=False, status=1, payment_complete=False)
-    if lots:
-        request = HttpRequest()
-        request.CURRENT_DOMAIN = _('vendedorinternacional.net')
-        ThreadLocalMiddleware.process_request(request)
     for lot in lots:
         LotAdmin.email_new_lot(lot)
     if lots:
@@ -217,6 +212,8 @@ def check_lifecycle_lots():
     # three_days = current_date - datetime.timedelta(minutes=4)
     lots = Lot.objects.filter(lifecycle_date__lte=three_days, lifecycle=2, lifecycle_open=True, is_fake=False,
                               is_archived=False, status=1, payment_complete=False)
+    logger.debug('THREE DAYS!!!!!!!!!!!!!!!!!!!!!!!')
+    logger.debug(lots)
     if lots:
         products_list = []
         for lot in lots:
@@ -228,10 +225,8 @@ def check_lifecycle_lots():
                     .update(quantity=models.F('quantity') + product.quantity)
     lots = Lot.objects.filter(lifecycle_date__lte=one_day, lifecycle=2, lifecycle_open=False, is_fake=False,
                               is_archived=False, status=1, payment_complete=False)
-    if lots:
-        request = HttpRequest()
-        request.CURRENT_DOMAIN = _('vendedorinternacional.net')
-        ThreadLocalMiddleware.process_request(request)
+    logger.debug('ONE DAY!!!!!!!!!!!!!!!!!!!!!!!')
+    logger.debug(lots)
     for lot in lots:
         LotAdmin.email_lifecycle_lot(lot)
     if lots:

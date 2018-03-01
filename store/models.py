@@ -176,6 +176,7 @@ class Product(models.Model):
     lot = models.ForeignKey(Lot, on_delete=models.CASCADE)
     product_stock = models.ForeignKey(ProductStock, on_delete=models.CASCADE, null=True, blank=True,
                                       related_name='stock_product')
+    custom = None
 
     class Meta:
         verbose_name = _('Produto')
@@ -187,7 +188,8 @@ class Product(models.Model):
 
 @receiver(pre_delete, sender=Product)
 def update_stock(sender, instance, **kwargs):
-    if instance.lot.payment_complete is False and instance.lot.is_fake is False and instance.lot.is_archived is False:
+    if instance.custom is None and instance.lot.payment_complete is False and instance.lot.is_fake is False \
+            and instance.lot.is_archived is False:
         ProductStock.objects.filter(pk=instance.product_stock_id).\
             update(quantity=models.F('quantity') + instance.quantity)
 

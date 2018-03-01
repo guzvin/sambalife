@@ -1,5 +1,6 @@
 from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
 from django import template
+import datetime
 import logging
 
 logger = logging.getLogger('django')
@@ -66,3 +67,23 @@ def exists_lot_associated(product):
 @register.simple_tag
 def total_voi_roi(profit, cost):
     return profit / cost * 100
+
+
+@register.simple_tag
+def is_vip(lot):
+    return not lot.lifecycle_open
+
+
+@register.simple_tag
+def lot_countdown(user, lot):
+    if lot.lifecycle == 2 and lot.lifecycle_date and is_subscriber(user, **{'lot': lot}):
+        if lot.lifecycle_open:
+            # delta = 3
+            delta = 4
+        else:
+            # delta = 1
+            delta = 2
+        # tdelta = lot.lifecycle_date + datetime.timedelta(days=delta)
+        tdelta = lot.lifecycle_date + datetime.timedelta(minutes=delta)
+        return datetime.datetime.strftime(tdelta, '%b %-d, %Y %H:%M:%S')
+    return None

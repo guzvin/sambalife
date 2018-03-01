@@ -541,4 +541,11 @@ def get_max_time_period():
         max_time_period = params.time_period_one + params.time_period_two + params.time_period_three
     return max_time_period
 
+
+def strfdelta(tdelta, fmt):
+    d = {"days": tdelta.days}
+    d["hours"], rem = divmod(tdelta.seconds, 3600)
+    d["minutes"], d["seconds"] = divmod(rem, 60)
+    return fmt.format(**d)
+
 valid_ipn_received.connect(paypal_notification)
