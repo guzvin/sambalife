@@ -39,6 +39,7 @@
     "Chosen %s": "Escolhido %s",
     "Click to choose all %s at once.": "Clique para escolher todos os %s de uma vez.",
     "Click to remove all chosen %s at once.": "Clique para remover todos os %s escolhidos de uma vez.",
+    "EXPIRED": "EXPIRADO",
     "Error": "Erro",
     "Expiration date": "Validade",
     "Filter": "Filtrar",
@@ -76,6 +77,7 @@
     "Sorry, we are unable to process your operation. Please reload the page and try again.": "Desculpe, n\u00e3o foi poss\u00edvel realizar sua opera\u00e7\u00e3o. Por favor, recarregue a p\u00e1gina e tente novamente.",
     "This is the list of available %s. You may choose some by selecting them in the box below and then clicking the \"Choose\" arrow between the two boxes.": "Esta \u00e9 a lista de %s dispon\u00edveis. Poder\u00e1 escolher alguns, selecionando-os na caixa abaixo e clicando na seta \"Escolher\" entre as duas caixas.",
     "This is the list of chosen %s. You may remove some by selecting them in the box below and then clicking the \"Remove\" arrow between the two boxes.": "Esta \u00e9 a lista de %s escolhidos. Poder\u00e1 remover alguns, selecionando-os na caixa abaixo e clicando na seta \"Remover\" entre as duas caixas.",
+    "Time to expire": "Tempo para ser retirado",
     "Today": "Hoje",
     "Tomorrow": "Amanh\u00e3",
     "Type into this box to filter down the list of available %s.": "Digite nesta caixa para filtrar a lista de %s dispon\u00edveis.",
@@ -87,7 +89,8 @@
     "Your message has been sent. Thank you for your contact.": "Mensagem enviada, obrigado pelo seu contato.",
     "en": "pt",
     "en-US": "pt-BR",
-    "mm/dd/yy": "dd/mm/yy"
+    "mm/dd/yy": "dd/mm/yy",
+    "store/lot/details": "loja/lote/detalhes"
   };
   for (var key in newcatalog) {
     django.catalog[key] = newcatalog[key];

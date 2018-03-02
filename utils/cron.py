@@ -9,10 +9,11 @@ from shipment.views import cancel_shipment
 from product.models import Product
 from utils.models import Params
 from store.models import Lot
-from store.admin import LotAdmin
+from store.send_email import email_new_lot, email_lifecycle_lot, email_new_lot_lifecycle
 from stock.models import Product as ProductStock
 from utils import helper
 import datetime
+import pytz
 import logging
 
 logger = logging.getLogger('django')
@@ -196,22 +197,57 @@ def _send_email_abandoned(request, product, days, user):
 
 
 def check_scheduled_lots():
-    lots = Lot.objects.filter(schedule_date__lte=datetime.datetime.now(datetime.timezone.utc), is_fake=False,
-                              is_archived=False, status=1, payment_complete=False)
-    for lot in lots:
-        LotAdmin.email_new_lot(lot)
-    if lots:
-        lots.update(schedule_date=None)
+    current_date = datetime.datetime.now(datetime.timezone.utc)
+    lots_no_lifecycle = Lot.objects.filter(~models.Q(lifecycle=2), schedule_date__lte=current_date, is_fake=False,
+                                           is_archived=False, status=1, payment_complete=False)
+    lots_lifecycle = Lot.objects.filter(lifecycle=2, schedule_date__lte=current_date, is_fake=False, is_archived=False,
+                                        status=1, payment_complete=False)
+    for lot in lots_no_lifecycle:
+        email_new_lot(lot)
+    for lot in lots_lifecycle:
+        email_new_lot_lifecycle(lot)
+    if lots_no_lifecycle:
+        lots_no_lifecycle.update(schedule_date=None)
+    if lots_lifecycle:
+        lots_lifecycle.update(schedule_date=None, lifecycle_date=pytz.utc.localize(datetime.datetime.today()))
 
 
 def check_lifecycle_lots():
     current_date = datetime.datetime.now(datetime.timezone.utc)
+    check_lifecycle_three_days(current_date)
+    check_lifecycle_one_day(current_date)
+
+
+def check_lifecycle_one_day(current_date, lid=None):
     one_day = current_date - datetime.timedelta(days=1)
+    # one_day = current_date - datetime.timedelta(minutes=1)
+    filters = {
+        'lifecycle_date__lte': one_day, 'lifecycle': 2, 'lifecycle_open': False, 'is_fake': False,
+        'is_archived': False, 'status': 1, 'payment_complete': False
+    }
+    if lid:
+        filters['id'] = lid
+    lots = Lot.objects.filter(**filters)
+    logger.debug('ONE DAY!!!!!!!!!!!!!!!!!!!!!!!')
+    logger.debug(lots)
+    for lot in lots:
+        email_lifecycle_lot(lot)
+    if lots:
+        lots.update(lifecycle_open=True)
+        return True
+    return False
+
+
+def check_lifecycle_three_days(current_date, lid=None):
     three_days = current_date - datetime.timedelta(days=3)
-    # one_day = current_date - datetime.timedelta(minutes=2)
-    # three_days = current_date - datetime.timedelta(minutes=4)
-    lots = Lot.objects.filter(lifecycle_date__lte=three_days, lifecycle=2, lifecycle_open=True, is_fake=False,
-                              is_archived=False, status=1, payment_complete=False)
+    # three_days = current_date - datetime.timedelta(minutes=3)
+    filters = {
+        'lifecycle_date__lte': three_days, 'lifecycle': 2, 'lifecycle_open': True, 'is_fake': False,
+        'is_archived': False, 'status': 1, 'payment_complete': False
+    }
+    if lid:
+        filters['id'] = lid
+    lots = Lot.objects.filter(**filters)
     logger.debug('THREE DAYS!!!!!!!!!!!!!!!!!!!!!!!')
     logger.debug(lots)
     if lots:
@@ -221,13 +257,7 @@ def check_lifecycle_lots():
         lots.update(lifecycle_date=None, lifecycle=3, lifecycle_open=False, is_archived=True)
         for products in products_list:
             for product in products:
-                ProductStock.objects.filter(pk=product.product_stock_id)\
+                ProductStock.objects.filter(pk=product.product_stock_id) \
                     .update(quantity=models.F('quantity') + product.quantity)
-    lots = Lot.objects.filter(lifecycle_date__lte=one_day, lifecycle=2, lifecycle_open=False, is_fake=False,
-                              is_archived=False, status=1, payment_complete=False)
-    logger.debug('ONE DAY!!!!!!!!!!!!!!!!!!!!!!!')
-    logger.debug(lots)
-    for lot in lots:
-        LotAdmin.email_lifecycle_lot(lot)
-    if lots:
-        lots.update(lifecycle_open=True)
+        return True
+    return False

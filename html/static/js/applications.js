@@ -1401,6 +1401,32 @@
         });
     });
 
+    var fcountdown = function(_this, countDownDate)
+    {
+          // Get todays date and time
+          var now = new Date(new Date().toUTCString().substring(0, 25))
+
+          // Find the distance between now an the count down date
+          var distance = countDownDate - now;
+
+          var hours = 0;
+          var minutes = 0;
+          var seconds = 0;
+          if(distance > 0)
+          {
+              // Time calculations for days, hours, minutes and seconds
+              hours = Math.floor(distance / (1000 * 60 * 60));
+              minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+              seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          }
+
+          // Display the result in the element with id="demo"
+          _this.innerHTML = "<i class='far fa-clock'></i> " + hours + "h "
+          + minutes + "m " + seconds + "s ";
+
+          return distance;
+    };
+
     $('p.countdown').each(function ()
     {
         // Set the date we're counting down to
@@ -1410,27 +1436,61 @@
         // Update the count down every 1 second
         var x = setInterval(function()
         {
-
-          // Get todays date and time
-          var now = new Date(new Date().toUTCString().substring(0, 25))
-
-          // Find the distance between now an the count down date
-          var distance = countDownDate - now;
-
-          // Time calculations for days, hours, minutes and seconds
-          var hours = Math.floor(distance / (1000 * 60 * 60));
-          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-          // Display the result in the element with id="demo"
-          _this.innerHTML = "<i class='far fa-clock'></i> " + hours + "h "
-          + minutes + "m " + seconds + "s ";
+          var distance = fcountdown(_this, countDownDate);
 
           // If the count down is finished, write some text
           if (distance < 0)
           {
             clearInterval(x);
-            _this.innerHTML = "EXPIRED";
+            $.ajax(
+            {
+                method: 'GET',
+                url: '/' + gettext('en') + '/store/public_countdown/' + $(_this).data('lid') + '/'
+            }).done(function( obj )
+            {
+                if(obj.public_countdown)
+                {
+                    var _thisParent = $(_this).parent();
+                    _thisParent.addClass('publico');
+                    _thisParent.removeClass('privado');
+                    _thisParent.find('.countdown-message')[0].innerHTML = gettext('Time to expire');
+                    _thisParent.prev().find('.img-vip').remove();
+                    _thisParent.prev().find('.lot-subscribers').remove();
+                    _thisParent.parent()[0].href = '/' + gettext('en') + '/' + gettext('store/lot/details') + '/' + $(_this).data('lid') + '/'
+                    var yCountDownDate = new Date(obj.public_countdown).getTime();
+                    // Update the count down every 1 second
+                    var y = setInterval(function()
+                    {
+                      var distance = fcountdown(_this, yCountDownDate);
+
+                      // If the count down is finished, write some text
+                      if (distance < 0)
+                      {
+                        clearInterval(y);
+                        $.ajax(
+                        {
+                            method: 'GET',
+                            url: '/' + gettext('en') + '/store/public_countdown/' + $(_this).data('lid') + '/'
+                        }).done(function( obj )
+                        {
+                            _this.innerHTML = gettext('EXPIRED');
+                        })
+                        .fail(function(jqXHR, textStatus, errorThrown)
+                        {
+                            _this.innerHTML = gettext('EXPIRED');
+                        });
+                      }
+                    }, 1000);
+                }
+                else
+                {
+                    _this.innerHTML = gettext('EXPIRED');
+                }
+            })
+            .fail(function(jqXHR, textStatus, errorThrown)
+            {
+                _this.innerHTML = gettext('EXPIRED');
+            });
           }
         }, 1000);
     });

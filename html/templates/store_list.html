@@ -123,10 +123,14 @@
                          <img src="/static/img/default-voi.png" />
                         {% endif %}
                      </div>
+                     {% is_vip lot as is_lot_vip %}
                      <div class="descricao-lote-prod">
                         <h6>{{ lot.name }}</h6>
                         <p class="valor-prod">U$ {{ lot.lot_cost|localize }} </p>
-                        <span>{% trans "Somente Assinantes" %}</span><br>
+                        {% if is_lot_vip %}
+                        <span class="lot-subscribers">{% trans "Somente Assinantes" %}</span>
+                        {% endif %}
+                        <br>
                         <p class="lucro-prod">{% trans "Lucro" %}: U$ {{ lot.profit|localize }}</p>
                         <p class="lucro-prod">{% trans "Número de Itens" %}: {{ lot.products_quantity }}</p>
                         <p class="lucro-prod">{% trans "ROI" %}: {{ lot.average_roi|localize }}% | Rank: {{ lot.average_rank|localize }}%</p>
@@ -143,7 +147,6 @@
                         </div>
                          <!-- Fim conteúdo novo -->
                         {% endif %}
-                        {% is_vip lot as is_lot_vip %}
                         {% if is_lot_vip %}
                           <!-- selo vip. Só vai aparecer quando o lote estiver nas primeiras 24 horas-->
                             <img class="img-vip" src="/static/img/vip.png" width="" />
@@ -161,16 +164,15 @@
 {% endcomment %}
                      {% lot_countdown user lot as lot_countdown_time %}
                      {% if lot_countdown_time %}
-                     <div class="tempo privado">
-                         <p class="lucro-prod">
-                             {% is_vip lot as is_lot_vip %}
+                     <div class="tempo {% if is_lot_vip %}privado{% else %}publico{% endif %} countdown-section">
+                         <p class="lucro-prod countdown-message">
                              {% if is_lot_vip %}
                              {% trans "Tempo para deixar de ser VIP" %}
                              {% else %}
                              {% trans "Tempo para ser retirado" %}
                              {% endif %}
                          </p>
-                         <p class="lucro-prod countdown" data-countdown="{{ lot_countdown_time }}" data-var="v{{ lot.id }}"> </p>
+                         <p class="lucro-prod countdown" data-countdown="{{ lot_countdown_time }}" data-lid="{{ lot.id }}"> </p>
                      </div>
                      {% endif %}
 

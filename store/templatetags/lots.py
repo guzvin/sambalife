@@ -1,5 +1,6 @@
 from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
 from django import template
+from utils.cron import check_lifecycle_one_day, check_lifecycle_three_days
 import datetime
 import logging
 
@@ -76,14 +77,23 @@ def is_vip(lot):
 
 @register.simple_tag
 def lot_countdown(user, lot):
+    return calculate_countdown(user, lot)
+
+
+def calculate_countdown(user, lot, force_is_open=False):
+    if force_is_open:
+        current_date = datetime.datetime.now(datetime.timezone.utc)
+        if lot.lifecycle_open:
+            if check_lifecycle_three_days(current_date, lid=lot.id):
+                lot.lifecycle = 3
+        elif check_lifecycle_one_day(current_date, lid=lot.id):
+            lot.lifecycle_open = True
     if lot.lifecycle == 2 and lot.lifecycle_date and is_subscriber(user, **{'lot': lot}):
         if lot.lifecycle_open:
-            # delta = 3
-            delta = 4
+            delta = 3
         else:
-            # delta = 1
-            delta = 2
-        # tdelta = lot.lifecycle_date + datetime.timedelta(days=delta)
-        tdelta = lot.lifecycle_date + datetime.timedelta(minutes=delta)
+            delta = 1
+        tdelta = lot.lifecycle_date + datetime.timedelta(days=delta)
+        # tdelta = lot.lifecycle_date + datetime.timedelta(minutes=delta)
         return datetime.datetime.strftime(tdelta, '%b %-d, %Y %H:%M:%S')
     return None

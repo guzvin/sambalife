@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _
 from store.models import Lot
+from store.templatetags.lots import calculate_countdown
 from product.models import Product
 from stock.models import Product as StockProduct
 from django.conf import settings
@@ -435,4 +436,11 @@ def _product_autocomplete(qs):
                                                             product.redirect_services.all()],
                                       'notes': product.notes})
     return HttpResponse(json.dumps(products_autocomplete),
+                        content_type='application/json')
+
+
+@require_http_methods(["GET"])
+def public_countdown(request, pid=None):
+    c = calculate_countdown(request.user, Lot.objects.get(pk=pid), force_is_open=True)
+    return HttpResponse(json.dumps({} if c is None else {'public_countdown': c}),
                         content_type='application/json')

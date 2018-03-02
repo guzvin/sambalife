@@ -92,4 +92,5 @@ urlpatterns += i18n_patterns(
     url(_(r'^politicas-de-privacidade'), privacy_policy, name='privacy_policy'),
     url(r'^store/product_name/autocomplete[/]$', product_name_autocomplete, name='store_product_name_autocomplete'),
     url(r'^store/product_asin/autocomplete[/]$', product_asin_autocomplete, name='store_product_asin_autocomplete'),
+    url(r'^store/public_countdown/(?P<pid>[0-9]+)/$', public_countdown, name='public_countdown'),
 )
