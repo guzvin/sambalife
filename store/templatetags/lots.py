@@ -88,7 +88,7 @@ def calculate_countdown(user, lot, force_is_open=False):
                 lot.lifecycle = 3
         elif check_lifecycle_one_day(current_date, lid=lot.id):
             lot.lifecycle_open = True
-    if lot.lifecycle == 2 and lot.lifecycle_date and is_subscriber(user, **{'lot': lot}):
+    if lot.status == 1 and lot.lifecycle == 2 and lot.lifecycle_date and is_subscriber(user, **{'lot': lot}):
         if lot.lifecycle_open:
             delta = 3
         else:

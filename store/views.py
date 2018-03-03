@@ -325,7 +325,10 @@ def store_paypal_notification_success(_lot_details, user_id, ipn_obj):
                                             'autorização (%(auth_user)s).') % {'pay_user': user_id,
                                                                                'auth_user': _lot_details.user_id},)
         _lot_details.payment_complete = True
-        _lot_details.save(update_fields=['payment_complete'])
+        _lot_details.lifecycle = 3
+        _lot_details.lifecycle_date = None
+        _lot_details.lifecycle_open = False
+        _lot_details.save(update_fields=['payment_complete', 'lifecycle', 'lifecycle_date', 'lifecycle_open'])
         products = _lot_details.product_set.all()
         for product in products:
             Product.objects.create(name=product.name, description=_('Produto comprado pela Plataforma. '

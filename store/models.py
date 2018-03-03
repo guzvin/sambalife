@@ -86,7 +86,7 @@ class Lot(models.Model):
         (2, _('Ligado')),  # On
         (3, _('Terminado')),  # On
     )
-    lifecycle = models.SmallIntegerField('Lifecycle', choices=LIFECYCLE_CHOICES, default=1)
+    lifecycle = models.SmallIntegerField('Lifecycle', choices=LIFECYCLE_CHOICES, default=2)
     lifecycle_date = models.DateTimeField(_('Data do lifecycle'), null=True, blank=True)
     lifecycle_open = models.BooleanField(_('Lifecycle aberto'), default=False)
 
