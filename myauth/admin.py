@@ -413,7 +413,7 @@ class GroupAdmin(admin.ModelAdmin):
         field = super(GroupAdmin, self).formfield_for_dbfield(db_field, request, **kwargs)
         if db_field.name == 'permissions' and request.user.is_superuser is False:
             field.queryset = field.queryset.filter(Q(content_type__app_label__in=[
-                'admin', 'auth', 'myauth', 'product', 'shipment', 'payment']) & ~Q(content_type__model__in=[
+                'admin', 'auth', 'myauth', 'product', 'shipment', 'payment', 'store']) & ~Q(content_type__model__in=[
                     'estimates', 'permission', 'costformula']))
         return field
 

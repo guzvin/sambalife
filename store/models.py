@@ -35,6 +35,9 @@ class Collaborator(models.Model):
     class Meta:
         verbose_name = _('Colaborador')
         verbose_name_plural = _('Colaboradores')
+        permissions = (
+            ('collaborator', _('Colaborador')),
+        )
 
     def __str__(self):
         return self.name
