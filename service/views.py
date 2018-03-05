@@ -3,7 +3,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseForbidden
 from shipment.views import calculate_shipment
 from shipment.models import Shipment, Product as ShipmentProduct, ProductService
-from service.templatetags.services import has_service_perm
+from shipment.templatetags.shipments import has_shipment_perm
 from django.utils import formats
 from django.utils.encoding import force_text
 import uuid
@@ -25,7 +25,7 @@ def service_product(request, pid=None):
         for product_service in product_services:
             product_services_json.append({'service_id': product_service.service_id,
                                           'service_price': str(product_service.price)})
-    elif has_service_perm(request.user, 'add_product') is False:
+    elif has_shipment_perm(request.user, 'add_productservice') is False:
         return HttpResponseForbidden()
     else:
         selected_services = request.POST.getlist('service')

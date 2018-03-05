@@ -83,7 +83,7 @@
                   {% if user|has_user_perm:'view_users' %}
                   <th>{% trans "Usuário" %}</th>
                   {% endif %}
-                  {% if shipment.status == 1 and user|has_service_perm:'add_product' or shipment.status > 1 %}
+                  {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' or shipment.status > 1 %}
                   <th>{% trans "Serviços" %}</th>
                   {% endif %}
 {% comment %}
@@ -126,9 +126,9 @@
                   {% if user|has_user_perm:'view_users' %}
                   <td>{{ shipment.user.first_name }}</td>
                   {% endif %}
-                  {% if shipment.status == 1 and user|has_service_perm:'add_product' or shipment.status > 1 %}
+                  {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' or shipment.status > 1 %}
                   <td>
-                  {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
+                  {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' %}
                       <a class="btn btn-primary add-service-product-shipment" title="{% trans 'Atribuir serviços' %}" href="javascript:void(0);" data-shipment-product-id="{{product.id}}" data-shipment-product-uid="{{product.uid}}"><i class="fa fa-fw fa-cogs"></i></a>
                       <input type="hidden" name="services{{product.id}}" id="services{{product.id}}" class="required-validate services-validation" value="{% if product|has_product_service %}1{% endif %}" />
                   {% elif shipment.status > 1 %}
@@ -608,7 +608,7 @@
         </div>
      </form>
     {% endif %}
-    {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
+    {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' %}
     <form>
     <input type="hidden" name="service_product_id" value="">
     <input type="hidden" name="shipment_product_uid" value="">
@@ -623,7 +623,7 @@
                 <div class="modal-body">
                     {% for service in services%}
                     <div class="checkbox">
-                        {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
+                        {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' %}
                         <label><input type="checkbox" name="service" value="{{ service.id }}"> {{ service.name }}</label>
                         <input type="text" name="price{{ service.id }}" value="{{service.price|unlocalize}}">
                         {% else %}
@@ -636,7 +636,7 @@
                     {% endfor %}
                 </div>
                 <div class="modal-footer">
-                    {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
+                    {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' %}
                     <button type="button" id="send-btn-add-service-product" class="btn btn-info">{% trans "Salvar" %}</button>
                     {% endif %}
                     <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
@@ -644,7 +644,7 @@
             </div>
         </div>
     </div>
-    {% if shipment.status == 1 and user|has_service_perm:'add_product' %}
+    {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' %}
     </form>
     {% endif %}
 {% endblock %}
