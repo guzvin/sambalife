@@ -146,7 +146,7 @@ class LotProductFormSet(helper.RequiredBaseInlineFormSet):
                 forms_valid = False
             old_stock_product_id = None
             stock_product = None
-            stock_product_id = form['product_stock'].value()
+            stock_product_id = form['product_stock'].value() if 'product_stock' in form else []
             if len(stock_product_id) == 0:
                 identifier = form.cleaned_data.get('identifier')
                 if identifier is None:
@@ -432,36 +432,37 @@ class LotAdmin(admin.ModelAdmin):
         lot_obj = super(LotAdmin, self).save_form(request, form, change)
         logger.debug('@@@@@@@@@@!!!!!!!!!!SAVE FORM!!!!!!!!@@@@@@@@@@@@@@@')
         if request.method == 'POST':
-            is_fake = form.inline_initial_data('is_fake')
-            is_archived = form.inline_initial_data('is_archived')
-            status = form.inline_initial_data('status')
-            status = status[0], int(status[1]),
-            schedule_date = form.inline_initial_data('schedule_date')
-            schedule_date = schedule_date[0], form.cleaned_data.get('schedule_date'),
-            if status[1] == 2:
-                lot_obj.payment_complete = True
-                sell_date = form.cleaned_data.get('sell_date')
-                if sell_date is None:
-                    lot_obj.sell_date = pytz.utc.localize(datetime.datetime.today())
-            else:
-                lot_obj.payment_complete = False
-                lot_obj.sell_date = None
-            if schedule_date[1] and schedule_date[1] <= datetime.datetime.now(datetime.timezone.utc):
-                lot_obj.schedule_date = None
-            if lot_obj.schedule_date is None and lot_obj.payment_complete is False and is_fake[1] is False \
-                    and is_archived[1] is False:
-                initial_lifecycle = form.inline_initial_data('lifecycle')
-                initial_lifecycle = initial_lifecycle[0], int(initial_lifecycle[1]),
-                if initial_lifecycle[0] != initial_lifecycle[1] or schedule_date[0] != schedule_date[1] \
-                        or status[0] != status[1] or is_fake[0] != is_fake[1] or is_archived[0] != is_archived[1]:
-                    if initial_lifecycle[1] == 2:
-                        lot_obj.lifecycle_date = pytz.utc.localize(datetime.datetime.today())
-                    else:
-                        lot_obj.lifecycle_date = None
-                        lot_obj.lifecycle_open = False
-            else:
-                lot_obj.lifecycle_date = None
-                lot_obj.lifecycle_open = False
+            if lot_obj.payment_complete is False:
+                is_fake = form.inline_initial_data('is_fake')
+                is_archived = form.inline_initial_data('is_archived')
+                status = form.inline_initial_data('status')
+                status = status[0], int(status[1]),
+                schedule_date = form.inline_initial_data('schedule_date')
+                schedule_date = schedule_date[0], form.cleaned_data.get('schedule_date'),
+                if status[1] == 2:
+                    lot_obj.payment_complete = True
+                    sell_date = form.cleaned_data.get('sell_date')
+                    if sell_date is None:
+                        lot_obj.sell_date = pytz.utc.localize(datetime.datetime.today())
+                else:
+                    lot_obj.payment_complete = False
+                    lot_obj.sell_date = None
+                if schedule_date[1] and schedule_date[1] <= datetime.datetime.now(datetime.timezone.utc):
+                    lot_obj.schedule_date = None
+                if lot_obj.schedule_date is None and lot_obj.payment_complete is False and is_fake[1] is False \
+                        and is_archived[1] is False:
+                    initial_lifecycle = form.inline_initial_data('lifecycle')
+                    initial_lifecycle = initial_lifecycle[0], int(initial_lifecycle[1]),
+                    if initial_lifecycle[0] != initial_lifecycle[1] or schedule_date[0] != schedule_date[1] \
+                            or status[0] != status[1] or is_fake[0] != is_fake[1] or is_archived[0] != is_archived[1]:
+                        if initial_lifecycle[1] == 2:
+                            lot_obj.lifecycle_date = pytz.utc.localize(datetime.datetime.today())
+                        else:
+                            lot_obj.lifecycle_date = None
+                            lot_obj.lifecycle_open = False
+                else:
+                    lot_obj.lifecycle_date = None
+                    lot_obj.lifecycle_open = False
             request.POST = request.POST.copy()
             request.POST['_lot_obj'] = lot_obj
         return lot_obj
@@ -606,8 +607,8 @@ class LotAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         page_readonly_fields = self.readonly_fields
         if obj and obj.status == 2 and obj.payment_complete:
-            page_readonly_fields += ('is_fake', 'status', 'sell_date', 'payment_complete', 'schedule_date', 'name',
-                                     'order_weight', 'description', 'collaborator', 'thumbnail', 'groups')
+            page_readonly_fields += ('is_fake', 'status', 'lifecycle', 'sell_date', 'payment_complete', 'schedule_date',
+                                     'name', 'order_weight', 'description', 'collaborator', 'thumbnail', 'groups')
         return page_readonly_fields
 
     @property
