@@ -20,7 +20,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
 from utils import helper
-from utils.models import Params
+from store.templatetags.lots import has_store_perm
 from django.db.models import Q, F
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
@@ -91,6 +91,7 @@ def merchant_shipment_list(request):
 def list_shipment(request, template_name, has_perm):
     if has_perm:
         is_user_perm = has_user_perm(request.user, 'view_users')
+        is_collaborator_perm = has_store_perm(request.user, 'collaborator')
         queries = []
         logger.debug('@@@@@@@@@@@@ SHIPMENT FILTERS @@@@@@@@@@@@@@')
         filter_id = request.GET.get('id')
@@ -111,7 +112,7 @@ def list_shipment(request, template_name, has_perm):
         if filter_id:
             queries.append(Q(pk__startswith=filter_id))
             filter_values['id'] = filter_id
-        if is_user_perm and filter_user:
+        if (is_user_perm or is_collaborator_perm) and filter_user:
             queries.append(Q(user__first_name__icontains=filter_user) | Q(user__last_name__icontains=filter_user) |
                            Q(user__email__icontains=filter_user))
             filter_values['user'] = filter_user
@@ -134,8 +135,10 @@ def list_shipment(request, template_name, has_perm):
             queries.append(Q(is_archived=False))
         logger.debug(str(queries))
         logger.debug(str(len(queries)))
-        if is_user_perm is False:
+        if is_user_perm is False and is_collaborator_perm is False:
             queries.append(Q(user=request.user))
+        elif is_collaborator_perm:
+            queries.append((Q(user=request.user) | Q(product__product__collaborator=request.user.collaborator)))
         if template_name == 'shipment_list.html':
             queries.append(Q(type=None))
         else:
@@ -144,7 +147,7 @@ def list_shipment(request, template_name, has_perm):
         for item in queries:
             query &= item
         logger.debug(str(query))
-        if is_user_perm:
+        if is_user_perm or is_collaborator_perm:
             logger.debug('FILTERED')
             _shipment_list = Shipment.objects.filter(query).select_related('user').order_by('id')
         else:
@@ -180,10 +183,13 @@ def shipment_details(request, pid=None):
     logger.debug(request.META)
     if has_shipment_perm(request.user, 'view_shipments') or has_shipment_perm(request.user, 'view_fbm_shipments'):
         is_user_perm = has_user_perm(request.user, 'view_users')
+        is_collaborator_perm = has_store_perm(request.user, 'collaborator')
         query = Q(pk=pid)
         try:
-            if is_user_perm is False:
+            if is_user_perm is False and is_collaborator_perm is False:
                 query &= Q(user=request.user)
+            elif is_collaborator_perm:
+                query &= (Q(user=request.user) | Q(product__product__collaborator=request.user.collaborator))
             _shipment_details = Shipment.objects.select_related('user').get(query)
         except Shipment.DoesNotExist as e:
             logger.error(e)
@@ -535,11 +541,14 @@ def current_milli_time(): return int(round(time.time() * 1000))
 def shipment_pay_form(request, pid=None):
     if has_shipment_perm(request.user, 'view_shipments') or has_shipment_perm(request.user, 'view_fbm_shipments'):
         is_user_perm = has_user_perm(request.user, 'view_users')
+        is_collaborator_perm = has_store_perm(request.user, 'collaborator')
         query = Q(pk=pid) & Q(status=3) & Q(is_archived=False) & Q(is_canceled=False)
         try:
             with transaction.atomic():
-                if is_user_perm is False:
+                if is_user_perm is False and is_collaborator_perm is False:
                     query &= Q(user=request.user)
+                elif is_collaborator_perm:
+                    query &= (Q(user=request.user) | Q(product__product__collaborator=request.user.collaborator))
                 _shipment_details = Shipment.objects.select_for_update().select_related('user').get(query)
                 if request.user == _shipment_details.user or has_group(request.user, 'admins'):
                     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_shipment_details.user)

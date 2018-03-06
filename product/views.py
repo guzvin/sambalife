@@ -15,6 +15,7 @@ from utils.helper import MyBaseInlineFormSet, ObjectView, send_email_basic_templ
 from store.models import Collaborator
 from product.templatetags.products import has_product_perm
 from myauth.templatetags.users import has_user_perm
+from store.templatetags.lots import has_store_perm
 from django.utils.html import format_html, mark_safe
 from django.conf import settings
 from django.utils import translation
@@ -31,6 +32,7 @@ logger = logging.getLogger('django')
 def product_stock(request):
     if has_product_perm(request.user, 'view_products'):
         is_user_perm = has_user_perm(request.user, 'view_users')
+        is_collaborator_perm = has_store_perm(request.user, 'collaborator')
         queries = []
         logger.debug('@@@@@@@@@@@@ PRODUCT STOCK FILTERS @@@@@@@@@@@@@@')
         logger.debug(settings.DEBUG)
@@ -74,7 +76,7 @@ def product_stock(request):
         if filter_asin:
             queries.append(Q(asin=filter_asin))
             filter_values['asin'] = filter_asin
-        if is_user_perm and filter_user:
+        if (is_user_perm or is_collaborator_perm) and filter_user:
             queries.append(Q(user__first_name__icontains=filter_user) | Q(user__last_name__icontains=filter_user) |
                            Q(user__email__icontains=filter_user))
             filter_values['user'] = filter_user
@@ -94,9 +96,11 @@ def product_stock(request):
         logger.debug('@@@@@@@@@@@@ QUERIES @@@@@@@@@@@@@@')
         logger.debug(str(queries))
         logger.debug(str(len(queries)))
-        if is_user_perm is False:
+        if is_user_perm is False and is_collaborator_perm is False:
             queries.append(~Q(status=100))
             queries.append(Q(user=request.user))
+        elif is_collaborator_perm:
+            queries.append((Q(user=request.user) | Q(collaborator=request.user.collaborator)))
         is_filtered = len(queries) > 0
         if is_filtered:
             query = queries.pop()
@@ -228,7 +232,8 @@ def product_edit_status(request, pid=None, output=None):
     request.PUT = QueryDict(request.body)
     try:
         product = Product.objects.select_related('user').get(pk=pid)
-        if product.user == request.user or has_user_perm(request.user, 'view_users'):
+        if product.user == request.user or has_user_perm(request.user, 'view_users') or \
+                (has_store_perm(request.user, 'collaborator') and product.collaborator == request.user.collaborator):
             fields_to_update = []
             error_msg = []
             product_quantity_partial = request.PUT.get('product_quantity_partial')
@@ -356,10 +361,13 @@ def product_details(request, pid=None):
         return HttpResponseForbidden()
     query = Q(pk=pid)
     try:
-        if has_user_perm(request.user, 'view_users') is False:
+        is_collaborator_perm = has_store_perm(request.user, 'collaborator')
+        if has_user_perm(request.user, 'view_users') is False and is_collaborator_perm is False:
             query &= Q(user=request.user)
             product = Product.objects.get(query)
         else:
+            if is_collaborator_perm:
+                query &= (Q(user=request.user) | Q(collaborator=request.user.collaborator))
             product = Product.objects.select_related('user').get(query)
         shipment_products = product.product_set.all()
         shipments = ', '.join([str(shipment_product.shipment_id) for shipment_product in shipment_products])
@@ -379,8 +387,11 @@ def product_delete(request):
         return HttpResponseForbidden()
     request.DELETE = QueryDict(request.body)
     query = Q(pk=request.DELETE.get('pid'))
-    if has_user_perm(request.user, 'view_users') is False:
+    is_collaborator_perm = has_store_perm(request.user, 'collaborator')
+    if has_user_perm(request.user, 'view_users') is False and is_collaborator_perm is False:
         query &= Q(user=request.user)
+    elif is_collaborator_perm:
+        query &= (Q(user=request.user) | Q(collaborator=request.user.collaborator))
     try:
         product = Product.objects.get(query)
         shipment_products = product.product_set.all()

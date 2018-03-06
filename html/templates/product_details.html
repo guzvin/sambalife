@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n tz permissions products users %}
+{% load i18n tz permissions products users lots %}
 {% block conteudo %}
 
 <div class="container-fluid">
@@ -115,7 +115,7 @@
 
               <!-- fim novos campo -->
 {% endcomment %}
-              {% if user|has_user_perm:'view_users' %}
+              {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                 <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Usuário" %}:</label>
                     <div class="col-xs-9">

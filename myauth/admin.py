@@ -224,15 +224,15 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('id', 'email', 'date_joined', 'is_superuser', 'is_active', 'is_verified', 'partner')
+    list_display = ('id', 'email', 'date_joined', 'is_superuser', 'is_active', 'is_verified', 'collaborator', 'partner')
     list_display_links = ('id', 'email',)
-    list_filter = ('groups', 'is_superuser', 'is_active', 'is_verified', 'partner')
+    list_filter = ('groups', 'is_superuser', 'is_active', 'is_verified', 'collaborator', 'partner')
     readonly_fields = ('date_joined',)
     fieldsets = (
         (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
                            'password1', 'password2')}),
         (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
-        (_('Permissões'), {'fields': ('is_superuser',)}),
+        (_('Permissões'), {'fields': ('is_superuser', 'collaborator',)}),
         (_('Grupos'), {'fields': ('groups',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
@@ -241,7 +241,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {
             'classes': ('wide',),
             'fields': ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
-                       'is_verified', 'is_active', 'is_superuser', 'password1', 'password2', 'groups')}
+                       'is_verified', 'is_active', 'is_superuser', 'password1', 'password2', 'collaborator', 'groups')}
          ),
     )
 
@@ -253,11 +253,11 @@ class UserAdmin(BaseUserAdmin):
                     (None, {
                         'classes': ('wide',),
                         'fields': ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
-                                   'is_verified', 'is_active', 'password1', 'password2', 'groups')}
+                                   'is_verified', 'is_active', 'password1', 'password2', 'collaborator', 'groups')}
                      ),
                 )
                 kwargs['fields'] = ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
-                                    'is_verified', 'is_active', 'password1', 'password2', 'groups')
+                                    'is_verified', 'is_active', 'password1', 'password2', 'collaborator', 'groups')
         return super(UserAdmin, self).get_form(request, obj, **kwargs)
 
     search_fields = ('id', 'email', 'first_name', 'last_name')
@@ -277,8 +277,8 @@ class UserAdmin(BaseUserAdmin):
                 this_extra_context = {}
             this_extra_context.update(system_user_extra_context)
         if not request.user.is_superuser:
-            self.list_display = ('id', 'email', 'date_joined', 'is_active', 'is_verified', 'partner')
-            self.list_filter = ('groups', 'is_active', 'is_verified', 'partner')
+            self.list_display = ('id', 'email', 'date_joined', 'is_active', 'is_verified', 'collaborator', 'partner')
+            self.list_filter = ('groups', 'is_active', 'is_verified', 'collaborator', 'partner')
             self.fieldsets = (
                 (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
                                    'password1', 'password2')}),
@@ -296,6 +296,7 @@ class UserAdmin(BaseUserAdmin):
                 (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
                                    'password1', 'password2')}),
                 (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
+                (_('Permissões'), {'fields': ('collaborator',)}),
                 (_('Grupos'), {'fields': ('groups',)}),
             )
         return super(UserAdmin, self).changelist_view(request, extra_context)

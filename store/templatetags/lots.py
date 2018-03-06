@@ -1,6 +1,6 @@
 from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
 from django import template
-from utils.cron import check_lifecycle_one_day, check_lifecycle_three_days
+from utils import helper
 import datetime
 import logging
 
@@ -84,9 +84,9 @@ def calculate_countdown(user, lot, force_is_open=False):
     if force_is_open:
         current_date = datetime.datetime.now(datetime.timezone.utc)
         if lot.lifecycle_open:
-            if check_lifecycle_three_days(current_date, lid=lot.id):
+            if helper.check_lifecycle_three_days(current_date, lid=lot.id):
                 lot.lifecycle = 3
-        elif check_lifecycle_one_day(current_date, lid=lot.id):
+        elif helper.check_lifecycle_one_day(current_date, lid=lot.id):
             lot.lifecycle_open = True
     if lot.status == 1 and lot.lifecycle == 2 and lot.lifecycle_date and user.is_authenticated:
         # and is_subscriber(user, **{'lot': lot}):

@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n tz permissions users shipments commons %}
+{% load i18n tz permissions users shipments commons lots %}
 
 {% block conteudo %}
 
@@ -20,7 +20,7 @@
                     <label for="filtro-id">{{ id }}</label>
                     <input type="text" class="form-control" id="filtro-id" placeholder="{{ id }}..." name="id" value="{{ filter_values.id }}">
                 </div>
-                {% if user|has_user_perm:'view_users' %}
+                {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                 <!-- somente o admin visualiza esse filtro -->
                 <div class="form-group col-md-2">
                     {% trans "Usuário" as user_label %}
@@ -78,7 +78,7 @@
                     {% trans "Ordenar pelo ID" as order_id %}
                     <a title="{{ order_id }}" href="javascript:void(0);">{{ id }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
-                  {% if user|has_user_perm:'view_users' %}
+                  {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                   <!-- somente admin visualiza -->
                   <th class="center">
                     {% trans "Ordenar pelo usuário" as order_user %}
@@ -105,7 +105,7 @@
               {% for shipment in shipments %}
                 <tr {% if shipment.is_archived or shipment.is_canceled %}style="color: gray;"{% endif %}>
                   <td>{{ shipment.id }}{% if shipment.is_canceled %} ({% trans "Cancelado" %}){% elif shipment.is_archived %} ({% trans "Arquivado" %}){% endif %}</td>
-                  {% if user|has_user_perm:'view_users' %}
+                  {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                   <!-- somente admin visualiza -->
                   <td class="center">{{ shipment.user.first_name }}<br>({{ shipment.user.email }})</td>
                   <!-- fim campo -->

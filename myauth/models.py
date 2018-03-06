@@ -12,6 +12,7 @@ from django.http import HttpRequest
 from utils.helper import send_email
 from smtplib import SMTPException
 from partner.models import Partner
+from store.models import Collaborator
 import socket
 import logging
 
@@ -32,6 +33,8 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     partner = models.ForeignKey(Partner, verbose_name=_('Parceiro'), on_delete=models.SET_NULL, null=True, blank=True)
     terms_conditions = models.BooleanField(_('Termos e Condições'), default=False)
     language_code = models.CharField(_('Idioma'), choices=settings.LANGUAGES, max_length=5, default='pt')
+    collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
+                                     blank=True)
 
     def __iter__(self):
         yield 'id', self.id

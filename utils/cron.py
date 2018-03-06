@@ -9,8 +9,7 @@ from shipment.views import cancel_shipment
 from product.models import Product
 from utils.models import Params
 from store.models import Lot
-from store.send_email import email_new_lot, email_lifecycle_lot, email_new_lot_lifecycle
-from stock.models import Product as ProductStock
+from store.send_email import email_new_lot, email_new_lot_lifecycle
 from utils import helper
 import datetime
 import pytz
@@ -214,50 +213,5 @@ def check_scheduled_lots():
 
 def check_lifecycle_lots():
     current_date = datetime.datetime.now(datetime.timezone.utc)
-    check_lifecycle_three_days(current_date)
-    check_lifecycle_one_day(current_date)
-
-
-def check_lifecycle_one_day(current_date, lid=None):
-    one_day = current_date - datetime.timedelta(days=1)
-    # one_day = current_date - datetime.timedelta(minutes=1)
-    filters = {
-        'lifecycle_date__lte': one_day, 'lifecycle': 2, 'lifecycle_open': False, 'is_fake': False,
-        'is_archived': False, 'status': 1, 'payment_complete': False
-    }
-    if lid:
-        filters['id'] = lid
-    lots = Lot.objects.filter(**filters)
-    logger.debug('ONE DAY!!!!!!!!!!!!!!!!!!!!!!!')
-    logger.debug(lots)
-    for lot in lots:
-        email_lifecycle_lot(lot)
-    if lots:
-        lots.update(lifecycle_open=True)
-        return True
-    return False
-
-
-def check_lifecycle_three_days(current_date, lid=None):
-    three_days = current_date - datetime.timedelta(days=3)
-    # three_days = current_date - datetime.timedelta(minutes=3)
-    filters = {
-        'lifecycle_date__lte': three_days, 'lifecycle': 2, 'lifecycle_open': True, 'is_fake': False,
-        'is_archived': False, 'status': 1, 'payment_complete': False
-    }
-    if lid:
-        filters['id'] = lid
-    lots = Lot.objects.filter(**filters)
-    logger.debug('THREE DAYS!!!!!!!!!!!!!!!!!!!!!!!')
-    logger.debug(lots)
-    if lots:
-        products_list = []
-        for lot in lots:
-            products_list.append(lot.product_set.all())
-        lots.update(lifecycle_date=None, lifecycle=3, lifecycle_open=False, is_archived=True)
-        for products in products_list:
-            for product in products:
-                ProductStock.objects.filter(pk=product.product_stock_id) \
-                    .update(quantity=models.F('quantity') + product.quantity)
-        return True
-    return False
+    helper.check_lifecycle_three_days(current_date)
+    helper.check_lifecycle_one_day(current_date)

@@ -7,6 +7,7 @@ from myauth.templatetags.users import has_user_perm
 from datetime import timedelta
 from utils.templatetags.commons import timezone_name
 from django.utils.encoding import force_text
+from store.templatetags.lots import has_store_perm
 import pytz
 import logging
 
@@ -76,16 +77,22 @@ def etc(initial_date, **kwargs):
 @register.simple_tag
 def open_fba_shipments(user):
     query_filter = Q(status__lt=5) & Q(is_archived=False) & Q(is_canceled=False) & Q(type=None)
-    if has_user_perm(user, 'view_users') is False:
+    is_collaborator_perm = has_store_perm(user, 'collaborator')
+    if has_user_perm(user, 'view_users') is False and is_collaborator_perm is False:
         query_filter &= Q(user=user)
+    elif is_collaborator_perm:
+        query_filter &= (Q(user=user) | Q(product__product__collaborator=user.collaborator))
     return Shipment.objects.filter(query_filter).count()
 
 
 @register.simple_tag
 def open_mf_shipments(user):
     query_filter = Q(status__lt=5) & Q(is_archived=False) & Q(is_canceled=False) & ~Q(type=None)
-    if has_user_perm(user, 'view_users') is False:
+    is_collaborator_perm = has_store_perm(user, 'collaborator')
+    if has_user_perm(user, 'view_users') is False and is_collaborator_perm is False:
         query_filter &= Q(user=user)
+    elif is_collaborator_perm:
+        query_filter &= (Q(user=user) | Q(product__product__collaborator=user.collaborator))
     return Shipment.objects.filter(query_filter).count()
 
 

@@ -32,7 +32,7 @@
                         <label for="filtro-asin">{{ asin }}</label>
                         <input type="text" class="form-control" id="filtro-asin" name="asin" placeholder="{{ asin }}..." value="{{ filter_values.asin }}">
                     </div>
-                    {% if user|has_user_perm:'view_users' %}
+                    {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                     <!-- somente o admin visualiza esse filtro -->
                     <div class="form-group col-md-2">
                         {% trans "Usuário" as user_label %}
@@ -140,7 +140,7 @@
                       {% trans "Ordenar pela quantidade" as order_qty %}
                       <a title="{{ order_qty }}" href="javascript:void(0);">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
-                  {% if user|has_user_perm:'view_users' %}
+                  {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                   <!-- somente admin visualiza -->
                   <th class="center">
                       {% trans "Ordenar pelo usuário" as order_user %}
@@ -174,7 +174,7 @@
                       {% if product.asin %}
                       {{ product.asin }}
                       {% endif %}
-                      {% if user|has_user_perm:'view_users' %}
+                      {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                       {% with associated_lots=product|exists_lot_associated %}
                       {% if associated_lots %}
                       <span class="help help-tooltip help-icon" title="{% blocktrans with associated_lots=associated_lots %}Este produto se encontra associado ao lote, ID: {{ associated_lots }}{% endblocktrans %}"></span>
@@ -202,7 +202,7 @@
                       {% endif %}
                       {% endwith %}
                   </td>
-                  {% if user|has_user_perm:'view_users' %}
+                  {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                   <!-- somente admin visualiza -->
                   <td class="center">{{ product.user.first_name }}<br>({{ product.user.email }})</td>
                   <!-- fim campo -->
