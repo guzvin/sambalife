@@ -86,7 +86,7 @@
                             </li>
                             <li class="divider"></li>
                             <li class="{% block pagamentos %}{% endblock %}">
-                                <a href="{%url 'admin:payment_mypaypalipn_changelist' %}"><i class="fa fa-fw fa-paypal"></i> {% trans "Pagamentos" %}</a>
+                                <a href="{%url 'admin:payment_mypaypalipn_changelist' %}"><i class="fab fa-paypal"></i> {% trans "Pagamentos" %}</a>
                             </li>
                             {% if user|has_service_perm:'add_service' %}
                             <li class="divider"></li>
@@ -105,7 +105,7 @@
                             <li>
                                 <form action="{%url 'user_impersonate' %}" id="impersonate_form" method="post">
                                     {% csrf_token %}
-                                    {% trans "Acessar como" %}: <input class="form-control" type="text" name="impersonate_id" onkeydown="var key = event.which || event.keyCode || 0; if(key === 13){ document.getElementById('impersonate_form').submit(); }" />
+                                    <i class="fas fa-user-secret"></i> {% trans "Acessar como" %}: <input class="form-control" type="text" name="impersonate_id" onkeydown="var key = event.which || event.keyCode || 0; if(key === 13){ document.getElementById('impersonate_form').submit(); }" />
                                 </form>
                             </li>
                             {% endif %}
@@ -125,7 +125,7 @@
                     </li>
 
                     <li class="{% block comoFunciona %}{% endblock %}">
-                        <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-leanpub"></i> {% trans "Como Funciona" %}</a>
+                        <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-book"></i> {% trans "Como Funciona" %}</a>
                     </li>
 {% if LANGUAGE_CODE == 'pt' %}
                     <li class="{% block faq %}{% endblock %}">
@@ -137,7 +137,7 @@
                     </li>
 {% if LANGUAGE_CODE == 'pt' %}
                     <li class="tutorial">
-                        <a href="{% trans '/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf' %}" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
+                        <a href="{% trans '/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf' %}" target="_blank" class="abre-tutorial"><i class="fa fa-book"></i> {% trans "Tutorial Plataforma" %}</a>
                     </li>
 {% endif %}
 {% comment %}
@@ -247,14 +247,14 @@
                             {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
                                 <li class="{% block shipmentlist %}{% endblock %}">
                                     {% open_fba_shipments request.user as ofs %}
-                                    <a href="{% url 'shipment' %}">
-                                        <i class="fa fa-amazon"></i> {% trans "Envios Amazon" %}
+                                    <a class="envio-amazon-link" href="{% url 'shipment' %}">
+                                        <i class="fab fa-amazon"></i> {% trans "Envios Amazon" %}
                                         {% if ofs > 0 %}
                                         <span title="{% trans 'Envios em aberto' %}" class="suspenso">{{ ofs }}</span>
                                         {% endif %}
                                     </a>
                                 </li>
-                                <li class="divider-fix divider"></li>
+                                <li class="divider"></li>
                             {% endif %}
                             {% if user|has_store_perm:'view_purchased_lots' %}
                             <li class="{% block mypurchases %}{% endblock %}">
@@ -302,19 +302,16 @@
                 <div class="col-md-3"><br />
                     <span class="copyright">{% trans "Copyright &copy; VOI Services 2018" %}</span>
                 </div>
-                <div class="col-md-6"><br /><!--
+                <div class="col-md-3"><br /><!--
                     <a href="https://prepshiptool.com" target="_blank" class="by download">
-                        <img src="/static/img/logo-en-maior.png" width="20px" /> by {% trans "PrepShip Tool" %}</a>-->
+                        <img src="/static/img/logo-en-maior.png" width="20px" /> by {% trans "PrepShip Tool" %}</a>
                     <span class="copyright"><strong>{% trans "Endereço" %}:</strong> 920 Lafayette Rd 204-B, Seabrook, NH 03874 <br> <strong>{% trans "Telefone" %}:</strong> 1 978 992 8417</span>
+                -->
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <ul class="list-inline quicklinks">
                         <li>
-                            <a href="{% url 'terms' %}">{% trans "Termos e Condições de Uso" %}</a>
-
-                        </li>
-                        <li>
-                            <a href="{% url 'privacy_policy' %}">{% trans "Políticas de Privacidade" %}</a>
+                            <a href="{% url 'terms' %}">{% trans "Termos e Condições de Uso" %}</a> | <a href="{% url 'privacy_policy' %}">{% trans "Políticas de Privacidade" %}</a>
                         </li>
                     </ul>
                 </div>

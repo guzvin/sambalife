@@ -8,7 +8,7 @@
           <hr>
           <div class="row">
             <div class="col-md-12">
-                <h4><i class="fa fa-fw fa-dropbox"></i> {% trans "Informações sobre destino dos produtos (Warehouses)" %}</h4><br>
+                <h4><i class="fab fa-dropbox"></i> {% trans "Informações sobre destino dos produtos (Warehouses)" %}</h4><br>
             </div>
             <!-- informacoes apos o cadastro-->
 
@@ -33,12 +33,12 @@
 {% block info_pdf_1 %}
             <div class="col-md-4">
                 <div class="form-group upload-pdf-edit">
-                    <label><i class="fa fa-fw fa-file-pdf-o"></i> {% trans "Upload/Download Arquivos" %}:</label><br><br>
+                    <label><i class="fas fa-file-pdf"></i> {% trans "Upload/Download Arquivos" %}:</label><br><br>
                     <label>{% trans "Etiqueta do produto" %}:</label><br>
                     <div class="link-download-pdf">
-                        <a href="{% url 'shipment_pdf_1' 'pdf_1' shipment.id %}" class="download" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Download</a>
+                        <a href="{% url 'shipment_pdf_1' 'pdf_1' shipment.id %}" class="download" target="_blank"><i class="fas fa-file-pdf"></i> Download</a>
                         {% if shipment.status < 5 %}
-                        <a href="javascript:void(0);" class="btn btn-warning edit-pdf"><i class="fa fa-fw fa-pencil-square-o"></i> {% trans "Alterar" %}</a>
+                        <a href="javascript:void(0);" class="btn btn-warning edit-pdf"><i class="fas fa-pencil-alt"></i> {% trans "Alterar" %}</a>
                         {% endif %}
                     </div>
                     {% if shipment.status < 5 %}
