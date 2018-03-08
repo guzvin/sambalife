@@ -477,7 +477,7 @@
     <footer>
         <div class="container">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <span class="copyright">{% trans "Copyright &copy; VOI Services 2018" %}</span>
                 </div>
                 <div class="col-md-3"><!--
@@ -485,10 +485,10 @@
                         <img src="../../static/img/logo-en-maior.png" width="20px"/> by {% trans "PrepShip Tool" %}
                    </a>-->
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-6">
                     <ul class="list-inline quicklinks">
                         <li>
-                            {% trans "<a href='/pt/termos-e-condicoes-de-uso/'>Termos e Condições de Uso" %}</a>
+                            <a href="{% url 'terms' %}">{% trans "Termos e Condições de Uso" %}</a> | <a href="{% url 'privacy_policy' %}">{% trans "Políticas de Privacidade" %}</a>
                         </li>
                     </ul>
                 </div>

@@ -101,7 +101,7 @@
                       <center>
                       {% assign product.product.url as amazon_url %}
                       {% if amazon_url %}
-                      <a class="btn btn-default link-amz-s" target="_blank" href="{{ amazon_url }}"><i class="fa fa-fw fa-amazon"></i></a>
+                      <a class="btn btn-default link-amz-s" target="_blank" href="{{ amazon_url }}"><i class="fab fa-amazon"></i></a>
                       {% else %}
                       -
                       {% endif %}
@@ -160,7 +160,7 @@
                  <label>{% trans "ID" %}: </label> {{ shipment.user.id }} <br>
                  <label>{% trans "Nome" %}: </label> {{ shipment.user.first_name }} {{ shipment.user.last_name }}<br>
                  <label>{% trans "Email" %}: </label> {{ shipment.user.email }}<br>
-                <br> <p><a href="{%url 'admin:myauth_myuser_change' shipment.user.id %}" class="btn btn-default"><i class="fa fa-external-link"></i> {% trans "Acessar cadastro do usuário" %}</a></p>
+                <br> <p><a href="{%url 'admin:myauth_myuser_change' shipment.user.id %}" class="btn btn-default"><i class="fas fa-external-link-square-alt"></i> {% trans "Acessar cadastro do usuário" %}</a></p>
             </div>
           </div>
 
@@ -172,7 +172,7 @@
 
           <div class="row">
             <div class="{% block info_values %}{% endblock %}">
-                <label><i class="fa fa-fw fa-bar-chart"></i> {% trans "Valores" %}:</label><br><br>
+                <label><i class="fas fa-chart-bar"></i> {% trans "Valores" %}:</label><br><br>
                 <p><strong><i class="fa fa-fw fa-list-ol"></i> {% trans "Total de Produtos" %}: </strong><span id="totalProducts">{{ shipment.total_products }}</span> </p>
 {% comment %}
                 <!-- Campo desconto visao usuario -->
@@ -347,7 +347,7 @@
                    </div>
                    <div class="col-md-3 center">
                         <label>
-                            <i class="fa fa-2x fa-file-pdf-o"></i><br>{% trans "Upload Etiqueta Caixa Autorizado" %}
+                            <i class="fas fa-2x fa-upload"></i><br>{% trans "Upload Etiqueta Caixa Autorizado" %}
                             {% if shipment.status == 2 %}
                              {% if shipment.is_standby%}
                               <br>
@@ -552,12 +552,12 @@
                  <!-- botao arquivar -->
                  <!-- Botao cancelar -->
                  <a class="btn btn-danger filtar-btn alterar-status" id="cancel-btn" href="#">
-                    <i class="fa fa-fw fa-remove"></i> {% trans "Cancelar Envio" %}
+                    <i class="fas fa-trash-alt"></i> {% trans "Cancelar Envio" %}
                  </a>
                  <br><br>
               {% endif %}
              {% endif %}
-                <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a>
+                <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i> {% trans "Voltar" %}</a>
                 <br><br><br><br>
              </div>
           </div>

@@ -898,6 +898,21 @@ body {
     line-height: 17px;
 }
 
+.dropdown-menu > li > a.envio-amazon-link{
+    height: 30px;
+}
+
+.dropdown-menu > li > a.envio-amazon-link .suspenso{
+    float: none;
+    top: -33px;
+    left: 115px;
+}
+
+#impersonate_form{
+    width: 90%;
+    margin: 0 0 0 8px;
+}
+
 .input-min{
     width: 235px;
     float: left;
