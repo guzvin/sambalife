@@ -19,6 +19,7 @@ from django.utils.encoding import force_text
 from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
+from django.template.context import Context
 from utils import helper
 from store.templatetags.lots import has_store_perm
 from django.db.models import Q, F
@@ -190,14 +191,14 @@ def shipment_details(request, pid=None):
                 query &= Q(user=request.user)
             elif is_collaborator_perm:
                 query &= (Q(user=request.user) | Q(product__product__collaborator=request.user.collaborator))
-            _shipment_details = Shipment.objects.select_related('user').get(query)
+            _shipment_details = Shipment.objects.distinct().select_related('user').get(query)
         except Shipment.DoesNotExist as e:
             logger.error(e)
             try:
                 error_400_template = loader.get_template('error/400_shipment.html')
             except TemplateDoesNotExist:
                 return HttpResponseBadRequest()
-            return HttpResponseBadRequest(error_400_template.render())
+            return HttpResponseBadRequest(error_400_template.render(Context({}), request))
         has_perm = _shipment_details.type and has_shipment_perm(request.user, 'view_fbm_shipments')
         if has_perm is False:
             has_perm = _shipment_details.type is None and has_shipment_perm(request.user, 'view_shipments')
