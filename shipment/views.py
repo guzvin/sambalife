@@ -704,7 +704,7 @@ def shipment_delete_product(request, output=None):
             if is_collaborator_perm:
                 if request.user.collaborator:
                     query &= Q(collaborator=request.user.collaborator)
-                else:
+                elif request.user.first_name != 'Administrador':
                     raise Shipment.DoesNotExist('Inconsistent collaborator.')
             shipment = Shipment.objects.select_for_update().select_related('user').get(query)
             product = Product.objects.select_for_update().get(pk=request.DELETE.get('delete_product_product_id'),
@@ -750,7 +750,7 @@ def shipment_status(request, pid=None, op=None):
         if is_collaborator_perm:
             if request.user.collaborator:
                 query &= Q(collaborator=request.user.collaborator)
-            else:
+            elif request.user.first_name != 'Administrador':
                 query = None
         if query:
             shipment = Shipment.objects.select_for_update().filter(query)
@@ -788,7 +788,7 @@ def shipment_standby(request, pid=None, op='0'):
         if is_collaborator_perm:
             if request.user.collaborator:
                 query &= Q(collaborator=request.user.collaborator)
-            else:
+            elif request.user.first_name != 'Administrador':
                 query = None
         if query:
             if op == '1':
@@ -808,7 +808,7 @@ def shipment_archive(request, pid=None, op='0'):
         if is_collaborator_perm:
             if request.user.collaborator:
                 query &= Q(collaborator=request.user.collaborator)
-            else:
+            elif request.user.first_name != 'Administrador':
                 raise Shipment.DoesNotExist('Inconsistent collaborator.')
         with transaction.atomic():
             if request.POST.get('archive_shipment') is None:
@@ -882,7 +882,7 @@ def shipment_cancel(request, pid=None):
         if is_collaborator_perm:
             if request.user.collaborator:
                 query &= Q(collaborator=request.user.collaborator)
-            else:
+            elif request.user.first_name != 'Administrador':
                 raise Shipment.DoesNotExist('Inconsistent collaborator.')
         with transaction.atomic():
             if request.POST.get('cancel_shipment') is None:
@@ -1159,7 +1159,7 @@ def shipment_download_pdf(request, pdf=None, pid=None):
             if is_collaborator_perm:
                 if request.user.collaborator:
                     query &= Q(collaborator=request.user.collaborator)
-                else:
+                elif request.user.first_name != 'Administrador':
                     raise Shipment.DoesNotExist('Inconsistent collaborator.')
             shipment = Shipment.objects.get(query)
             pdf_field = shipment.pdf_1
@@ -1172,7 +1172,7 @@ def shipment_download_pdf(request, pdf=None, pid=None):
             if is_collaborator_perm:
                 if request.user.collaborator:
                     query &= Q(shipment__collaborator=request.user.collaborator)
-                else:
+                elif request.user.first_name != 'Administrador':
                     raise Package.DoesNotExist('Inconsistent collaborator.')
             package = Package.objects.get(query)
             pdf_field = package.pdf_2

@@ -53,12 +53,12 @@ def assign(value):
 @register.filter
 def check_collaborator(collaborator, user):
     if has_store_perm(user, 'collaborator'):
-        return user.collaborator and collaborator == user.collaborator_id
+        return user.first_name == 'Administrador' or (user.collaborator and collaborator == user.collaborator_id)
     return True
 
 
 @register.filter
 def is_collaborator(collaborator, user):
     if has_store_perm(user, 'collaborator'):
-        return user.collaborator and collaborator == user.collaborator_id
+        return user.first_name == 'Administrador' or (user.collaborator and collaborator == user.collaborator_id)
     return False

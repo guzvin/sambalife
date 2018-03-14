@@ -1232,12 +1232,12 @@ msgstr[1] ""
 #: html/templates/product_stock.html:53 html/templates/product_stock.html:240
 #: product/models.py:25
 msgid "Encaminhado VOI"
-msgstr "Encaminhado VOI S"
+msgstr "Encaminhado"
 
 #: html/templates/product_stock.html:54 html/templates/product_stock.html:241
 #: product/models.py:26
 msgid "Em Estoque VOI"
-msgstr "Em Estoque VOI S"
+msgstr "Em Estoque"
 
 #: html/templates/product_stock.html:70 product/models.py:50
 #: sambalife/views.py:351 store/models.py:36 store/models.py:82
@@ -2221,7 +2221,7 @@ msgstr ""
 
 #: product/views.py:435
 msgid "Quantidade em estoque na VOI"
-msgstr "Quantidade em estoque na VOI S"
+msgstr "Quantidade em estoque"
 
 #: product/views.py:437
 msgid "Data de validade"

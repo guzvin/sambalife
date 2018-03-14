@@ -58,14 +58,16 @@ def product_stock(request):
         filter_values = {
             'status': '',
         }
-        try:
-            int(filter_collaborator)
-            selected_collaborator = Collaborator.objects.get(pk=filter_collaborator)
-            queries.append(Q(collaborator_id=filter_collaborator))
-            filter_collaborator = selected_collaborator
-        except (ValueError, TypeError, Collaborator.DoesNotExist):
-            queries.append(Q(collaborator=None))
-            filter_collaborator = None
+        if filter_collaborator is None:
+            filter_collaborator = request.user.collaborator
+        else:
+            try:
+                int(filter_collaborator)
+                selected_collaborator = Collaborator.objects.get(pk=filter_collaborator)
+                filter_collaborator = selected_collaborator
+            except (ValueError, TypeError, Collaborator.DoesNotExist):
+                filter_collaborator = None
+        queries.append(Q(collaborator=filter_collaborator))
         filter_values['collaborator'] = filter_collaborator
         if filter_id:
             queries.append(Q(pk__startswith=filter_id))
@@ -242,7 +244,7 @@ def product_edit_status(request, pid=None, output=None):
         if has_store_perm(request.user, 'collaborator'):
             if request.user.collaborator:
                 product_filter &= Q(collaborator=request.user.collaborator)
-            else:
+            elif request.user.first_name != 'Administrador':
                 raise Product.DoesNotExist('Inconsistent collaborator.')
         product = Product.objects.select_related('user').get(product_filter)
         fields_to_update = []
