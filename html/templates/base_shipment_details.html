@@ -83,11 +83,11 @@
                   {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                   <th>{% trans "Usuário" %}</th>
                   {% endif %}
-                  {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' or shipment.status > 1 %}
+                  {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' and shipment.collaborator_id|check_collaborator:user or shipment.status > 1 %}
                   <th>{% trans "Serviços" %}</th>
                   {% endif %}
 {% comment %}
-                  {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False %}
+                  {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False and shipment.collaborator_id|check_collaborator:user %}
                   <th>{% trans "Retirar" %}</th>
                   {% endif %}
 {% endcomment %}
@@ -126,9 +126,9 @@
                   {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                   <td>{{ shipment.user.first_name }}</td>
                   {% endif %}
-                  {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' or shipment.status > 1 %}
+                  {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' and shipment.collaborator_id|check_collaborator:user or shipment.status > 1 %}
                   <td>
-                  {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' %}
+                  {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' and shipment.collaborator_id|check_collaborator:user %}
                       <a class="btn btn-primary add-service-product-shipment" title="{% trans 'Atribuir serviços' %}" href="javascript:void(0);" data-shipment-product-id="{{product.id}}" data-shipment-product-uid="{{product.uid}}"><i class="fa fa-fw fa-cogs"></i></a>
                       <input type="hidden" name="services{{product.id}}" id="services{{product.id}}" class="required-validate services-validation" value="{% if product|has_product_service %}1{% endif %}" />
                   {% elif shipment.status > 1 %}
@@ -137,7 +137,7 @@
                   </td>
                   {% endif %}
 {% comment %}
-                  {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False %}
+                  {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False and shipment.collaborator_id|check_collaborator:user %}
                   {% trans "Excluir" as delete %}
                   <td>
                       <a class="btn btn-danger delete-product-shipment" title="{{ delete }} {{ product.product.name }}" href="#" data-delete-product-shipment-id="{{ shipment.id }}" data-delete-product-product-id="{{ product.id }}"><i class="fa fa-fw fa-close"></i></a>
@@ -224,10 +224,10 @@
                   {% csrf_token %}
                   {% if shipment.status == 2 %}
                   <input type="hidden" name="add_package_file" value="1">
-                  {% elif shipment.status > 3 and user|has_shipment_perm:'add_package' %}
+                  {% elif shipment.status > 3 and user|has_shipment_perm:'add_package' and shipment.collaborator_id|check_collaborator:user %}
                   <input type="hidden" name="add_package_tracking" value="1">
                   {% endif %}
-                  {% if shipment.status <= 4 and user|has_shipment_perm:'add_package' %}
+                  {% if shipment.status <= 4 and user|has_shipment_perm:'add_package' and shipment.collaborator_id|check_collaborator:user %}
                     <input type="hidden" name="edit_package_warehouse" value="1">
                   {% endif %}
                  {% block add_info_2 %}{% endblock %}
@@ -243,7 +243,7 @@
                     <div class="{% block package_info_class %}{% endblock %}">
                         <label><i class="fa fa-fw fa-info-circle"></i> {% trans "Informações do pacote" %}:</label><br><br>
                         <p><strong>{{ weight }}:</strong> {{ package.weight.value|unlocalize }} {% unit_weight_display 1 abbreviate=True %} <br /> <strong>{% trans "Dimensões" %} - </strong> {{ length }}: {{ package.length.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ width }}: {{ package.width.value|unlocalize }}{% unit_length_display 3 abbreviate=True %} x {{ height }}: {{ package.height.value|unlocalize }}{% unit_length_display 3 abbreviate=True %}</p>
-                        {% if user|has_shipment_perm:'add_package' %}
+                        {% if user|has_shipment_perm:'add_package' and shipment.collaborator_id|check_collaborator:user %}
                         <!-- info localizacao visao usuario -->
                         <p>
                             <strong>{{ package.pick_ticket.label }}: </strong>
@@ -262,7 +262,7 @@
                     <div class="{% block package_label_class %}{% endblock %}">
                         <label><i class="fa fa-fw fa-file"></i> {{package.pdf_2.label}}:</label><br><br>
                         {% if shipment.status == 2 %}
-                          {% if user == shipment.user or user|has_group:'admins' %}
+                          {% if user == shipment.user or user|has_group:'admins' or shipment.collaborator_id|is_collaborator:user %}
                         <p>
                             {{ package.pdf_2 }}
                             {% for error in package.pdf_2.errors %}
@@ -296,7 +296,7 @@
                         <div class="form-group">
                             <label for="{{ package.shipment_tracking.id_for_label }}"><i class="fa fa-fw fa-file-pdf-o"></i> {{ package.shipment_tracking.label }}:</label><br><br>
                             <p>
-                                {% if shipment.status > 3 and user|has_shipment_perm:'add_package' %}
+                                {% if shipment.status > 3 and user|has_shipment_perm:'add_package' and shipment.collaborator_id|check_collaborator:user %}
                                 <input type="text" name="{{ package.shipment_tracking.html_name }}" class="form-control" id="{{ package.shipment_tracking.id_for_label }}" value="{% if package.shipment_tracking.value %}{{ package.shipment_tracking.value }}{% endif %}" />
                                 {% for error in package.shipment_tracking.errors %}
                                 <label id="{{ package.shipment_tracking.id_for_label }}-error" class="error" for="{{ package.shipment_tracking.id_for_label }}">{{ error|escape }}</label>
@@ -392,7 +392,7 @@
                    </div>
                </div>
            </div><hr />
-           {% if shipment.status == 1 and user|has_shipment_perm:'add_package' %}
+           {% if shipment.status == 1 and user|has_shipment_perm:'add_package' and shipment.collaborator_id|check_collaborator:user %}
            <div class="row">
                <h4><i class="fa fa-fw fa-line-chart"></i> {% trans "Área Administrativa" %}</h4><br>
                {% csrf_token %}
@@ -468,12 +468,12 @@
           {% if shipment.status != 1 %}
           </form>
           {% endif %}
-          {% if shipment.status == 1 and user|has_shipment_perm:'add_package' %}
+          {% if shipment.status == 1 and user|has_shipment_perm:'add_package' and shipment.collaborator_id|check_collaborator:user %}
           </form>
           {% endif %}
 {% comment %}<!-- FORM GERAL FECHAR -->{% endcomment %}
            {% if shipment.status == 3 and shipment.is_archived is False and shipment.is_canceled is False %}
-            {% if user == shipment.user or user|has_group:'admins' %}
+            {% if user == shipment.user or user|has_group:'admins' or shipment.collaborator_id|is_collaborator:user %}
              {% render_payment_button paypal_form shipment.id %}
              <br><br>
             {% endif %}
@@ -486,7 +486,7 @@
                     <i class="fa fa-fw fa-edit"></i> {% trans "Reativar Envio" %}
                  </a>
               {% else %}
-               {% if shipment.status == 4 and user|has_group:'admins' or request.session.impersonated is not None %}
+               {% if shipment.status == 4 and user|has_group:'admins' or shipment.status == 4 and shipment.collaborator_id|is_collaborator:user or request.session.impersonated is not None %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-final" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Enviar e Finalizar Envio" %}
                 </a>
@@ -503,12 +503,12 @@
                 </a>
                 {% endif %}
                {% endif %}
-               {% if shipment.status == 5 and user|has_group:'admins' or shipment.status == 4 or shipment.status == 3 %}
+               {% if shipment.status == 5 and user|has_group:'admins' or shipment.status == 5 and shipment.collaborator_id|is_collaborator:user or shipment.status == 4 or shipment.status == 3 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-5" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
                 </a>
                {% endif %}
-               {% if user|has_group:'admins' %}
+               {% if user|has_group:'admins' or shipment.collaborator_id|is_collaborator:user %}
                 {% if shipment.status < 4 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="change-btn-status-forward" href="{% url 'shipment_status' shipment.id 'forward' %}">
                     <i class="fa fa-fw fa-forward"></i> {% trans "Pular etapa" %}
@@ -522,7 +522,7 @@
 
                 {% endif %}
                {% endif %}
-               {% if user|has_group:'admins' %}
+               {% if user|has_group:'admins' or shipment.collaborator_id|is_collaborator:user %}
                  <form class="left" action="{% if shipment.is_standby%}{% url 'shipment_standby' shipment.id '1' %}{% else %}{% url 'shipment_standby' shipment.id '2' %}{% endif %}" method="post" id="form-standby-shipment">
                     {% csrf_token %}
                     <input type="hidden" name="standby_shipment" value="1">
@@ -565,7 +565,7 @@
         <div class="col-md-1 sidebar">
         </div>
       </div>
-    {% if shipment.status == 4 and user|has_group:'admins' %}
+    {% if shipment.status == 4 and user|has_group:'admins' or shipment.status == 4 and shipment.collaborator_id|is_collaborator:user %}
     <div id="send-shipment-confirmation" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -608,7 +608,7 @@
         </div>
      </form>
     {% endif %}
-    {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' %}
+    {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' and shipment.collaborator_id|check_collaborator:user %}
     <form>
     <input type="hidden" name="service_product_id" value="">
     <input type="hidden" name="shipment_product_uid" value="">
@@ -623,7 +623,7 @@
                 <div class="modal-body">
                     {% for service in services%}
                     <div class="checkbox">
-                        {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' %}
+                        {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' and shipment.collaborator_id|check_collaborator:user %}
                         <label><input type="checkbox" name="service" value="{{ service.id }}"> {{ service.name }}</label>
                         <input type="text" name="price{{ service.id }}" value="{{service.price|unlocalize}}">
                         {% else %}
@@ -636,7 +636,7 @@
                     {% endfor %}
                 </div>
                 <div class="modal-footer">
-                    {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' %}
+                    {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' and shipment.collaborator_id|check_collaborator:user %}
                     <button type="button" id="send-btn-add-service-product" class="btn btn-info">{% trans "Salvar" %}</button>
                     {% endif %}
                     <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
@@ -644,7 +644,7 @@
             </div>
         </div>
     </div>
-    {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' %}
+    {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' and shipment.collaborator_id|check_collaborator:user %}
     </form>
     {% endif %}
 {% endblock %}

@@ -1,4 +1,5 @@
 from django import template
+from store.templatetags.lots import has_store_perm
 import logging
 
 logger = logging.getLogger('django')
@@ -47,3 +48,17 @@ def log_message(message):
 @register.simple_tag
 def assign(value):
     return value
+
+
+@register.filter
+def check_collaborator(collaborator, user):
+    if has_store_perm(user, 'collaborator'):
+        return user.collaborator and collaborator == user.collaborator_id
+    return True
+
+
+@register.filter
+def is_collaborator(collaborator, user):
+    if has_store_perm(user, 'collaborator'):
+        return user.collaborator and collaborator == user.collaborator_id
+    return False

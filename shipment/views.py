@@ -136,10 +136,10 @@ def list_shipment(request, template_name, has_perm):
             queries.append(Q(is_archived=False))
         logger.debug(str(queries))
         logger.debug(str(len(queries)))
-        if is_user_perm is False and is_collaborator_perm is False:
+        if is_collaborator_perm and request.user.collaborator:
+            queries.append((Q(user=request.user) | Q(collaborator=request.user.collaborator)))
+        elif is_user_perm is False:
             queries.append(Q(user=request.user))
-        elif is_collaborator_perm:
-            queries.append((Q(user=request.user) | Q(product__product__collaborator=request.user.collaborator)))
         if template_name == 'shipment_list.html':
             queries.append(Q(type=None))
         else:
@@ -148,7 +148,7 @@ def list_shipment(request, template_name, has_perm):
         for item in queries:
             query &= item
         logger.debug(str(query))
-        if is_user_perm or is_collaborator_perm:
+        if is_user_perm or (is_collaborator_perm and request.user.collaborator):
             logger.debug('FILTERED')
             _shipment_list = Shipment.objects.filter(query).select_related('user').order_by('id')
         else:
@@ -187,11 +187,11 @@ def shipment_details(request, pid=None):
         is_collaborator_perm = has_store_perm(request.user, 'collaborator')
         query = Q(pk=pid)
         try:
-            if is_user_perm is False and is_collaborator_perm is False:
+            if is_collaborator_perm and request.user.collaborator:
+                query &= (Q(user=request.user) | Q(collaborator=request.user.collaborator))
+            elif is_user_perm is False:
                 query &= Q(user=request.user)
-            elif is_collaborator_perm:
-                query &= (Q(user=request.user) | Q(product__product__collaborator=request.user.collaborator))
-            _shipment_details = Shipment.objects.distinct().select_related('user').get(query)
+            _shipment_details = Shipment.objects.select_related('user').get(query)
         except Shipment.DoesNotExist as e:
             logger.error(e)
             try:
@@ -261,7 +261,8 @@ def shipment_details(request, pid=None):
                         context_data['success_message'] = ungettext('Upload realizado com sucesso.',
                                                                     'Uploads realizados com sucesso.',
                                                                     len(package_formset))
-                elif _shipment_details.status == 5 and has_group(request.user, 'admins'):
+                elif _shipment_details.status == 5 and (has_group(request.user, 'admins') or
+                                                        (is_collaborator_perm and request.user.collaborator)):
                         context_data['success'] = True
                         context_data['success_message'] = _('Envio concluído com sucesso.')
         elif request.method == 'POST' and _shipment_details.is_archived is False \
@@ -327,7 +328,8 @@ def shipment_details(request, pid=None):
                             except Shipment.DoesNotExist as e:
                                 logger.error(e)
                                 return HttpResponseBadRequest()
-                if request.user == _shipment_details.user or has_group(request.user, 'admins'):
+                if request.user == _shipment_details.user or has_group(request.user, 'admins') or \
+                        (is_collaborator_perm and request.user.collaborator):
                     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_shipment_details.user)
                     context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
                                                                                             is_render_button=True,
@@ -335,15 +337,14 @@ def shipment_details(request, pid=None):
             elif _shipment_details.status == 2:
                 # Upload PDF 2 Autorizado
                 if request.user == _shipment_details.user or has_group(request.user, 'admins') \
-                        or has_shipment_perm(request.user, 'add_package'):
+                        or (is_collaborator_perm and request.user.collaborator):
                     if request.method == 'POST' and request.POST.get('add_package_file'):
                         package_formset = PackageFormSet(request.POST, request.FILES, instance=_shipment_details,
                                                          prefix='package_set', **package_kwargs)
                         logger.debug('@@@@@@@@@@@@@@@ PDF 2 IS VALID @@@@@@@@@@@@@@@@@')
                         logger.debug(package_formset)
                         logger.debug(package_formset.is_valid())
-                        if package_formset.is_valid() and (request.user == _shipment_details.user
-                                                           or has_shipment_perm(request.user, 'add_package')):
+                        if package_formset.is_valid():
                             try:
                                 next_status = 3 if has_payment(_shipment_details) else 4
                                 with transaction.atomic():
@@ -456,8 +457,9 @@ def shipment_details(request, pid=None):
                                     if is_completing_shipment is False:
                                         packages.append(package)
                                 previous_state = _shipment_details.status
-                                if _shipment_details.status == 4 and has_group(request.user, 'admins') \
-                                        and is_completing_shipment:
+                                if _shipment_details.status == 4 and is_completing_shipment \
+                                        and (has_group(request.user, 'admins')
+                                             or (is_collaborator_perm and request.user.collaborator)):
                                     _shipment_details.status = 5
                                     _shipment_details.save(update_fields=['status'])
                                     complete_shipment(_shipment_details)
@@ -546,55 +548,54 @@ def shipment_pay_form(request, pid=None):
         query = Q(pk=pid) & Q(status=3) & Q(is_archived=False) & Q(is_canceled=False)
         try:
             with transaction.atomic():
-                if is_user_perm is False and is_collaborator_perm is False:
+                if is_collaborator_perm and request.user.collaborator:
+                    query &= (Q(user=request.user) | Q(collaborator=request.user.collaborator))
+                elif is_user_perm is False:
                     query &= Q(user=request.user)
-                elif is_collaborator_perm:
-                    query &= (Q(user=request.user) | Q(product__product__collaborator=request.user.collaborator))
                 _shipment_details = Shipment.objects.select_for_update().select_related('user').get(query)
-                if request.user == _shipment_details.user or has_group(request.user, 'admins'):
-                    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_shipment_details.user)
-                    if is_sandbox:
-                        invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
-                        paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
-                        paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
-                        paypal_cert = settings.PAYPAL_CERT_SANDBOX
-                        paypal_private_cert = settings.PAYPAL_PRIVATE_CERT_SANDBOX
-                        paypal_public_cert = settings.PAYPAL_PUBLIC_CERT_SANDBOX
-                        is_sandbox = settings.PAYPAL_SANDBOX_ENDPOINT_LIVE is False
-                    else:
-                        invoice_id = '_'.join(['A', str(request.user.id), str(pid)])
-                        paypal_business = settings.PAYPAL_BUSINESS
-                        paypal_cert_id = settings.PAYPAL_CERT_ID
-                        paypal_cert = settings.PAYPAL_CERT
-                        paypal_private_cert = settings.PAYPAL_PRIVATE_CERT
-                        paypal_public_cert = settings.PAYPAL_PUBLIC_CERT
+                is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_shipment_details.user)
+                if is_sandbox:
+                    invoice_id = '_'.join(['A', str(request.user.id), str(pid), 'debug', str(current_milli_time())])
+                    paypal_business = settings.PAYPAL_BUSINESS_SANDBOX
+                    paypal_cert_id = settings.PAYPAL_CERT_ID_SANDBOX
+                    paypal_cert = settings.PAYPAL_CERT_SANDBOX
+                    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT_SANDBOX
+                    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT_SANDBOX
+                    is_sandbox = settings.PAYPAL_SANDBOX_ENDPOINT_LIVE is False
+                else:
+                    invoice_id = '_'.join(['A', str(request.user.id), str(pid)])
+                    paypal_business = settings.PAYPAL_BUSINESS
+                    paypal_cert_id = settings.PAYPAL_CERT_ID
+                    paypal_cert = settings.PAYPAL_CERT
+                    paypal_private_cert = settings.PAYPAL_PRIVATE_CERT
+                    paypal_public_cert = settings.PAYPAL_PUBLIC_CERT
 
-                    _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').\
-                        order_by('id')
-                    ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id,
-                                                                save_product_price=True)
-                    _shipment_details.cost = cost
-                    _shipment_details.is_sandbox = is_sandbox
-                    _shipment_details.save(update_fields=['cost', 'is_sandbox'])
-                    paypal_dict = {
-                        'business': paypal_business,
-                        'amount': _shipment_details.cost,
-                        'item_name': _('Envio %(number)s') % {'number': pid},
-                        'invoice': invoice_id,
-                        'notify_url': 'https://' + request.CURRENT_DOMAIN + reverse('paypal-ipn'),
-                        'return_url': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details', args=[pid]),
-                        'cancel_return': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details', args=[pid]),
-                        # 'custom': 'Custom command!',  # Custom command to correlate to some function later (optional)
-                    }
-                    paypal_form = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox, initial=paypal_dict,
-                                                                            paypal_cert=paypal_cert,
-                                                                            cert_id=paypal_cert_id,
-                                                                            private_cert=paypal_private_cert,
-                                                                            public_cert=paypal_public_cert)
-                    rendered_response = paypal_form.render()
-                    logger.info(paypal_dict)
-                    logger.info(rendered_response)
-                    return HttpResponse(rendered_response)
+                _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').\
+                    order_by('id')
+                ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id,
+                                                            save_product_price=True)
+                _shipment_details.cost = cost
+                _shipment_details.is_sandbox = is_sandbox
+                _shipment_details.save(update_fields=['cost', 'is_sandbox'])
+                paypal_dict = {
+                    'business': paypal_business,
+                    'amount': _shipment_details.cost,
+                    'item_name': _('Envio %(number)s') % {'number': pid},
+                    'invoice': invoice_id,
+                    'notify_url': 'https://' + request.CURRENT_DOMAIN + reverse('paypal-ipn'),
+                    'return_url': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details', args=[pid]),
+                    'cancel_return': 'https://' + request.CURRENT_DOMAIN + reverse('shipment_details', args=[pid]),
+                    # 'custom': 'Custom command!',  # Custom command to correlate to some function later (optional)
+                }
+                paypal_form = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox, initial=paypal_dict,
+                                                                        paypal_cert=paypal_cert,
+                                                                        cert_id=paypal_cert_id,
+                                                                        private_cert=paypal_private_cert,
+                                                                        public_cert=paypal_public_cert)
+                rendered_response = paypal_form.render()
+                logger.info(paypal_dict)
+                logger.info(rendered_response)
+                return HttpResponse(rendered_response)
         except Shipment.DoesNotExist as e:
             logger.error(e)
             try:
@@ -697,8 +698,15 @@ def shipment_delete_product(request, output=None):
     logger.debug('@@@@@@@@@@@@ DELETE PRODUCT @@@@@@@@@@@@@@')
     try:
         with transaction.atomic():
-            shipment = Shipment.objects.select_for_update().select_related('user').\
-                get(pk=request.DELETE.get('delete_product_shipment_id'), status=1, is_archived=False, is_canceled=False)
+            is_collaborator_perm = has_store_perm(request.user, 'collaborator')
+            query = Q(pk=request.DELETE.get('delete_product_shipment_id')) & Q(status=1) & Q(is_archived=False)
+            query &= Q(is_canceled=False)
+            if is_collaborator_perm:
+                if request.user.collaborator:
+                    query &= Q(collaborator=request.user.collaborator)
+                else:
+                    raise Shipment.DoesNotExist('Inconsistent collaborator.')
+            shipment = Shipment.objects.select_for_update().select_related('user').get(query)
             product = Product.objects.select_for_update().get(pk=request.DELETE.get('delete_product_product_id'),
                                                               shipment=shipment)
             logger.debug(product.quantity)
@@ -736,8 +744,18 @@ def resolve_url(_shipment_details):
 @require_http_methods(["GET"])
 @transaction.atomic
 def shipment_status(request, pid=None, op=None):
-    if has_group(request.user, 'admins'):
-        shipment = Shipment.objects.select_for_update().filter(pk=pid, is_archived=False, is_canceled=False)
+    is_collaborator_perm = has_store_perm(request.user, 'collaborator')
+    if has_group(request.user, 'admins') or (is_collaborator_perm and request.user.collaborator):
+        query = Q(pk=pid) & Q(is_archived=False) & Q(is_canceled=False)
+        if is_collaborator_perm:
+            if request.user.collaborator:
+                query &= Q(collaborator=request.user.collaborator)
+            else:
+                query = None
+        if query:
+            shipment = Shipment.objects.select_for_update().filter(query)
+        else:
+            shipment = None
         if shipment:
             if shipment[0].status == 2 or shipment[0].status == 3 or shipment[0].status == 4:
                 products = shipment[0].product_set.all()
@@ -764,10 +782,19 @@ def shipment_status(request, pid=None, op=None):
 @login_required
 @require_http_methods(["POST"])
 def shipment_standby(request, pid=None, op='0'):
-    if op == '1':
-        Shipment.objects.filter(pk=pid).update(is_standby=False)
-    elif op == '2':
-        Shipment.objects.filter(pk=pid).update(is_standby=True)
+    is_collaborator_perm = has_store_perm(request.user, 'collaborator')
+    if has_group(request.user, 'admins') or (is_collaborator_perm and request.user.collaborator):
+        query = Q(pk=pid)
+        if is_collaborator_perm:
+            if request.user.collaborator:
+                query &= Q(collaborator=request.user.collaborator)
+            else:
+                query = None
+        if query:
+            if op == '1':
+                Shipment.objects.filter(query).update(is_standby=False)
+            elif op == '2':
+                Shipment.objects.filter(query).update(is_standby=True)
     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
 
 
@@ -776,12 +803,20 @@ def shipment_standby(request, pid=None, op='0'):
 def shipment_archive(request, pid=None, op='0'):
     redirect_url = None
     try:
+        is_collaborator_perm = has_store_perm(request.user, 'collaborator')
+        query = Q(pk=pid) & Q(is_canceled=False)
+        if is_collaborator_perm:
+            if request.user.collaborator:
+                query &= Q(collaborator=request.user.collaborator)
+            else:
+                raise Shipment.DoesNotExist('Inconsistent collaborator.')
         with transaction.atomic():
             if request.POST.get('archive_shipment') is None:
                 raise Shipment.DoesNotExist('archive_shipment parameter not found in request.')
-            _shipment_details = Shipment.objects.select_for_update().get(pk=pid, is_canceled=False)
+            _shipment_details = Shipment.objects.select_for_update().get(query)
             redirect_url = resolve_url(_shipment_details)
-            if request.user != _shipment_details.user and has_group(request.user, 'admins') is False:
+            if request.user != _shipment_details.user and has_group(request.user, 'admins') is False \
+                    and is_collaborator_perm is False:
                 raise Shipment.DoesNotExist('Shipment from another user and user is not from admins group.')
             if op == '1':
                 if _shipment_details.is_archived is False:
@@ -842,12 +877,20 @@ def shipment_archive(request, pid=None, op='0'):
 def shipment_cancel(request, pid=None):
     redirect_url = None
     try:
+        is_collaborator_perm = has_store_perm(request.user, 'collaborator')
+        query = Q(pk=pid)
+        if is_collaborator_perm:
+            if request.user.collaborator:
+                query &= Q(collaborator=request.user.collaborator)
+            else:
+                raise Shipment.DoesNotExist('Inconsistent collaborator.')
         with transaction.atomic():
             if request.POST.get('cancel_shipment') is None:
                 raise Shipment.DoesNotExist('cancel_shipment parameter not found in request.')
-            _shipment_details = Shipment.objects.select_for_update().get(pk=pid)
+            _shipment_details = Shipment.objects.select_for_update().get(query)
             redirect_url = resolve_url(_shipment_details)
-            if request.user != _shipment_details.user and has_group(request.user, 'admins') is False:
+            if request.user != _shipment_details.user and has_group(request.user, 'admins') is False \
+                    and is_collaborator_perm is False:
                 raise Shipment.DoesNotExist('Shipment from another user and user is not from admins group.')
             cancel_shipment(_shipment_details)
     except Shipment.DoesNotExist as err:
@@ -928,6 +971,7 @@ def shipment_add(request):
                         original_product = OriginalProduct.objects.get(pk=product.product_id)
                         product.receive_date = original_product.receive_date
                         shipment.total_products += product.quantity
+                        shipment.collaborator = original_product.collaborator
                     shipment.cost = 0
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
                     shipment.save()
@@ -1042,8 +1086,8 @@ def merchant_shipment_add(request):
 @login_required
 @require_http_methods(["GET"])
 def shipment_calculate(request):
-    if has_shipment_perm(request.user, 'add_shipment') is False and \
-                    has_shipment_perm(request.user, 'add_fbm_shipment') is False:
+    if has_shipment_perm(request.user, 'add_shipment') is False \
+            and has_shipment_perm(request.user, 'add_fbm_shipment') is False:
         return HttpResponseForbidden()
     billing_type = 2  # por serviço
     if billing_type == 2:
@@ -1108,9 +1152,16 @@ def calculate_shipment(products, user_id, save_product_price=False):
 @login_required
 @require_http_methods(["GET"])
 def shipment_download_pdf(request, pdf=None, pid=None):
+    is_collaborator_perm = has_store_perm(request.user, 'collaborator')
+    query = Q(pk=pid)
     if pdf == 'pdf_1':
         try:
-            shipment = Shipment.objects.get(pk=pid)
+            if is_collaborator_perm:
+                if request.user.collaborator:
+                    query &= Q(collaborator=request.user.collaborator)
+                else:
+                    raise Shipment.DoesNotExist('Inconsistent collaborator.')
+            shipment = Shipment.objects.get(query)
             pdf_field = shipment.pdf_1
             user = shipment.user
         except Shipment.DoesNotExist as e:
@@ -1118,13 +1169,18 @@ def shipment_download_pdf(request, pdf=None, pid=None):
             return HttpResponseBadRequest()
     else:
         try:
-            package = Package.objects.get(pk=pid)
+            if is_collaborator_perm:
+                if request.user.collaborator:
+                    query &= Q(shipment__collaborator=request.user.collaborator)
+                else:
+                    raise Package.DoesNotExist('Inconsistent collaborator.')
+            package = Package.objects.get(query)
             pdf_field = package.pdf_2
             user = package.shipment.user
         except Package.DoesNotExist as e:
             logger.error(e)
             return HttpResponseBadRequest()
-    if user == request.user or request.user.groups.filter(name='admins').exists():
+    if user == request.user or has_group(request.user, 'admins') or is_collaborator_perm:
         content_type = magic.from_file(os.path.sep.join([settings.MEDIA_ROOT, pdf_field.name]), mime=True)
         filename = pdf_field.name.split('/')[-1]
         logger.debug('@@@@@@@@@@@@ FILE CONTENT TYPE @@@@@@@@@@@@@@')

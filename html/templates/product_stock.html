@@ -113,10 +113,10 @@
           {% if user|has_shipment_perm:'add_fbm_shipment' %}
             <a class="btn btn-default" id="btn-add-merchant-shipment" data-action-url="{% url 'merchant_shipment_add' %}"><i class="fa fa-ship"></i> {% trans "Criar Envio Merchant" %}</a>
           {% endif %}
-          {% comment %}
+{% comment %}
             <!-- Novo botao -->
             <a class="btn btn-default" id="btn-add-shipment-brazil"><i class="fa fa-globe"></i> {% trans "Criar Envio para o Brasil" %}</a>
-          {% endcomment %}
+{% endcomment %}
           {% if user|has_shipment_perm:'add_shipment' or user|has_shipment_perm:'add_fbm_shipment' %}
             <form action="" method="post" class="form-add-shipment" id="form-add-shipment">
                 {% csrf_token %}
@@ -208,7 +208,7 @@
                   <!-- fim campo -->
                   {% endif %}
                   <td class="">
-                      {% if user|has_product_perm:'change_product_status' %}
+                      {% if user|has_product_perm:'change_product_status' and product.collaborator_id|check_collaborator:user %}
                       <!-- somente admin visualiza o botao de editar status-->
 
                       <a id="mudar-status-{{ product.id }}" class="mudar-status btn btn-default" href="javascript:void(0);">
@@ -223,7 +223,7 @@
                       {% days_in_stock product max_time_period=max_time_period as days_in_voi_stock %}
                       ({{ days_in_voi_stock }} {% trans "dias" %})
                       {% endif %}
-                      {% if user|has_product_perm:'change_product_status' %}
+                      {% if user|has_product_perm:'change_product_status' and product.collaborator_id|check_collaborator:user %}
                       <!-- somente admin visualiza -->
 
                       <div class="contem-status" style="display:none;">

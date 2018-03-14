@@ -72,7 +72,7 @@
 {% block package_warehouse_2 %}
                     <div class="col-md-2">
                         <label><i class="fa fa-fw fa-truck"></i> {{ package.warehouse.label }}:</label><br><br>
-                        {% if shipment.status <= 3 and user|has_shipment_perm:'add_package' %}
+                        {% if shipment.status <= 3 and user|has_shipment_perm:'add_package' and shipment.collaborator_id|check_collaborator:user %}
                         <p><input type="text" placeholder="{{ package.warehouse.label }}..." name="{{ package.warehouse.html_name }}" class="form-control" id="{{ package.warehouse.id_for_label }}" aria-required="true" value="{% if package.warehouse.value %}{{ package.warehouse.value }}{% endif %}"/></p>
                         {% else %}
                         <p>{{ package.warehouse.value }}</p>

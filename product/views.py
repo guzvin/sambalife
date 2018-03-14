@@ -96,18 +96,18 @@ def product_stock(request):
         logger.debug('@@@@@@@@@@@@ QUERIES @@@@@@@@@@@@@@')
         logger.debug(str(queries))
         logger.debug(str(len(queries)))
-        if is_user_perm is False and is_collaborator_perm is False:
+        if is_collaborator_perm and request.user.collaborator:
+            queries.append((Q(user=request.user) | Q(collaborator=request.user.collaborator)))
+        elif is_user_perm is False:
             queries.append(~Q(status=100))
             queries.append(Q(user=request.user))
-        elif is_collaborator_perm:
-            queries.append((Q(user=request.user) | Q(collaborator=request.user.collaborator)))
         is_filtered = len(queries) > 0
         if is_filtered:
             query = queries.pop()
             for item in queries:
                 query &= item
             logger.debug(str(query))
-        if is_user_perm:
+        if is_user_perm or (is_collaborator_perm and request.user.collaborator):
             if is_filtered:
                 logger.debug('@@@@@@@@@@@@ FILTERED @@@@@@@@@@@@@@')
                 products_list = Product.objects.filter(query).select_related('user').order_by('id')
@@ -144,7 +144,7 @@ def product_add_edit(request, pid=None):
     ProductFormSet = modelformset_factory(Product, fields=('name', 'asin', 'url', 'store', 'description', 'quantity',
                                                            'quantity_partial', 'send_date', 'edd_date', 'best_before',
                                                            'condition', 'actual_condition', 'condition_comments',
-                                                           'status', 'pick_ticket'),
+                                                           'status', 'pick_ticket', 'collaborator'),
                                           localized_fields=('send_date',), min_num=1, max_num=1)
     TrackingFormSet = inlineformset_factory(Product, Tracking, formset=MyBaseInlineFormSet, fields=('track_number',),
                                             extra=1)
@@ -155,7 +155,14 @@ def product_add_edit(request, pid=None):
         product_instance = None
     else:
         page_type = 2
-        product_qs = Product.objects.filter(pk=pid)
+        product_filter = Q(pk=pid)
+        is_user_perm = has_user_perm(request.user, 'view_users')
+        is_collaborator_perm = has_store_perm(request.user, 'collaborator')
+        if is_collaborator_perm and request.user.collaborator:
+            product_filter &= (Q(user=request.user) | Q(collaborator=request.user.collaborator))
+        elif is_user_perm is False:
+            product_filter &= Q(user=request.user)
+        product_qs = Product.objects.filter(product_filter)
         try:
             product_instance = product_qs[:1].get()
         except Product.DoesNotExist:
@@ -231,121 +238,125 @@ def product_edit_status(request, pid=None, output=None):
             return HttpResponseForbidden()
     request.PUT = QueryDict(request.body)
     try:
-        product = Product.objects.select_related('user').get(pk=pid)
-        if product.user == request.user or has_user_perm(request.user, 'view_users') or \
-                (has_store_perm(request.user, 'collaborator') and product.collaborator == request.user.collaborator):
-            fields_to_update = []
-            error_msg = []
-            product_quantity_partial = request.PUT.get('product_quantity_partial')
-            if product_quantity_partial:
-                try:
-                    product_quantity_partial = int(product_quantity_partial)
-                    if product.quantity_partial < 0:
-                        int('err')
-                except ValueError:
-                    error_msg.append(_('Quantidade deve ser maior ou igual a zero.') % {'qty': product.quantity})
-                if product_quantity_partial != product.quantity_partial:
-                    product.quantity_partial = product_quantity_partial
-                    fields_to_update.append('quantity_partial')
-                    if product.quantity_partial == 0 or product.quantity_partial > product.quantity:
-                        product.quantity = product.quantity_partial
-                        fields_to_update.append('quantity')
-            product_best_before = request.PUT.get('product_best_before')
-            if product_best_before:
-                try:
-                    product_best_before = datetime.datetime.strptime(product_best_before, str(_('%d/%m/%Y')))
-                    if product.best_before is None or product.best_before.date() != product_best_before.date():
-                        product.best_before = product_best_before
-                        fields_to_update.append('best_before')
-                except ValueError:
-                    error_msg.append(_('Data de Vencimento inválida.'))
-            elif product.best_before:
-                product.best_before = None
-                fields_to_update.append('best_before')
-            if error_msg:
-                return HttpResponse(json.dumps({'success': False, 'error': (_(' ; ').join(error_msg))}),
-                                    content_type='application/json', status=400)
-            if product.quantity == product.quantity_partial and product.quantity == 0 and \
-                    ShipmentProduct.objects.filter(Q(product__id=product.id) &
-                                                   ~Q(shipment__status=5) &
-                                                   Q(shipment__is_archived=False) &
-                                                   Q(shipment__is_canceled=False)).exists() is False:
-                product_status = '99'  # Archived
+        product_filter = Q(pk=pid)
+        if has_store_perm(request.user, 'collaborator'):
+            if request.user.collaborator:
+                product_filter &= Q(collaborator=request.user.collaborator)
             else:
-                product_status = request.PUT.get('product_status')
-            if str(product.status) != product_status:
-                fields_to_update.append('status')
-                if product_status == '2':
-                    product.receive_date = datetime.datetime.now()
-                    fields_to_update.append('receive_date')
-            product_status_display = None
+                raise Product.DoesNotExist('Inconsistent collaborator.')
+        product = Product.objects.select_related('user').get(product_filter)
+        fields_to_update = []
+        error_msg = []
+        product_quantity_partial = request.PUT.get('product_quantity_partial')
+        if product_quantity_partial:
+            try:
+                product_quantity_partial = int(product_quantity_partial)
+                if product.quantity_partial < 0:
+                    int('err')
+            except ValueError:
+                error_msg.append(_('Quantidade deve ser maior ou igual a zero.') % {'qty': product.quantity})
+            if product_quantity_partial != product.quantity_partial:
+                product.quantity_partial = product_quantity_partial
+                fields_to_update.append('quantity_partial')
+                if product.quantity_partial == 0 or product.quantity_partial > product.quantity:
+                    product.quantity = product.quantity_partial
+                    fields_to_update.append('quantity')
+        product_best_before = request.PUT.get('product_best_before')
+        if product_best_before:
+            try:
+                product_best_before = datetime.datetime.strptime(product_best_before, str(_('%d/%m/%Y')))
+                if product.best_before is None or product.best_before.date() != product_best_before.date():
+                    product.best_before = product_best_before
+                    fields_to_update.append('best_before')
+            except ValueError:
+                error_msg.append(_('Data de Vencimento inválida.'))
+        elif product.best_before:
+            product.best_before = None
+            fields_to_update.append('best_before')
+        if error_msg:
+            return HttpResponse(json.dumps({'success': False, 'error': (_(' ; ').join(error_msg))}),
+                                content_type='application/json', status=400)
+        if product.quantity == product.quantity_partial and product.quantity == 0 and \
+                ShipmentProduct.objects.filter(Q(product__id=product.id) &
+                                               ~Q(shipment__status=5) &
+                                               Q(shipment__is_archived=False) &
+                                               Q(shipment__is_canceled=False)).exists() is False:
+            product_status = '99'  # Archived
+        else:
+            product_status = request.PUT.get('product_status')
+        if str(product.status) != product_status:
+            fields_to_update.append('status')
+            if product_status == '2':
+                product.receive_date = datetime.datetime.now()
+                fields_to_update.append('receive_date')
+        product_status_display = None
+        for choice in Product.STATUS_CHOICES:
+            if str(choice[0]) == product_status:
+                product_status_display = str(choice[1])
+                break
+        if product_status_display is not None:
+            product.status = product_status
+        else:
             for choice in Product.STATUS_CHOICES:
-                if str(choice[0]) == product_status:
+                if str(choice[0]) == str(product.status):
                     product_status_display = str(choice[1])
                     break
-            if product_status_display is not None:
-                product.status = product_status
-            else:
-                for choice in Product.STATUS_CHOICES:
-                    if str(choice[0]) == str(product.status):
-                        product_status_display = str(choice[1])
-                        break
-            product_actual_condition = request.PUT.get('product_actual_condition')
-            if str(product.actual_condition) != product_actual_condition:
-                fields_to_update.append('actual_condition')
-            product_actual_condition_display = None
-            for choice in Product.CONDITION_CHOICES:
-                if str(choice[0]) == product_actual_condition:
-                    product_actual_condition_display = str(choice[1])
-                    break
-            if product_actual_condition_display is None:
-                product.actual_condition = None
-                product_actual_condition_display = ''
-            else:
-                product.actual_condition = product_actual_condition
-            product_condition_comments = request.PUT.get('product_condition_comments')
-            if product.condition_comments != product_condition_comments:
-                product.condition_comments = product_condition_comments
-                fields_to_update.append('condition_comments')
-            pick_ticket = False
-            product_pick_ticket = request.PUT.get('product_pick_ticket')
-            if product.pick_ticket != product_pick_ticket:
-                product.pick_ticket = product_pick_ticket.strip()
-                pick_ticket = True
-            if len(fields_to_update) == 0 and pick_ticket is False:
-                raise Product.DoesNotExist
-            elif len(fields_to_update) == 0 and pick_ticket:
-                product.save(update_fields=['pick_ticket'])
-            else:
-                fields_to_update.append('pick_ticket')
-                with transaction.atomic():
-                    product.save(update_fields=fields_to_update)
-                    shipment_products = product.product_set.all()
-                    for shipment_product in shipment_products:
-                        shipment_product.receive_date = product.receive_date
-                        shipment_product.save(update_fields=['receive_date'])
-                send_email_product_info(request, product, product_status_display, product_actual_condition_display)
-            if output and output == 'json':
-                product_json = {
-                    'id': product.id,
-                    'name': product.name,
-                    'description': product.description,
-                    'quantity': product.quantity,
-                    'quantity_partial': product.quantity_partial,
-                    'send_date': formats.date_format(product.send_date, "DATE_FORMAT"),
-                    'best_before': '' if product.best_before is None else formats.date_format(product.best_before,
-                                                                                              "SHORT_DATE_FORMAT"),
-                    'actual_condition': '' if product.actual_condition is None else product.actual_condition,
-                    'condition_comments': '' if product.condition_comments is None else product.condition_comments,
-                    'pick_ticket': '' if product.pick_ticket is None else product.pick_ticket,
-                    'status': product.status,
-                    'status_display': product_status_display,
-                    'show_check': product.user == request.user,
-                }
-                return HttpResponse(json.dumps({'success': True, 'product': product_json}),
-                                    content_type='application/json')
-            else:
-                pass  # TODO retorno de sucesso da edição HTML
+        product_actual_condition = request.PUT.get('product_actual_condition')
+        if str(product.actual_condition) != product_actual_condition:
+            fields_to_update.append('actual_condition')
+        product_actual_condition_display = None
+        for choice in Product.CONDITION_CHOICES:
+            if str(choice[0]) == product_actual_condition:
+                product_actual_condition_display = str(choice[1])
+                break
+        if product_actual_condition_display is None:
+            product.actual_condition = None
+            product_actual_condition_display = ''
+        else:
+            product.actual_condition = product_actual_condition
+        product_condition_comments = request.PUT.get('product_condition_comments')
+        if product.condition_comments != product_condition_comments:
+            product.condition_comments = product_condition_comments
+            fields_to_update.append('condition_comments')
+        pick_ticket = False
+        product_pick_ticket = request.PUT.get('product_pick_ticket')
+        if product.pick_ticket != product_pick_ticket:
+            product.pick_ticket = product_pick_ticket.strip()
+            pick_ticket = True
+        if len(fields_to_update) == 0 and pick_ticket is False:
+            raise Product.DoesNotExist
+        elif len(fields_to_update) == 0 and pick_ticket:
+            product.save(update_fields=['pick_ticket'])
+        else:
+            fields_to_update.append('pick_ticket')
+            with transaction.atomic():
+                product.save(update_fields=fields_to_update)
+                shipment_products = product.product_set.all()
+                for shipment_product in shipment_products:
+                    shipment_product.receive_date = product.receive_date
+                    shipment_product.save(update_fields=['receive_date'])
+            send_email_product_info(request, product, product_status_display, product_actual_condition_display)
+        if output and output == 'json':
+            product_json = {
+                'id': product.id,
+                'name': product.name,
+                'description': product.description,
+                'quantity': product.quantity,
+                'quantity_partial': product.quantity_partial,
+                'send_date': formats.date_format(product.send_date, "DATE_FORMAT"),
+                'best_before': '' if product.best_before is None else formats.date_format(product.best_before,
+                                                                                          "SHORT_DATE_FORMAT"),
+                'actual_condition': '' if product.actual_condition is None else product.actual_condition,
+                'condition_comments': '' if product.condition_comments is None else product.condition_comments,
+                'pick_ticket': '' if product.pick_ticket is None else product.pick_ticket,
+                'status': product.status,
+                'status_display': product_status_display,
+                'show_check': product.user == request.user,
+            }
+            return HttpResponse(json.dumps({'success': True, 'product': product_json}),
+                                content_type='application/json')
+        else:
+            pass  # TODO retorno de sucesso da edição HTML
     except Product.DoesNotExist:
         if output and output == 'json':
             return HttpResponse(json.dumps({'success': False}),
@@ -361,14 +372,18 @@ def product_details(request, pid=None):
         return HttpResponseForbidden()
     query = Q(pk=pid)
     try:
+        is_fetch_user = True
         is_collaborator_perm = has_store_perm(request.user, 'collaborator')
-        if has_user_perm(request.user, 'view_users') is False and is_collaborator_perm is False:
+        if is_collaborator_perm and request.user.collaborator:
+            query &= (Q(user=request.user) | Q(collaborator=request.user.collaborator))
+            is_fetch_user = False
+        elif has_user_perm(request.user, 'view_users') is False:
             query &= Q(user=request.user)
-            product = Product.objects.get(query)
-        else:
-            if is_collaborator_perm:
-                query &= (Q(user=request.user) | Q(collaborator=request.user.collaborator))
+            is_fetch_user = False
+        if is_fetch_user:
             product = Product.objects.select_related('user').get(query)
+        else:
+            product = Product.objects.get(query)
         shipment_products = product.product_set.all()
         shipments = ', '.join([str(shipment_product.shipment_id) for shipment_product in shipment_products])
         return render(request, 'product_details.html', {'title': _('Produto'), 'shipments': len(shipment_products),
@@ -388,10 +403,10 @@ def product_delete(request):
     request.DELETE = QueryDict(request.body)
     query = Q(pk=request.DELETE.get('pid'))
     is_collaborator_perm = has_store_perm(request.user, 'collaborator')
-    if has_user_perm(request.user, 'view_users') is False and is_collaborator_perm is False:
-        query &= Q(user=request.user)
-    elif is_collaborator_perm:
+    if is_collaborator_perm and request.user.collaborator:
         query &= (Q(user=request.user) | Q(collaborator=request.user.collaborator))
+    elif has_user_perm(request.user, 'view_users') is False:
+        query &= Q(user=request.user)
     try:
         product = Product.objects.get(query)
         shipment_products = product.product_set.all()

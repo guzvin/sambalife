@@ -10,6 +10,7 @@ from django.dispatch import receiver
 from service.models import Service
 from shipment.validators import validate_file_extension
 from product.models import Product as OriginalProduct
+from store.models import Collaborator
 from utils import helper
 from utils.models import Accounting
 from pyparsing import ParseException
@@ -61,6 +62,8 @@ class Shipment(models.Model):
     information = models.TextField(_('Informações adicionais'), null=True, blank=True)
     payment_date = models.DateTimeField(_('Data de pagamento'), null=True)
     is_standby = models.BooleanField(_('Aguardando resposta'), default=False)
+    collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
+                                     blank=True)
 
     class Meta:
         verbose_name = _('Envio')

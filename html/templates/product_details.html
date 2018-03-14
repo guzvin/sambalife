@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n tz permissions products users lots %}
+{% load i18n tz permissions products users lots commons %}
 {% block conteudo %}
 
 <div class="container-fluid">
@@ -41,7 +41,7 @@
                         <p>{% if product.url %}{{ product.url }}{% endif %}</p>
                     </div>
               </div>
-              {% if user|has_product_perm:'change_product_status' %}
+              {% if user|has_product_perm:'change_product_status' and product.collaborator_id|check_collaborator:user %}
               <div class="form-group">
                     <label class="control-label col-xs-3">{% trans "Localização na Warehouse" %}:</label>
                     <div class="col-xs-9">
@@ -159,9 +159,9 @@
               {% if user|has_product_perm:'change_product' %}
               <a href="{% url 'product_edit' product.id %}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> {% trans "Editar" %}</a>
               {% endif %}
-              {% if user|has_product_perm:'delete_product' and shipments == 0 %}
+              {% if user|has_product_perm:'delete_product' and shipments == 0 and product.collaborator_id|check_collaborator:user %}
               <a href="#" class="btn btn-danger send-btn-delete"><i class="fa fa-fw fa-trash"></i> {% trans "Excluir" %}</a>
-              {% elif shipments > 0 %}
+              {% elif user|has_product_perm:'delete_product' and shipments > 0 and product.collaborator_id|check_collaborator:user %}
               <br><br>
               <span>
                 {% blocktrans count i=shipments %}
@@ -180,7 +180,7 @@
         {% endif %}
       </div>
     </div>
-    {% if user|has_product_perm:'delete_product' and shipments == 0 %}
+    {% if user|has_product_perm:'delete_product' and shipments == 0 and product.collaborator_id|check_collaborator:user %}
     <form action="{% url 'product_delete' %}" method="post" class="form-delete-product" id="form-delete-product">
     {% csrf_token %}
         <input type="hidden" name="pid" value="{{ product.id }}">

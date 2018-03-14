@@ -78,10 +78,10 @@ def etc(initial_date, **kwargs):
 def open_fba_shipments(user):
     query_filter = Q(status__lt=5) & Q(is_archived=False) & Q(is_canceled=False) & Q(type=None)
     is_collaborator_perm = has_store_perm(user, 'collaborator')
-    if has_user_perm(user, 'view_users') is False and is_collaborator_perm is False:
+    if is_collaborator_perm and user.collaborator:
+        query_filter &= (Q(user=user) | Q(collaborator=user.collaborator))
+    elif has_user_perm(user, 'view_users') is False:
         query_filter &= Q(user=user)
-    elif is_collaborator_perm:
-        query_filter &= (Q(user=user) | Q(product__product__collaborator=user.collaborator))
     return Shipment.objects.filter(query_filter).count()
 
 
@@ -89,10 +89,10 @@ def open_fba_shipments(user):
 def open_mf_shipments(user):
     query_filter = Q(status__lt=5) & Q(is_archived=False) & Q(is_canceled=False) & ~Q(type=None)
     is_collaborator_perm = has_store_perm(user, 'collaborator')
-    if has_user_perm(user, 'view_users') is False and is_collaborator_perm is False:
+    if is_collaborator_perm and user.collaborator:
+        query_filter &= (Q(user=user) | Q(collaborator=user.collaborator))
+    elif has_user_perm(user, 'view_users') is False:
         query_filter &= Q(user=user)
-    elif is_collaborator_perm:
-        query_filter &= (Q(user=user) | Q(product__product__collaborator=user.collaborator))
     return Shipment.objects.filter(query_filter).count()
 
 
