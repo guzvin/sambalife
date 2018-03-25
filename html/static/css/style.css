@@ -1313,6 +1313,7 @@ label.titulo-pct span{
     padding-top: 5px;
     background: #3C3E77;
     float: left;
+    padding-bottom: 9px;
 }
 
 .descricao-lote-prod{
@@ -2336,6 +2337,8 @@ ul.listaancora li a{
 
     .box-container-lote {
         width: 100%;
+        height: 307px;
+        margin-bottom: 0;
     }
 
     .box-lote {
@@ -2492,6 +2495,22 @@ ul.listaancora li a{
     .descricao-lote-prod{
         float: left;
         width: 47%;
+    }
+
+    .box-lote img.img-vip {
+        left: -187px;
+        top: 3px;
+    }
+
+    .parceiro:before {
+        left: 319px;
+         z-index: 1000;
+    }
+
+    .parceiro:after {
+        left: 337px;
+        content: "Parceiro";
+         z-index: 1001;
     }
 
 }
