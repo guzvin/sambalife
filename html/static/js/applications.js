@@ -1650,4 +1650,12 @@
             });
         });
 
+        //controle quantidade string título mobile
+
+        if((window.screen.width >= 280) && (window.screen.width <= 768)){
+
+            $('.parceiro h6').html($('.parceiro h6').text().substring(0,38) + '...');
+
+        }
+
 })(jQuery); // End of use strict
