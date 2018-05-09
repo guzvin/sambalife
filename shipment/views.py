@@ -290,7 +290,7 @@ def shipment_details(request, pid=None):
                 else:
                     return HttpResponseForbidden()
             if has_shipment_perm(request.user, 'add_package'):
-                if has_service_perm(request.user, 'add_product'):
+                if has_shipment_perm(request.user, 'add_productservice'):
                     _services = Service.objects.all()
                     context_data['services'] = _services
                 serialized_products = serializers.serialize('json', _shipment_products, fields=('id', 'quantity',

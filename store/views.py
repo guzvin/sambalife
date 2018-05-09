@@ -397,7 +397,7 @@ def store_paypal_notification_post_transaction(request, _lot_details, user, ipn_
                                '{}<br>{}<br>{}<br>{}<br>{}</p>'])
         email_message = _(helper._html_format(*texts, custom_html_format=html_format)) + paypal_status_message
         helper.send_email_basic_template_bcc_admins(request, user.first_name, [user.email], email_title, email_message,
-                                                    async=True)
+                                                    async=True, collaborator=_lot_details.collaborator)
     elif ipn_obj.payment_status == ST_PP_VOIDED:
         email_title = _('CANCELAMENTO do pagamento confirmado pelo PayPal para o item '
                         '\'%(item)s\'') % {'item': ipn_obj.item_name}
