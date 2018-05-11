@@ -99,7 +99,7 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['localhost', '.voiservices.com', '.ppst.com', '.prepshiptool.com', 'ed8d8f91.ngrok.io']
+ALLOWED_HOSTS = ['localhost', '.voiredirect.com', 'ed8d8f91.ngrok.io']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -273,9 +273,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 CSRF_TRUSTED_ORIGINS = (
     'localhost',
-    'vendedorinternacional.net',
-    'prepshiptool.com',
-    '.maquinadevendasusa.com',
+    'voiredirect.com',
 )
 
 PASSWORD_RESET_TIMEOUT_DAYS = 2
