@@ -7,6 +7,7 @@ from django import forms
 from service.models import Service
 from django.utils.translation import ugettext as _
 from django.db.utils import IntegrityError
+from rangefilter.filter import DateRangeFilter
 
 import logging
 
@@ -104,6 +105,10 @@ class ProductAdmin(admin.ModelAdmin):
     form = StockProductForm
     search_fields = ('name', 'identifier',)
     list_display = ('identifier', 'name', 'quantity',)
+    list_filter = [
+        ('created_date', DateRangeFilter),
+        ('changed_date', DateRangeFilter),
+    ]
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         field = super(ProductAdmin, self).formfield_for_dbfield(db_field, request, **kwargs)

@@ -3,6 +3,7 @@ from django.db.models.fields import BigAutoField
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from service.models import Service
+import datetime
 
 import logging
 
@@ -73,6 +74,8 @@ class Product(models.Model):
         related_name="stock_product_set",
         related_query_name="stock_product",
     )
+    created_date = models.DateTimeField(_('Data de criação'), auto_now_add=True, null=True)
+    changed_date = models.DateTimeField(_('Data de modificação'), default=datetime.datetime.now, null=True)
 
     class Meta:
         verbose_name = _('Produto')

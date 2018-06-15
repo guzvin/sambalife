@@ -77,9 +77,9 @@ class ObjectView(object):
 
 
 def send_email_basic_template_bcc_admins(request, user_name, user_email, email_title, email_body, async=False,
-                                         raise_exception=False):
+                                         raise_exception=False, collaborator=None):
     email_tuple = build_basic_template_email_tuple(request, user_name, user_email, email_title, email_body)
-    send_email((email_tuple,), bcc_admins=True, async=async, raise_exception=raise_exception)
+    send_email((email_tuple,), bcc_admins=True, async=async, raise_exception=raise_exception, collaborator=collaborator)
 
 
 def build_basic_template_email_tuple(request, user_name, user_email, email_title, email_body):
@@ -109,6 +109,19 @@ def get_admins_emails():
     logger.debug('@@@@@@@@@@@@ ADMINS EMAIL @@@@@@@@@@@@@@')
     logger.debug(admins_emails)
     return admins_emails
+
+
+def get_collaborators_emails(collaborator):
+    user_model = get_user_model()
+    collaborators = user_model.objects.filter(collaborator=collaborator)
+    collaborators_emails = set()
+    for user in collaborators:
+        collaborators_emails.add(user.email)
+    if settings.SYS_SU_USER in collaborators_emails:
+        collaborators_emails -= {settings.SYS_SU_USER}
+    logger.debug('@@@@@@@@@@@@ ADMINS EMAIL @@@@@@@@@@@@@@')
+    logger.debug(collaborators_emails)
+    return collaborators_emails
 
 
 class EmailThread(threading.Thread):
@@ -165,10 +178,12 @@ class EmailThread(threading.Thread):
 
 def send_email(email_data_tuple, email_from=None, bcc_admins=False, async=False, raise_exception=False,
                reply_to=('support@voiservices.com',),
-               bcc=set()):
+               bcc=set(), collaborator=None):
     if email_from is None:
         email_from = string_concat(_('Vendedor Online Internacional'), ' ',
                                    _('<no-reply@vendedorinternacional.net>'))
+    if collaborator:
+        bcc.update(get_collaborators_emails(collaborator))
     if bcc_admins:
         bcc.update(get_admins_emails())
 
