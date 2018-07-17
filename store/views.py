@@ -159,6 +159,8 @@ def store_lot_details(request, pid=None):
     has_access = set(request.user.groups.all()) & set(_lot_details.groups.all())
     logger.info(has_access)
     if not has_access and not (_lot_details.lifecycle_open and request.user.is_authenticated):
+        has_access = not has_access
+        logger.info(has_access)
         return HttpResponseBadRequest()
     context_data = {'title': _('Loja'), 'lot': _lot_details}
     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_lot_details.user)
