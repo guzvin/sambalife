@@ -197,10 +197,11 @@ def _send_email_abandoned(request, product, days, user):
 
 def check_scheduled_lots():
     current_date = datetime.datetime.now(datetime.timezone.utc)
-    lots_no_lifecycle = Lot.objects.filter(~models.Q(lifecycle=2), schedule_date__lte=current_date, is_fake=False,
-                                           is_archived=False, status=1, payment_complete=False)
-    lots_lifecycle = Lot.objects.filter(lifecycle=2, schedule_date__lte=current_date, is_fake=False, is_archived=False,
-                                        status=1, payment_complete=False)
+    lots_no_lifecycle = Lot.objects.filter(~(models.Q(lifecycle=2) | models.Q(lifecycle=4)),
+                                           schedule_date__lte=current_date, is_fake=False, is_archived=False, status=1,
+                                           payment_complete=False)
+    lots_lifecycle = Lot.objects.filter(models.Q(lifecycle=2) | models.Q(lifecycle=4), schedule_date__lte=current_date,
+                                        is_fake=False, is_archived=False, status=1, payment_complete=False)
     for lot in lots_no_lifecycle:
         email_new_lot(lot)
     for lot in lots_lifecycle:

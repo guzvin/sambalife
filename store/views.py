@@ -193,7 +193,7 @@ def store_pay_form(request, pid=None):
         logger.error(e)
         return HttpResponseBadRequest()
     has_access = set(request.user.groups.all()) & set(_lot_details.groups.all())
-    if not has_access and not (_lot_details.lifecycle_open  and request.user.is_authenticated):
+    if not has_access and not (_lot_details.lifecycle_open and request.user.is_authenticated):
         return HttpResponse(json.dumps({'modal': 'subscribe'}), content_type='application/json')
     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(request.user)
     if is_sandbox:
