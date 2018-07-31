@@ -593,12 +593,12 @@ def check_lifecycle_three_days(current_date, lid=None):
     three_days = current_date - datetime.timedelta(days=3)
     # three_days = current_date - datetime.timedelta(minutes=3)
     filters = {
-        'lifecycle_date__lte': three_days, 'lifecycle': 2, 'lifecycle_open': True, 'is_fake': False,
+        'lifecycle_date__lte': three_days, 'lifecycle_open': True, 'is_fake': False,
         'is_archived': False, 'status': 1, 'payment_complete': False
     }
     if lid:
         filters['id'] = lid
-    lots = Lot.objects.filter(**filters)
+    lots = Lot.objects.filter(models.Q(lifecycle=2) | models.Q(lifecycle=4), **filters)
     logger.debug('THREE DAYS!!!!!!!!!!!!!!!!!!!!!!!')
     logger.debug(lots)
     if lots:

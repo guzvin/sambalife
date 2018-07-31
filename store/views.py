@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from utils import helper
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from payment.forms import MyPayPalSharedSecretEncryptedPaymentsForm
 from django.forms import DateField
 from django.urls import reverse
@@ -151,14 +151,21 @@ def filter_resolver(filters):
 def store_lot_details(request, pid=None):
     try:
         _lot_details = Lot.objects.prefetch_related('product_set').get(pk=pid, is_archived=False, schedule_date=None)
+        logger.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        logger.info(_lot_details)
     except Lot.DoesNotExist as e:
         logger.error(e)
         return HttpResponseBadRequest()
-    has_access = set(request.user.groups.all()) & set(_lot_details.groups.all())
-    if not has_access and not (_lot_details.lifecycle_open and request.user.is_authenticated):
-        return HttpResponseBadRequest()
+    # has_access = set(request.user.groups.all()) & set(_lot_details.groups.all())
+    # logger.info(has_access)
+    # if not has_access and not (_lot_details.lifecycle_open and request.user.is_authenticated):
+    #     has_access = not has_access
+    #     logger.info(has_access)
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('login'))
     context_data = {'title': _('Loja'), 'lot': _lot_details}
     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(_lot_details.user)
+    logger.info('#########################################$$$$')
     context_data['paypal_form'] = MyPayPalSharedSecretEncryptedPaymentsForm(is_sandbox=is_sandbox,
                                                                             is_render_button=True,
                                                                             origin='store')
@@ -186,7 +193,7 @@ def store_pay_form(request, pid=None):
         logger.error(e)
         return HttpResponseBadRequest()
     has_access = set(request.user.groups.all()) & set(_lot_details.groups.all())
-    if not has_access and not (_lot_details.lifecycle_open  and request.user.is_authenticated):
+    if not has_access and not (_lot_details.lifecycle_open and request.user.is_authenticated):
         return HttpResponse(json.dumps({'modal': 'subscribe'}), content_type='application/json')
     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(request.user)
     if is_sandbox:

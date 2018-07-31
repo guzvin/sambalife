@@ -87,7 +87,8 @@ class Lot(models.Model):
     LIFECYCLE_CHOICES = (
         (1, _('Desligado')),  # Off
         (2, _('Ligado')),  # On
-        (3, _('Terminado')),  # On
+        (4, _('Todos usuários cadastrados')),  # All registered users
+        (3, _('Terminado')),  # Ended
     )
     lifecycle = models.SmallIntegerField('Lifecycle', choices=LIFECYCLE_CHOICES, default=2)
     lifecycle_date = models.DateTimeField(_('Data do lifecycle'), null=True, blank=True)

@@ -76,9 +76,13 @@ def assemble_email_new_lot(request, lot, lifecycle=False):
     texts += (''.join(['https://', request.CURRENT_DOMAIN, helper.reverse('store_lot_details', args=[lot.id])]),
               _('Clique aqui'), _('para acessar este lote agora mesmo!'),)
     if lifecycle:
-        texts = (_('FIQUE ATENTO: Este lote será privado para os assinantes somente nas primeiras 24 horas, após isto, '
-                   'caso o lote não seja vendido, o mesmo ficará disponível à todos cadastrados na plataforma.'), '',) \
-                + texts
+        if lot.lifecycle == 2:
+            texts = (_('FIQUE ATENTO: Este lote será privado para os assinantes somente nas primeiras 24 horas, após '
+                       'isto, caso o lote não seja vendido, o mesmo ficará disponível à todos cadastrados na '
+                       'plataforma.'), '',) + texts
+        elif lot.lifecycle == 4:
+            texts = (_('FIQUE ATENTO: Este lote estará disponível à todos cadastrados na plataforma pelas próximas 72 '
+                       'horas.'), '',) + texts
     email_body = helper.format_html(html_format, *texts)
     return helper.build_basic_template_email_tuple_bcc(request, email_title, email_body)
 

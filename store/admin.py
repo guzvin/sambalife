@@ -453,10 +453,16 @@ class LotAdmin(admin.ModelAdmin):
                         and is_archived[1] is False:
                     initial_lifecycle = form.inline_initial_data('lifecycle')
                     initial_lifecycle = initial_lifecycle[0], int(initial_lifecycle[1]),
-                    if initial_lifecycle[0] != initial_lifecycle[1] or schedule_date[0] != schedule_date[1] \
+                    if not change or initial_lifecycle[0] != initial_lifecycle[1] or schedule_date[0] != schedule_date[1] \
                             or status[0] != status[1] or is_fake[0] != is_fake[1] or is_archived[0] != is_archived[1]:
-                        if initial_lifecycle[1] == 2:
+                        if initial_lifecycle[1] == 2 or initial_lifecycle[1] == 4:
                             lot_obj.lifecycle_date = pytz.utc.localize(datetime.datetime.today())
+                            if initial_lifecycle[1] == 4:
+                                form.cleaned_data['groups'] = form.cleaned_data.get('groups') | \
+                                    Group.objects.filter(name='all_users')
+                                lot_obj.lifecycle_open = True
+                            else:
+                                lot_obj.lifecycle_open = False
                         else:
                             lot_obj.lifecycle_date = None
                             lot_obj.lifecycle_open = False
@@ -541,7 +547,7 @@ class LotAdmin(admin.ModelAdmin):
         if lot.is_fake is False and lot.is_archived is False and lot.status == 1 and lot.payment_complete is False \
                 and (lot.schedule_date is None or lot.schedule_date <= datetime.datetime.now(datetime.timezone.utc)):
             if change is False or change and is_archived_changed:
-                if lot.lifecycle == 2:
+                if lot.lifecycle == 2 or lot.lifecycle == 4:
                     email_new_lot_lifecycle(lot)
                 else:
                     email_new_lot(lot)
