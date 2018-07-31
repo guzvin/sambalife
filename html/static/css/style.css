@@ -1934,17 +1934,17 @@ form small{
     text-indent: -999em;
     height: 50px;
     margin-top: 0px;
-    width: 250px;
+    width: 290px;
 }
 
 .navbar-default.affix-top .navbar-brand.logo-site{
-    background: url('../img/logo-en-white.png') no-repeat 0 0;
-    background-size: 250px;
+    background: url('../img/logo-en-old.png') no-repeat 0 14px;
+    background-size: 290px;
 }
 
 .navbar-default.affix .navbar-brand.logo-site{
-    background: url('../img/logo-en.png') no-repeat 0 0;
-    background-size: 250px;
+    background: url('../img/logo-en-old.png') no-repeat 0 14px;
+    background-size: 290px;
 }
 
 footer{
