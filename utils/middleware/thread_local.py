@@ -12,7 +12,7 @@ def get_current_request():
     request = getattr(_thread_local, 'request', None)
     if request is None:
         request = HttpRequest()
-        request.CURRENT_DOMAIN = 'voiservices.com'
+        request.CURRENT_DOMAIN = 'lots.voiservices.com'
         logger.debug(_('vendedorinternacional.net'))
     return request
 

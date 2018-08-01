@@ -2026,7 +2026,7 @@ msgstr "Pode excluir"
 #: myauth/models.py:120 utils/cron.py:56 utils/cron.py:134
 #: utils/middleware/thread_local.py:16
 msgid "vendedorinternacional.net"
-msgstr "voiservices.com"
+msgstr "lots.voiservices.com"
 
 #: myauth/models.py:131
 msgid "País"
