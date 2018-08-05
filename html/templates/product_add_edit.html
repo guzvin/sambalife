@@ -21,6 +21,41 @@
               {{ product_formset.management_form }}
               {% for form in product_formset %}
                 {{ form.id }}
+
+                <!-- Novo campo -->
+                <div class="form-group col-md-12">
+                  <label for="tipo_armazenamento">{% trans "Tipo de armazenamento" %}</label>
+                    <select class="form-control condition_validate" id="tipo_armazenamento" name="tipo_armazenamento">
+                         <option value="1">{% trans "Escolha o tipo de serviço..." %}</option>
+                        <option value="2">{% trans "Armazenamento FBM" %}</option>
+                        <option value="3">{% trans "Armazenamento FBA" %}</option>
+                    </select>
+                </div>
+
+                <div class="bs-example col-md-12">
+                     <div class="alert alert-warning">
+                         <p><strong>{% trans "Armazenamento FBM" %}</strong></p>
+                         <p>{% trans "Você escolheu deixar seus produtos armazenados conosco até serem vendidos para seus clientes. Lembre-se que com essa escolha você aceita os custos
+                         relativos a armazenagem a partir do momento em que o produto chegar. Os valores são:" %}</p>
+                         <p><strong>{% trans "Storage:</strong> {% trans "$0.40 por feet cubico / Mês - Mínimo é de $25.00/Mês" %}</p>
+                         <p>* {% trans "Caso a soma do espaço ocupado por seus produtos dê menos de $25.00, será cobrado essa taxa mínima." %}</p>
+                         <p>* {% trans "Caso o pagamento mensal não seja efetuado por 90 dias, os produtos serão doados." %}</p>
+                     </div>
+                  </div>
+                <div class="bs-example col-md-12">
+                     <div class="alert alert-warning">
+                         <p><strong>{% trans "Armazenamento FBA" %}</strong></p>
+                         <p>{% trans "Você escolheu por realizar envio FBA. A partir do momento que os seus produtos chegarem na nossa warehouse, você terá
+                         11 dias para criar o envio. Caso não seja realizado, você terá que pagar pelo armazenamento. Consulte valores no nosso" %}
+                         <a href="/" class="download">{% trans "site" %}</a>.</p>
+                         <p>* {% trans "Caso os produtos não sejam enviados e as taxas de storage não sejam quitadas após 60 dias os produtos serão doados." %}</p>
+                     </div>
+                  </div>
+                <br>
+
+                <!-- Novo campo fim -->
+
+
                 <div class="form-group col-md-12">
                   <label for="{{ form.name.id_for_label }}">{{ form.name.label }}*</label>
                     {% blocktrans asvar name with name_label=form.name.label|lower %}Digite o {{ name_label }}{% endblocktrans %}
