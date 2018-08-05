@@ -23,6 +23,11 @@ def select_condition(item, condition):
 
 
 @register.simple_tag
+def select_stock_type(item, condition):
+    return 'selected="selected"' if str(item) == condition else ''
+
+
+@register.simple_tag
 def timezone_name(lang):
     return 'Brazil/East' if lang == 'pt' else 'US/Eastern'
 

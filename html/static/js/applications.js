@@ -463,6 +463,13 @@
                 positiveNumber: true,
             });
         });
+        $('.stock_type_validate').each(function ()
+        {
+            $(this).rules('add',
+            {
+                required: true
+            });
+        });
         $('.send_date_validate').each(function ()
         {
             $(this).rules('add',

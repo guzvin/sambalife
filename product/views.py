@@ -103,6 +103,7 @@ def product_stock(request):
         elif is_user_perm is False:
             queries.append(~Q(status=100))
             queries.append(Q(user=request.user))
+        queries.append(Q(stock_type=1))
         is_filtered = len(queries) > 0
         if is_filtered:
             query = queries.pop()
@@ -129,7 +130,116 @@ def product_stock(request):
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
     max_time_period = get_max_time_period()
-    return render(request, 'product_stock.html', {'title': _('Estoque'), 'products': products,
+    return render(request, 'product_stock.html', {'title': _('Estoque FBA'), 'products': products,
+                                                  'filter_values': ObjectView(filter_values),
+                                                  'max_time_period': max_time_period if max_time_period else 0,
+                                                  'collaborators': Collaborator.objects.all().order_by('name')})
+
+
+@login_required
+@require_http_methods(["GET"])
+def product_stock_fbm(request):
+    if has_product_perm(request.user, 'view_products'):
+        is_user_perm = has_user_perm(request.user, 'view_users')
+        is_collaborator_perm = has_store_perm(request.user, 'collaborator')
+        queries = []
+        logger.debug('@@@@@@@@@@@@ PRODUCT STOCK FILTERS @@@@@@@@@@@@@@')
+        logger.debug(settings.DEBUG)
+        logger.debug(settings.PAYPAL_TEST)
+        filter_collaborator = request.GET.get('collaborator')
+        logger.debug(str(filter_collaborator))
+        filter_id = request.GET.get('id')
+        logger.debug(str(filter_id))
+        filter_name = request.GET.get('name')
+        logger.debug(str(filter_name))
+        filter_asin = request.GET.get('asin')
+        logger.debug(str(filter_asin))
+        filter_user = request.GET.get('user')
+        logger.debug(str(filter_user))
+        filter_status = request.GET.get('status')
+        logger.debug(str(filter_status))
+        filter_tracking = request.GET.get('tracking')
+        logger.debug(str(filter_tracking))
+        filter_store = request.GET.get('store')
+        logger.debug(str(filter_store))
+        filter_archived = request.GET.get('archived')
+        logger.debug(str(filter_archived))
+        filter_values = {
+            'status': '',
+        }
+        if filter_collaborator is None:
+            filter_collaborator = request.user.collaborator
+        else:
+            try:
+                int(filter_collaborator)
+                selected_collaborator = Collaborator.objects.get(pk=filter_collaborator)
+                filter_collaborator = selected_collaborator
+            except (ValueError, TypeError, Collaborator.DoesNotExist):
+                filter_collaborator = None
+        queries.append(Q(collaborator=filter_collaborator))
+        filter_values['collaborator'] = filter_collaborator
+        if filter_id:
+            queries.append(Q(pk__startswith=filter_id))
+            filter_values['id'] = filter_id
+        if filter_name:
+            queries.append(Q(name__icontains=filter_name))
+            filter_values['name'] = filter_name
+        if filter_asin:
+            queries.append(Q(asin=filter_asin))
+            filter_values['asin'] = filter_asin
+        if (is_user_perm or is_collaborator_perm) and filter_user:
+            queries.append(Q(user__first_name__icontains=filter_user) | Q(user__last_name__icontains=filter_user) |
+                           Q(user__email__icontains=filter_user))
+            filter_values['user'] = filter_user
+        if filter_status:
+            queries.append(Q(status=filter_status))
+            filter_values['status'] = filter_status
+        if filter_tracking:
+            queries.append(Q(tracking__track_number=filter_tracking))
+            filter_values['tracking'] = filter_tracking
+        if filter_store:
+            queries.append(Q(store__icontains=filter_store))
+            filter_values['store'] = filter_store
+        if filter_archived and filter_archived == 'on':
+            filter_values['archived'] = 'checked=checked'
+        else:
+            queries.append(~Q(status=99))
+        logger.debug('@@@@@@@@@@@@ QUERIES @@@@@@@@@@@@@@')
+        logger.debug(str(queries))
+        logger.debug(str(len(queries)))
+        if is_collaborator_perm and request.user.collaborator:
+            queries.append((Q(user=request.user) | Q(collaborator=request.user.collaborator)))
+        elif is_user_perm is False:
+            queries.append(~Q(status=100))
+            queries.append(Q(user=request.user))
+        queries.append(Q(stock_type=2))
+        is_filtered = len(queries) > 0
+        if is_filtered:
+            query = queries.pop()
+            for item in queries:
+                query &= item
+            logger.debug(str(query))
+        if is_user_perm or (is_collaborator_perm and request.user.collaborator):
+            if is_filtered:
+                logger.debug('@@@@@@@@@@@@ FILTERED @@@@@@@@@@@@@@')
+                products_list = Product.objects.filter(query).select_related('user').order_by('id')
+            else:
+                logger.debug('@@@@@@@@@@@@ ALL @@@@@@@@@@@@@@')
+                products_list = Product.objects.all().select_related('user').order_by('id')
+        else:
+            products_list = Product.objects.filter(query).order_by('id')
+    else:
+        products_list = []
+    page = request.GET.get('page', 1)
+    paginator = Paginator(products_list, 30)
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
+    max_time_period = get_max_time_period()
+    return render(request, 'product_stock_fbm.html', {'title': _('Estoque FBM'), 'products': products,
                                                   'filter_values': ObjectView(filter_values),
                                                   'max_time_period': max_time_period if max_time_period else 0,
                                                   'collaborators': Collaborator.objects.all().order_by('name')})
@@ -144,9 +254,10 @@ def product_add_edit(request, pid=None):
         elif pid is not None and has_product_perm(request.user, 'change_product') is False:
             return HttpResponseForbidden()
     ProductFormSet = modelformset_factory(Product, fields=('name', 'asin', 'url', 'store', 'description', 'quantity',
-                                                           'quantity_partial', 'send_date', 'edd_date', 'best_before',
-                                                           'condition', 'actual_condition', 'condition_comments',
-                                                           'status', 'pick_ticket', 'collaborator'),
+                                                           'quantity_partial', 'stock_type', 'send_date', 'edd_date',
+                                                           'best_before', 'condition', 'actual_condition',
+                                                           'condition_comments', 'status', 'pick_ticket',
+                                                           'collaborator'),
                                           localized_fields=('send_date',), min_num=1, max_num=1)
     TrackingFormSet = inlineformset_factory(Product, Tracking, formset=MyBaseInlineFormSet, fields=('track_number',),
                                             extra=1)
@@ -434,7 +545,28 @@ def product_autocomplete(request):
     term = request.GET.get('term')
     if term is not None and len(term) >= 3:
         products = Product.objects.filter(name__icontains=term, status=2, user=request.user,
-                                          quantity_partial__gt=0).order_by('id')
+                                          quantity_partial__gt=0, stock_type=1).order_by('id')
+        for product in products:
+            products_autocomplete.append({'value': product.id, 'label': product.name,
+                                          'desc': product.description, 'qty': product.quantity_partial,
+                                          'bb': formats.date_format(product.best_before, "SHORT_DATE_FORMAT")
+                                          if product.best_before else '',
+                                          'lot': False if product.lot_product is None else True})
+    return HttpResponse(json.dumps(products_autocomplete),
+                        content_type='application/json')
+
+
+@login_required
+@require_http_methods(["GET"])
+def product_autocomplete_fbm(request):
+    if has_product_perm(request.user, 'view_products') is False:
+        return HttpResponse(json.dumps([]),
+                            content_type='application/json', status=403)
+    products_autocomplete = []
+    term = request.GET.get('term')
+    if term is not None and len(term) >= 3:
+        products = Product.objects.filter(name__icontains=term, status=2, user=request.user,
+                                          quantity_partial__gt=0, stock_type=2).order_by('id')
         for product in products:
             products_autocomplete.append({'value': product.id, 'label': product.name,
                                           'desc': product.description, 'qty': product.quantity_partial,

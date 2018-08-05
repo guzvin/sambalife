@@ -240,7 +240,11 @@
                             {% endif %}
                              {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
                                 <li class="{% block productlist %}{% endblock %}">
-                                    <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Estoque" %}</a>
+                                    <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Estoque FBA" %}</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li class="{% block productfbmlist %}{% endblock %}">
+                                    <a href="{% url 'product_stock_fbm' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Estoque FBM" %}</a>
                                 </li>
                                 <li class="divider"></li>
                             {% endif %}

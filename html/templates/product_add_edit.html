@@ -81,6 +81,19 @@
                   {% endfor %}
                 </div><br>
               {% endif %}
+                <div class="form-group col-md-12">
+                  <label for="{{ form.stock_type.id_for_label }}">{{ form.stock_type.label }}*</label>
+                    {% select_stock_type form.stock_type.value '1' as stock_type_fba %}
+                    {% select_stock_type form.stock_type.value '2' as stock_type_fbm %}
+                    <select class="form-control stock_type_validate" id="{{ form.stock_type.id_for_label }}" name="{{ form.stock_type.html_name }}">
+                        <option value="">{{ form.stock_type.label }}</option>
+                        <option value="1" {{ stock_type_fba }}>{% trans "FBA" %}</option>
+                        <option value="2" {{ stock_type_fbm }}>{% trans "FBM" %}</option>
+                    </select>
+                  {% for error in form.stock_type.errors %}
+                    <label id="stock_type-error" class="error" for="{{ form.stock_type.id_for_label }}">{{ error|escape }}</label>
+                  {% endfor %}
+                </div><br>
 {% comment %}
               <!-- Campo novo Peso -->
 
