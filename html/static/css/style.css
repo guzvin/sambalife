@@ -824,6 +824,15 @@ body {
     width: 60px;
 }
 
+.pt .navbar-brand img.logo-lots:first-child, .en .navbar-brand img.logo-lots:first-child{
+    width: 200px;
+    margin-top: 8px;
+}
+
+.margin-top-40{
+    margin-top: 40px;
+}
+
 .navbar-custom .nav li a{
     color: #3C3E77;
     font-weight: bold;
@@ -1937,14 +1946,14 @@ form small{
     width: 290px;
 }
 
-.navbar-default.affix-top .navbar-brand.logo-site{
-    background: url('../img/logo-en-old.png') no-repeat 0 14px;
-    background-size: 290px;
+.navbar-default.affix-top .navbar-brand.logo-site {
+    background: url(../img/logo-en-old.png) no-repeat 0 0px;
+    background-size: 227px;
 }
 
 .navbar-default.affix .navbar-brand.logo-site{
-    background: url('../img/logo-en-old.png') no-repeat 0 14px;
-    background-size: 290px;
+    background: url(../img/logo-en-old.png) no-repeat 0 0px;
+    background-size: 227px;
 }
 
 footer{
@@ -2342,7 +2351,7 @@ ul.listaancora li a{
     }
 
     .div-center{
-         margin: 0 auto;
+        margin: 0 auto;
         float: none;
         text-align: center;
     }
