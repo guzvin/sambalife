@@ -2341,6 +2341,12 @@ ul.listaancora li a{
         margin-bottom: 0;
     }
 
+    .div-center{
+         margin: 0 auto;
+        float: none;
+        text-align: center;
+    }
+
     .box-lote {
     width: 100%;
     display: block;
