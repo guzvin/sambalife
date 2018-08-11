@@ -111,7 +111,9 @@
           {% if user|has_shipment_perm:'add_shipment' %}
             <a class="btn btn-default" id="btn-add-shipment" data-action-url="{% url 'shipment_add' %}"><i class="fab fa-amazon"></i> {% trans "Criar Envio para Amazon" %}</a>
           {% endif %}
-
+          {% if user|has_shipment_perm:'create_fba_shipment' %}
+            <a class="btn btn-primary" id="btn-create-shipment" data-action-url="{% url 'shipment_create' %}"><i class="fa fa-fw fa-th"></i> {% trans "FBA Prep Criar Envio" %}</a>
+          {% endif %}
 {% comment %}
           {% if user|has_shipment_perm:'add_fbm_shipment' %}
             <a class="btn btn-default" id="btn-add-merchant-shipment" data-action-url="{% url 'merchant_shipment_add' %}"><i class="fa fa-ship"></i> {% trans "Criar Envio Merchant" %}</a>
@@ -337,27 +339,4 @@
         {% endif %}
       </div>
     </div>
-
-<!-- Popup com o histórico de cubagem utilizada -->
-
-
-<div id="espaco" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title"><i class="fa fa-fw fa-frown-o"></i> Verifique o Histórico de ocupação dos seus Produtos</h4>
-            </div>
-            <div class="modal-body">
-                <p>03/07/18 - 20 pés cúbicos</p>
-                <p>15/07/18 - 30 pés cúbicos</p>
-                <p>30/07/18 - 20 pés cúbicos</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 {% endblock %}

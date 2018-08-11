@@ -9,13 +9,14 @@ from django.contrib.auth.models import Group
 from django.contrib.admin.utils import unquote
 from django.contrib.admin import utils
 from django.core.exceptions import ObjectDoesNotExist
-from myauth.models import MyUser, UserAddress, UserLotReport
+from myauth.models import MyUser, UserAddress, UserLotReport, UserSpace
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.db.models import Q
 from utils.sites import admin_site
 from myauth.admin_filters import LotSellDateFilter, LotNoPurchaseFilter
 from django.contrib.admin.views.main import ChangeList
 from django.db.models import Sum
+from django.utils import translation
 
 import logging
 
@@ -166,6 +167,21 @@ class AddressInline(admin.TabularInline):
     verbose_name_plural = _('Endereços')
 
 
+class UserSpaceForm(forms.ModelForm):
+    class Meta:
+        model = UserSpace
+        fields = ('space',)
+
+
+class SpaceInline(admin.TabularInline):
+    model = UserSpace
+    form = UserSpaceForm
+    readonly_fields = ('date_register',)
+    can_delete = True
+    verbose_name = _('Espaço')
+    verbose_name_plural = _('Espaços')
+
+
 class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
     form = UserChangeForm
@@ -173,6 +189,7 @@ class UserAdmin(BaseUserAdmin):
 
     inlines = [
         AddressInline,
+        SpaceInline
     ]
 
     actions = ['make_active', 'make_inactive']

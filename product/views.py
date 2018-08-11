@@ -551,7 +551,8 @@ def product_autocomplete(request):
                                           'desc': product.description, 'qty': product.quantity_partial,
                                           'bb': formats.date_format(product.best_before, "SHORT_DATE_FORMAT")
                                           if product.best_before else '',
-                                          'lot': False if product.lot_product is None else True})
+                                          'lot': False if product.lot_product is None else True,
+                                          'asin': product.asin if product.asin else ''})
     return HttpResponse(json.dumps(products_autocomplete),
                         content_type='application/json')
 
@@ -572,7 +573,8 @@ def product_autocomplete_fbm(request):
                                           'desc': product.description, 'qty': product.quantity_partial,
                                           'bb': formats.date_format(product.best_before, "SHORT_DATE_FORMAT")
                                           if product.best_before else '',
-                                          'lot': False if product.lot_product is None else True})
+                                          'lot': False if product.lot_product is None else True,
+                                          'asin': product.asin if product.asin else ''})
     return HttpResponse(json.dumps(products_autocomplete),
                         content_type='application/json')
 

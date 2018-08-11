@@ -37,6 +37,7 @@ class Shipment(models.Model):
     total_products = models.PositiveIntegerField(_('Total de Produtos'))
     cost = models.DecimalField(_('Valor Total'), max_digits=12, decimal_places=2)
     STATUS_CHOICES = (
+        (0, _('Criar Envio')),  # Create Shipment
         (1, _('Preparando para Envio')),  # Preparing for Shipment
         (2, _('Upload Etiqueta Caixa Autorizado')),  # Upload Box Label Authorized
         (3, _('Pagamento Autorizado')),  # Payment Authorized
@@ -64,6 +65,7 @@ class Shipment(models.Model):
     is_standby = models.BooleanField(_('Aguardando resposta'), default=False)
     collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
                                      blank=True)
+    is_fba_create = models.BooleanField(_('FBA Prep Criar Envio'), default=False)
 
     class Meta:
         verbose_name = _('Envio')
@@ -72,6 +74,8 @@ class Shipment(models.Model):
             ('view_shipments', _('Pode visualizar Envios Amazon')),
             ('view_fbm_shipments', _('Pode visualizar Envios Merchant')),
             ('add_fbm_shipment', _('Pode adicionar Envios Merchant')),
+            ('create_fba_shipment', _('Criar Envio FBA')),
+            ('create_fba_shipment_admin', _('Criar Envio FBA Admin')),
         )
 
 

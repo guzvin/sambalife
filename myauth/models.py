@@ -143,6 +143,13 @@ class UserAddress(models.Model):
     default = models.BooleanField(_('Padrão'))
 
 
+class UserSpace(models.Model):
+    id = BigAutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date_register = models.DateTimeField(_('Data de registro'), auto_now_add=True)
+    space = models.DecimalField(_('Espaço em pés cúbicos'), max_digits=12, decimal_places=2)
+
+
 class UserLotReport(MyUser):
     class Meta:
         proxy = True

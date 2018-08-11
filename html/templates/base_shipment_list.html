@@ -32,6 +32,7 @@
                 <div class="form-group col-md-2">
                     {% trans "Status" as status %}
                     <label for="filtro-status">{{ status }}</label>
+                    {% select_status filter_values '0' as create_filter_status %}
                     {% select_status filter_values '1' as preparing_filter_status %}
                     {% select_status filter_values '2' as upload_filter_status %}
                     {% select_status filter_values '3' as payed_filter_status %}
@@ -39,6 +40,7 @@
                     {% select_status filter_values '5' as sent_filter_status %}
                     <select class="form-control" id="filtro-status" name="status">
                       <option value="">{{ status }}</option>
+                      <option value="0" {{ create_filter_status }}>{% trans "Criar Envio" %}</option>
                       <option value="1" {{ preparing_filter_status }}>{% trans "Preparando para Envio" %}</option>
                       <option value="2" {{ upload_filter_status }}>{% trans "Upload Etiqueta Caixa Autorizado" %}</option>
                       <option value="3" {{ payed_filter_status }}>{% trans "Pagamento Autorizado" %}</option>
@@ -116,6 +118,7 @@
                   {% endtimezone %}
                   <td class="center">{{ shipment.total_products }}</td>
                   <td class="center">
+                    {% if shipment.is_fba_create is True %}(*) {% endif %}
                     {{ shipment.get_status_display  }}
                     {% if shipment.is_standby%}
                       <br>

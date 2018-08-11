@@ -35,14 +35,19 @@
                 <div class="form-group upload-pdf-edit">
                     <label><i class="fas fa-file-pdf"></i> {% trans "Upload/Download Arquivos" %}:</label><br><br>
                     <label>{% trans "Etiqueta do produto" %}:</label><br>
+                    {% if shipment.status > 0 %}
                     <div class="link-download-pdf">
                         <a href="{% url 'shipment_pdf_1' 'pdf_1' shipment.id %}" class="download" target="_blank"><i class="fas fa-file-pdf"></i> Download</a>
-                        {% if shipment.status < 5 %}
+                        {% if shipment.status > 0 and shipment.status < 5 %}
+                        {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                         <a href="javascript:void(0);" class="btn btn-warning edit-pdf"><i class="fas fa-pencil-alt"></i> {% trans "Alterar" %}</a>
                         {% endif %}
+                        {% endif %}
                     </div>
+                    {% endif %}
                     {% if shipment.status < 5 %}
-                    <div class="input-content-edit-pdf">
+                    {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
+                    <div class="{% if shipment.status > 0 %}input-content-edit-pdf{% endif %}">
                         {{ shipment_fs.management_form }}
                         {% for shipment_f in shipment_fs %}
                             {{ shipment_f.id }}
@@ -51,8 +56,11 @@
                             <label id="{{ shipment_f.pdf_1.id_for_label }}-error" class="error" for="{{ shipment_f.pdf_1.id_for_label }}">{{ error|escape }}</label>
                             {% endfor %}
                         {% endfor %}
+                        {% if shipment.status > 0 %}
                         <a href="javascript:void(0);" class="btn btn-default edit-pdf-undo"><i class="fa fa-fw fa-undo"></i></a>
+                        {% endif %}
                     </div>
+                    {% endif %}
                     {% endif %}
                     <br>
                 </div>
@@ -72,8 +80,13 @@
 {% block package_warehouse_2 %}
                     <div class="col-md-2">
                         <label><i class="fa fa-fw fa-truck"></i> {{ package.warehouse.label }}:</label><br><br>
+                        {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                         {% if shipment.status <= 3 and user|has_shipment_perm:'add_package' and shipment.collaborator_id|check_collaborator:user %}
                         <p><input type="text" placeholder="{{ package.warehouse.label }}..." name="{{ package.warehouse.html_name }}" class="form-control" id="{{ package.warehouse.id_for_label }}" aria-required="true" value="{% if package.warehouse.value %}{{ package.warehouse.value }}{% endif %}"/></p>
+                        {% else %}
+                        <p>{{ package.warehouse.value }}</p>
+                        <input type="hidden" name="{{ package.warehouse.html_name }}" value="{{ package.warehouse.value }}">
+                        {% endif %}
                         {% else %}
                         <p>{{ package.warehouse.value }}</p>
                         <input type="hidden" name="{{ package.warehouse.html_name }}" value="{{ package.warehouse.value }}">

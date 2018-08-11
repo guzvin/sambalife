@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n permissions products users shipments commons lots %}
+{% load i18n tz l10n permissions products users shipments commons lots %}
 {% block productfbmlist %}active{% endblock %}
 
 {% block conteudo %}
@@ -115,6 +115,10 @@
           {% if user|has_shipment_perm:'add_fbm_shipment' %}
             <a class="btn btn-default" id="btn-add-merchant-shipment" data-action-url="{% url 'merchant_shipment_add' %}"><i class="fa fa-ship"></i> {% trans "Criar Envio Merchant" %}</a>
           {% endif %}
+
+            <!-- Novo botao verificar espaço ocupado -->
+            <a class="btn btn-primary" id="ver-espaco" href="javascript:void(0)"><i class="fa fa-fw fa-th"></i> {% trans "Verificar Espaço ocupado FBM" %}</a>
+
 {% comment %}
             <!-- Novo botao -->
             <a class="btn btn-default" id="btn-add-shipment-brazil"><i class="fa fa-globe"></i> {% trans "Criar Envio para o Brasil" %}</a>
@@ -338,4 +342,28 @@
       </div>
     </div>
 
+<!-- Popup com o histórico de cubagem utilizada -->
+
+
+<div id="espaco" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-fw fa-frown-o"></i> {% trans "Verifique o Histórico de ocupação dos seus Produtos" %}</h4>
+            </div>
+            <div class="modal-body">
+                {% timezone_name LANGUAGE_CODE as mytz %}
+                {% timezone mytz %}
+                {% for user_space in user.userspace_set.all %}
+                <p>{{ user_space.date_register|date:'SHORT_DATE_FORMAT' }} - {{ user_space.space|localize }} {% trans "pés cúbico" %}s</p>
+                {% endfor %}
+                {% endtimezone %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

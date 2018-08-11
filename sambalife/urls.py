@@ -57,6 +57,7 @@ urlpatterns += i18n_patterns(
     url(_(r'^shipment/list[/]$'), shipment_list, name='shipment'),
     url(_(r'^shipment/details/(?P<pid>[0-9]+)[/]$'), shipment_details, name='shipment_details'),
     url(_(r'^shipment/add[/]$'), shipment_add, name='shipment_add'),
+    url(_(r'^shipment/create[/]$'), shipment_add_fba_prep, name='shipment_create'),
     url(r'^shipment/(?P<pdf>pdf_1)/(?P<pid>[0-9]+)[/]$', shipment_download_pdf, name='shipment_pdf_1'),
     url(r'^shipment/(?P<pdf>pdf_2)/(?P<pid>[0-9]+)[/]$', shipment_download_pdf, name='shipment_pdf_2'),
     url(r'^shipment/standby/(?P<pid>[0-9]+)/(?P<op>(1|2)+)[/]$', shipment_standby, name='shipment_standby'),

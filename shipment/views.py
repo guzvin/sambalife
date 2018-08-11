@@ -52,9 +52,10 @@ class InlineProductWidget(Widget):
             # Only add the 'value' attribute if a value is non-empty.
             final_attrs['value'] = hidden_value
         hidden_tag = format_html('<input{} class="inline-row-key"/>', flatatt(final_attrs))
-        html_fragment = format_html('<td>{}{}</td><td>{}</td><td>{}</td><td>{}</td>',
+        html_fragment = format_html('<td>{}{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td>',
                                     hidden_tag,
                                     value.id if value else '',
+                                    value.asin if value and value.asin else '',
                                     value.name if value else '',
                                     value.description if value else '',
                                     formats.date_format(value.best_before, "SHORT_DATE_FORMAT")
@@ -275,6 +276,8 @@ def shipment_details(request, pid=None):
             if shipment_formset.is_valid() and shipment_formset.has_changed():
                 shipment_formset.save()
                 context_data['shipment_fs'] = shipment_formset
+            if _shipment_details.status == 0:
+                Shipment.objects.filter(pk=_shipment_details.id).update(status=1)
         if _shipment_details.is_archived is False and _shipment_details.is_canceled is False and \
                 _shipment_details.status == 1:
             # Preparando para Envio
@@ -692,14 +695,14 @@ def shipment_add_status_one_data(request, PackageFormSet, shipment_extra_info, p
 @login_required
 @require_http_methods(["DELETE"])
 def shipment_delete_product(request, output=None):
-    if has_shipment_perm(request.user, 'change_shipment') is False:
+    if has_shipment_perm(request.user, 'create_fba_shipment_admin') is False:
         return HttpResponseForbidden()
     request.DELETE = QueryDict(request.body)
     logger.debug('@@@@@@@@@@@@ DELETE PRODUCT @@@@@@@@@@@@@@')
     try:
         with transaction.atomic():
             is_collaborator_perm = has_store_perm(request.user, 'collaborator')
-            query = Q(pk=request.DELETE.get('delete_product_shipment_id')) & Q(status=1) & Q(is_archived=False)
+            query = Q(pk=request.DELETE.get('delete_product_shipment_id')) & Q(is_archived=False)
             query &= Q(is_canceled=False)
             if is_collaborator_perm:
                 if request.user.collaborator:
@@ -1001,6 +1004,75 @@ def shipment_add(request):
                                                  'product_formset': product_formset,
                                                  'warehouse_formset': warehouse_formset,
                                                  'max_time_period': max_time_period if max_time_period else 0})
+
+
+@login_required
+@require_http_methods(["POST"])
+def shipment_add_fba_prep(request):
+    if has_shipment_perm(request.user, 'add_shipment') is False:
+        return HttpResponseForbidden()
+    if request.method == 'POST' and request.POST.get('shipment_collaborator'):
+        try:
+            selected_collaborator = int(request.POST.get('shipment_collaborator'))
+        except (ValueError, TypeError):
+            selected_collaborator = None
+        original_products = OriginalProduct.objects.select_related('lot_product')\
+            .filter(user=request.user, status=2, quantity_partial__gt=0, collaborator_id=selected_collaborator)
+    else:
+        original_products = OriginalProduct.objects.none()
+    ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
+                                           widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
+    ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
+                                                                                                          'product'),
+                                           field_classes={'product': Field},
+                                           widgets={'product': InlineProductWidget},
+                                           formfield_callback=my_formfield_callback,
+                                           extra=original_products.count())
+    logger.debug('@@@@@@@@@@@@ REQUEST METHOD @@@@@@@@@@@@@@')
+    logger.debug(request.method)
+    logger.debug(str(request.method == 'POST' and request.POST.get('save_shipment')))
+    logger.debug('@@@@@@@@@@@@ SAVE SHIPMENT @@@@@@@@@@@@@@')
+    shipment_formset = ShipmentFormSet(queryset=Shipment.objects.none())
+    form_data = {
+        'product_set-TOTAL_FORMS': str(original_products.count()),
+        'product_set-INITIAL_FORMS': '0',
+        'product_set-MAX_NUM_FORMS': '',
+        'product_set-MIN_NUM_FORMS': '',
+    }
+    for idx, data in enumerate(original_products):
+        logger.debug(idx)
+        logger.debug(data)
+        form_data['product_set-%s-product' % idx] = str(data.id)
+        form_data['product_set-%s-quantity' % idx] = str(data.quantity_partial)
+    product_formset = ProductFormSet(form_data, prefix='product_set')
+    with transaction.atomic():
+        for shipment_form in shipment_formset:
+            logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE PROCESS @@@@@@@@@@@@@@')
+            shipment = shipment_form.save(commit=False)
+            shipment.user = request.user
+            shipment.status = 0  # Create Shipment
+            shipment.total_products = 0
+            shipment.is_fba_create = True
+            products = product_formset.save(commit=False)
+            logger.debug(len(products))
+            for product in products:
+                OriginalProduct.objects.filter(pk=product.product_id).update(quantity=
+                                                                             F('quantity') - product.quantity,
+                                                                             quantity_partial=
+                                                                             F('quantity_partial') -
+                                                                             product.quantity)
+                original_product = OriginalProduct.objects.get(pk=product.product_id)
+                product.receive_date = original_product.receive_date
+                shipment.total_products += product.quantity
+                shipment.collaborator = original_product.collaborator
+            shipment.cost = 0
+            logger.debug('@@@@@@@@@@@@ SHIPMENT SAVE @@@@@@@@@@@@@@')
+            shipment.save()
+            product_formset.instance = shipment
+            logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
+            product_formset.save()
+            # send_email_shipment_add(request, shipment, products, warehouses)
+    return HttpResponseRedirect('%s?s=1' % reverse('shipment'))
 
 
 @login_required

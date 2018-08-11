@@ -717,7 +717,7 @@
             }
             sessionStorage.setItem('shipment_products', JSON.stringify(shipmentProducts));
         });
-        $('#btn-add-shipment, #btn-add-merchant-shipment').click(function()
+        $('#btn-add-shipment, #btn-add-merchant-shipment, #btn-create-shipment').click(function()
         {
             var get = false;
             for(var shipmentProduct in shipmentProducts)

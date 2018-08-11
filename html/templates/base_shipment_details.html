@@ -63,10 +63,10 @@
 
            <hr />
 
-          {% if shipment.status != 1 %}
+          {% if shipment.status != 1 and shipment.status != 0 %}
           <form action="" method="post" id="form-upload-file" enctype="multipart/form-data">
           {% endif %}
-          {% if shipment.status == 1 %}
+          {% if shipment.status == 1 or shipment.status == 0 %}
           <form action="{% url 'shipment_details' shipment.id %}" method="post" id="form-add-package" enctype="multipart/form-data">
           {% endif %}
             <div class="table-responsive">
@@ -75,6 +75,7 @@
                 <tr>
                   <th>{% trans "Link Amazon" %}</th>
                   <th>{% trans "ID" %}</th>
+                  <th>{% trans "ASIN" %}</th>
                   <th>{% trans "Nome" %}</th>
                   <th>{% trans "Descrição" %}</th>
                   <th>{% trans "Validade" %}</th>
@@ -86,11 +87,11 @@
                   {% if shipment.status == 1 and user|has_shipment_perm:'add_productservice' and shipment.collaborator_id|check_collaborator:user or shipment.status > 1 %}
                   <th>{% trans "Serviços" %}</th>
                   {% endif %}
-{% comment %}
-                  {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False and shipment.collaborator_id|check_collaborator:user %}
+
+                  {% if shipment.status < 5 and user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_archived is False and shipment.is_canceled is False and shipment.collaborator_id|check_collaborator:user %}
                   <th>{% trans "Retirar" %}</th>
                   {% endif %}
-{% endcomment %}
+
                 </tr>
               </thead>
               <tbody>
@@ -108,6 +109,7 @@
                       </center>
                   </td>
                   <td>{{ product.product.id }}</td>
+                  <td>{% if product.product.asin %}{{ product.product.asin }}{% endif %}</td>
                   <td>{{ product.product.name }}</td>
                   <td>{{ product.product.description }}</td>
 
@@ -136,14 +138,14 @@
                   {% endif %}
                   </td>
                   {% endif %}
-{% comment %}
-                  {% if shipment.status == 1 and user|has_shipment_perm:'change_shipment' and shipment.is_archived is False and shipment.is_canceled is False and shipment.collaborator_id|check_collaborator:user %}
+
+                  {% if shipment.status < 5 and user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_archived is False and shipment.is_canceled is False and shipment.collaborator_id|check_collaborator:user %}
                   {% trans "Excluir" as delete %}
                   <td>
                       <a class="btn btn-danger delete-product-shipment" title="{{ delete }} {{ product.product.name }}" href="#" data-delete-product-shipment-id="{{ shipment.id }}" data-delete-product-product-id="{{ product.id }}"><i class="fa fa-fw fa-close"></i></a>
                   </td>
                   {% endif %}
-{% endcomment %}
+
                 </tr>
               {% endfor %}
               </tbody>
@@ -262,6 +264,7 @@
                     <div class="{% block package_label_class %}{% endblock %}">
                         <label><i class="fa fa-fw fa-file"></i> {{package.pdf_2.label}}:</label><br><br>
                         {% if shipment.status == 2 %}
+                          {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                           {% if user == shipment.user or user|has_group:'admins' or shipment.collaborator_id|is_collaborator:user %}
                         <p>
                             {{ package.pdf_2 }}
@@ -272,19 +275,26 @@
                           {% else %}
                         <p>{% trans "Upload não permitido" %}</p>
                           {% endif %}
+                          {% else %}
+                        <p>{% trans "Upload não permitido" %}</p>
+                          {% endif %}
                         {% else %}
                         <div class="upload-pdf-edit">
                             <div class="link-download-pdf"><br>
                                 <a href="{% url 'shipment_pdf_2' 'pdf_2' package.id.value %}" class="download" target="_blank">Download</a>
-                                {% if shipment.status < 5 %}
+                                {% if shipment.status < 5  %}
+                                {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                                 <a href="javascript:void(0);" class="btn btn-warning edit-pdf"><i class="fa fa-fw fa-pencil-square-o"></i> {% trans "Alterar" %}</a>
+                                {% endif %}
                                 {% endif %}
                             </div>
                             {% if shipment.status < 5 %}
+                            {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                             <div class="input-content-edit-pdf"><br>
                                 {{ package.pdf_2 }}
                                 <a href="javascript:void(0);" class="btn btn-default edit-pdf-undo"><i class="fa fa-fw fa-undo"></i></a>
                             </div>
+                            {% endif %}
                             {% endif %}
                         </div>
 
@@ -297,12 +307,16 @@
                             <label for="{{ package.shipment_tracking.id_for_label }}"><i class="fa fa-fw fa-file-pdf-o"></i> {{ package.shipment_tracking.label }}:</label><br><br>
                             <p>
                                 {% if shipment.status > 3 and user|has_shipment_perm:'add_package' and shipment.collaborator_id|check_collaborator:user %}
+                                {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                                 <input type="text" name="{{ package.shipment_tracking.html_name }}" class="form-control" id="{{ package.shipment_tracking.id_for_label }}" value="{% if package.shipment_tracking.value %}{{ package.shipment_tracking.value }}{% endif %}" />
                                 {% for error in package.shipment_tracking.errors %}
                                 <label id="{{ package.shipment_tracking.id_for_label }}-error" class="error" for="{{ package.shipment_tracking.id_for_label }}">{{ error|escape }}</label>
                                 {% endfor %}
+                                {% endif %}
                                 {% elif shipment.status == 5 and shipment.shipment != '' %}
+                                {% if not user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                                 {% if package.shipment_tracking.value %}{{ package.shipment_tracking.value }}{% endif %}
+                                {% endif %}
                                 {% endif %}
                             </p>
                         </div>
@@ -393,6 +407,7 @@
                </div>
            </div><hr />
            {% if shipment.status == 1 and user|has_shipment_perm:'add_package' and shipment.collaborator_id|check_collaborator:user %}
+              {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
            <div class="row">
                <h4><i class="fa fa-fw fa-line-chart"></i> {% trans "Área Administrativa" %}</h4><br>
                {% csrf_token %}
@@ -464,6 +479,7 @@
                     </div>
               </div>
            </div><hr />
+              {% endif %}
            {% endif %}
           {% if shipment.status != 1 %}
           </form>
@@ -491,25 +507,31 @@
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Enviar e Finalizar Envio" %}
                 </a>
                {% endif %}
-               {% if shipment.status == 1 %}
+               {% if shipment.status == 0 or shipment.status == 1 %}
+                 {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-1" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
                 </a>
+                 {% endif %}
                {% endif %}
                {% if shipment.status == 2 %}
                 {% if user == shipment.user or user|has_group:'admins' or user|has_shipment_perm:'add_package' %}
+                 {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-3" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
                 </a>
+                 {% endif %}
                 {% endif %}
                {% endif %}
                {% if shipment.status == 5 and user|has_group:'admins' or shipment.status == 5 and shipment.collaborator_id|is_collaborator:user or shipment.status == 4 or shipment.status == 3 %}
+                 {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="send-btn-5" href="#">
                     <i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}
                 </a>
+                 {% endif %}
                {% endif %}
                {% if user|has_group:'admins' or shipment.collaborator_id|is_collaborator:user %}
-                {% if shipment.status < 4 %}
+                {% if shipment.status > 0 and shipment.status < 4 %}
                 <a class="btn btn-primary filtar-btn alterar-status" id="change-btn-status-forward" href="{% url 'shipment_status' shipment.id 'forward' %}">
                     <i class="fa fa-fw fa-forward"></i> {% trans "Pular etapa" %}
                 </a>
@@ -538,10 +560,12 @@
                </a>
                {% endif %}
                {% if shipment.status < 5 %}
+                 {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                  <!-- Botao arquivar -->
                  <a class="btn btn-danger filtar-btn alterar-status" id="archive-btn" href="#">
                     <i class="fa fa-fw fa-archive"></i> {% trans "Arquivar Envio" %}
                  </a>
+                 {% endif %}
                {% endif %}
               {% endif %}
               {% if shipment.status < 5 %}
@@ -550,10 +574,12 @@
                     <input type="hidden" name="archive_shipment" value="1">
                  </form>
                  <!-- botao arquivar -->
+                 {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
                  <!-- Botao cancelar -->
                  <a class="btn btn-danger filtar-btn alterar-status" id="cancel-btn" href="#">
                     <i class="fas fa-trash-alt"></i> {% trans "Cancelar Envio" %}
                  </a>
+                 {% endif %}
                  <br><br>
               {% endif %}
              {% endif %}
