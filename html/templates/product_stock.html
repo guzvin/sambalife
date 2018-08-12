@@ -112,7 +112,7 @@
             <a class="btn btn-default" id="btn-add-shipment" data-action-url="{% url 'shipment_add' %}"><i class="fab fa-amazon"></i> {% trans "Criar Envio para Amazon" %}</a>
           {% endif %}
           {% if user|has_shipment_perm:'create_fba_shipment' %}
-            <a class="btn btn-primary" id="btn-create-shipment" data-action-url="{% url 'shipment_create' %}"><i class="fa fa-fw fa-th"></i> {% trans "FBA Prep Criar Envio" %}</a>
+            <a class="btn btn-primary" id="btn-create-shipment" data-action-url="{% url 'shipment_create' %}"><i class="fa fa-fw fa-th"></i> {% trans "We create your AZ Shipment" %}</a>
           {% endif %}
 {% comment %}
           {% if user|has_shipment_perm:'add_fbm_shipment' %}

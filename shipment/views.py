@@ -1020,6 +1020,8 @@ def shipment_add_fba_prep(request):
             .filter(user=request.user, status=2, quantity_partial__gt=0, collaborator_id=selected_collaborator)
     else:
         original_products = OriginalProduct.objects.none()
+    if original_products.count() == 0:
+        return HttpResponseRedirect('%s?s=1' % reverse('product_stock'))
     ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
                                            widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',

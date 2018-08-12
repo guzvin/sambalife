@@ -37,7 +37,7 @@ class Shipment(models.Model):
     total_products = models.PositiveIntegerField(_('Total de Produtos'))
     cost = models.DecimalField(_('Valor Total'), max_digits=12, decimal_places=2)
     STATUS_CHOICES = (
-        (0, _('Criar Envio')),  # Create Shipment
+        (0, _('We create your AZ Shipment')),  # Create Shipment
         (1, _('Preparando para Envio')),  # Preparing for Shipment
         (2, _('Upload Etiqueta Caixa Autorizado')),  # Upload Box Label Authorized
         (3, _('Pagamento Autorizado')),  # Payment Authorized
