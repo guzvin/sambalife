@@ -1085,16 +1085,16 @@ def shipment_add_fba_prep(request):
 def merchant_shipment_add(request):
     if has_shipment_perm(request.user, 'add_fbm_shipment') is False:
         return HttpResponseForbidden()
-    if request.method == 'POST':
-        if request.POST.get('save_shipment') is None:
-            preselected_products = request.POST.getlist('shipment_product')
-            original_products = OriginalProduct.objects.filter(user=request.user, status=2, quantity__gt=0,
-                                                               pk__in=preselected_products,
-                                                               stock_type=2).order_by('id')
-            if original_products.count() == 0:
-                return HttpResponseRedirect('%s?s=1' % reverse('product_stock_fbm'))
-        else:
-            original_products = OriginalProduct.objects.none()
+    if request.method == 'POST' and request.POST.get('shipment_collaborator'):
+        try:
+            selected_collaborator = int(request.POST.get('shipment_collaborator'))
+        except (ValueError, TypeError):
+            selected_collaborator = None
+        original_products = OriginalProduct.objects.select_related('lot_product')\
+            .filter(user=request.user, status=2, quantity_partial__gt=0, collaborator_id=selected_collaborator,
+                    stock_type=2).order_by('id')
+        if original_products.count() == 0:
+            return HttpResponseRedirect('%s?s=1' % reverse('product_stock_fbm'))
     else:
         original_products = OriginalProduct.objects.none()
     ShipmentFormSet = modelformset_factory(Shipment, fields=('type',), min_num=1, max_num=1)
