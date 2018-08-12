@@ -210,7 +210,7 @@
                   </td>
                   {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                   <!-- somente admin visualiza -->
-                  <td class="center">{{ product.user.first_name }}<br>({{ product.user.email }})</td>
+                  <td class="center">{{ product.user.first_name }}<br>({{ product.user.from_key }})<br>({{ product.user.email }})</td>
                   <!-- fim campo -->
                   {% endif %}
                   <td class="">

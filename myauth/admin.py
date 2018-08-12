@@ -242,7 +242,7 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('id', 'email', 'date_joined', 'is_superuser', 'is_active', 'is_verified', 'collaborator', 'partner')
+    list_display = ('id', 'email', 'from_key', 'date_joined', 'is_superuser', 'is_active', 'is_verified', 'collaborator', 'partner')
     list_display_links = ('id', 'email',)
     list_filter = ('groups', 'is_superuser', 'is_active', 'is_verified', 'collaborator', 'partner')
     readonly_fields = ('date_joined',)
@@ -278,7 +278,7 @@ class UserAdmin(BaseUserAdmin):
                                     'is_verified', 'is_active', 'password1', 'password2', 'collaborator', 'groups')
         return super(UserAdmin, self).get_form(request, obj, **kwargs)
 
-    search_fields = ('id', 'email', 'first_name', 'last_name')
+    search_fields = ('id', 'email', 'first_name', 'last_name', 'from_key')
     ordering = ('email',)
     filter_horizontal = ()
 
@@ -295,7 +295,7 @@ class UserAdmin(BaseUserAdmin):
                 this_extra_context = {}
             this_extra_context.update(system_user_extra_context)
         if not request.user.is_superuser:
-            self.list_display = ('id', 'email', 'date_joined', 'is_active', 'is_verified', 'collaborator', 'partner')
+            self.list_display = ('id', 'email', 'from_key', 'date_joined', 'is_active', 'is_verified', 'collaborator', 'partner')
             self.list_filter = ('groups', 'is_active', 'is_verified', 'collaborator', 'partner')
             self.fieldsets = (
                 (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
@@ -308,7 +308,7 @@ class UserAdmin(BaseUserAdmin):
 
     def changelist_view(self, request, extra_context=None):
         if not request.user.is_superuser:
-            self.list_display = ('id', 'email', 'date_joined', 'is_active', 'is_verified', 'partner')
+            self.list_display = ('id', 'email', 'from_key', 'date_joined', 'is_active', 'is_verified', 'partner')
             self.list_filter = ('groups', 'is_active', 'is_verified', 'partner')
             self.fieldsets = (
                 (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
@@ -473,8 +473,8 @@ class UserLotReportAdmin(admin.ModelAdmin):
     ]
 
     #  DO NOTHING CHECK get_search_results FOR SEARCH FIELDS
-    search_fields = ('first_name', 'last_name', 'email', 'lot__name')
-    list_display = ('id', 'user_name', 'email', 'user_date_joined', 'lot_name', 'lot_sell_date', 'lot_cost',)
+    search_fields = ('first_name', 'last_name', 'email', 'lot__name', 'from_key')
+    list_display = ('id', 'from_key', 'user_name', 'email', 'user_date_joined', 'lot_name', 'lot_sell_date', 'lot_cost',)
 
     def user_name(self, obj):
         return ' '.join([obj.first_name, obj.last_name])
