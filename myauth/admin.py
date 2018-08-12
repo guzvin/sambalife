@@ -16,7 +16,7 @@ from utils.sites import admin_site
 from myauth.admin_filters import LotSellDateFilter, LotNoPurchaseFilter
 from django.contrib.admin.views.main import ChangeList
 from django.db.models import Sum
-from django.utils import translation
+from utils.helper import gen_from_key
 
 import logging
 
@@ -71,6 +71,7 @@ class UserCreationForm(forms.ModelForm):
         # Save the provided password in hashed format
         user = super(UserCreationForm, self).save(commit=False)
         user.set_password(self.cleaned_data['password1'])
+        user.from_key = gen_from_key()
         user.save()
         user.groups = self.cleaned_data['groups']
         if commit:

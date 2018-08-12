@@ -3,7 +3,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from sambalife.forms import UserRegistrationForm, UserLoginForm, UserForgotPasswordForm, UserResetPasswordForm
-from utils.helper import send_email, send_email_basic_template_bcc_admins
+from utils.helper import send_email, send_email_basic_template_bcc_admins, gen_from_key
 from utils.models import Params
 from django.utils import translation
 from django.utils.translation import string_concat, ugettext as _
@@ -181,6 +181,7 @@ def user_registration(request, pid=None):
             user.terms_conditions = True
             user.language_code = translation.get_language()
             user.is_active = True
+            user.from_key = gen_from_key()
             user.save()
             all_users_group = Group.objects.get(name='all_users')
             all_users_group.user_set.add(user)

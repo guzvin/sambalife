@@ -40,6 +40,8 @@ import re
 import math
 import json
 import datetime
+import string
+import random
 import logging
 
 logger = logging.getLogger('django')
@@ -612,5 +614,16 @@ def check_lifecycle_three_days(current_date, lid=None):
                     .update(quantity=models.F('quantity') + product.quantity)
         return True
     return False
+
+
+def gen_from_key():
+    user_model = get_user_model()
+    from_key = None
+    while from_key is None:
+        from_key = ''.join(random.choice(string.ascii_uppercase) for _ in range(4))
+        if user_model.objects.filter(from_key=from_key).exists():
+            from_key = None
+    return from_key
+
 
 valid_ipn_received.connect(paypal_notification)

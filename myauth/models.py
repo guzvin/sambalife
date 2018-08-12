@@ -35,6 +35,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     language_code = models.CharField(_('Idioma'), choices=settings.LANGUAGES, max_length=5, default='pt')
     collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
                                      blank=True)
+    from_key = models.CharField(_('FROM'), max_length=4, unique=True)
 
     def __iter__(self):
         yield 'id', self.id
@@ -50,6 +51,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         yield 'partner', self.partner
         yield 'terms_conditions', self.terms_conditions
         yield 'language_code', self.language_code
+        yield 'from_key', self.from_key
 
     objects = MyUserManager()
 
