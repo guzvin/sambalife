@@ -1092,7 +1092,7 @@ def merchant_shipment_add(request):
                                                                pk__in=preselected_products,
                                                                stock_type=2).order_by('id')
             if original_products.count() == 0:
-                return HttpResponseRedirect('%s?s=1' % reverse('product_stock'))
+                return HttpResponseRedirect('%s?s=1' % reverse('product_stock_fbm'))
         else:
             original_products = OriginalProduct.objects.none()
     else:

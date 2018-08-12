@@ -244,10 +244,15 @@ def product_stock_fbm(request):
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
     max_time_period = get_max_time_period()
-    return render(request, 'product_stock_fbm.html', {'title': _('Estoque FBM'), 'products': products,
-                                                  'filter_values': ObjectView(filter_values),
-                                                  'max_time_period': max_time_period if max_time_period else 0,
-                                                  'collaborators': Collaborator.objects.all().order_by('name')})
+    context_data = {'title': _('Estoque FBM'), 'products': products, 'filter_values': ObjectView(filter_values),
+                    'max_time_period': max_time_period if max_time_period else 0,
+                    'collaborators': Collaborator.objects.all().order_by('name')}
+    if request.GET.get('s') == '1':
+        context_data['custom_modal'] = True
+        context_data['modal_title'] = _('Envio Merchant')
+        context_data['modal_message'] = _('Envio NÃO criado. Por favor, verifique seu estoque, nenhum produto '
+                                          'disponível para envio.')
+    return render(request, 'product_stock_fbm.html', context_data)
 
 
 @login_required
