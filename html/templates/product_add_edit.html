@@ -265,30 +265,5 @@
         {% endif %}
       </div>
     </div>
-     <!-- Modal confirmacao de acao-->
-    <script type="text/javascript">
-    $(function(){
-    {% if custom_modal %}
-        $('#confirmacao').modal('show');
-    {% endif %}
-    });
-    </script>
-    <div id="confirmacao" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">{{ modal_title }}</h4>
-                </div>
-                <div class="modal-body">
-                    {% if custom_modal %}
-                        <p>{{ modal_message }}</p>
-                    {% endif %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
 {% endblock %}

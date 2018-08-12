@@ -260,6 +260,18 @@
                                 </li>
                                 <li class="divider"></li>
                             {% endif %}
+                            {% if user|has_shipment_perm:'view_fbm_shipments' or user|has_shipment_perm:'add_fbm_shipment' %}
+                                <li class="{% block merchant_shipment %}{% endblock %}">
+                                    {% open_mf_shipments request.user as oms %}
+                                    <a href="{% url 'merchant_shipment' %}">
+                                        <i class="fa fa-fw fa-list-alt"></i> {% trans "Envios Merchant" %}
+                                        {% if oms > 0 %}
+                                        <span title="{% trans 'Envios em aberto' %}" class="suspenso">{{ oms }}</span>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                <li class="divider"></li>
+                            {% endif %}
                             {% if user|has_store_perm:'view_purchased_lots' %}
                             <li class="{% block mypurchases %}{% endblock %}">
                                 <a href="{% url 'store_purchase' %}"><i class="fa fa-fw fa-shopping-basket"></i> {% trans "Minhas compras" %}</a>
