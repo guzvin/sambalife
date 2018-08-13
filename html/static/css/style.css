@@ -1906,11 +1906,34 @@ form small{
 
 .nav > li.tutorial.adress{
     top: 170px;
-    background: #286090;
+    background: #fff;
+    border: 1px solid #858585;
 }
 
 .nav > li.tutorial.adress a{
     padding: 8px 6px;
+    color: #858585;
+}
+
+.nav > li.tutorial.adress a span{
+    color: red;
+}
+
+.nav > li.tutorial.adress small{
+    color: #858585;
+    padding: 0 9px 9px;
+    margin: 0;
+    line-height: 14px;
+    display: block;
+}
+
+.nav > li.tutorial.adress hr{
+    margin: 0 0 14px 0;
+}
+
+.nav > li.tutorial.adress small:hover{
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .en footer {

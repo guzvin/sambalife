@@ -1568,6 +1568,13 @@
     //Tabs pagina ajuda
     $("#ajudatab li:eq(0) a").tab('show');
 
+
+
+    //Modal tutorial
+    $('#abre-codigo').click(function(){
+        $('#modal-codigo').modal('show');
+    });
+
     //Modal tutorial
     $('.abre-tutorial').click(function(){
         $('#tutorial').modal('show');

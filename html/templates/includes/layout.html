@@ -139,12 +139,19 @@
                     <li class="tutorial">
                         <a href="{% trans '/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf' %}" target="_blank" class="abre-tutorial"><i class="fa fa-book"></i> {% trans "Tutorial Plataforma" %}</a>
                     </li>
+
+                    <!-- Novo item com código de usuário -->
+
+                    <li class="tutorial adress" id="abre-codigo">
+                        <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fas fa-user-circle" style="font-size: 70px;"></i> {% trans "Código Usuário" %}: <span>FERADW</span></a>
+                        <hr />
+                        <small id="btn-cod-cliente">Onde utilizo esse código?</small>
+                    </li>
 {% endif %}
 {% comment %}
                     <li class="tutorial adress">
                         <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fa fa-map-marker"></i> {% trans "Ver Endereço VOI" %}</a>
                     </li>
-
 
 
                     {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
@@ -385,7 +392,7 @@
             </div>
         </div>
     </div>
-
+<!--
     <div id="box-adress" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -403,7 +410,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
 
     {% url 'terms' as termsandconditions %}
     {% if user.terms_conditions is False and not request.path|startswith:termsandconditions %}
@@ -453,6 +460,29 @@
         </div>
     </div>
 {% endcomment %}
+
+ <!-- Modal cógigo usuário explicação -->
+    <div id="modal-codigo" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fas fa-user-circle" style="font-size: 30px;"></i> {% trans "Onde utilizar meu código de cliente" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Olá" %}, {{ user.first_name }}</p>
+                    <p>{% trans "Diariamente nós recebemos dezenas de caixas na nossa warehouse. Para que possamos agilizar o processo de recebimento, identificação e preparo desses produtos, precisamos saber de forma rápida e ágil de quem é cada caixa a qual chega." %}</p>
+                    <p>{% trans "Com isso, criamos o 'Código do usuário'. No momento do seu cadastro, esse código é gerado e enviado para você por email. Você que utiliza nossos serviços de redirecionamento, storage e envia produtos para nós precisa inserir esse código ao lado do seu nome no remetente." %}</p>
+                    <p>{% trans "Resumindo, nas suas compras, ao lado do seu nome, insira o seu código de usuário. Caso não seja inserido, nós não conseguiremos identificar seus produtos quando chegarem." %}</p>
+                    <p><strong>Caso a(s) caixa(s) não estejam identificadas com o código de usuário, será cobrada uma taxa de identificação de caixa.</strong></p>
+                    <p>Para maiores informações, <a href="/pt/termos-e-condicoes-de-uso" class="download">leia nossos termos</a></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Loading basta dar display block-->
     <div class="loading" style="display: none;">{% trans "Carregando" %}...</div>
