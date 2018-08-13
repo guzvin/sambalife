@@ -1670,6 +1670,22 @@
             });
         });
 
+        //change select FBM FBA
+
+        $( ".select-fbs" ).change(function() {
+
+            $(".boxes-fb").removeClass("active");
+            var tipo = "";
+
+            $( "select option:selected" ).each(function() {
+
+              tipo += $( this ).text() + " ";
+              $("#" + tipo).addClass("active");
+
+            });
+        });
+
+
         //controle quantidade string título mobile
 
         if((window.screen.width >= 280) && (window.screen.width <= 768)){

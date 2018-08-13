@@ -1597,6 +1597,14 @@ label.titulo-pct span{
 }
 /*fim balão*/
 
+.boxes-fb{
+    display: none;
+}
+
+.boxes-fb.active{
+    display: block;
+}
+
 .table-responsive {
     overflow-x: inherit;
 }
