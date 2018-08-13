@@ -929,9 +929,9 @@ body {
 }
 
 #login-box img{
-    margin: 25px auto -4px auto;
+    margin: 25px auto 47px auto;
     display: block;
-    width: 100px;
+    width: 120px;
 }
 
 #login-box  .logo-services {
@@ -1955,6 +1955,11 @@ form small{
 .sistema .navbar-brand img:first-child{
     margin-top: 14px;
     width: 55px;
+}
+
+.sistema .navbar-brand img.logo-fba{
+    width: 165px;
+    margin-top: 12px;
 }
 
 .sistema .navbar-right {

@@ -253,7 +253,16 @@
               </div>
               <div class="col-md-12"><br>
                 <a class="add-track btn btn-success {{ tracking_formset.prefix }}-add-row add-row" title="{{ tracking_formset.addText }}" href="javascript:void(0);"><i class="fa fa-fw fa-plus"></i>{{ tracking_formset.addText }}</a>
-              </div><br><br>
+              </div><br>
+                <div class="bs-example col-md-12" id="alerta-valor-minimo">
+                 <div class="alert alert-warning">
+                     <p><strong>Lembre-se!!</strong>
+                         <br>
+                         Você deve inserir no from do seu envio o seu código de cliente para que possamos identificar as suas caixas quando chegarem na nossa warehouse.
+                     </p>
+                     <p><strong>Fique atento e evite cobranças extras.</strong></p>
+                 </div>
+              </div>
               <div class="form-group col-md-12"><br><br>
                   <button type="submit" id="send-btn" class="btn btn-primary"><i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}</button><br><br>
                   <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>

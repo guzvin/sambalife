@@ -1,5 +1,12 @@
 {% extends 'includes/layout.html' %}
 {% load i18n l10n tz lots permissions users commons %}
+
+{% block logo %}
+    <a href="/" class="navbar-brand page-scroll">
+        <img class="logo-fba" src="/static/img/logo-lots.png" />
+    </a>
+{% endblock %}
+
 {% block conteudo %}
 
 <div class="container-fluid">

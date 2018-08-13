@@ -66,9 +66,13 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="/" class="navbar-brand page-scroll">
-                    <img src="/static/img/logo_sup.png" /><span class="logo-services fr">VOI </span><span class="logo-services">SERVICES</span><!--<img src="/static/img/logo_bottom.png" />-->
-                </a>
+
+                {% block logo %}
+                    <a href="/" class="navbar-brand page-scroll">
+                        <img class="logo-fba" src="/static/img/logo-en-old.png" />
+                    </a>
+                {% endblock %}
+
             </div>
             <nav class="collapse navbar-collapse" id="bs-navbar">
                 <ul class="nav navbar-nav navbar-right">
