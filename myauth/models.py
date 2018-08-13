@@ -115,13 +115,13 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         super(MyUser, self).save(*args, **kwargs)  # Call the "real" save() method
 
     def _send_email(self, template_name):
-        ctx = Context({'user_name': self.first_name, 'protocol': 'https'})
+        ctx = Context({'user_name': self.first_name, 'user_from_key': self.from_key, 'protocol': 'https'})
         translation.activate(self.language_code)
         request = HttpRequest()
         request.LANGUAGE_CODE = translation.get_language()
         request.CURRENT_DOMAIN = _('vendedorinternacional.net')
         message = loader.get_template(template_name).render(ctx, request)
-        email_tuple = (' - '.join([str(ugettext('Cadastro')), str(ugettext('Vendedor Online Internacional'))]),
+        email_tuple = (' '.join([str(ugettext('Seu código de cliente é:')), self.from_key]),
                        message,
                        [self.email])
         send_email((email_tuple,), async=True)
