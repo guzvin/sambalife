@@ -215,6 +215,21 @@ fieldset[disabled] .btn-xl.active {
      width: 235px;
   }
 
+  .page-scroll.navbar-header {
+    width: 313px;
+  }
+
+ .page-scroll.navbar-header span{
+    color: #fff;
+    margin-top: 26px;
+    display: block;
+    font-size: 11px;
+  }
+
+  .navbar-custom.affix .page-scroll.navbar-header span{
+    color: #858585;
+  }
+
   .sistema .navbar-header {
      width: 110px;
      margin-top: -8px;
@@ -846,7 +861,7 @@ body {
 }
 
 .margin-top-40{
-    margin-top: 40px;
+    margin-top: 75px;
 }
 
 .navbar-custom .nav li a{
@@ -1999,7 +2014,7 @@ form small{
     text-indent: -999em;
     height: 50px;
     margin-top: 0px;
-    width: 290px;
+    width: 233px;
 }
 
 .navbar-default.affix-top .navbar-brand.logo-site {
