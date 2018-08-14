@@ -800,7 +800,14 @@ body {
 .navbar-brand {
     padding: 3px 0px 0px;
     height: 25px;
-    width: 200px;
+    width: 270px;
+}
+
+.navbar-brand span{
+    font-size: 11px;
+    margin: 24px 0 0 5px;
+    display: block;
+    float: left;
 }
 
 .header-user .navbar-brand {
