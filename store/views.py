@@ -403,6 +403,8 @@ def store_paypal_notification_post_transaction(request, _lot_details, user, ipn_
                                '<br>'
                                '{}<br>{}<br>{}<br>{}<br>{}</p>'])
         email_message = _(helper._html_format(*texts, custom_html_format=html_format)) + paypal_status_message
+        logger.info(email_title)
+        logger.info(user.email)
         helper.send_email_basic_template_bcc_admins(request, user.first_name, [user.email], email_title, email_message,
                                                     async=True, collaborator=_lot_details.collaborator)
     elif ipn_obj.payment_status == ST_PP_VOIDED:

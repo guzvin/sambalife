@@ -81,6 +81,7 @@ class ObjectView(object):
 def send_email_basic_template_bcc_admins(request, user_name, user_email, email_title, email_body, async=False,
                                          raise_exception=False, collaborator=None):
     email_tuple = build_basic_template_email_tuple(request, user_name, user_email, email_title, email_body)
+    logger.info(email_tuple)
     send_email((email_tuple,), bcc_admins=True, async=async, raise_exception=raise_exception, collaborator=collaborator)
 
 
@@ -138,8 +139,8 @@ class EmailThread(threading.Thread):
 
     def run(self):
         logger.info('@@@@@@@@@@@@ EMAIL MESSAGE @@@@@@@@@@@@@@')
-        logger.debug(self.email_from)
-        logger.debug(self.email_data_tuple)
+        logger.info(self.email_from)
+        logger.info(self.email_data_tuple)
         messages = []
         recipients = []
         for subject, message, recipient in self.email_data_tuple:
