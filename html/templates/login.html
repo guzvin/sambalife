@@ -38,8 +38,12 @@
 </head>
 
 <body id="page-top" class="login">
-    <div id="login-box">
+    <div id="login-box">{{ request.CURRENT_DOMAIN }}
+            {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
             <img src="/static/img/logo-fba-new.png" width="176"/>
+            {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
+            <img class="logo-lots" src="/static/img/logo-lots.png" />
+            {% endif %}
             <p class="left">{% trans "Digite abaixo seus dados de acesso" %}</p>
             <form action="" method="post" id="form-login">
               {% csrf_token %}
