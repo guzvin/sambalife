@@ -78,7 +78,7 @@
                   {% if user|has_shipment_perm:'delete_product' %}
                   <td>
                       {% if product_formset.can_delete %}
-                      <a class="btn btn-danger inline-deletelink" title="{{ product_formset.deleteText }}" href="#"><i class="fa fa-fw fa-close"></i></a>
+                      <a class="btn btn-danger inline-deletelink" title="{{ product_formset.deleteText }}" href="#"><i class="fa fa-fw fa-times-circle"></i></a>
                       {% endif %}
                   </td>
                   {% endif %}
