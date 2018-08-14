@@ -35,7 +35,7 @@
 
 </head>
 
-<body id="page-top" class="cadastro-usuario">
+<body id="page-top" class="cadastro-usuario sistema">
  <header class="bs-docs-nav navbar navbar-static-top header-sistema header-user" id="top">
             <div class="navbar-header">
                 <button aria-controls="bs-navbar" aria-expanded="false" class="collapsed navbar-toggle" data-target="#bs-navbar" data-toggle="collapse" type="button">
@@ -45,7 +45,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a href="/" class="navbar-brand page-scroll">
-                    <img src="/static/img/logo_sup.png" /><span class="logo-services fr">VOI </span><span class="logo-services">SERVICES</span><!--<img src="/static/img/logo_bottom.png" />-->
+                    <img class="logo-fba" src="/static/img/logo-lots.png" />
                 </a>
             </div>
             <nav class="collapse navbar-collapse" id="bs-navbar">
@@ -65,7 +65,7 @@
                 <img src="/static/img/sale-img.png" width="100%" />
                 <br><br><br>
                 <div class="box-valor">
-                    <p class="seja">{% trans "Faça seu cadastro para entrar em nossa fila de espera de assinantes. Assim que sua vaga for liberada, você será notificado." %}</p>
+                    <p class="seja">{% trans "Faça seu cadastro agora e tenha acesso aos nossos lotes." %}</p>
                     <!--<p class="assinate-span">Invista apenas <span>U${% trans "54,90" %}</span>{% trans "/mês" %}</p>
                     <p>{% trans "Tenha acesso a todas as vantagens de ser um assinante VOI Services" %}</p>-->
                 </div>
@@ -75,7 +75,7 @@
                 <label> {% trans "Se ainda tiver dúvidas, veja nossos tutorias de utilização da plataforma <a href='/pt/ajuda/' class='download'>aqui</a>." %}</label>
             <br /><br><br>-->
                 {% url 'how_it_works' as how_it_works_url %}
-                <label> {% blocktrans %}Veja aqui as vantagens de se tornar um assinante <a href="{{ how_it_works_url }}" class="download">Clique aqui</a>.{% endblocktrans %}</label>
+                <label> {% blocktrans %}Torne-se VOI Prime e tenha acesso a lotes mais especiais ainda. Veja aqui as vantagens de se tornar um VOI Prime <a href="http://voiservices.com/#prime" class="download">Clique aqui</a>.{% endblocktrans %}</label>
 
             </div>
             <div class="col-md-6">
@@ -478,7 +478,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
-                    <span class="copyright">{% trans "Copyright &copy; VOI Services 2018" %}</span>
+                    <span class="copyright">{% trans "Copyright &copy; VOI Lots 2018" %}</span>
                 </div>
                 <div class="col-md-3"><!--
                    <a href="https://prepshiptool.com" target="_blank" class="by download">

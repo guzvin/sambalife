@@ -1680,10 +1680,14 @@
             $( "select option:selected" ).each(function() {
 
               tipo += $( this ).text() + " ";
-              $("#" + tipo).addClass("active");
+              $("#" + tipo).adClass("active");
 
             });
         });
+
+        //controlar qual logo será exibida
+
+        console.log(document.domain);
 
 
         //controle quantidade string título mobile
