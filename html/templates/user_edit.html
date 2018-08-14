@@ -3,9 +3,15 @@
 {% block edituser %}active{% endblock %}
 
 {% block logo %}
-    <a href="/" class="navbar-brand page-scroll">
-        <img class="logo-fba" src="/static/img/logo-lots.png" />
-    </a>
+    {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
+        <a href="/" class="navbar-brand page-scroll">
+            <img class="logo-fba" src="/static/img/logo-en-old.png" /><span>By <strong>VOILOTS</strong></span>
+        </a>
+    {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
+        <a href="/" class="navbar-brand page-scroll">
+            <img class="logo-fba" src="/static/img/logo-lots.png" />
+        </a>
+    {% endif %}
 {% endblock %}
 
 {% block conteudo %}

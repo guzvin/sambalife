@@ -44,9 +44,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="/" class="navbar-brand page-scroll">
-                    <img class="logo-fba" src="/static/img/logo-lots.png" />
-                </a>
+                {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
+                    <a href="/" class="navbar-brand page-scroll">
+                        <img class="logo-fba" src="/static/img/logo-en-old.png" /><span>By <strong>VOILOTS</strong></span>
+                    </a>
+                {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
+                    <a href="/" class="navbar-brand page-scroll">
+                        <img class="logo-fba" src="/static/img/logo-lots.png" />
+                    </a>
+                {% endif %}
             </div>
             <nav class="collapse navbar-collapse" id="bs-navbar">
                 <ul class="nav navbar-nav navbar-right">
@@ -65,17 +71,27 @@
                 <img src="/static/img/sale-img.png" width="100%" />
                 <br><br><br>
                 <div class="box-valor">
-                    <p class="seja">{% trans "Faça seu cadastro agora e tenha acesso aos nossos lotes." %}</p>
+
                     <!--<p class="assinate-span">Invista apenas <span>U${% trans "54,90" %}</span>{% trans "/mês" %}</p>
                     <p>{% trans "Tenha acesso a todas as vantagens de ser um assinante VOI Services" %}</p>-->
+
+                    {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
+                        <p class="seja">{% trans "Faça seu cadastro agora e tenha acesso aos nossos serviços de redirecionamento." %}</p>
+                    {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
+                        <p class="seja">{% trans "Faça seu cadastro agora e tenha acesso aos nossos lotes." %}</p>
+                    {% endif %}
                 </div>
-                {% url 'terms' as terms_url %}
-                <label> {% blocktrans %}Leia <a href="{{ terms_url }}" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
-                <br /><br><br><!--
-                <label> {% trans "Se ainda tiver dúvidas, veja nossos tutorias de utilização da plataforma <a href='/pt/ajuda/' class='download'>aqui</a>." %}</label>
-            <br /><br><br>-->
-                {% url 'how_it_works' as how_it_works_url %}
-                <label> {% blocktrans %}Torne-se VOI Prime e tenha acesso a lotes mais especiais ainda. Veja aqui as vantagens de se tornar um VOI Prime <a href="http://voiservices.com/#prime" class="download">Clique aqui</a>.{% endblocktrans %}</label>
+                {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
+                        <label> {% blocktrans %}Leia <a href="https://fbaprepmaster.com/pt/termos-e-condicoes" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
+                        <br /><br><br>
+                        <label> {% blocktrans %}Torne-se VOI Prime e tenha acesso ao serviço de criação de labels. Veja aqui as vantagens <a href="https://fbaprepmaster.com" class="download">Clique aqui</a>.{% endblocktrans %}</label>
+                    {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
+                        {% url 'terms' as terms_url %}
+                        <label> {% blocktrans %}Leia <a href="{{ terms_url }}" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
+                        <br /><br><br>
+                        {% url 'how_it_works' as how_it_works_url %}
+                        <label> {% blocktrans %}Torne-se VOI Prime e tenha acesso a lotes mais especiais ainda. Veja aqui as vantagens de se tornar um VOI Prime <a href="http://voiservices.com/#prime" class="download">Clique aqui</a>.{% endblocktrans %}</label>
+                    {% endif %}
 
             </div>
             <div class="col-md-6">

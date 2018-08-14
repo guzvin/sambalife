@@ -836,6 +836,15 @@ body {
     margin-top: 8px;
 }
 
+#login-box .lots-login{
+    width: 220px;
+}
+
+.contem-logo{
+    text-align: center;
+    margin-bottom: 30px;
+}
+
 .margin-top-40{
     margin-top: 40px;
 }
@@ -939,6 +948,10 @@ body {
     margin: 25px auto 47px auto;
     display: block;
     width: 120px;
+}
+
+#login-box .contem-logo img{
+    margin: 25px auto 0 auto;
 }
 
 #login-box  .logo-services {

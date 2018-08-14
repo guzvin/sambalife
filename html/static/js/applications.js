@@ -1687,7 +1687,8 @@
 
         //controlar qual logo será exibida
 
-        console.log(document.domain);
+        var dominio = document.domain;
+
 
 
         //controle quantidade string título mobile
