@@ -82,16 +82,16 @@
                     {% endif %}
                 </div>
                 {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
-                        <label> {% blocktrans %}Leia <a href="https://fbaprepmaster.com/pt/termos-e-condicoes-de-uso" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
-                        <br /><br><br>
-                        <label> {% blocktrans %}Assine nosso serviço "We create your Amazon shipment" e não se preocupe mais em criar envios para Amazon, Nós fazemos pra você. Veja aqui as vantagens <a href="https://fbaprepmaster.com" class="download">Clique aqui</a>.{% endblocktrans %}</label>
-                    {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
-                        {% url 'terms' as terms_url %}
-                        <label> {% blocktrans %}Leia <a href="{{ terms_url }}" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
-                        <br /><br><br>
-                        {% url 'how_it_works' as how_it_works_url %}
-                        <label> {% blocktrans %}Torne-se VOI Prime e tenha acesso a lotes mais especiais ainda. Veja aqui as vantagens de se tornar um VOI Prime <a href="http://voiservices.com/#prime" class="download">Clique aqui</a>.{% endblocktrans %}</label>
-                    {% endif %}
+                    <label> {% blocktrans %}Leia <a href="https://fbaprepmaster.com/pt/termos-e-condicoes-de-uso" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
+                    <br /><br><br>
+                    <label> {% blocktrans %}Assine nosso serviço "We create your Amazon shipment" e não se preocupe mais em criar envios para Amazon, Nós fazemos pra você. Veja aqui as vantagens <a href="/pt/create-az-shipment/" class="download">Clique aqui</a>.{% endblocktrans %}</label>
+                {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
+                    {% url 'terms' as terms_url %}
+                    <label> {% blocktrans %}Leia <a href="{{ terms_url }}" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
+                    <br /><br><br>
+                    {% url 'how_it_works' as how_it_works_url %}
+                    <label> {% blocktrans %}Torne-se VOI Prime e tenha acesso a lotes mais especiais ainda. Veja aqui as vantagens de se tornar um VOI Prime <a href="http://voiservices.com/#prime" class="download">Clique aqui</a>.{% endblocktrans %}</label>
+                {% endif %}
 
             </div>
             <div class="col-md-6">

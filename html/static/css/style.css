@@ -861,7 +861,7 @@ body {
 }
 
 .margin-top-40{
-    margin-top: 75px;
+    margin-top: 75px !important;
 }
 
 .navbar-custom .nav li a{
