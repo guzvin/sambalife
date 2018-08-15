@@ -221,9 +221,9 @@ fieldset[disabled] .btn-xl.active {
 
  .page-scroll.navbar-header span{
     color: #fff;
-    margin-top: 26px;
+    margin-top: 22px;
     display: block;
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .navbar-custom.affix .page-scroll.navbar-header span{
@@ -2018,17 +2018,17 @@ form small{
     text-indent: -999em;
     height: 50px;
     margin-top: 0px;
-    width: 233px;
+    width: 202px;
 }
 
 .navbar-default.affix-top .navbar-brand.logo-site {
-    background: url(../img/logo-en-old.png) no-repeat 0 0px;
-    background-size: 227px;
+    background: url(../img/logo-en-old-white.png) no-repeat 0 0px;
+    background-size: 198px;
 }
 
 .navbar-default.affix .navbar-brand.logo-site{
     background: url(../img/logo-en-old.png) no-repeat 0 0px;
-    background-size: 227px;
+    background-size: 198px;
 }
 
 footer{
