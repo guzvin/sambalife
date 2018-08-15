@@ -82,9 +82,9 @@
                     {% endif %}
                 </div>
                 {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
-                        <label> {% blocktrans %}Leia <a href="https://fbaprepmaster.com/pt/termos-e-condicoes" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
+                        <label> {% blocktrans %}Leia <a href="https://fbaprepmaster.com/pt/termos-e-condicoes-de-uso" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
                         <br /><br><br>
-                        <label> {% blocktrans %}Torne-se VOI Prime e tenha acesso ao serviço de criação de labels. Veja aqui as vantagens <a href="https://fbaprepmaster.com" class="download">Clique aqui</a>.{% endblocktrans %}</label>
+                        <label> {% blocktrans %}Assine nosso serviço "We create your Amazon shipment" e não se preocupe mais em criar envios para Amazon, Nós fazemos pra você. Veja aqui as vantagens <a href="https://fbaprepmaster.com" class="download">Clique aqui</a>.{% endblocktrans %}</label>
                     {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
                         {% url 'terms' as terms_url %}
                         <label> {% blocktrans %}Leia <a href="{{ terms_url }}" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
