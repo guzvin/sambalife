@@ -1948,9 +1948,13 @@ form small{
 }
 
 .nav > li.tutorial.adress{
-    top: 170px;
+    top: 262px;
     background: #fff;
     border: 1px solid #858585;
+}
+
+.nav > li.tutorial.adress.adress-v{
+    top: 170px;
 }
 
 .nav > li.tutorial.adress a{

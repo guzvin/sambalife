@@ -1568,11 +1568,13 @@
     //Tabs pagina ajuda
     $("#ajudatab li:eq(0) a").tab('show');
 
-
-
     //Modal tutorial
     $('#abre-codigo').click(function(){
         $('#modal-codigo').modal('show');
+    });
+
+    $("#abre-endereco").click(function(){
+        $('#modal-endereco').modal('show');
     });
 
     //Modal tutorial
@@ -1684,12 +1686,6 @@
 
             });
         });
-
-        //controlar qual logo será exibida
-
-        var dominio = document.domain;
-
-
 
         //controle quantidade string título mobile
 
