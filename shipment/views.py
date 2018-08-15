@@ -1341,7 +1341,7 @@ def send_email_shipment_add(request, shipment, products, warehouses):
                                                                             "SHORT_DATE_FORMAT")}),)
         else:
             texts += ('',)
-    texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment')]), _('Clique aqui'),
+    texts += (''.join(['https://fbaprepmaster.com', reverse('shipment')]), _('Clique aqui'),
               _('para acessar sua lista de envios.'))
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
@@ -1381,7 +1381,7 @@ def send_email_merchant_shipment_add(request, shipment, products):
                                                                             "SHORT_DATE_FORMAT")}),)
         else:
             texts += ('',)
-    texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('merchant_shipment')]), _('Clique aqui'),
+    texts += (''.join(['https://fbaprepmaster.com', reverse('merchant_shipment')]), _('Clique aqui'),
               _('para acessar sua lista de envios merchant.'))
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
@@ -1394,16 +1394,21 @@ def send_email_shipment_add_package(request, shipment, packages, async=True):
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">Warehouse: {} / {}: {} {} / '
                            'L: {}{} x W: {}{} x H: {}{}</p>'] * len(packages) +
                           ['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}</strong></p>',
+                           '<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}</strong></p>',
                            '<p><a href="{}">{}</a> {}</p>'])
     texts = (_('Os seguintes pacotes foram cadastrado para o seu envio:'),)
     for package in packages:
         texts += (package.warehouse, _('Peso'), package.weight, unit_weight_display(1, abbreviate=True), package.length,
                   unit_length_display(3, abbreviate=True), package.width, unit_length_display(3, abbreviate=True),
                   package.height, unit_length_display(3, abbreviate=True))
-    texts += (ungettext('Agora faça o upload da etiqueta da caixa para dar continuidade com o seu envio '
-                        '%(id)s.', 'Agora faça o upload das etiquetas das caixas para dar continuidade com o '
-                                   'seu envio %(id)s.', len(packages)) % {'id': shipment.id},
-              ''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
+
+    texts += (ungettext('Se você não possui o serviço "We create your Amazon Shipment", faça o upload da etiqueta da '
+                        'caixa para dar continuidade com o seu envio %(id)s.',
+                        'Se você não possui o serviço "We create your Amazon Shipment", faça o upload das etiquetas das'
+                        ' caixas para dar continuidade com o seu envio %(id)s.', len(packages)) % {'id': shipment.id},
+              _('Se você possui o serviço "We create your Amazon Shimpement", nós iremos fazer este trabalho para '
+                'você.'),
+              ''.join(['https://fbaprepmaster.com', reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), _('para acessar seu envio e efetuar o upload.'),)
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
@@ -1446,8 +1451,8 @@ def send_email_shipment_sent(request, shipment, packages):
                                 % {'warehouse': package.warehouse, 'code': package.shipment_tracking})]
     texts += [mark_safe(_('No caso de qualquer dúvida é só nos enviar uma mensagem através do '
                           '<a href="%(url)s">fale conosco</a>.')
-                        % {'url': ''.join(['https://', request.CURRENT_DOMAIN, '/#contact'])})]
-    texts += [''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
+                        % {'url': ''.join(['https://fbaprepmaster.com', '/#contact'])})]
+    texts += [''.join(['https://fbaprepmaster.com', reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), _('para acessar seu envio.')]
     email_body = format_html(html_format, *tuple(texts))
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
@@ -1465,7 +1470,7 @@ def send_email_shipment_change_shipment(request, shipment, packages):
     for package in packages:
         texts += (mark_safe(_('Warehouse: <strong>%(warehouse)s</strong> / Código: <strong>%(code)s</strong>.')
                             % {'warehouse': package.warehouse, 'code': package.shipment_tracking}),)
-    texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
+    texts += (''.join(['https://fbaprepmaster.com', reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), _('para acessar seu envio.'))
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
@@ -1480,7 +1485,7 @@ def send_email_shipment_status_change(request, shipment, link_text, *texts, asyn
                           (['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong>'
                            '<br> {} {}</p>'] if len(texts) == 4 else ['']) +
                           ['<p><a href="{}">{}</a> {}</p>'])
-    texts += (''.join(['https://', request.CURRENT_DOMAIN, reverse('shipment_details', args=[shipment.id])]),
+    texts += (''.join(['https://fbaprepmaster.com', reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), link_text,)
     email_body = format_html(html_format, *texts)
     helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
