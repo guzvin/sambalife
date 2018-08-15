@@ -387,10 +387,8 @@ def store_paypal_notification_post_transaction(request, _lot_details, user, ipn_
                   _('Para o usuário usufruir do redirecionamento grátis, todos os produtos do lote adquirido, deverão '
                     'ser enviados para a amazon, em um prazo de até 3 dias úteis. Caso o tempo de envio supere a '
                     'gratuidade, serão aplicadas as seguintes regras de cobrança para a realização do envio:'),
-                  _('- Produto no estoque VOI S a partir do quarto dia até 10 dias: USD 1,29 por unidade do produto;'),
-                  _('- Produto no estoque VOI S de 11 até 20 dias: USD 1,49 por unidade do produto;'),
-                  _('- Produto no estoque VOI S de 21 até 30 dias: USD 1,99 por unidade do produto; e'),
-                  _('- Após 30 dias entrar em contato com o nosso suporte.'),)
+                  _('- Produto no estoque VOI S a partir do quarto dia: USD 1,29 por unidade do produto;'),
+                  _('- Após 60 dias os produtos serão doados.'),)
         html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>'] +
                               ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}<br>{}<br>{}</p>'] +
                               (['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}<br>{}</p>']
@@ -401,7 +399,7 @@ def store_paypal_notification_post_transaction(request, _lot_details, user, ipn_
                               ['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}'
                                '<br>'
                                '<br>'
-                               '{}<br>{}<br>{}<br>{}<br>{}</p>'])
+                               '{}<br>{}<br>{}</p>'])
         email_message = _(helper._html_format(*texts, custom_html_format=html_format)) + paypal_status_message
         logger.info(email_title)
         logger.info(user.email)
