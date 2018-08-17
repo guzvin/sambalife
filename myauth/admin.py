@@ -57,7 +57,8 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        fields = ('email', 'first_name', 'last_name', 'cell_phone', 'phone', 'is_active', 'is_superuser')
+        fields = ('email', 'first_name', 'last_name', 'amz_store_name', 'cell_phone', 'phone', 'is_active',
+                  'is_superuser')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -112,7 +113,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        fields = ('email', 'password', 'first_name', 'last_name', 'cell_phone', 'phone', 'is_active',
+        fields = ('email', 'password', 'first_name', 'last_name', 'amz_store_name', 'cell_phone', 'phone', 'is_active',
                   'is_superuser')
 
     def clean_password(self):
@@ -249,7 +250,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
                            'password1', 'password2')}),
-        (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
+        (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'amz_store_name', 'cell_phone', 'phone',)}),
         (_('Permissões'), {'fields': ('is_superuser', 'collaborator',)}),
         (_('Grupos'), {'fields': ('groups',)}),
     )
@@ -258,7 +259,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
+            'fields': ('email', 'partner', 'first_name', 'last_name', 'amz_store_name', 'cell_phone', 'phone',
                        'is_verified', 'is_active', 'is_superuser', 'password1', 'password2', 'collaborator', 'groups')}
          ),
     )
@@ -270,12 +271,14 @@ class UserAdmin(BaseUserAdmin):
                 self.add_fieldsets = (
                     (None, {
                         'classes': ('wide',),
-                        'fields': ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
-                                   'is_verified', 'is_active', 'password1', 'password2', 'collaborator', 'groups')}
+                        'fields': ('email', 'partner', 'first_name', 'last_name', 'amz_store_name', 'cell_phone',
+                                   'phone', 'is_verified', 'is_active', 'password1', 'password2', 'collaborator',
+                                   'groups')}
                      ),
                 )
-                kwargs['fields'] = ('email', 'partner', 'first_name', 'last_name', 'cell_phone', 'phone',
-                                    'is_verified', 'is_active', 'password1', 'password2', 'collaborator', 'groups')
+                kwargs['fields'] = ('email', 'partner', 'first_name', 'last_name', 'amz_store_name', 'cell_phone',
+                                    'phone', 'is_verified', 'is_active', 'password1', 'password2', 'collaborator',
+                                    'groups')
         return super(UserAdmin, self).get_form(request, obj, **kwargs)
 
     search_fields = ('id', 'email', 'first_name', 'last_name', 'from_key')
@@ -300,7 +303,8 @@ class UserAdmin(BaseUserAdmin):
             self.fieldsets = (
                 (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
                                    'password1', 'password2')}),
-                (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
+                (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'amz_store_name', 'cell_phone',
+                                                      'phone',)}),
                 (_('Grupos'), {'fields': ('groups',)}),
             )
         return super(UserAdmin, self).change_view(request, object_id, form_url=form_url,
@@ -313,7 +317,8 @@ class UserAdmin(BaseUserAdmin):
             self.fieldsets = (
                 (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
                                    'password1', 'password2')}),
-                (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'cell_phone', 'phone',)}),
+                (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'amz_store_name', 'cell_phone',
+                                                      'phone',)}),
                 (_('Permissões'), {'fields': ('collaborator',)}),
                 (_('Grupos'), {'fields': ('groups',)}),
             )

@@ -122,6 +122,14 @@
                     {% endfor %}
                   </div>
                   <div class="form-group">
+                    <label for="amzstore">{% trans "Nome da sua loja na Amazon" %}</label>
+                      {% trans "Digite o nome da loja na Amazon" as amzstore %}
+                    <input type="text" class="form-control" id="amzstore" aria-describedby="amzstoreHelp" name="amz_store_name" placeholder="{{ amzstore }}..." value="{% if form %}{{ form.amz_store_name.value }}{% endif %}">
+                    {% for error in form.amz_store_name.errors %}
+                      <label id="amzstore-error" class="error" for="amzstore">{{ error|escape }}</label>
+                    {% endfor %}
+                  </div>
+                  <div class="form-group">
                     <label for="celular">{% trans "Telefone 1" %}*</label>
                       {% trans "Digite o telefone, celular de preferência" as cell_phone %}
                     <input type="number" class="form-control" id="celular" name="cell_phone" placeholder="{{ cell_phone }}..." value="{% if form %}{{ form.cell_phone.value }}{% endif %}">

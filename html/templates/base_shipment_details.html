@@ -142,7 +142,7 @@
                   {% if shipment.status < 5 and user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_archived is False and shipment.is_canceled is False and shipment.collaborator_id|check_collaborator:user %}
                   {% trans "Excluir" as delete %}
                   <td>
-                      <a class="btn btn-danger delete-product-shipment" title="{{ delete }} {{ product.product.name }}" href="#" data-delete-product-shipment-id="{{ shipment.id }}" data-delete-product-product-id="{{ product.id }}"><i class="fa fa-fw fa-close"></i></a>
+                      <a class="btn btn-danger delete-product-shipment" title="{{ delete }} {{ product.product.name }}" href="#" data-delete-product-shipment-id="{{ shipment.id }}" data-delete-product-product-id="{{ product.id }}"><i class="fa fa-fw fa-times-circle"></i></a>
                   </td>
                   {% endif %}
 

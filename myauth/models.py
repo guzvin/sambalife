@@ -36,6 +36,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
                                      blank=True)
     from_key = models.CharField(_('FROM'), max_length=4, unique=True)
+    amz_store_name = models.CharField(_('Nome da sua loja na Amazon'), max_length=255, null=True, blank=True)
 
     def __iter__(self):
         yield 'id', self.id
