@@ -173,6 +173,7 @@ def user_registration(request, pid=None):
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
             user.email = form.cleaned_data['email']
+            user.amz_store_name = form.cleaned_data['amz_store_name']
             user.phone = form.cleaned_data['phone']
             user.cell_phone = form.cleaned_data['cell_phone']
             user.set_password(form.cleaned_data['password'])

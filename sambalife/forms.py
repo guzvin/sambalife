@@ -8,6 +8,7 @@ class UserRegistrationForm(forms.Form):
     first_name = forms.CharField(label=_('Nome'), max_length=50)
     last_name = forms.CharField(label=_('Sobrenome'), max_length=50)
     email = forms.EmailField(label=_('E-mail'), max_length=150)
+    amz_store_name = forms.CharField(label=_('Nome da sua loja na Amazon'), max_length=255, required=False)
     cell_phone = forms.CharField(label=_('Telefone 1'), max_length=25)
     phone = forms.CharField(label=_('Telefone 2'), max_length=25, required=False)
     # address_1 = forms.CharField(label=_('Endereço'), max_length=200)
