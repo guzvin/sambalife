@@ -164,6 +164,10 @@
                  <label>{% trans "Email" %}: </label> {{ shipment.user.email }}<br>
                 <br> <p><a href="{%url 'admin:myauth_myuser_change' shipment.user.id %}" class="btn btn-default"><i class="fas fa-external-link-square-alt"></i> {% trans "Acessar cadastro do usuário" %}</a></p>
             </div>
+              <div class="col-md-6">
+                  <h4><i class="fa fa-fw fa-info-circle"></i>Observação:</h4>
+                  <p>texto da observação</p><br><br>
+              </div>
           </div>
 
           <!-- fim bloco informacoes do usuario -->
