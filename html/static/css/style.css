@@ -2391,6 +2391,41 @@ ul.listaancora li a{
 
 @media (max-width: 767px){
 
+    .page-scroll.navbar-header span {
+        color: #fff;
+        margin-top: 22px;
+        display: block;
+        font-size: 10px;
+    }
+
+    .sistema .navbar-brand img.logo-fba {
+        width: 130px;
+        margin-top: 9px !important;
+    }
+
+    .sistema .navbar-brand span{
+        margin: 15px 0 0 5px;
+    }
+
+    .navbar-default.affix-top .navbar-brand.logo-site {
+        background: url(../img/logo-en-old-white.png) no-repeat 13px 11px;
+        background-size: 130px;
+    }
+
+    .navbar-default.affix .navbar-brand.logo-site{
+        background: url(../img/logo-en-old-white.png) no-repeat 13px 11px;
+        background-size: 130px;
+    }
+
+    .sistema .navbar-brand img.logo-fba {
+        width: 130px;
+        margin-top: 12px;
+    }
+
+    .navbar-default .navbar-brand.logo-site{
+        width: 148px;
+    }
+
     .sistema .navbar-brand img:first-child{
         margin-top: 0;
     }
@@ -2432,13 +2467,13 @@ ul.listaancora li a{
     }
 
     .box-lote {
-    width: 100%;
-    display: block;
-    float: left;
-    border-right: 1px solid #e5e5e5;
-    padding: 0;
-    margin-bottom: 10px;
-}
+        width: 100%;
+        display: block;
+        float: left;
+        border-right: 1px solid #e5e5e5;
+        padding: 0;
+        margin-bottom: 10px;
+    }
 
     .valor-prod {
         font-size: 25px;
@@ -2488,7 +2523,7 @@ ul.listaancora li a{
     }
 
     .navbar-brand {
-        width: 100px;
+        width: 234px;
     }
 
     .navbar-toggle {
