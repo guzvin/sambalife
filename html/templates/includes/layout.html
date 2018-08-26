@@ -538,6 +538,47 @@
         </div>
     </div>
 
+
+    <!-- Modal nome warehouse -->
+    <div id="modal-whaz" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fas fa-hand-paper" style="font-size: 30px;"></i> {% trans "Confirmação" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Olá" %}, {{ user.first_name }}</p>
+                    <p>{% trans "Para que possamos realizar o seu envio, através do serviço 'We create your amazon Shipment, precisamos que ANTES, realize a configuração em sua conta." %}</p>
+                    <p>{% trans "Veja como: <a class='download' href='https://fbaprepmaster.com/pt/create-a-shipment'>https://fbaprepmaster.com/pt/create-az-shipment</a>" %}</p>
+                    <p><strong>{% trans "Assinantes VOI Prime podem utilizar este serviço sem nenhum custo adicional" %}</strong></p>
+                    <div class="panel-group" id="accordion">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="download"><i class="fab fa-amazon"></i> Cadastrar nome da minha loja agora</a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label for="nomeloja">Nome da loja</label>
+                                        <input type="text" class="form-control" id="nomeloja" placeholder="Nome da loja" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Salvar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-check"></i> {% trans "Já cadastrei. Seguir com envio" %}</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> {% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading basta dar display block-->
     <div class="loading" style="display: none;">{% trans "Carregando" %}...</div>
 

@@ -162,6 +162,7 @@
                  <label>{% trans "ID" %}: </label> {{ shipment.user.id }} <br>
                  <label>{% trans "Nome" %}: </label> {{ shipment.user.first_name }} {{ shipment.user.last_name }}<br>
                  <label>{% trans "Email" %}: </label> {{ shipment.user.email }}<br>
+                 <label>{% trans "Nome loja Amazon"%}: </label> Nome da loja<br>
                 <br> <p><a href="{%url 'admin:myauth_myuser_change' shipment.user.id %}" class="btn btn-default"><i class="fas fa-external-link-square-alt"></i> {% trans "Acessar cadastro do usuário" %}</a></p>
             </div>
               <div class="col-md-6">

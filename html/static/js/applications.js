@@ -1577,6 +1577,10 @@
         $('#modal-endereco').modal('show');
     });
 
+    $("#btn-create-shipment").click(function(){
+        $('#modal-whaz').modal('show');
+    });
+
     //Modal tutorial
     $('.abre-tutorial').click(function(){
         $('#tutorial').modal('show');
