@@ -13,7 +13,7 @@ logger = logging.getLogger('django')
 
 class Product(models.Model):
     id = BigAutoField(primary_key=True)
-    name = models.CharField(_('Nome'), max_length=150)
+    name = models.CharField(_('Nome do Produto'), max_length=150)
     asin = models.CharField(_('ASIN / UPC / EAN'), max_length=50, null=True)
     store = models.CharField(_('Loja'), max_length=200, null=True, blank=True)
     description = models.TextField(_('Descrição'), null=True, blank=True)

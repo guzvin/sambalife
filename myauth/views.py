@@ -19,8 +19,8 @@ def user_edit(request):
     if request.user.first_name == 'Administrador':
         return HttpResponseForbidden()
     user_model = get_user_model()
-    UserFormSet = modelformset_factory(user_model, fields=('first_name', 'last_name', 'email', 'phone',
-                                                           'cell_phone'), min_num=1, max_num=1)
+    UserFormSet = modelformset_factory(user_model, fields=('first_name', 'last_name', 'email', 'amz_store_name',
+                                                           'phone', 'cell_phone'), min_num=1, max_num=1)
     context_data = {}
     if request.method == 'GET':
         user_formset = UserFormSet(queryset=user_model.objects.filter(pk=request.user.pk))

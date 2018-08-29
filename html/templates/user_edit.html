@@ -54,6 +54,14 @@
                     <label id="email-error" class="error" for="{{ form.email.id_for_label }}">{{ error|escape }}</label>
                   {% endfor %}
                 </div><br>
+                  <div class="form-group col-md-12">
+                    <label for="{{ form.amz_store_name.id_for_label }}">{% trans "Nome da sua loja na Amazon" %}</label>
+                      {% trans "Digite o nome da loja na Amazon" as amzstore %}
+                    <input type="text" class="form-control" id="{{ form.amz_store_name.id_for_label }}" aria-describedby="amzstoreHelp" name="{{ form.amz_store_name.html_name }}" placeholder="{{ amzstore }}..." value="{% if form.amz_store_name.value %}{{ form.amz_store_name.value }}{% endif %}">
+                    {% for error in form.amz_store_name.errors %}
+                      <label id="amzstore-error" class="error" for="{{ form.amz_store_name.id_for_label }}">{{ error|escape }}</label>
+                    {% endfor %}
+                  </div><br>
                 <div class="form-group col-md-12">
                   <label for="{{ form.cell_phone.id_for_label }}">{{ form.cell_phone.label }}*</label>
                     {% trans "Digite o telefone, celular de preferência" as cell_phone %}
