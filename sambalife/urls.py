@@ -81,6 +81,7 @@ urlpatterns += i18n_patterns(
     url(r'^shipment/pay/(?P<pid>[0-9]+)[/]$', shipment_pay_form, name='shipment_pay_form'),
     url(r'^shipment/calculate[/]$', shipment_calculate, name='shipment_calculate'),
     url(r'^user/accept_terms[/]$', accept_terms_conditions, name='accept_terms_conditions'),
+    url(r'^user/amz_store_name[/]$', user_amz_store_name, name='user_amz_store_name'),
     url(r'^user/impersonate[/]$', user_impersonate, name='user_impersonate'),
     url(r'^user/end_impersonate[/]$', user_end_impersonate, name='user_end_impersonate'),
     url(r'^product/autocomplete[/]$', product_autocomplete, name='product_autocomplete'),

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.db import transaction
 from product.models import Product, Tracking
@@ -133,6 +134,10 @@ def product_stock(request):
     context_data = {'title': _('Estoque FBA'), 'products': products, 'filter_values': ObjectView(filter_values),
                     'max_time_period': max_time_period if max_time_period else 0,
                     'collaborators': Collaborator.objects.all().order_by('name')}
+    user_model = get_user_model()
+    UserFormSet = modelformset_factory(user_model, fields=('amz_store_name',), min_num=1, max_num=1)
+    user_formset = UserFormSet(queryset=user_model.objects.filter(pk=request.user.pk))
+    context_data['user_formset'] = user_formset
     if request.GET.get('s') == '1':
         context_data['custom_modal'] = True
         context_data['modal_title'] = _('We create your AZ Shipment')

@@ -549,32 +549,38 @@
                 </div>
                 <div class="modal-body">
                     <p>{% trans "Olá" %}, {{ user.first_name }}</p>
-                    <p>{% trans "Para que possamos realizar o seu envio, através do serviço 'We create your Amazon Shipment, precisamos que ANTES, realize a configuração em sua conta." %}</p>
-                    <p>{% trans "Veja como: <a class='download' href='https://fbaprepmaster.com/pt/create-a-shipment'>https://fbaprepmaster.com/pt/create-az-shipment</a>" %}</p>
-                    <p><strong>Não se esqueça que você precisa também já ter cadastrado os produtos do seu envio em seu estoque na Amazon.</strong></p>
-                    <p><strong>{% trans "Assinantes VOI Prime podem utilizar este serviço sem nenhum custo adicional" %}</strong></p>
-                    <!--
+                    <p>{% trans "Para que possamos realizar o seu envio, através do serviço 'We create your Amazon Shipment', precisamos que ANTES, realize a configuração em sua conta." %}</p>
+                    <!--p>{% blocktrans %}Veja como: <a class='download' href='https://fbaprepmaster.com/pt/create-a-shipment'>https://fbaprepmaster.com/pt/create-az-shipment</a>{% endblocktrans %}</p-->
+                    <p><strong>{% blocktrans %}Não se esqueça que você precisa também já ter cadastrado os produtos do seu envio em seu estoque na Amazon.{% endblocktrans %}</strong></p>
+                    <p><strong>{% trans "Assinantes VOI Prime podem utilizar este serviço sem nenhum custo adicional." %}</strong></p>
                     <div class="panel-group" id="accordion">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="download"><i class="fab fa-amazon"></i> Cadastrar nome da minha loja agora</a>
+                                    <a id="anchor-user-amz-store" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="download"><i class="fab fa-amazon"></i> {% blocktrans %}Cadastrar nome da minha loja na Amazon agora{% endblocktrans %}</a>
                                 </h4>
                             </div>
                             <div id="collapseOne" class="panel-collapse collapse">
                                 <div class="panel-body">
+                                    <form action="" method="post" class="form-edit-user" id="form-edit-user-amz-store">
                                     <div class="form-group">
-                                        <label for="nomeloja">Nome da loja</label>
-                                        <input type="text" class="form-control" id="nomeloja" placeholder="Nome da loja" required>
+                                        <label for="{{ form.amz_store_name.id_for_label }}">{% trans "Nome da loja na Amazon" as label_amz_store_name %}{{ label_amz_store_name }}</label>
+                                          {% csrf_token %}
+                                          {{ user_formset.management_form }}
+                                          {% for form in user_formset %}
+                                            {{ form.id }}
+                                            <input type="text" name="{{ form.amz_store_name.html_name }}" class="form-control" id="{{ form.amz_store_name.id_for_label }}" placeholder="{{ label_amz_store_name }}" required value="{% if form.amz_store_name.value %}{{ form.amz_store_name.value }}{% endif %}">
+                                          {% endfor %}
                                     </div>
-                                    <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Salvar</button>
+                                    <button id="btn-save-user-amz-store" type="button" class="btn btn-primary"><i class="fas fa-check"></i> {% trans "Salvar" %}</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                    </div>-->
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-check"></i> {% trans "Já cadastrei. Seguir com envio" %}</button>
+                    <button type="button" id="btn-create-shipment-0" data-action-url="{% url 'shipment_create' %}" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-check"></i> {% trans "Já cadastrei. Seguir com envio" %}</button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> {% trans "Fechar" %}</button>
                 </div>
             </div>

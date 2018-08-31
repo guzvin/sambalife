@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
 from django.contrib.auth import login
 from django.utils.translation import ugettext as _
+from django.http import HttpResponse
 
 import logging
 
@@ -34,6 +35,19 @@ def user_edit(request):
             return HttpResponseRedirect('%s?s=1' % reverse('user_edit'))
     context_data['user_formset'] = user_formset
     return render(request, 'user_edit.html', context_data)
+
+
+@login_required
+@require_http_methods(["POST"])
+def user_amz_store_name(request):
+    if request.user.first_name == 'Administrador':
+        return HttpResponseForbidden()
+    user_model = get_user_model()
+    UserFormSet = modelformset_factory(user_model, fields=('amz_store_name',), min_num=1, max_num=1)
+    user_formset = UserFormSet(request.POST)
+    if user_formset.is_valid():
+        user_formset.save()
+    return HttpResponse(status=201)
 
 
 @login_required

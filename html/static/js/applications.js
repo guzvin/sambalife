@@ -717,7 +717,11 @@
             }
             sessionStorage.setItem('shipment_products', JSON.stringify(shipmentProducts));
         });
-        $('#btn-add-shipment, #btn-add-merchant-shipment, #btn-create-shipment').click(function()
+        $('#btn-create-shipment').click(function()
+        {
+            $('#modal-whaz').modal('show');
+        });
+        $('#btn-add-shipment, #btn-add-merchant-shipment, #btn-create-shipment-0').click(function()
         {
             var get = false;
             for(var shipmentProduct in shipmentProducts)
@@ -741,6 +745,19 @@
                 shipmentForm.attr('action', $(this).data('action-url'));
                 shipmentForm.submit();
             }
+        });
+        $('#btn-save-user-amz-store').click(function()
+        {
+            $.ajax(
+            {
+                method: 'POST',
+                url: '/' + gettext('en') + '/user/amz_store_name/',
+                data: $('#form-edit-user-amz-store').serialize(),
+            })
+            .done(function()
+            {
+                $('#anchor-user-amz-store').click();
+            });
         });
     }
     else
@@ -1575,10 +1592,6 @@
 
     $("#abre-endereco").click(function(){
         $('#modal-endereco').modal('show');
-    });
-
-    $("#btn-create-shipment").click(function(){
-        $('#modal-whaz').modal('show');
     });
 
     //Modal tutorial
