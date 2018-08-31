@@ -105,6 +105,19 @@
         </div>--><div class="col-md-1"></div>
         <div class="col-md-10 main loja">
           {% log_message '@#@#@#@#@#@#@#@#@#@#@@#@#@#@#@#@#@#@#@' %}
+          {% if not lots %}
+            <pre>
+{% blocktrans %}
+Não existem mais lotes disponíveis.
+
+Segue a agenda de publicação dos lotes:
+Terça: 10:30 horário de Brasília
+Terça: 20:30 horário de Brasília
+Quinta: 10:30 horário de Brasília
+Quinta: 20:30 horário de Brasília
+{% endblocktrans %}
+            </pre>
+          {% endif %}
           {% for lot in lots %}
           {% if forloop.counter0|divisibleby:4 %}
           <div class="row">

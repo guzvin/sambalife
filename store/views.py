@@ -63,7 +63,7 @@ def store_list(request):
             logger.debug(filter_roi)
             build_query(queries, roi_filter, lte='average_roi__lte', gte='average_roi__gte')
         filter_values['roi'] = filter_roi
-    # queries.append(Q(status=1) & Q(sell_date=None))
+    queries.append(Q(status=1) & Q(sell_date=None))
     # logger.debug(str(queries))
     # logger.debug(str(len(queries)))
     # _lot_list = Lot.objects.extra(where=['EXISTS (SELECT 1 FROM store_lot_groups WHERE store_lot.id = store_lot_groups.'
