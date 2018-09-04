@@ -66,6 +66,7 @@ class Shipment(models.Model):
     collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
                                      blank=True)
     is_fba_create = models.BooleanField(_('FBA Prep Criar Envio'), default=False)
+    observations = models.TextField(_('Observações'), null=True, blank=True)
 
     class Meta:
         verbose_name = _('Envio')
@@ -76,6 +77,7 @@ class Shipment(models.Model):
             ('add_fbm_shipment', _('Pode adicionar Envios Merchant')),
             ('create_fba_shipment', _('Criar Envio FBA')),
             ('create_fba_shipment_admin', _('Criar Envio FBA Admin')),
+            ('voi_prime', _('VOI Prime')),
         )
 
 

@@ -936,7 +936,7 @@ def shipment_add(request):
             return HttpResponseRedirect('%s?s=1' % reverse('product_stock'))
     else:
         original_products = OriginalProduct.objects.none()
-    ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
+    ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1', 'observations',), min_num=1, max_num=1,
                                            widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
                                                                                                           'product'),
@@ -1102,7 +1102,7 @@ def merchant_shipment_add(request):
             return HttpResponseRedirect('%s?s=1' % reverse('product_stock_fbm'))
     else:
         original_products = OriginalProduct.objects.none()
-    ShipmentFormSet = modelformset_factory(Shipment, fields=('type',), min_num=1, max_num=1)
+    ShipmentFormSet = modelformset_factory(Shipment, fields=('type', 'observations',), min_num=1, max_num=1)
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',
                                                                                                           'product'),
                                            field_classes={'product': Field},
