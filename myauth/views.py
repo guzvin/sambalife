@@ -47,7 +47,7 @@ def user_amz_store_name(request):
     user_formset = UserFormSet(request.POST)
     if user_formset.is_valid():
         user_formset.save()
-    return HttpResponse(status=201)
+    return HttpResponse(status=200)
 
 
 @login_required

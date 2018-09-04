@@ -570,6 +570,9 @@
                                           {% for form in user_formset %}
                                             {{ form.id }}
                                             <input type="text" name="{{ form.amz_store_name.html_name }}" class="form-control" id="{{ form.amz_store_name.id_for_label }}" placeholder="{{ label_amz_store_name }}" required value="{% if form.amz_store_name.value %}{{ form.amz_store_name.value }}{% endif %}">
+                                            {% for error in form.amz_store_name.errors %}
+                                              <label id="amzstore-error" class="error" for="{{ form.amz_store_name.id_for_label }}">{{ error|escape }}</label>
+                                            {% endfor %}
                                           {% endfor %}
                                     </div>
                                     <button id="btn-save-user-amz-store" type="button" class="btn btn-primary"><i class="fas fa-check"></i> {% trans "Salvar" %}</button>

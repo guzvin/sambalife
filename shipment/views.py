@@ -1013,7 +1013,12 @@ def shipment_add(request):
 def shipment_add_fba_prep(request):
     if has_shipment_perm(request.user, 'add_shipment') is False:
         return HttpResponseForbidden()
-    if request.method == 'POST' and request.POST.get('shipment_collaborator'):
+    user_amz_store_name = None
+    if request.user.amz_store_name:
+        user_amz_store_name = request.user.amz_store_name.strip()
+    if not user_amz_store_name:
+        return HttpResponseRedirect('%s?s=2' % reverse('product_stock'))
+    if request.POST.get('shipment_collaborator'):
         try:
             selected_collaborator = int(request.POST.get('shipment_collaborator'))
         except (ValueError, TypeError):
@@ -1024,7 +1029,7 @@ def shipment_add_fba_prep(request):
         if original_products.count() == 0:
             return HttpResponseRedirect('%s?s=1' % reverse('product_stock'))
     else:
-        original_products = OriginalProduct.objects.none()
+        return HttpResponseRedirect('%s?s=1' % reverse('product_stock'))
     ShipmentFormSet = modelformset_factory(Shipment, fields=('pdf_1',), min_num=1, max_num=1,
                                            widgets={'pdf_1': FileInput(attrs={'class': 'form-control pdf_1-validate'})})
     ProductFormSet = inlineformset_factory(Shipment, Product, formset=helper.MyBaseInlineFormSet, fields=('quantity',

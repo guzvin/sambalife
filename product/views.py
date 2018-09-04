@@ -143,6 +143,11 @@ def product_stock(request):
         context_data['modal_title'] = _('We create your AZ Shipment')
         context_data['modal_message'] = _('Envio NÃO criado. Por favor, verifique seu estoque, nenhum produto '
                                           'disponível para envio.')
+    elif request.GET.get('s') == '2':
+        context_data['custom_modal'] = True
+        context_data['modal_title'] = _('We create your AZ Shipment')
+        context_data['modal_message'] = _('Envio NÃO criado. Por favor, cadastre o nome da sua loja na Amazon para '
+                                          'seguir com seu envio.')
     return render(request, 'product_stock.html', context_data)
 
 
