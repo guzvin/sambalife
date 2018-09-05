@@ -78,6 +78,9 @@
                   <th>{% trans "ASIN" %}</th>
                   <th>{% trans "Nome" %}</th>
                   <th>{% trans "Descrição" %}</th>
+                  {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
+                    <th>{% trans "Localização" %}</th>
+                  {% endif %}
                   <th>{% trans "Validade" %}</th>
                   <th class="center">{% trans "Tempo em estoque" %}</th>
                   <th class="center">{% trans "Quantidade" %}</th>
@@ -112,7 +115,9 @@
                   <td>{% if product.product.asin %}{{ product.product.asin }}{% endif %}</td>
                   <td>{{ product.product.name }}</td>
                   <td>{{ product.product.description }}</td>
-
+                  {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
+                    <td>{{ product.product.pick_ticket }}</td>
+                  {% endif %}
                   <td>
                       {% with best_before_date=product.product.best_before|date:'SHORT_DATE_FORMAT' %}
                       {% if best_before_date %}
