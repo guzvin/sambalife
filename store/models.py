@@ -208,6 +208,15 @@ class Config(models.Model):
             'Grupo ao qual os lotes e os usuários assinantes serão associados por padrão.'
         ),
     )
+    default_service = models.OneToOneField(
+        Service,
+        verbose_name=_('Serviço padrão'),
+        null=True,
+        blank=True,
+        help_text=_(
+            'Serviço ao qual os produtos serão associados por padrão.'
+        ),
+    )
 
     class Meta:
         verbose_name = _('Configuração')

@@ -8,7 +8,8 @@ from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpRespo
 from django.utils.translation import ugettext as _, ungettext
 from product.models import Product as OriginalProduct
 from service.models import Service, Config
-from shipment.models import Shipment, Product, Warehouse, Package, CostFormula
+from shipment.models import Shipment, Product, Warehouse, Package, CostFormula, ProductService
+from store.models import Config as StoreConfig
 from django.forms import modelformset_factory, inlineformset_factory, Field, DateField
 from django.forms.widgets import Widget, FileInput
 from django.utils.html import format_html, mark_safe
@@ -983,7 +984,19 @@ def shipment_add(request):
                     product_formset.instance = shipment
                     warehouse_formset.instance = shipment
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
-                    product_formset.save()
+                    products = product_formset.save()
+                    product_service = []
+                    for product in products:
+                        original_product = OriginalProduct.objects.get(pk=product.product_id)
+                        if original_product.lot_product:
+                            config = StoreConfig.objects.first()
+                            if config.default_service:
+                                product_service += [
+                                    ProductService(product=product, service_id=config.default_service.id,
+                                                   price=config.default_service.price)
+                                ]
+                    if product_service:
+                        ProductService.objects.bulk_create(product_service)
                     warehouses = warehouse_formset.save()
                     logger.debug('@@@@@@@@@@@@ SEND PDF 1 EMAIL @@@@@@@@@@@@@@')
                     send_email_shipment_add(request, shipment, products, warehouses)
@@ -1080,7 +1093,19 @@ def shipment_add_fba_prep(request):
             shipment.save()
             product_formset.instance = shipment
             logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
-            product_formset.save()
+            products = product_formset.save()
+            product_service = []
+            for product in products:
+                original_product = OriginalProduct.objects.get(pk=product.product_id)
+                if original_product.lot_product:
+                    config = StoreConfig.objects.first()
+                    if config.default_service:
+                        product_service += [
+                            ProductService(product=product, service_id=config.default_service.id,
+                                           price=config.default_service.price)
+                        ]
+            if product_service:
+                ProductService.objects.bulk_create(product_service)
             # send_email_shipment_add(request, shipment, products, warehouses)
     return HttpResponseRedirect('%s?s=1' % reverse('shipment'))
 
@@ -1148,7 +1173,19 @@ def merchant_shipment_add(request):
                     shipment.save()
                     product_formset.instance = shipment
                     logger.debug('@@@@@@@@@@@@ SHIPMENT SAVED @@@@@@@@@@@@@@')
-                    product_formset.save()
+                    products = product_formset.save()
+                    product_service = []
+                    for product in products:
+                        original_product = OriginalProduct.objects.get(pk=product.product_id)
+                        if original_product.lot_product:
+                            config = StoreConfig.objects.first()
+                            if config.default_service:
+                                product_service += [
+                                    ProductService(product=product, service_id=config.default_service.id,
+                                                   price=config.default_service.price)
+                                ]
+                    if product_service:
+                        ProductService.objects.bulk_create(product_service)
                     send_email_merchant_shipment_add(request, shipment, products)
             return HttpResponseRedirect('%s?s=1' % reverse('merchant_shipment_add'))
         else:

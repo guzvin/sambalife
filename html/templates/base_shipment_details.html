@@ -116,7 +116,7 @@
                   <td>{{ product.product.name }}</td>
                   <td>{{ product.product.description }}</td>
                   {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
-                    <td>{{ product.product.pick_ticket }}</td>
+                    <td>{% if product.product.pick_ticket %}{{ product.product.pick_ticket }}{% endif %}</td>
                   {% endif %}
                   <td>
                       {% with best_before_date=product.product.best_before|date:'SHORT_DATE_FORMAT' %}
