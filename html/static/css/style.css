@@ -2389,6 +2389,48 @@ ul.listaancora li a{
     font-weight: bold;
 }
 
+.logo-invoice{
+    display: block;
+    float: left;
+    width: 200px;
+}
+
+.null{
+    text-indent: -9999em;
+}
+
+.content-invoice{
+    width: 1006px;
+    border: 1px solid #ccc;
+    margin: 40px auto;
+}
+
+.order-details{
+    width: 300px;
+    float: left;
+    margin: 40px 0 0 98px;
+    list-style: none;
+}
+
+.order-details.dados li{
+    text-align: center;
+    margin-bottom: 9px;
+}
+
+.order-details.pay li{
+    text-align: right;
+    margin-bottom: 9px;
+}
+
+.black{
+    background: #000;
+    color: #fff;
+}
+
+.details-pur table{
+    margin: 0;
+}
+
 @media (max-width: 767px){
 
     .page-scroll.navbar-header span {

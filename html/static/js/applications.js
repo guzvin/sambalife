@@ -1594,6 +1594,10 @@
         $('#modal-endereco').modal('show');
     });
 
+    $("#standby-btn").click(function(){
+        $('#modal-standby').modal('show');
+    });
+
     //Modal tutorial
     $('.abre-tutorial').click(function(){
         $('#tutorial').modal('show');

@@ -318,12 +318,12 @@ def update_user_language(user_id):
 #     return render(request, 'lista_envio_brasil.html')
 #
 #
-# def envioBrasilCadastro(request):
-#     return render(request, 'envio_brasil_cadastro.html')
+#def envioBrasilCadastro(request):
+#    return render(request, 'envio_brasil_cadastro.html')
 #
 #
-# def envioBrasilDetalhe(request):
-#     return render(request, 'detalhe_envio_brasil.html')
+def envioBrasilDetalhe(request):
+    return render(request, 'detalhe_envio_brasil.html')
 
 
 def how_it_works(request):
@@ -340,6 +340,10 @@ def faq(request):
 
 def privacy_policy(request):
     return render(request, 'privacy_policy.html')
+
+def invoice(request):
+    return render(request, 'invoice.html')
+
 
 
 def colab(request):

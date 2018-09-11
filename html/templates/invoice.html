@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+{% load i18n commons permissions products shipments services lots static %}
+<html lang="{{ LANGUAGE_CODE }}">
+
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112929909-1"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-112929909-1');
+    </script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{% trans "VOI Services" %} - {{ title }}</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/externo/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fontes -->
+    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+    <!-- Estilo Jquery-ui -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <!-- Estilo -->
+    <link href="/static/css/style.css" rel="stylesheet">
+
+    {% block specific_styles %}{% endblock %}
+
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js" integrity="sha384-0s5Pv64cNZJieYFkXYOTId2HMA2Lfb6q2nAcx2n0RTLUnCAoTTsS0nKEO27XyKcY" crossorigin="anonymous"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js" integrity="sha384-ZoaMbDF+4LeFxg6WdScQ9nnR1QC2MIRxA1O9KWEXQwns1G8UNyIEZIQidzb0T1fo" crossorigin="anonymous"></script>
+    <![endif]-->
+
+    <!-- jQuery -->
+    <script src="/static/externo/jquery/jquery.min.js"></script>
+
+</head>
+<body>
+
+<div class="content-invoice">
+    <div class="top-invoice">
+        <img src="/static/img/default-voi.png" class="logo-invoice" />
+        <ul class="order-details dados">
+            <li>https://lots.voiservices.com</li>
+            <li>(978) 871-7979</li>
+            <li> support@voiservices.com</li>
+            <li> 920 Lafayette road, 204-B<br>Seabrook, NH 03874</li>
+        </ul>
+        <ul class="order-details pay">
+            <li><strong>INVOICE NUMBER: </strong> 00010234</li>
+            <li><strong>ORDER:</strong> 00010222</li>
+            <li><strong>DATE:</strong> 09/09/2018</li>
+            <li><strong>DUE:</strong> 09/09/2018</li>
+            <li><strong>PAYMENT METHOD:</strong> PayPal</li>
+        </ul>
+    </div>
+    <div class="details-pur">
+        <div class="table-responsive">
+            <br>
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                    <td width="50%">
+                        <strong>SHIP TO</strong>
+                        <p>Fudoncio Camargo</p>
+                        <p>920 Lafayette road, 204-B<br>Seabrook - NH<br> 03974</p>
+                    </td>
+                    <td>
+                        <strong>BILL TO</strong>
+                        </br><p>Fudoncio Camargo</p>
+                        <p>920 Lafayette road, 204-B<br>Seabrook - NH<br> 03974 (Endereço cadastrado na plataforma)</p>
+                    </td>
+                </tr>
+              </thead>
+            </table>
+        </div>
+    </div>
+    <div class="details-pur">
+        <div class="table-responsive">
+            <br>
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <td>
+                      <strong>SHIP VIA</strong><br><p class="null">null</p>
+                  </td>
+                  <td>
+                      <strong>B.O.L</strong><br><p class="null">null</p>
+                  </td>
+                    <td>
+                        <strong>CONTACT</strong><br><p>PrimeiroNome</p>
+                    </td>
+                    <td>
+                        <strong>PHONE</strong></br><p>99223434</p>
+                    </td>
+                    <td>
+                        <strong>FAX</strong><br><p class="null">null</p>
+                    </td>
+                    <td>
+                        <strong>SALESPERSON</strong><br><p>Website</p>
+                    </td>
+                </tr>
+              </thead>
+            </table>
+        </div>
+    </div>
+    <div class="details-pur">
+        <div class="table-responsive">
+            <br>
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr class="black">
+                  <td>
+                      <strong>QTY ORDERED</strong>
+                  </td>
+                  <td>
+                      <strong>SKU / UPC</strong>
+                  </td>
+                    <td>
+                        <strong>DESCRIPTION</strong>
+                    </td>
+                    <td>
+                        <strong>UNIT PRICE</strong>
+                    </td>
+                    <td>
+                        <strong>TOTAL PRICE</strong>
+                    </td>
+                </tr>
+              </thead>
+                <tr>
+                  <td>
+                      03
+                  </td>
+                  <td>
+                      S0983976946522
+                  </td>
+                    <td>
+                        CALÇA LEE 16 S
+                    </td>
+                    <td>
+                        $11.29
+                    </td>
+                    <td>
+                        $33.87
+                    </td>
+                </tr>
+                <tr>
+                  <td>
+                      04
+                  </td>
+                  <td>
+                      S0983976946522
+                  </td>
+                    <td>
+                        Sutiã tal 38DD
+                    </td>
+                    <td>
+                        $5.29
+                    </td>
+                    <td>
+                        $20.87
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="details-pur">
+        <div class="table-responsive">
+            <br>
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr class="black">
+                  <td>
+                      <strong>SUMMARY</strong>
+                  </td>
+                  <td>
+                      <strong>PAID BY: </strong> PayPal
+                  </td>
+                    <td>
+                        <strong>MERCHANDISE: </strong> $52.00
+                    </td>
+                    <td>
+                        <strong>TAX: </strong> $0.00
+                    </td>
+                    <td>
+                        <strong>TOTAL AMOUNT: </strong> $52.00
+                    </td>
+                </tr>
+              </thead>
+            </table>
+        </div>
+    </div>
+    <P class="center">Thank you for shopping at VOI Services.</P>
+    <p class="center">Do you need further assistance with your order? Email us at support@voiservices.com and include order number in your message.</p>
+</div>
+
+    <!-- Loading basta dar display block-->
+    <div class="loading" style="display: none;">{% trans "Carregando" %}...</div>
+
+    <!-- jQuery validate -->
+    <script type="text/javascript" src="{% static 'externo/jquery/jquery.validate.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'externo/jquery/jquery-ui.min.js' %}"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script type="text/javascript" src="{% static 'externo/bootstrap/js/bootstrap.min.js' %}"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js" integrity="sha384-mE6eXfrb8jxl0rzJDBRanYqgBxtJ6Unn4/1F7q4xRRyIw7Vdg9jP4ycT7x1iVsgb" crossorigin="anonymous"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script type="text/javascript" src="{% static 'js/jqBootstrapValidation.js' %}"></script>
+
+    <!-- Theme JavaScript -->
+    <script type="text/javascript" src="{% static 'js/applications.js' %}"></script>
+
+</body>
+
+</html>

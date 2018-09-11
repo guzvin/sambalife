@@ -51,7 +51,7 @@
                   <th class="center"><a title="{{ label_order_qty }}" href="javascript:void(0);" class="order-by" data-order="{{ order_by.qty }}">{% trans "Quantidade de itens" %}{% if selected_order|slice:'1:' == 'qty' %} <i class="fa fa-fw fa-sort-amount-{% if selected_order|slice:':1' == '+' %}asc{% else %}desc{% endif %}"></i>{% endif %}</a></th>
                   <th class="center"><a title="{{ label_order_purchase }}" href="javascript:void(0);" class="order-by" data-order="{{ order_by.purchase }}">{% trans "Data da compra" %}{% if selected_order|slice:'1:' == 'purchase' %} <i class="fa fa-fw fa-sort-amount-{% if selected_order|slice:':1' == '+' %}asc{% else %}desc{% endif %}"></i>{% endif %}</a></th>
                   <th class="center"><a title="{{ label_order_roi }}" href="javascript:void(0);" class="order-by" data-order="{{ order_by.roi }}">{% trans "ROI" %}{% if selected_order|slice:'1:' == 'roi' %} <i class="fa fa-fw fa-sort-amount-{% if selected_order|slice:':1' == '+' %}asc{% else %}desc{% endif %}"></i>{% endif %}</a></th>
-                  <th class="center"><a title="{{ label_order_rank }}" href="javascript:void(0);" class="order-by" data-order="{{ order_by.rank }}">{% trans "Rank" %}{% if selected_order|slice:'1:' == 'rank' %} <i class="fa fa-fw fa-sort-amount-{% if selected_order|slice:':1' == '+' %}asc{% else %}desc{% endif %}"></i>{% endif %}</a></th>
+                  <th class="center"><a title="Invoice" href="javascript:void(0);" class="order-by" data-order="Invoice">{% trans "Invoice" %}<i class="fa fa-fw fa-sort-amount-asc"></i></a></th>
                   <th class="center">{% trans "Ações" %}</th>
                 </tr>
               </thead>
@@ -67,7 +67,7 @@
                     {% endtimezone %}
                   </td>
                   <td class="center">{{ lot.average_roi|localize }}%</td>
-                  <td class="center">{{ lot.average_rank|localize }}%</td>
+                  <td class="center"><a class="download" href="/pt/compra/invoice"><i class="fa fa-pencil"></i> {% trans "visualizar" %}</td>
                   <td class="center">
                       <a class="download" href="{% url 'store_lot_details' lot.id %}"><i class="fa fa-pencil"></i> {% trans "Detalhe" %}</a>
                   </td>
