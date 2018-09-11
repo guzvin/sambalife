@@ -151,6 +151,16 @@
                         <a href="javascript: void(0);" id="contato-popup-link"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
                     </li>
 
+                    <li class="tutorial adress" id="abre-codigo">
+                        <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fas fa-user-circle" style="font-size: 70px;"></i> {% trans "Código Cliente" %}: <span>{{ user.from_key }}</span></a>
+                        <hr />
+                        <small id="btn-cod-cliente">{% trans "Onde utilizo esse código?" %}</small>
+                    </li>
+
+                    <li class="tutorial adress adress-v" id="abre-endereco">
+                        <a href="javascript:void(0);" class="abre-tutorial open-endereco"><i class="fa fa-2x fa-map-marker"></i><br /> {% trans "Nosso Endereço" %}</a>
+                    </li>
+
                     {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
 
                         {% if LANGUAGE_CODE == 'pt' %}
@@ -159,15 +169,7 @@
                             </li>
                             <!-- Novo item com código de usuário -->
                         {% endif %}
-                        <li class="tutorial adress" id="abre-codigo">
-                            <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fas fa-user-circle" style="font-size: 70px;"></i> {% trans "Código Cliente" %}: <span>{{ user.from_key }}</span></a>
-                            <hr />
-                            <small id="btn-cod-cliente">{% trans "Onde utilizo esse código?" %}</small>
-                        </li>
 
-                        <li class="tutorial adress adress-v" id="abre-endereco">
-                            <a href="javascript:void(0);" class="abre-tutorial open-endereco"><i class="fa fa-2x fa-map-marker"></i><br /> {% trans "Nosso Endereço" %}</a>
-                        </li>
                     {% endif %}
 
 {% comment %}
