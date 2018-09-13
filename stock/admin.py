@@ -8,6 +8,7 @@ from service.models import Service
 from django.utils.translation import ugettext as _
 from django.db.utils import IntegrityError
 from rangefilter.filter import DateRangeFilter
+from utils.middleware.thread_local import get_current_user
 
 import logging
 
@@ -65,6 +66,10 @@ class StockProductForm(forms.ModelForm):
             self.fields['redirect_services'].initial = self.instance.redirect_services.all()
             # self.fields['invoices'].queryset = Invoice.objects.filter(pk=self.instance.pk)
             self.fields['invoices'].initial = self.instance.invoices.all()
+        if get_current_user().groups.filter(name='admins').count():
+            self.fields['sell_price'].label = _('Valor Buy Box / Best Match')
+            self.fields['fba_fee'].label = _('FBA Fee / Fee Ebay')
+            self.fields['shipping_cost'].label = _('Custo de Envio para Amazon / Envio Cliente')
         # self.fields['condition'].required = True
 
     def save(self, *args, **kwargs):
