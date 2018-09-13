@@ -63,6 +63,7 @@ class Shipment(models.Model):
     information = models.TextField(_('Informações adicionais'), null=True, blank=True)
     payment_date = models.DateTimeField(_('Data de pagamento'), null=True)
     is_standby = models.BooleanField(_('Aguardando resposta'), default=False)
+    standby_reason = models.TextField(_('Motivo do aguardando resposta'), null=True, blank=True)
     collaborator = models.ForeignKey(Collaborator, verbose_name=_('Colaborador'), on_delete=models.SET_NULL, null=True,
                                      blank=True)
     is_fba_create = models.BooleanField(_('FBA Prep Criar Envio'), default=False)

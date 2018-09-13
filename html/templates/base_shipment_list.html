@@ -122,7 +122,7 @@
                     {{ shipment.get_status_display  }}
                     {% if shipment.is_standby%}
                       <br>
-                      ({% trans "Aguardando resposta do usuário" %})
+                      ({% trans "Aguardando resposta do usuário" %}{% if shipment.standby_reason %} - {{ shipment.standby_reason }}{% endif %})
                     {% endif %}
                   </td>
                   <td class="center"><a class="download" href="{% url 'shipment_details' shipment.id %}"><i class="fa fa-pencil-square"></i> {% trans "Visualizar" %}</a></td>

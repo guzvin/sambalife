@@ -786,19 +786,26 @@ def shipment_status(request, pid=None, op=None):
 @login_required
 @require_http_methods(["POST"])
 def shipment_standby(request, pid=None, op='0'):
+    logger.debug('shipment_standbyshipment_standbyshipment_standbyshipment_standbyshipment_standbyshipment_standby')
     is_collaborator_perm = has_store_perm(request.user, 'collaborator')
     if has_group(request.user, 'admins') or (is_collaborator_perm and request.user.collaborator):
         query = Q(pk=pid)
         if is_collaborator_perm:
             if request.user.collaborator:
                 query &= Q(collaborator=request.user.collaborator)
-            elif request.user.first_name != 'Administrador':
+            elif request.user.first_name != 'Administrador' and request.user.is_superuser is False:
                 query = None
+        logger.debug('###################')
+        logger.debug(query)
+        logger.debug(op)
+        logger.debug(request.POST.get('standby_shipment_reason'))
         if query:
             if op == '1':
-                Shipment.objects.filter(query).update(is_standby=False)
+                Shipment.objects.filter(query).update(is_standby=False,
+                                                      standby_reason=None)
             elif op == '2':
-                Shipment.objects.filter(query).update(is_standby=True)
+                Shipment.objects.filter(query).update(is_standby=True,
+                                                      standby_reason=request.POST.get('standby_shipment_reason'))
     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
 
 

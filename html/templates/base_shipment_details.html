@@ -365,7 +365,7 @@
                              {% endif %}
                              {% if shipment.is_standby%}
                               <br>
-                              <span class="previsao">({% trans "Aguardando resposta do usuário" %})</span>
+                              <span class="previsao">({% trans "Aguardando resposta do usuário" %}{% if shipment.standby_reason %} - {{ shipment.standby_reason }}{% endif %})</span>
                              {% endif %}
                             {% endif %}
                         </label>
@@ -376,7 +376,7 @@
                             {% if shipment.status == 2 %}
                              {% if shipment.is_standby%}
                               <br>
-                              <span class="previsao">({% trans "Aguardando resposta do usuário" %})</span>
+                              <span class="previsao">({% trans "Aguardando resposta do usuário" %}{% if shipment.standby_reason %} - {{ shipment.standby_reason }}{% endif %})</span>
                              {% endif %}
                             {% endif %}
                         </label>
@@ -388,7 +388,7 @@
                             {% if shipment.status == 3 %}
                              {% if shipment.is_standby%}
                               <br>
-                              <span class="previsao">({% trans "Aguardando resposta do usuário" %})</span>
+                              <span class="previsao">({% trans "Aguardando resposta do usuário" %}{% if shipment.standby_reason %} - {{ shipment.standby_reason }}{% endif %})</span>
                              {% endif %}
                             {% endif %}
                         </label>
@@ -407,7 +407,7 @@
                              {% endif %}
                              {% if shipment.is_standby%}
                               <br>
-                              <span class="previsao">({% trans "Aguardando resposta do usuário" %})</span>
+                              <span class="previsao">({% trans "Aguardando resposta do usuário" %}{% if shipment.standby_reason %} - {{ shipment.standby_reason }}{% endif %})</span>
                              {% endif %}
                             {% endif %}
                         </label>
@@ -559,9 +559,10 @@
                  <form class="left" action="{% if shipment.is_standby%}{% url 'shipment_standby' shipment.id '1' %}{% else %}{% url 'shipment_standby' shipment.id '2' %}{% endif %}" method="post" id="form-standby-shipment">
                     {% csrf_token %}
                     <input type="hidden" name="standby_shipment" value="1">
+                    <input type="hidden" name="standby_shipment_reason" id="standby_shipment_reason" value="">
                  </form>
                <!-- Botao stand by -->
-               <a class="btn btn-primary filtar-btn alterar-status" id="standby-btn" href="#">
+               <a class="btn btn-primary filtar-btn alterar-status" id="{% if shipment.is_standby%}standby-btn-remove{% else %}standby-btn{% endif %}" href="#">
                 <i class="fa fa-fw fa-phone"></i>
                 {% if shipment.is_standby%}
                 {% trans "Retirar de Stand by" %}

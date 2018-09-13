@@ -664,11 +664,19 @@
 
     if($('#form-standby-shipment')[0])
     {
-        if($('#standby-btn')[0])
+        if($('#standby-btn')[0] || $('#standby-btn-remove')[0])
         {
-            $('#standby-btn').click(function()
+            $("#standby-btn").click(function(){
+                $('#modal-standby').modal('show');
+            });
+            $("#standby-btn-remove").click(function(){
+                $('.loading').show();
+                $('#form-standby-shipment').submit();
+            });
+            $('#standby-btn-save').click(function()
             {
                 $('.loading').show();
+                $('#standby_shipment_reason').val($('#modal_standby_shipment_reason').val());
                 $('#form-standby-shipment').submit();
             });
         }
@@ -1066,60 +1074,67 @@
             });
         }
     }
-
     if($('input#payment_button')[0])
     {
         $('input#payment_button').click(function(e)
         {
-            e.preventDefault();
-            var $this = $(this);
-            $.ajax(
-            {
-                method: 'GET',
-                url: '/' + gettext('en') + '/' + $this.data('origin') + '/pay/' + $this.data('generic'),
-                statusCode:
-                {
-                    400: function(jqXHR, textStatus, errorThrown)
-                    {
-                        if(jqXHR.responseText)
-                        {
-                            $('html')[0].innerHTML = jqXHR.responseText;
-                            return;
-                        }
-                        var body = gettext('Sorry, but this item is unavailable.');
-                        assembleModal(gettext('Error'), body);
-                    },
-                    403: function()
-                    {
-                        var body = gettext('Access denied');
-                        assembleModal(gettext('Error'), body);
-                    },
-                    500: function()
-                    {
-                        var body = gettext('Sorry, we are unable to process your operation. Please reload the page and try again.');
-                        assembleModal(gettext('Error'), body);
-                    }
-                }
-            })
-            .done(function( obj )
-            {
-                if(obj.redirect)
-                {
-                    window.location.href = obj.redirect;
-                    return;
-                }
-                if(obj.modal)
-                {
-                    $('#modal-store-subscribe').modal('show');
-                    return;
-                }
-                var paymentFormArea = $('<span id="payment-form-area"></span>').append($(obj));
-                paymentFormArea.insertAfter($this);
-                var paymentFormArea = $('span#payment-form-area');
-                paymentFormArea.find('form').submit();
-                paymentFormArea.remove();
-            });
+            $('#modal-compra').modal('show');
         });
+
+        if($('#btn-confirmar-modal-compra')[0])
+        {
+            $('#btn-confirmar-modal-compra').click(function(e)
+            {
+                e.preventDefault();
+                var $this = $('input#payment_button');
+                $.ajax(
+                {
+                    method: 'GET',
+                    url: '/' + gettext('en') + '/' + $this.data('origin') + '/pay/' + $this.data('generic'),
+                    statusCode:
+                    {
+                        400: function(jqXHR, textStatus, errorThrown)
+                        {
+                            if(jqXHR.responseText)
+                            {
+                                $('html')[0].innerHTML = jqXHR.responseText;
+                                return;
+                            }
+                            var body = gettext('Sorry, but this item is unavailable.');
+                            assembleModal(gettext('Error'), body);
+                        },
+                        403: function()
+                        {
+                            var body = gettext('Access denied');
+                            assembleModal(gettext('Error'), body);
+                        },
+                        500: function()
+                        {
+                            var body = gettext('Sorry, we are unable to process your operation. Please reload the page and try again.');
+                            assembleModal(gettext('Error'), body);
+                        }
+                    }
+                })
+                .done(function( obj )
+                {
+                    if(obj.redirect)
+                    {
+                        window.location.href = obj.redirect;
+                        return;
+                    }
+                    if(obj.modal)
+                    {
+                        $('#modal-store-subscribe').modal('show');
+                        return;
+                    }
+                    var paymentFormArea = $('<span id="payment-form-area"></span>').append($(obj));
+                    paymentFormArea.insertAfter($this);
+                    var paymentFormArea = $('span#payment-form-area');
+                    paymentFormArea.find('form').submit();
+                    paymentFormArea.remove();
+                });
+            });
+        }
     }
 
     $('a.not-subscriber').click(function(e)
@@ -1592,10 +1607,6 @@
 
     $("#abre-endereco").click(function(){
         $('#modal-endereco').modal('show');
-    });
-
-    $("#standby-btn").click(function(){
-        $('#modal-standby').modal('show');
     });
 
     //Modal tutorial
