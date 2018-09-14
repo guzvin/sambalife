@@ -117,7 +117,7 @@ def list_shipment(request, template_name, has_perm):
             filter_values['id'] = filter_id
         if (is_user_perm or is_collaborator_perm) and filter_user:
             queries.append(Q(user__first_name__icontains=filter_user) | Q(user__last_name__icontains=filter_user) |
-                           Q(user__email__icontains=filter_user))
+                           Q(user__email__icontains=filter_user) | Q(user__from_key__icontains=filter_user))
             filter_values['user'] = filter_user
         if filter_status:
             queries.append(Q(status=filter_status))
