@@ -52,6 +52,11 @@ class Lot(models.Model):
         (2, _('Vendido')),  # Sold
     )
     status = models.SmallIntegerField(_('Situação'), choices=STATUS_CHOICES, default=1)
+    DESTINATION_CHOICES = (
+        (1, _('Amazon')),
+        (2, _('Ebay')),
+    )
+    destination = models.SmallIntegerField(_('Destino'), choices=DESTINATION_CHOICES, default=1)
     payment_complete = models.BooleanField(_('Pago'), default=False)
     create_date = models.DateField(_('Data de Cadastro'), auto_now_add=True)
     sell_date = models.DateTimeField(_('Data da Venda'), null=True, blank=True)

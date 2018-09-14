@@ -385,6 +385,7 @@ class LotAdmin(admin.ModelAdmin):
     ]
 
     list_filter = [
+        'destination',
         'is_archived',
         'status',
         'is_fake',
@@ -395,7 +396,7 @@ class LotAdmin(admin.ModelAdmin):
 
     search_fields = ('name', 'product__name', 'product__identifier',)
     list_display_links = ('id', 'name',)
-    list_display = ('id', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'sell_date',
+    list_display = ('id', 'destination', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'sell_date',
                     'schedule_date','is_archived', 'is_fake', 'duplicate_lot_action')
 
     def duplicate_lot_action(self, obj):
@@ -423,7 +424,7 @@ class LotAdmin(admin.ModelAdmin):
         }),
         (_('Informações'), {
             'fields': (
-                'name', 'order_weight', 'description', 'collaborator', 'thumbnail', 'groups',
+                'destination', 'name', 'order_weight', 'description', 'collaborator', 'thumbnail', 'groups',
             )
         }),
     )
@@ -614,7 +615,8 @@ class LotAdmin(admin.ModelAdmin):
         page_readonly_fields = self.readonly_fields
         if obj and obj.status == 2 and obj.payment_complete:
             page_readonly_fields += ('is_fake', 'status', 'lifecycle', 'sell_date', 'payment_complete', 'schedule_date',
-                                     'name', 'order_weight', 'description', 'collaborator', 'thumbnail', 'groups')
+                                     'destination', 'name', 'order_weight', 'description', 'collaborator', 'thumbnail',
+                                     'groups')
         return page_readonly_fields
 
     @property
@@ -723,7 +725,7 @@ class LotReportAdmin(admin.ModelAdmin):
     ]
 
     search_fields = ('name', 'product__name',)
-    list_display = ('id', 'name', 'collaborator', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost',
+    list_display = ('id', 'destination', 'name', 'collaborator', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost',
                     'voi_profit', 'voi_roi', 'products_quantity', 'paypal_value', 'transfer_value', 'net_value')
 
     def paypal_value(self, obj):
