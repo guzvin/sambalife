@@ -1127,9 +1127,14 @@ def merchant_shipment_add(request):
             selected_collaborator = int(request.POST.get('shipment_collaborator'))
         except (ValueError, TypeError):
             selected_collaborator = None
-        original_products = OriginalProduct.objects.select_related('lot_product')\
-            .filter(user=request.user, status=2, quantity_partial__gt=0, collaborator_id=selected_collaborator,
-                    stock_type=2).order_by('id')
+        preselected_products = request.POST.getlist('shipment_product')
+        if preselected_products:
+            original_products = OriginalProduct.objects.filter(user=request.user, status=2, quantity_partial__gt=0,
+                                                               collaborator_id=selected_collaborator,
+                                                               pk__in=preselected_products,
+                                                               stock_type=2).order_by('id')
+        else:
+            original_products = OriginalProduct.objects.none()
         if original_products.count() == 0:
             return HttpResponseRedirect('%s?s=1' % reverse('product_stock_fbm'))
     else:
