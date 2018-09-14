@@ -173,6 +173,8 @@
                       {% if user|has_product_perm:'change_product_status' and product.pick_ticket %}
                       <span class="help help-tooltip fa fa-thumb-tack" title="{% blocktrans %}Localização na Warehouse{% endblocktrans %}: {{ product.pick_ticket }}"></span>
                       {% endif %}
+                      <br>
+                      ({{ product.create_date|date:'SHORT_DATE_FORMAT' }})
                   </td>
                   <td class="center">
                       {% if product.asin %}
@@ -208,7 +210,13 @@
                   </td>
                   {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
                   <!-- somente admin visualiza -->
-                  <td class="center">{{ product.user.first_name }}<br>({{ product.user.from_key }})<br>({{ product.user.email }})</td>
+                  <td class="center">
+                      {{ product.user.first_name }}
+                      <br>
+                      ({{ product.user.from_key }})
+                      <br>
+                      ({{ product.user.email }})
+                  </td>
                   <!-- fim campo -->
                   {% endif %}
                   <td class="">
