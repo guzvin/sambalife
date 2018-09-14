@@ -91,11 +91,22 @@
                   <div class="col-md-12">
                       <p class="nome"><strong>{% trans "Nome" %}:</strong><br> {{ product.name }}</p>
                   </div>
+                  {% if lot.destination == 1 %}
                   <div class="col-md-12">
                       <p><strong>{% trans "Rank" %}:</strong> {{ product.rank|localize }}%</p>
                   </div>
+                  {% endif %}
                   <div class="col-md-12">
-                      <p><strong>{% trans "UPC / CODIGO IDENTIFICADOR" %}:</strong><br> {{ product.identifier }}</p>
+                      <p>
+                          <strong>
+                              {% if lot.destination == 1 %}
+                              {% trans "UPC / CODIGO IDENTIFICADOR" %}:
+                              {% elif lot.destination == 2 %}
+                              {% trans "UPC" %}:
+                              {% endif %}
+                          </strong>
+                          <br> {{ product.identifier }}
+                      </p>
                   </div>
                   <div class="col-md-12">
                       <p><strong>{% trans "Condição" %}:</strong><br> {% if product.condition %}{{ product.get_condition_display }}{% endif %}</p>
@@ -111,7 +122,16 @@
                       <p><strong>{% trans "Valor de Venda" %}:</strong><br> U$ {{ product.sell_price|localize }}</p>
                   </div>
                   <div class="col-md-6">
-                      <p><strong>{% trans "Tarifa FBA" %}:</strong><br> U$ {{ product.fba_fee|localize }}</p>
+                      <p>
+                          <strong>
+                              {% if lot.destination == 1 %}
+                              {% trans "Tarifa FBA" %}:
+                              {% elif lot.destination == 2 %}
+                              {% trans "Fee Ebay" %}:
+                              {% endif %}
+                          </strong>
+                          <br> U$ {{ product.fba_fee|localize }}
+                      </p>
                   </div>
 {% comment %}
                   <div class="col-md-6">
@@ -122,7 +142,16 @@
                       <p><strong>{% trans "Redirecionamento" %}:</strong><br> {% trans "Grátis" %}</p>
                   </div>
                   <div class="col-md-12">
-                      <p><strong>{% trans "Custo de Envio para Amazon" %}:</strong><br> U$ {{ product.shipping_cost|localize }}</p>
+                      <p>
+                          <strong>
+                              {% if lot.destination == 1 %}
+                              {% trans "Custo de Envio para Amazon" %}:
+                              {% elif lot.destination == 2 %}
+                              {% trans "Shipping estimado para o cliente" %}:
+                              {% endif %}
+                          </strong>
+                          <br> U$ {{ product.shipping_cost|localize }}
+                      </p>
                   </div>
 {% comment %}
                   <div class="col-md-12">
@@ -141,13 +170,20 @@
 
                    <!-- Campo observação-->
                   <div class="col-md-12">
-                        <p><strong>{% trans "Observação" %}:</strong><br> {{product.notes}}.</p>
+                        <p><strong>{% trans "Observação" %}:</strong><br> {% if product.notes %}{{product.notes}}.{% endif %}</p>
                   </div>
 
                   {% if product.url %}
                   <!-- btn link para amazon -->
                   <div class="col-md-12">
-                        <a class="btn btn-default link-amz" target="_blank" href="{{ product.url }}"><i class="fa fa-amazon"></i> {% trans 'Veja o Produto na Amazon' %}</a>
+                        <a class="btn btn-default link-amz" target="_blank" href="{{ product.url }}">
+                            <i class="fa fa-amazon"></i>
+                            {% if lot.destination == 1 %}
+                              {% trans 'Veja o Produto na Amazon' %}
+                            {% elif lot.destination == 2 %}
+                              {% trans 'Veja o Produto na Ebay' %}
+                            {% endif %}
+                        </a>
                   </div>
                   {% endif %}
               </div>
