@@ -157,18 +157,42 @@
             </table>
           </div>
 
-           <!-- Adicionar caixa ao envio -->
-            <div class="row">
-                <div class="col-md-12">
-                    <h4><i class="fa fa-fw fa-inbox"></i> Adicionar Caixa(s)</h4><br>
-                </div>
-                <div class="col-md-12">
-                    <div class="col-md-2">
-                        <input placeholder="Quantidade..." name="package_qtd" class="form-control" id="package_qtd" value="" aria-required="true" type="text">
-                    </div>
-                     <a href="#" class="btn btn-primary"><i class="fa fa-plus"></i> Adicionar </a><hr>
-                </div>
+           <!-- Adicionar serviços e tambem coloquei a lista de serviços adicionados para que o usuário saiba o que está pagando -->
+            <div class="row"><hr>
+            <div class="col-md-12">
+                <h4><i class="fa fa-fw fa-inbox"></i> Serviços Relativos ao Envio</h4><br>
             </div>
+            <!-- lista de serviços adicionados -->
+
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Serviço</th>
+                            <th class="center">Quantidade</th>
+                          <th class="center">Valor</th>
+                          <th class="center">Retirar</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                              <td>Shipment para o Brasil</td>
+                              <td class="center">1</td>
+                              <td class="center">$20.00</td>
+                              <td class="center">
+                                  <a class="btn btn-danger delete-product-shipment" title="Excluir Vanity Fair Womens Flattering Lift Full Figure Underwire Bra 76212, Star White, 40DD" href="#" data-delete-product-shipment-id="666" data-delete-product-product-id="4337"><i class="fa fa-fw fa-times-circle"></i></a>
+                              </td>
+                        </tr>
+                      </tbody>
+                    </table>
+            </div></div><br>
+            <div class="col-md-12">
+                <a href="#" class="btn btn-primary"><i class="fa fa-plus"></i> Adicionar Serviço</a>
+            </div><br>
+          </div>
+
+              <--! fim bloco novo -->
 
           {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
           <!-- Bloco Informacoes do usuario -->
