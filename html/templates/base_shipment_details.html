@@ -156,6 +156,20 @@
               </tbody>
             </table>
           </div>
+
+           <!-- Adicionar caixa ao envio -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h4><i class="fa fa-fw fa-inbox"></i> Adicionar Caixa(s)</h4><br>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <input placeholder="Quantidade..." name="package_qtd" class="form-control" id="package_qtd" value="" aria-required="true" type="text">
+                    </div>
+                     <a href="#" class="btn btn-primary"><i class="fa fa-plus"></i> Adicionar </a><hr>
+                </div>
+            </div>
+
           {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
           <!-- Bloco Informacoes do usuario -->
 
