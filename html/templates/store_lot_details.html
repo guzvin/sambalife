@@ -76,7 +76,7 @@
                    {% url 'terms' as terms_url %}
                    {% timezone mytz %}
                     {% blocktrans with lot_create_date=lot.create_date|date:'SHORT_DATE_FORMAT' %}
-                    <strong>Importante!</strong> Os dados apurados abaixo, tais como: <strong>Rank, Valor de Venda, Tarifa FBA, Lucros, etc...</strong> foram apurados dia <strong>{{ lot_create_date }}</strong>. É imprescindível que o usuário, antes de finalizar a compra, verifique novamente as informações junto a Amazon. Os dados informados abaixo podem sofrer alteração entre a data de apuração e a data de hoje. Caso tenha dúvidas, leia nossos termos <a href="{{ terms_url }}"><strong>Clicando aqui</strong></a>.
+                    <strong>Importante!</strong> É imprescindível que o usuário realize a sua própria análise antes de finalizar a compra. As informações abaixo utilizam ferramentas automatizadas para a inserção dos valores, passíveis de variações. Caso tenha dúvidas, leia nossos termos <a href="{{ terms_url }}"><strong>Clicando aqui</strong></a>.
                     {% endblocktrans %}
                    {% endtimezone %}
                  </div>

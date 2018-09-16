@@ -2392,7 +2392,9 @@ ul.listaancora li a{
 .logo-invoice{
     display: block;
     float: left;
-    width: 200px;
+    width: 175px;
+    margin-left: 17px;
+    padding-top: 14px;
 }
 
 .null{
@@ -2408,7 +2410,7 @@ ul.listaancora li a{
 .order-details{
     width: 300px;
     float: left;
-    margin: 40px 0 0 98px;
+    margin: 20px 0 0 98px;
     list-style: none;
 }
 
@@ -2429,6 +2431,22 @@ ul.listaancora li a{
 
 .details-pur table{
     margin: 0;
+}
+
+.imprimir{
+    margin: 0 auto 100px auto;
+    display: block;
+    width: 170px;
+}
+
+@media print
+{
+    .imprimir{display: none;}
+
+    .black{
+        background: #000;
+        color: #fff;
+    }
 }
 
 @media (max-width: 767px){
