@@ -1441,6 +1441,122 @@
         });
     });
 
+    var deleteShipmentService = function()
+    {
+//TODO implementar
+    };
+
+    $('.delete-shipment-service').click(deleteShipmentService);
+
+    $('#btn-add-service-shipment').click(function()
+    {
+        var sid = $(this).data('shipment-id');
+        var addServiceShipment = $('#add-service-shipment');
+        var form = addServiceShipment.closest('form');
+        form.find('input[name="service_shipment_id"]').val(sid);
+        $('.loading').show();
+        $.ajax(
+        {
+            method: 'GET',
+            url: '/' + gettext('en') + '/service/shipment/' + sid + '/'
+        }).done(function( obj )
+        {
+            if(form[0])
+                form[0].reset();
+            addServiceShipment.find('span').each(function ()
+            {
+                $(this).hide();
+            });
+            obj.shipment_services.forEach(function(item)
+            {
+                addServiceShipment.find('input[name="service"]').each(function ()
+                {
+                    if(''+item.service_id === this.value)
+                    {
+                        this.checked=true;
+                        addServiceShipment.find('input[name="price' + this.value + '"]').val(item.service_price);
+                        addServiceShipment.find('input[name="quantity' + this.value + '"]').val(item.service_quantity);
+                        return false;
+                    }
+                });
+                addServiceShipment.find('span[id="service_shipment_'+item.service_id+'"]').each(function ()
+                {
+                    $(this).show();
+                });
+            });
+            $('.loading').hide();
+            addServiceShipment.modal('show');
+        });
+    });
+
+    $('#send-btn-add-service-shipment').click(function()
+    {
+        var addServiceShipment = $('#add-service-shipment');
+        var form = addServiceShipment.closest('form');
+        $('.loading').show();
+        $.ajax(
+        {
+            method: 'POST',
+            url: '/' + gettext('en') + '/service/shipment/' + form.find('input[name="service_shipment_id"]').val() + '/',
+            data: form.serialize()
+        }).done(function( obj )
+        {
+            var totalCost = $('#totalCost');
+            if(totalCost[0])
+            {
+                var pElement = totalCost.closest('p');
+                if(obj.new_cost_raw > 0)
+                {
+                    pElement.removeAttr('class');
+                    $('.minimum-value-alert').removeClass('hide');
+                }
+                else
+                {
+                    pElement.attr('class', 'hide');
+                    $('.minimum-value-alert').addClass('hide');
+                }
+                totalCost[0].innerHTML = obj.new_cost;
+            }
+            var row = 1;
+            $('#table-shipment-services tbody').find("tr:gt(0)").remove();
+            obj.shipment_services.forEach(function(item)
+            {
+                var newRow = $('#row-shipment-services-template')
+                  .clone()
+                  .attr('id', 'row' + (row++))
+                  .appendTo($('#table-shipment-services tbody'));
+                newRow.find('td').each(function(index)
+                {
+                    switch(index)
+                    {
+                        case 0:
+                            $(this).append(item.service_name);
+                            break;
+                        case 1:
+                            $(this).append(item.service_quantity);
+                            break;
+                        case 2:
+                            $(this).append(item.service_price);
+                            break;
+                        case 3:
+                            var anchor = $(this).find('a');
+                            anchor.attr('title', gettext('Excluir') + ' ' + item.service_name);
+                            anchor.attr('data-delete-shipment-service-id', item.service_id);
+                            anchor.click(deleteShipmentService);
+                            break;
+                    }
+                });
+                newRow.show();
+            });
+        })
+        .always(function()
+        {
+            form[0].reset();
+            $('.loading').hide();
+            addServiceShipment.modal('hide');
+        });
+    });
+
     var fcountdown = function(_this, countDownDate)
     {
           // Get todays date and time

@@ -8,7 +8,7 @@ from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpRespo
 from django.utils.translation import ugettext as _, ungettext
 from product.models import Product as OriginalProduct
 from service.models import Service, Config
-from shipment.models import Shipment, Product, Warehouse, Package, CostFormula, ProductService
+from shipment.models import Shipment, Product, Warehouse, Package, CostFormula, ProductService, ShipmentService
 from store.models import Config as StoreConfig
 from django.forms import modelformset_factory, inlineformset_factory, Field, DateField
 from django.forms.widgets import Widget, FileInput
@@ -206,13 +206,15 @@ def shipment_details(request, pid=None):
             has_perm = _shipment_details.type is None and has_shipment_perm(request.user, 'view_shipments')
         if has_perm is False:
             return HttpResponseForbidden()
+        _shipment_services = ShipmentService.objects.filter(shipment=_shipment_details).order_by('service__name')
         _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').order_by('id')
-        ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id)
+        ignored_response, cost = calculate_shipment(_shipment_details, _shipment_products, _shipment_details.user.id)
         _shipment_details.cost = cost
         _shipment_warehouses = Warehouse.objects.filter(shipment=_shipment_details).order_by('id')
         title = ' '.join([str(_('Envio')), str(_shipment_details.id)])
         max_time_period = helper.get_max_time_period()
-        context_data = {'title': title, 'shipment': _shipment_details, 'products': _shipment_products,
+        context_data = {'title': title, 'shipment': _shipment_details, 'shipment_services': _shipment_services,
+                        'products': _shipment_products,
                         'warehouses': _shipment_warehouses,
                         'max_time_period': max_time_period if max_time_period else 0,
                         'collaborator': _shipment_products[0].product.collaborator}
@@ -314,7 +316,8 @@ def shipment_details(request, pid=None):
                 ignore_package_fields.append('width')
                 ignore_package_fields.append('length')
                 ignore_package_fields.append('shipment_tracking')
-            _services = Service.objects.filter(productservice__product__shipment__user_id=_shipment_details.user_id).distinct()
+            _services = Service.objects.filter(productservice__product__shipment__user_id=_shipment_details.user_id)\
+                .distinct()
             context_data['services'] = _services
             if _shipment_details.status == 3:
                 # Pagamento Autorizado
@@ -576,7 +579,7 @@ def shipment_pay_form(request, pid=None):
 
                 _shipment_products = Product.objects.filter(shipment=_shipment_details).select_related('product').\
                     order_by('id')
-                ignored_response, cost = calculate_shipment(_shipment_products, _shipment_details.user.id,
+                ignored_response, cost = calculate_shipment(_shipment_details, _shipment_products, _shipment_details.user.id,
                                                             save_product_price=True)
                 _shipment_details.cost = cost
                 _shipment_details.is_sandbox = is_sandbox
@@ -728,7 +731,7 @@ def shipment_delete_product(request, output=None):
             products = shipment.product_set.all()
             logger.debug('@@@@@@@@@@@@ SHIPMENT PRODUCTS @@@@@@@@@@@@@@')
             logger.debug(products)
-            http_response, cost = calculate_shipment(products, shipment.user.id)
+            http_response, cost = calculate_shipment(shipment, products, shipment.user.id)
             shipment.cost = cost
             shipment.save(update_fields=['total_products', 'cost'])
     except (Product.DoesNotExist, Shipment.DoesNotExist) as err:
@@ -763,7 +766,7 @@ def shipment_status(request, pid=None, op=None):
         if shipment:
             if shipment[0].status == 2 or shipment[0].status == 3 or shipment[0].status == 4:
                 products = shipment[0].product_set.all()
-                ignored_response, cost = calculate_shipment(products, shipment[0].user_id, save_product_price=True)
+                ignored_response, cost = calculate_shipment(shipment[0], products, shipment[0].user_id, save_product_price=True)
                 shipment[0].cost = cost
             if op == 'forward' and shipment[0].status < 4:
                 is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(shipment[0].user)
@@ -1245,11 +1248,11 @@ def shipment_calculate(request):
             return HttpResponseBadRequest()
         product.quantity = item['q']
         products.append(product)
-    http_response, cost = calculate_shipment(products, request.user.id)
+    http_response, cost = calculate_shipment(None, products, request.user.id)
     return http_response
 
 
-def calculate_shipment(products, user_id, save_product_price=False):
+def calculate_shipment(shipment, products, user_id, save_product_price=False):
     if len(products) == 0:
         return HttpResponseBadRequest(), 0
     user_model = get_user_model()
@@ -1274,6 +1277,7 @@ def calculate_shipment(products, user_id, save_product_price=False):
             cost += product.quantity * (helper.resolve_price_value(product) +
                                         helper.resolve_partner_value(partner))
             quantity += product.quantity
+    cost += float(helper.resolve_shipment_price_value(shipment))
     config = Config.objects.first()
     if config and 0 < cost < config.minimum_price:
         cost = config.minimum_price

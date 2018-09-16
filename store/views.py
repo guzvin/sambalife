@@ -172,6 +172,12 @@ def store_lot_details(request, pid=None):
     return render(request, 'store_lot_details.html', context_data)
 
 
+@require_http_methods(["GET"])
+def store_lot_invoice(request, pid=None):
+    context_data = {}
+    return render(request, 'store_lot_details.html', context_data)
+
+
 def current_milli_time(): return int(round(time.time() * 1000))
 
 
