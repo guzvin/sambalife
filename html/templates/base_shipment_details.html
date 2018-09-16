@@ -156,6 +156,7 @@
               </tbody>
             </table>
           </div>
+          {% if shipment.status == 1 and user|has_shipment_perm:'add_shipmentservice' and shipment.collaborator_id|check_collaborator:user or shipment.status > 1 %}
           <!-- Adicionar serviços e tambem coloquei a lista de serviços adicionados para que o usuário saiba o que está pagando -->
           <div class="row"><hr>
             <div class="col-md-12">
@@ -216,6 +217,7 @@
             {% endif %}
           </div>
           <!-- fim bloco novo -->
+          {% endif %}
 
           {% if user|has_user_perm:'view_users' or user|has_store_perm:'collaborator' %}
           <!-- Bloco Informacoes do usuario -->
