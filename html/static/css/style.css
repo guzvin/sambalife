@@ -2392,8 +2392,8 @@ ul.listaancora li a{
 .logo-invoice{
     display: block;
     float: left;
-    width: 175px;
-    margin-left: 17px;
+    width: 150px;
+    margin-left: 32px;
     padding-top: 14px;
 }
 
@@ -2434,9 +2434,10 @@ ul.listaancora li a{
 }
 
 .imprimir{
-    margin: 0 auto 100px auto;
-    display: block;
-    width: 170px;
+    width: 180px;
+    position: fixed;
+    top: 100px;
+    left: 30px;
 }
 
 @media print
