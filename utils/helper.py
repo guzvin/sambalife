@@ -26,7 +26,7 @@ from django.template import Context, Template
 from django.template.base import VariableNode
 from utils.models import Params
 from django.utils import translation
-from shipment.models import ProductService
+from shipment.models import ProductService, ShipmentService
 from utils.templatetags.commons import timezone_name
 from store.models import Lot
 from store.send_email import email_lifecycle_lot
@@ -251,6 +251,20 @@ def resolve_price_value_by_service(product):
     price = 0
     for service in services:
         price += service.price
+    return price
+
+
+def resolve_shipment_price_value(shipment):
+    if shipment is None:
+        return 0
+    return resolve_shipment_price_value_by_service(shipment)
+
+
+def resolve_shipment_price_value_by_service(shipment):
+    services = ShipmentService.objects.filter(shipment=shipment)
+    price = 0
+    for service in services:
+        price += service.price * service.quantity
     return price
 
 

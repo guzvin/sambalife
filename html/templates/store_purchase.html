@@ -67,7 +67,7 @@
                     {% endtimezone %}
                   </td>
                   <td class="center">{{ lot.average_roi|localize }}%</td>
-                  <td class="center"><a class="download" href="/pt/compra/invoice"><i class="fa fa-pencil"></i> {% trans "visualizar" %}</td>
+                  <td class="center"><a class="download" href="{% url 'store_lot_invoice' lot.id %}"><i class="fa fa-pencil"></i> {% trans "visualizar" %}</td>
                   <td class="center">
                       <a class="download" href="{% url 'store_lot_details' lot.id %}"><i class="fa fa-pencil"></i> {% trans "Detalhe" %}</a>
                   </td>

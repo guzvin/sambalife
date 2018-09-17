@@ -240,3 +240,15 @@ class ProductService(models.Model):
     class Meta:
         verbose_name = _('Serviço Produto')
         verbose_name_plural = _('Serviços Produtos')
+
+
+class ShipmentService(models.Model):
+    id = BigAutoField(primary_key=True)
+    shipment = models.ForeignKey('shipment.Shipment', on_delete=models.CASCADE, related_name='shipment_service')
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    price = models.DecimalField(_('Preço'), max_digits=12, decimal_places=2)
+    quantity = models.PositiveIntegerField(_('Quantidade'))
+
+    class Meta:
+        verbose_name = _('Serviço Envio')
+        verbose_name_plural = _('Serviços Envios')
