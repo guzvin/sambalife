@@ -535,7 +535,7 @@ class LotAdmin(admin.ModelAdmin):
             lot.products_quantity = products_quantity
             lot.products_cost = products_cost
             lot.profit = profit
-            lot.average_roi = (profit / lot_cost) * 100
+            lot.average_roi = (profit / products_cost) * 100
             lot.average_rank = (average_rank / len(products)) * 100
             lot.lot_cost = lot_cost
             lot.redirect_cost = redirect_cost
