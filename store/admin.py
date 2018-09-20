@@ -380,8 +380,8 @@ class LotProductInline(admin.StackedInline):
     def get_queryset(self, request):
         logger.info('$$$$$$$$$$$$$$$$$$$$$$ GETQUERYSET %%%%%%%%%%%%%%%%%%%%%%%%')
         qs = super(LotProductInline, self).get_queryset(request)
-        redirect_cost = 0
         for p in qs:
+            redirect_cost = 0
             for redirect_service in p.redirect_services.all():
                 redirect_cost += redirect_service.price
             logger.info('profit_per_unit ==> %s' % str(p.profit_per_unit))
