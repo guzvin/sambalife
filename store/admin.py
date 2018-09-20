@@ -374,6 +374,7 @@ class LotProductInline(admin.StackedInline):
             page_readonly_fields += ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'rank', 'quantity',
                                      'fba_fee', 'amazon_fee', 'shipping_cost', 'redirect_services', 'condition',
                                      'notes', 'product_stock')
+        page_readonly_fields += ('roi',)
         return page_readonly_fields
 
 
