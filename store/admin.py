@@ -384,11 +384,11 @@ class LotProductInline(admin.StackedInline):
         for p in qs:
             for redirect_service in p.redirect_services.all():
                 redirect_cost += redirect_service.price
-            logger.info(p.profit_per_unit)
-            logger.info(p.buy_price)
-            logger.info(redirect_cost)
+            logger.info('profit_per_unit ==> %s' % str(p.profit_per_unit))
+            logger.info('buy_price ==> %s' % str(p.buy_price))
+            logger.info('redirect_cost ==> %s' % str(redirect_cost))
             p.roi = (p.profit_per_unit / (p.buy_price + redirect_cost)) * 100
-            logger.info(p.roi)
+            logger.info('roi ==> %s' % str(p.roi))
             p.save()
         return qs
 
