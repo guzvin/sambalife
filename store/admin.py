@@ -306,7 +306,7 @@ class LotProductForm(forms.ModelForm):
                 instance.shipping_cost + redirect_cost
             instance.profit_per_unit = instance.sell_price - instance.product_cost
             instance.total_profit = instance.profit_per_unit * instance.quantity
-            instance.roi = (instance.profit_per_unit / instance.product_cost) * 100
+            instance.roi = (instance.profit_per_unit / (instance.buy_price + redirect_cost)) * 100
         instance.save()
         return instance
 
@@ -377,6 +377,22 @@ class LotProductInline(admin.StackedInline):
         return page_readonly_fields
 
 
+class TempChangeList(ChangeList):  #TODO remover depois
+    def __init__(self, request, model, list_display, list_display_links,
+                 list_filter, date_hierarchy, search_fields, list_select_related,
+                 list_per_page, list_max_show_all, list_editable, model_admin):
+        super(TempChangeList, self).__init__(request, model, list_display, list_display_links,
+                                             list_filter, date_hierarchy, search_fields, list_select_related,
+                                             list_per_page, list_max_show_all, list_editable, model_admin)
+        self.show_all = True
+
+    def get_results(self, *args, **kwargs):
+        super(TempChangeList, self).get_results(*args, **kwargs)
+        for lot in self.result_list:
+            lot.average_roi = (lot.profit / lot.lot_cost) * 100
+            lot.save()
+
+
 class LotAdmin(admin.ModelAdmin):
     form = LotForm
 
@@ -396,8 +412,8 @@ class LotAdmin(admin.ModelAdmin):
 
     search_fields = ('name', 'product__name', 'product__identifier',)
     list_display_links = ('id', 'name',)
-    list_display = ('id', 'destination', 'name', 'create_date', 'products_quantity', 'status', 'lot_cost', 'sell_date',
-                    'schedule_date','is_archived', 'is_fake', 'duplicate_lot_action')
+    list_display = ('id', 'destination', 'name', 'create_date', 'average_roi', 'products_quantity', 'status',
+                    'lot_cost', 'sell_date', 'schedule_date', 'is_archived', 'is_fake', 'duplicate_lot_action')
 
     def duplicate_lot_action(self, obj):
         return format_html('<a class="button" href="{}">{}</a>', reverse('admin:duplicate_lot',
@@ -428,6 +444,20 @@ class LotAdmin(admin.ModelAdmin):
             )
         }),
     )
+
+    def changelist_view(self, request, extra_context=None):
+        if not request.user.is_superuser:
+            self.list_display = ('id', 'email', 'from_key', 'date_joined', 'is_active', 'is_verified', 'partner')
+            self.list_filter = ('groups', 'is_active', 'is_verified', 'partner')
+            self.fieldsets = (
+                (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
+                                   'password1', 'password2')}),
+                (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'amz_store_name', 'cell_phone',
+                                                      'phone',)}),
+                (_('Permissões'), {'fields': ('collaborator',)}),
+                (_('Grupos'), {'fields': ('groups',)}),
+            )
+        return super(LotAdmin, self).changelist_view(request, extra_context)
 
     def save_form(self, request, form, change):
         lot_obj = super(LotAdmin, self).save_form(request, form, change)
@@ -535,7 +565,7 @@ class LotAdmin(admin.ModelAdmin):
             lot.products_quantity = products_quantity
             lot.products_cost = products_cost
             lot.profit = profit
-            lot.average_roi = (profit / products_cost) * 100
+            lot.average_roi = (profit / lot_cost) * 100
             lot.average_rank = (average_rank / len(products)) * 100
             lot.lot_cost = lot_cost
             lot.redirect_cost = redirect_cost
@@ -574,6 +604,9 @@ class LotAdmin(admin.ModelAdmin):
         request.GET = request.GET.copy()
         request.GET['duplicate_lot'] = True
         return self.changeform_view(request, lid, '', context)
+
+    def get_changelist(self, request, **kwargs):
+        return TempChangeList
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         logger.debug('@@@@@@@@@@@@@@ DUP LOTE DUP LOTE DUP LOTE @@@@@@@@@@@@@@@@')

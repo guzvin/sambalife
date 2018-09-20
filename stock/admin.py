@@ -89,7 +89,7 @@ class StockProductForm(forms.ModelForm):
                 instance.shipping_cost + redirect_cost
             instance.profit_per_unit = instance.sell_price - instance.product_cost
             instance.total_profit = instance.profit_per_unit * instance.quantity
-            instance.roi = (instance.profit_per_unit / instance.product_cost) * 100
+            instance.roi = (instance.profit_per_unit / (instance.buy_price + redirect_cost)) * 100
             instance.save()
         except IntegrityError:
             pass  # o proprio django faz o tratamento da mensagem
