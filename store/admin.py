@@ -378,18 +378,17 @@ class LotProductInline(admin.StackedInline):
         return page_readonly_fields
 
     def get_queryset(self, request):
-        logger.info('$$$$$$$$$$$$$$$$$$$$$$ GETQUERYSET %%%%%%%%%%%%%%%%%%%%%%%%')
         qs = super(LotProductInline, self).get_queryset(request)
-        for p in qs:
-            redirect_cost = 0
-            for redirect_service in p.redirect_services.all():
-                redirect_cost += redirect_service.price
-            logger.info('profit_per_unit ==> %s' % str(p.profit_per_unit))
-            logger.info('buy_price ==> %s' % str(p.buy_price))
-            logger.info('redirect_cost ==> %s' % str(redirect_cost))
-            p.roi = (p.profit_per_unit / (p.buy_price + redirect_cost)) * 100
-            logger.info('roi ==> %s' % str(p.roi))
-            p.save()
+        # for p in qs:
+        #     redirect_cost = 0
+        #     for redirect_service in p.redirect_services.all():
+        #         redirect_cost += redirect_service.price
+        #     logger.info('profit_per_unit ==> %s' % str(p.profit_per_unit))
+        #     logger.info('buy_price ==> %s' % str(p.buy_price))
+        #     logger.info('redirect_cost ==> %s' % str(redirect_cost))
+        #     p.roi = (p.profit_per_unit / (p.buy_price + redirect_cost)) * 100
+        #     logger.info('roi ==> %s' % str(p.roi))
+        #     p.save()
         return qs
 
 
