@@ -386,6 +386,7 @@ class LotProductInline(admin.StackedInline):
                 redirect_cost += redirect_service.price
             p.roi = (p.profit_per_unit / (p.buy_price + redirect_cost)) * 100
             p.save()
+        return qs
 
 
 class ExampleChangeList(ChangeList):
