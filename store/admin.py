@@ -377,16 +377,20 @@ class LotProductInline(admin.StackedInline):
         page_readonly_fields += ('roi',)
         return page_readonly_fields
 
-    # def get_queryset(self, request):
-    #     qs = super(LotProductInline, self).get_queryset(request)
-    #     redirect_cost = 0
-    #     for p in qs:
-    #         for redirect_service in p.redirect_services.all():
-    #             logger.debug(redirect_service.price)
-    #             redirect_cost += redirect_service.price
-    #         p.roi = (p.profit_per_unit / (p.buy_price + redirect_cost)) * 100
-    #         p.save()
-    #     return qs
+    def get_queryset(self, request):
+        logger.info('$$$$$$$$$$$$$$$$$$$$$$ GETQUERYSET %%%%%%%%%%%%%%%%%%%%%%%%')
+        qs = super(LotProductInline, self).get_queryset(request)
+        redirect_cost = 0
+        for p in qs:
+            for redirect_service in p.redirect_services.all():
+                redirect_cost += redirect_service.price
+            logger.info(p.profit_per_unit)
+            logger.info(p.buy_price)
+            logger.info(redirect_cost)
+            p.roi = (p.profit_per_unit / (p.buy_price + redirect_cost)) * 100
+            logger.info(p.roi)
+            p.save()
+        return qs
 
 
 class ExampleChangeList(ChangeList):
