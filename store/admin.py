@@ -377,20 +377,20 @@ class LotProductInline(admin.StackedInline):
         return page_readonly_fields
 
 
-class TempChangeList(ChangeList):  #TODO remover depois
+class ExampleChangeList(ChangeList):
     def __init__(self, request, model, list_display, list_display_links,
                  list_filter, date_hierarchy, search_fields, list_select_related,
                  list_per_page, list_max_show_all, list_editable, model_admin):
-        super(TempChangeList, self).__init__(request, model, list_display, list_display_links,
-                                             list_filter, date_hierarchy, search_fields, list_select_related,
-                                             list_per_page, list_max_show_all, list_editable, model_admin)
-        self.show_all = True
+        super(ExampleChangeList, self).__init__(request, model, list_display, list_display_links,
+                                                list_filter, date_hierarchy, search_fields, list_select_related,
+                                                list_per_page, list_max_show_all, list_editable, model_admin)
+        # self.show_all = True
 
     def get_results(self, *args, **kwargs):
-        super(TempChangeList, self).get_results(*args, **kwargs)
-        for lot in self.result_list:
-            lot.average_roi = (lot.profit / lot.lot_cost) * 100
-            lot.save()
+        super(ExampleChangeList, self).get_results(*args, **kwargs)
+        # for lot in self.result_list:
+        #     lot.average_roi = (lot.profit / lot.lot_cost) * 100
+        #     lot.save()
 
 
 class LotAdmin(admin.ModelAdmin):
@@ -606,7 +606,7 @@ class LotAdmin(admin.ModelAdmin):
         return self.changeform_view(request, lid, '', context)
 
     def get_changelist(self, request, **kwargs):
-        return TempChangeList
+        return ExampleChangeList
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         logger.debug('@@@@@@@@@@@@@@ DUP LOTE DUP LOTE DUP LOTE @@@@@@@@@@@@@@@@')
