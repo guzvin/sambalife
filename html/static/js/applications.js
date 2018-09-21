@@ -1078,6 +1078,23 @@
     {
         $('input#payment_button').click(function(e)
         {
+            var $this = $(this);
+            if($this.data('type') === 1)
+            {
+                $('.fba-text').show();
+                $('.fbm-text').hide();
+            }
+            else if($this.data('type') === 2)
+            {
+                $('.fba-text').hide();
+                $('.fbm-text').show();
+            }
+            else
+            {
+                $('.fba-text').hide();
+                $('.fbm-text').hide();
+            }
+
             $('#modal-compra').modal('show');
         });
 

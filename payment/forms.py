@@ -83,12 +83,13 @@ class MyPayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
             (False, self.DONATE): DONATION_IMAGE,
         }[self.test_mode(), self.button_type]
 
-    def render_button(self, data=None):
+    def render_button(self, data=None, text_type=None):
         from django.utils.safestring import mark_safe
         return format_html('<input type="image" src="{0}" id="payment_button" border="0" name="submit" '
-                           'alt="Buy it Now" data-origin="{1}" data-generic="{2}" {3} />',
+                           'alt="Buy it Now" data-origin="{1}" data-generic="{2}" {3} data-type="{4}"/>',
                            self.get_image(), self.button_origin if self.button_origin else '', data if data else '',
-                           mark_safe('style="width: 171px"') if self.test_mode() is False else '')
+                           mark_safe('style="width: 171px"') if self.test_mode() is False else '',
+                           text_type if text_type else '')
 
     def test_mode(self):
         logger.debug('@@@@@@@@@@@@ IS SANDBOX @@@@@@@@@@@@@@')

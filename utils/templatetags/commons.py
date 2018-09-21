@@ -33,8 +33,8 @@ def timezone_name(lang):
 
 
 @register.simple_tag
-def render_payment_button(paypal_form, data):
-    return paypal_form.render_button(data=data)
+def render_payment_button(paypal_form, data, text_type=None):
+    return paypal_form.render_button(data=data, text_type=text_type)
 
 
 @register.filter
