@@ -142,6 +142,7 @@
                       <a title="{{ order_name }}" href="javascript:void(0);">{{ name }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
                   <th class="center">{% trans "ASIN" %}</th>
+                  <th class="center">{% trans "Origem" %}</th>
                   <th class="center">
                       {% trans "Ordenar pela quantidade" as order_qty %}
                       <a title="{{ order_qty }}" href="javascript:void(0);">{% trans "Quantidade" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
@@ -187,6 +188,9 @@
                       {% endif %}
                       {% endwith %}
                       {% endif %}
+                  </td>
+                  <td>
+                      {% if product.lot_product %}{% trans "Lotes" %}{% else %}{% trans "Cadastro" %}{% endif %}
                   </td>
                   <td class="center row-quantity" data-current-qty="{{ product.quantity }}">
                       <span class="row-quantity-display">
