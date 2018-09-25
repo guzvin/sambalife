@@ -56,7 +56,7 @@
                   {% if lot.payment_complete is False %}
                   <!-- Aparece apenas para usuarios comuns -->
                     <br><br>
-                    {% render_payment_button paypal_form lot.id %}
+                    {% render_payment_button paypal_form lot.id lot.destination %}
                   <!-- fim botao compra -->
 
                   <br>
@@ -198,7 +198,7 @@
             {% if lot.payment_complete is False %}
                 <!-- Aparece apenas para usuarios comuns -->
                 <br><br>
-                {% render_payment_button paypal_form lot.id %}
+                {% render_payment_button paypal_form lot.id lot.destination %}
                 <!-- fim botao compra -->
 
                 <!-- Botão compra cartão -->

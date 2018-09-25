@@ -10,6 +10,7 @@ from django.db.models.fields import FloatField
 from store.models import Lot, Product, Config, LotReport, lot_directory_path, Collaborator
 from store.admin_filters import UserFilter, AsinFilter
 from stock.models import Product as ProductStock
+from product.models import Product as ProductProduct
 from store.widgets import NameTextInput, IdentifierTextInput
 from utils import helper
 from utils.models import Params
@@ -267,8 +268,9 @@ class LotProductForm(forms.ModelForm):
             'name': NameTextInput(),
             'identifier': IdentifierTextInput()
         }
-        fields = ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'rank', 'quantity', 'fba_fee', 'amazon_fee',
-                  'shipping_cost', 'redirect_services', 'condition', 'voi_value', 'notes', 'product_stock')
+        fields = ('name', 'identifier', 'pick_ticket', 'url', 'buy_price', 'sell_price', 'rank',
+                  'quantity', 'fba_fee', 'amazon_fee', 'shipping_cost', 'redirect_services', 'condition', 'voi_value',
+                  'notes', 'product_stock')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor
@@ -292,6 +294,8 @@ class LotProductForm(forms.ModelForm):
         instance = super(LotProductForm, self).save(commit=False)
         if instance.pk is None:
             instance.save()
+        else:
+            ProductProduct.objects.filter(lot_product=instance).update(pick_ticket=self.cleaned_data['pick_ticket'])
         if 'redirect_services' in self.fields:
             redirect_cost = 0
             logger.debug(self.fields)
