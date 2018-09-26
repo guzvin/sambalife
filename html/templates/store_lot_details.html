@@ -57,11 +57,10 @@
                   <!-- Aparece apenas para usuarios comuns -->
                     <br><br>
                     {% render_payment_button paypal_form lot.id lot.destination %}
-                  <!-- fim botao compra -->
+                  <!-- fim botao compra
 
-                  <br>
                   <a href="#" class="btn btn-default"><i class="fa fa-credit-card"></i> {% trans "Pagar com Cartão de Crédito" %}</a>
-
+                  -->
                   {% endif %}
               </div>
           </div>
@@ -95,11 +94,17 @@
                   <div class="col-md-12">
                       <p class="nome"><strong>{% trans "Nome" %}:</strong><br> {{ product.name }}</p>
                   </div>
+
+                  <!------------------- Comentar se ebay inicio ------------------->
                   {% if lot.destination == 1 %}
                   <div class="col-md-12">
                       <p><strong>{% trans "Rank" %}:</strong> {{ product.rank|localize }}%</p>
                   </div>
                   {% endif %}
+
+
+                  <!------------------- Comentar se ebay fim --------------------->
+
                   <div class="col-md-12">
                       <p>
                           <strong>
@@ -122,6 +127,9 @@
                   <div class="col-md-6">
                       <p><strong>{% trans "Quantidade" %}:</strong><br> {{ product.quantity }}</p>
                   </div>
+
+                  <!--------- Comentar se ebay inicio --------->
+
                   <div class="col-md-6">
                       <p><strong>{% trans "Valor de Venda" %}:</strong><br> U$ {{ product.sell_price|localize }}</p>
                   </div>
@@ -172,10 +180,15 @@
                       <p><strong>{% trans "ROI" %} (%):</strong><br> {{ product.roi|localize }}</p>
                   </div>
 
+                  <!----------------- Comentar se ebay fim -------------->
+
                    <!-- Campo observação-->
                   <div class="col-md-12">
                         <p><strong>{% trans "Observação" %}:</strong><br> {% if product.notes %}{{product.notes}}.{% endif %}</p>
                   </div>
+
+
+                  <!--------- Comentar se ebay inicio --------->
 
                   {% if product.url %}
                   <!-- btn link para amazon -->
@@ -190,6 +203,9 @@
                         </a>
                   </div>
                   {% endif %}
+
+                  <!----------------- Comentar se ebay fim -------------->
+
               </div>
           {% if forloop.counter|divisibleby:3 or forloop.last %}
           </div>
@@ -201,11 +217,11 @@
                 {% render_payment_button paypal_form lot.id lot.destination %}
                 <!-- fim botao compra -->
 
-                <!-- Botão compra cartão -->
+                <!-- Botão compra cartão
 
-                <br>
+
                 <a href="#" class="btn btn-default"><i class="fa fa-credit-card"></i> {% trans "Pagar com Cartão de Crédito" %}</a>
-
+                -->
                 <br><br>
                 {% if user|has_store_perm:'change_lot' %}
                 <a href="{%url 'admin:store_lot_change' lot.id %}" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
