@@ -106,17 +106,33 @@
         <div class="col-md-10 main loja">
           {% log_message '@#@#@#@#@#@#@#@#@#@#@@#@#@#@#@#@#@#@#@' %}
           {% if not lots %}
-            <pre>
-{% blocktrans %}
-Não existem mais lotes disponíveis.
+            <div class="no-lots">
+                {% blocktrans %}
 
-Segue a agenda de publicação dos lotes:
-Terça: 10:30 horário de Brasília
-Terça: 20:30 horário de Brasília
-Quinta: 10:30 horário de Brasília
-Quinta: 20:30 horário de Brasília
-{% endblocktrans %}
-            </pre>
+                <h3 class="center"><i class="fa fa-2x fa-frown"></i><br />Infelizmente Não existem mais lotes disponíveis.</h3>
+                <p class="center">Veja abaixo os dias e horários de publicação de lotes. Não perca.</p><br><br>
+                <div class="col-md-12">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3">
+                        <div class="col-schedule">
+                            <span>Terças</span>
+                            <br>
+                            <p>Manhã: 10:30<br>Noite: 20:30</p>
+                            <smal>(Horário de Brasília)</smal>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="col-schedule">
+                            <span>Quintas</span>
+                            <br>
+                            <p>Manhã: 10:30<br>Noite: 20:30</p>
+                            <smal>(Horário de Brasília)</smal>
+                        </div><br><br>
+                    </div>
+                    <div class="col-md-3"></div>
+                </div>
+                {% endblocktrans %}
+            </div>
           {% endif %}
           {% for lot in lots %}
           {% if forloop.counter0|divisibleby:4 %}
@@ -152,7 +168,18 @@ Quinta: 20:30 horário de Brasília
                         <br>
                         <p class="lucro-prod">{% trans "Lucro" %}: U$ {{ lot.profit|localize }}</p>
                         <p class="lucro-prod">{% trans "Número de Itens" %}: {{ lot.products_quantity }}</p>
-                        <p class="lucro-prod">{% trans "ROI" %}: {{ lot.average_roi|localize }}% | Rank: {{ lot.average_rank|localize }}%</p>
+                        <p class="lucro-prod">{% trans "ROI" %}: {{ lot.average_roi|localize }}% |
+
+                            <!------------------- Comentar se ebay inicio ------------------->
+
+                            Rank: {{ lot.average_rank|localize }}%
+
+                            <!------------------- Comentar se ebay fim --------------------->
+
+                        </p>
+
+
+
                         {% if lot.collaborator %}
                         <!--Conteúdo novo -->
                         <p class="lucro-prod parceiro-titulo"><strong>{% trans "Vendido por" %}:  </strong>{{ lot.collaborator.name }}</p>

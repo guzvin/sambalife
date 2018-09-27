@@ -176,11 +176,23 @@
                   <div class="col-md-6">
                       <p><strong>{% trans "Lucro Total" %} <span class="help help-tooltip help-icon" title="{% trans 'Valor informativo que é composto por: &quot;Lucro líquido por Unidade&quot; vezes &quot;Quantidade&quot;.' %}"></span>:</strong><br> U$ {{ product.total_profit|localize }}</p>
                   </div>
+
+                  <!----------------- Comentar se ebay fim -------------->
+
+                  <!-- Se for Amazon -->
+
                   <div class="col-md-6">
                       <p><strong>{% trans "ROI" %} (%):</strong><br> {{ product.roi|localize }}</p>
                   </div>
 
-                  <!----------------- Comentar se ebay fim -------------->
+
+                  <!-- Se for Ebay. Só alterei o Label e a classe da div-->
+
+                  <div class="col-md-12">
+                      <p><strong>{% trans "Retorno Estimado" %} (%):</strong><br> {{ product.roi|localize }}</p>
+                  </div>
+
+
 
                    <!-- Campo observação-->
                   <div class="col-md-12">

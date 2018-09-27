@@ -2440,6 +2440,38 @@ ul.listaancora li a{
     left: 30px;
 }
 
+.col-schedule{
+    background: rgba(0, 0, 0, .5);
+    text-align: center;
+    padding-top: 34px;
+    padding-bottom: 20px;
+}
+
+.col-schedule p, .col-schedule smal{
+    color: #fff;
+}
+
+.col-schedule p{
+    font-size: 16px;
+}
+
+.col-schedule smal{
+    font-size: 11px;
+}
+
+.col-schedule span{
+    background: #fff;
+    border-radius: 70px;
+    width: 110px;
+    height: 110px;
+    display: block;
+    margin: 0px auto 0 auto;
+    padding: 40px 0 0 0;
+    font-weight: bold;
+    color: #666;
+    font-size: 20px;
+}
+
 @media print
 {
     .imprimir{display: none;}
