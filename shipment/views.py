@@ -798,17 +798,25 @@ def shipment_standby(request, pid=None, op='0'):
                 query &= Q(collaborator=request.user.collaborator)
             elif request.user.first_name != 'Administrador' and request.user.is_superuser is False:
                 query = None
-        logger.debug('###################')
-        logger.debug(query)
-        logger.debug(op)
-        logger.debug(request.POST.get('standby_shipment_reason'))
         if query:
-            if op == '1':
-                Shipment.objects.filter(query).update(is_standby=False,
-                                                      standby_reason=None)
-            elif op == '2':
-                Shipment.objects.filter(query).update(is_standby=True,
-                                                      standby_reason=request.POST.get('standby_shipment_reason'))
+            shipment = Shipment.objects.filter(query)
+            if shipment:
+                texts = None
+                email_title = None
+                if op == '1':
+                    shipment.update(is_standby=False, standby_reason=None)
+                    email_title = _('Seu envio %(shipment)s saiu de Stand By') % {'shipment': shipment[0].id}
+                    texts = (_('Seu envio %(shipment)s saiu de Stand By.') % {'shipment': shipment[0].id},
+                             _('Em breve daremos seguimento ao seu envio.'))
+                elif op == '2':
+                    standby_reason = request.POST.get('standby_shipment_reason')
+                    shipment.update(is_standby=True, standby_reason=standby_reason)
+                    email_title = _('Seu envio %(shipment)s entrou em Stand By') % {'shipment': shipment[0].id}
+                    texts = (_('Seu envio %(shipment)s entrou em Stand By.') % {'shipment': shipment[0].id},)
+                    if standby_reason:
+                        texts += (_('Segue abaixo o motivo:'), standby_reason)
+                send_email_shipment_standby(request, shipment[0], email_title, _('para acessar seu envio.'), *texts,
+                                            async=True)
     return HttpResponseRedirect(reverse('shipment_details', args=[pid]))
 
 
@@ -1542,6 +1550,16 @@ def send_email_shipment_status_change(request, shipment, link_text, *texts, asyn
                            '<strong>{}:</strong> U$ {}</p>'] if len(texts) == 3 else ['']) +
                           (['<p style="color:#858585;font:13px/120%% \'Helvetica\'"><strong>{}:</strong>'
                            '<br> {} {}</p>'] if len(texts) == 4 else ['']) +
+                          ['<p><a href="{}">{}</a> {}</p>'])
+    texts += (''.join(['https://fbaprepmaster.com', reverse('shipment_details', args=[shipment.id])]),
+              _('Clique aqui'), link_text,)
+    email_body = format_html(html_format, *texts)
+    helper.send_email_basic_template_bcc_admins(request, shipment.user.first_name, [shipment.user.email], email_title,
+                                                email_body, async=async)
+
+
+def send_email_shipment_standby(request, shipment, email_title, link_text, *texts, async=False):
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>' for x in texts] +
                           ['<p><a href="{}">{}</a> {}</p>'])
     texts += (''.join(['https://fbaprepmaster.com', reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), link_text,)
