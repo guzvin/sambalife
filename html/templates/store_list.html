@@ -107,31 +107,28 @@
           {% log_message '@#@#@#@#@#@#@#@#@#@#@@#@#@#@#@#@#@#@#@' %}
           {% if not lots %}
             <div class="no-lots">
-                {% blocktrans %}
-
-                <h3 class="center"><i class="fa fa-2x fa-frown"></i><br />Infelizmente Não existem mais lotes disponíveis.</h3>
-                <p class="center">Veja abaixo os dias e horários de publicação de lotes. Não perca.</p><br><br>
+                <h3 class="center"><i class="fa fa-2x fa-frown"></i><br />{% blocktrans %}Infelizmente Não existem mais lotes disponíveis.{% endblocktrans %}</h3>
+                <p class="center">{% blocktrans %}Veja abaixo os dias e horários de publicação de lotes. Não perca.{% endblocktrans %}</p><br><br>
                 <div class="col-md-12">
                     <div class="col-md-3"></div>
                     <div class="col-md-3">
                         <div class="col-schedule">
-                            <span>Terças</span>
+                            <span>{% blocktrans %}Terças{% endblocktrans %}</span>
                             <br>
-                            <p>Manhã: 10:30<br>Noite: 20:30</p>
-                            <smal>(Horário de Brasília)</smal>
+                            <p>{% blocktrans %}Manhã{% endblocktrans %}: 10:30<br>{% blocktrans %}Noite{% endblocktrans %}: 20:30</p>
+                            <smal>({% blocktrans %}Horário de Brasília{% endblocktrans %})</smal>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="col-schedule">
-                            <span>Quintas</span>
+                            <span>{% blocktrans %}Quintas{% endblocktrans %}</span>
                             <br>
-                            <p>Manhã: 10:30<br>Noite: 20:30</p>
-                            <smal>(Horário de Brasília)</smal>
+                            <p>{% blocktrans %}Manhã{% endblocktrans %}: 10:30<br>{% blocktrans %}Noite{% endblocktrans %}: 20:30</p>
+                            <smal>({% blocktrans %}Horário de Brasília{% endblocktrans %})</smal>
                         </div><br><br>
                     </div>
                     <div class="col-md-3"></div>
                 </div>
-                {% endblocktrans %}
             </div>
           {% endif %}
           {% for lot in lots %}
@@ -168,14 +165,12 @@
                         <br>
                         <p class="lucro-prod">{% trans "Lucro" %}: U$ {{ lot.profit|localize }}</p>
                         <p class="lucro-prod">{% trans "Número de Itens" %}: {{ lot.products_quantity }}</p>
-                        <p class="lucro-prod">{% trans "ROI" %}: {{ lot.average_roi|localize }}% |
-
-                            <!------------------- Comentar se ebay inicio ------------------->
-
-                            Rank: {{ lot.average_rank|localize }}%
-
-                            <!------------------- Comentar se ebay fim --------------------->
-
+                        <p class="lucro-prod">
+                            {% if lot.destination == 1 %}
+                            {% trans "ROI" %}: {{ lot.average_roi|localize }}% | Rank: {{ lot.average_rank|localize }}%
+                            {% else %}
+                            {% trans "Retorno Estimado" %}: {{ lot.average_roi|localize }}%
+                            {% endif %}
                         </p>
 
 
