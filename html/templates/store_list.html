@@ -188,7 +188,6 @@
                         </div>
                          <!-- Fim conteúdo novo -->
                         {% endif %}
-                        {% if is_lot_vip %}
                           <!-- O vip não aparecerá mais. Agora se for lote amazon, a imgem será /vip-amz.png e se for ebay, /vip-ebay.png-->
                          {% if lot.destination == 1 %}
                             <img class="img-vip" src="/static/img/vip-amz.png" width="" />
@@ -196,7 +195,6 @@
                             <img class="img-vip" src="/static/img/vip-ebay.png" width="" />
                          {% endif %}
                          <!-- Fim selo -->
-                        {% endif %}
 
                      </div>
 
