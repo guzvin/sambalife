@@ -461,6 +461,7 @@
                         <label>
                             <i class="fa fa-2x fa-list-alt"></i><br>{% trans "Checagens Finais" %}
                             {% if shipment.status == 4 %}
+{% comment %}
                              <br>
                              {% etc shipment.payment_date estimate='shipment' as etc_shipment %}
                              {% if etc_shipment %}
@@ -468,6 +469,7 @@
                                <span class="previsao">({% trans "Previsão: Até" %} {{ etc_shipment|date:'SHORT_DATE_FORMAT' }} {% trans "inclusive" %})</span>
                               {% endtimezone %}
                              {% endif %}
+{% endcomment %}
                              {% if shipment.is_standby%}
                               <br>
                               <span class="previsao">({% trans "Aguardando resposta do usuário" %}{% if shipment.standby_reason %} - {{ shipment.standby_reason }}{% endif %})</span>
@@ -650,10 +652,12 @@
                  </form>
                  <!-- botao arquivar -->
                  {% if user|has_shipment_perm:'create_fba_shipment_admin' and shipment.is_fba_create is True or shipment.is_fba_create is False %}
+                  {% if shipment.status > 1 and user|has_group:'admins' or shipment.status > 1 and shipment.collaborator_id|is_collaborator:user or shipment.status == 1 %}
                  <!-- Botao cancelar -->
                  <a class="btn btn-danger filtar-btn alterar-status" id="cancel-btn" href="#">
                     <i class="fas fa-trash-alt"></i> {% trans "Cancelar Envio" %}
                  </a>
+                  {% endif %}
                  {% endif %}
                  <br><br>
               {% endif %}
