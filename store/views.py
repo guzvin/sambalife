@@ -174,8 +174,15 @@ def store_lot_details(request, pid=None):
 
 @require_http_methods(["GET"])
 def store_lot_invoice(request, pid=None):
-    context_data = {}
-    return render(request, 'store_lot_details.html', context_data)
+    try:
+        _lot_details = Lot.objects.prefetch_related('product_set').get(pk=pid, status=2)
+        logger.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        logger.info(_lot_details)
+    except Lot.DoesNotExist as e:
+        logger.error(e)
+        return HttpResponseBadRequest()
+    context_data = {'lot': _lot_details}
+    return render(request, 'invoice.html', context_data)
 
 
 def current_milli_time(): return int(round(time.time() * 1000))

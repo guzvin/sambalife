@@ -37,6 +37,14 @@ def calculate_buy_price(product):
 
 
 @register.simple_tag
+def calculate_total_buy_price(product):
+    product_redirect_cost = 0
+    for redirect_service in product.redirect_services.all():
+        product_redirect_cost += redirect_service.price
+    return (product.buy_price + product_redirect_cost) * product.quantity
+
+
+@register.simple_tag
 def is_subscriber(user, **kwargs):
     lot = kwargs.pop('lot')
     return set(user.groups.all()) & set(lot.groups.all()) or (lot.lifecycle_open and user.is_authenticated)
@@ -98,3 +106,9 @@ def calculate_countdown(user, lot, force_is_open=False):
         # tdelta = lot.lifecycle_date + datetime.timedelta(minutes=delta)
         return datetime.datetime.strftime(tdelta, '%b %-d, %Y %H:%M:%S')
     return None
+
+
+@register.simple_tag
+def calculate_invoice_number(lot):
+    invoice_number = 1124 + lot.id
+    return '%07d' % invoice_number

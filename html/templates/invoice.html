@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load i18n commons permissions products shipments services lots static %}
+{% load i18n commons permissions products shipments services lots static tz l10n %}
 <html lang="{{ LANGUAGE_CODE }}">
 
 <head>
@@ -59,10 +59,13 @@
             <li> 920 Lafayette road, 204-B<br>Seabrook, NH 03874</li>
         </ul>
         <ul class="order-details pay">
-            <li><strong>INVOICE NUMBER: </strong> 0001054</li>
-            <li><strong>ORDER:</strong> 0001054</li>
-            <li><strong>DATE:</strong> 08/23/2018</li>
-            <li><strong>DUE:</strong> 08/23/2018</li>
+            {% calculate_invoice_number lot as invoice_number %}
+            <li><strong>INVOICE NUMBER: </strong> {{ invoice_number }}</li>
+            <li><strong>ORDER:</strong> {{ invoice_number }}</li>
+{% comment %}
+            <li><strong>DATE:</strong> {% now 'm/d/Y' %}</li>
+{% endcomment %}
+            <li><strong>DUE:</strong> {% if lot.sell_date %}{{ lot.sell_date|date:'m/d/Y' }}{% endif %}</li>
             <li><strong>PAYMENT METHOD:</strong> PayPal</li>
         </ul>
     </div>
@@ -79,8 +82,19 @@
                     </td>-->
                     <td>
                         <strong>BILL TO:</strong><br>
-                        </br><p><strong>Elaine Mauricio da Cruz</strong><br>
-                        Rua Industrial, 300 casa 12<br>Vila Bela, São Paulo - SP<br> 03203-010 <br> Brazil</p>
+                        </br><p><strong>{{ lot.user.first_name }} {{ lot.user.last_name }}</strong><br>
+                        {% with lot.user.useraddress_set.all|first as addr %}
+                        {% if addr %}
+                        {{ addr.address_1 }}
+                        {% if addr.address_2 %}
+                        <br>{{ addr.address_2 }}
+                        {% endif %}
+                        <br>{{ addr.city }} - {{ addr.state }}
+                        <br>{{ addr.zipcode }}
+                        <br>{{ addr.country }}
+                        {% endif %}
+                        {% endwith %}
+                        </p>
                     </td>
                 </tr>
               </thead>
@@ -100,10 +114,10 @@
                       <strong>B.O.L</strong><br><p class="null">null</p>
                   </td>
                     <td>
-                        <strong>CONTACT</strong><br><p>Elaine</p>
+                        <strong>CONTACT</strong><br><p>{{ lot.user.first_name }}</p>
                     </td>
                     <td>
-                        <strong>PHONE</strong></br><p class="null">null</p>
+                        <strong>PHONE</strong></br><p class="null">{{ lot.user.cell_phone }}</p>
                     </td>
                     <td>
                         <strong>FAX</strong><br><p class="null">null</p>
@@ -139,74 +153,27 @@
                     </td>
                 </tr>
               </thead>
+                {% for product in lot.product_set.all %}
                 <tr>
                   <td class="center">
-                      02
+                      {{ product.quantity }}
                   </td>
                   <td class="center">
-                      051071926621
+                      {{ product.identifier }}
                   </td>
                     <td>
-                        LEE Mens Big-Tall Regular Fit Straight Leg Jean, Vintage, 52W x 34L
+                        {{ product.name }}
                     </td>
                     <td class="center">
-                        $14.29
+                        {% calculate_buy_price product as product_buy_price %}
+                        ${{ product_buy_price|localize }}
                     </td>
                     <td class="center">
-                        $28.58
+                        {% calculate_total_buy_price product as product_total_buy_price %}
+                        ${{ product_total_buy_price|localize }}
                     </td>
                 </tr>
-                <tr>
-                  <td class="center">
-                      02
-                  </td>
-                  <td class="center">
-                      051071926614
-                  </td>
-                    <td>
-                        LEE Mens Big-Tall Regular Fit Straight Leg Jean, Vintage, 52W x 32L
-                    </td>
-                    <td class="center">
-                        $14.29
-                    </td>
-                    <td class="center">
-                        $28.58
-                    </td>
-                </tr>
-                <tr>
-                  <td class="center">
-                      01
-                  </td>
-                  <td class="center">
-                      051071926454
-                  </td>
-                    <td>
-                        LEE Mens Big-Tall Regular Fit Straight Leg Jean, Vintage, 44W x 30L
-                    </td>
-                    <td class="center">
-                        $16.29
-                    </td>
-                    <td class="center">
-                        $16.29
-                    </td>
-                </tr>
-                <tr>
-                  <td class="center">
-                      01
-                  </td>
-                  <td class="center">
-                      051071926584
-                  </td>
-                    <td>
-                        LEE Mens Big-Tall Regular Fit Straight Leg Jean, Vintage, 50W x 32L
-                    </td>
-                    <td class="center">
-                        $16.29
-                    </td>
-                    <td class="center">
-                        $16.29
-                    </td>
-                </tr>
+                {% endfor %}
             </table>
         </div>
     </div>
@@ -223,13 +190,13 @@
                       <strong>PAID BY: </strong> PayPal
                   </td>
                     <td>
-                        <strong>MERCHANDISE: </strong> $89.74
+                        <strong>MERCHANDISE: </strong> ${{ lot.lot_cost|localize }}
                     </td>
                     <td>
                         <strong>TAX: </strong> $0.00
                     </td>
                     <td>
-                        <strong>TOTAL AMOUNT: </strong> $89.74
+                        <strong>TOTAL AMOUNT: </strong> ${{ lot.lot_cost|localize }}
                     </td>
                 </tr>
               </thead>
