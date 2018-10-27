@@ -11,7 +11,7 @@ from store.models import Lot, Product, Config, LotReport, lot_directory_path, Co
 from store.admin_filters import UserFilter, AsinFilter
 from stock.models import Product as ProductStock
 from product.models import Product as ProductProduct
-from store.widgets import NameTextInput, IdentifierTextInput
+from store.widgets import NameTextInput, IdentifierTextInput, UpcTextInput
 from utils import helper
 from utils.models import Params
 from utils.sites import admin_site
@@ -266,9 +266,10 @@ class LotProductForm(forms.ModelForm):
         widgets = {
             'product_stock': HiddenInput(),
             'name': NameTextInput(),
-            'identifier': IdentifierTextInput()
+            'identifier': IdentifierTextInput(),
+            'upc': UpcTextInput()
         }
-        fields = ('name', 'identifier', 'pick_ticket', 'url', 'buy_price', 'sell_price', 'rank',
+        fields = ('name', 'identifier', 'upc', 'pick_ticket', 'url', 'buy_price', 'sell_price', 'rank',
                   'quantity', 'fba_fee', 'amazon_fee', 'shipping_cost', 'redirect_services', 'condition', 'voi_value',
                   'notes', 'product_stock')
 
@@ -375,7 +376,7 @@ class LotProductInline(admin.StackedInline):
     def get_readonly_fields(self, request, obj=None):
         page_readonly_fields = self.readonly_fields
         if obj and obj.status == 2 and obj.payment_complete:
-            page_readonly_fields += ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'rank', 'quantity',
+            page_readonly_fields += ('name', 'identifier', 'upc', 'url', 'buy_price', 'sell_price', 'rank', 'quantity',
                                      'fba_fee', 'amazon_fee', 'shipping_cost', 'redirect_services', 'condition',
                                      'notes', 'product_stock')
         page_readonly_fields += ('roi',)
@@ -429,7 +430,7 @@ class LotAdmin(admin.ModelAdmin):
         ('sell_date', DateRangeFilter),
     ]
 
-    search_fields = ('name', 'product__name', 'product__identifier',)
+    search_fields = ('name', 'product__name', 'product__identifier', 'product__upc',)
     list_display_links = ('id', 'name',)
     list_display = ('id', 'destination', 'name', 'create_date', 'average_roi', 'products_quantity', 'status',
                     'lot_cost', 'sell_date', 'schedule_date', 'is_archived', 'is_fake', 'duplicate_lot_action')
@@ -776,7 +777,7 @@ class LotReportAdmin(admin.ModelAdmin):
         AsinFilter,
     ]
 
-    search_fields = ('name', 'product__name',)
+    search_fields = ('name', 'product__name', 'product__identifier', 'product__upc',)
     list_display = ('id', 'destination', 'name', 'collaborator', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost',
                     'voi_profit', 'voi_roi', 'products_quantity', 'paypal_value', 'transfer_value', 'net_value')
 

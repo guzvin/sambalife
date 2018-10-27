@@ -441,12 +441,20 @@ def product_asin_autocomplete(request):
     return _product_autocomplete(StockProduct.objects.filter(identifier__icontains=term).order_by('name'))
 
 
+@login_required
+@require_http_methods(["GET"])
+def product_upc_autocomplete(request):
+    term = request.GET.get('term')
+    return _product_autocomplete(StockProduct.objects.filter(upc__icontains=term).order_by('name'))
+
+
 def _product_autocomplete(qs):
     products_autocomplete = []
     for product in qs:
         products_autocomplete.append({'label': ' - '.join([str(product.id), product.identifier, product.name]),
                                       'id': str(product.id),
-                                      'name': product.name, 'identifier': product.identifier, 'url': product.url,
+                                      'name': product.name, 'identifier': product.identifier,
+                                      'upc': product.upc, 'url': product.url,
                                       'buy_price': str(product.buy_price), 'sell_price': str(product.sell_price),
                                       'quantity': product.quantity, 'fba_fee': str(product.fba_fee),
                                       'amazon_fee': str(product.amazon_fee),

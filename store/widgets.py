@@ -28,3 +28,14 @@ class IdentifierTextInput(TextInput):
         else:
             attrs = {'class': 'enable-autocomplete-asin'}
         return super(IdentifierTextInput, self).render(name, value, attrs)
+
+
+class UpcTextInput(TextInput):
+    def render(self, name, value, attrs=None):
+        if 'class' in attrs:
+            attrs['class'] += ' enable-autocomplete-upc'
+        elif attrs:
+            attrs['class'] = 'enable-autocomplete-upc'
+        else:
+            attrs = {'class': 'enable-autocomplete-upc'}
+        return super(UpcTextInput, self).render(name, value, attrs)

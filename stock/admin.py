@@ -49,8 +49,8 @@ class StockProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ('name', 'identifier', 'url', 'buy_price', 'sell_price', 'rank', 'quantity', 'fba_fee', 'amazon_fee',
-                  'shipping_cost', 'redirect_services', 'condition', 'voi_value', 'notes', 'invoices')
+        fields = ('name', 'identifier', 'upc', 'url', 'buy_price', 'sell_price', 'rank', 'quantity', 'fba_fee',
+                  'amazon_fee', 'shipping_cost', 'redirect_services', 'condition', 'voi_value', 'notes', 'invoices')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor
@@ -108,8 +108,8 @@ class MyRelatedFieldWidgetWrapper(RelatedFieldWidgetWrapper):
 
 class ProductAdmin(admin.ModelAdmin):
     form = StockProductForm
-    search_fields = ('name', 'identifier',)
-    list_display = ('identifier', 'name', 'quantity',)
+    search_fields = ('name', 'identifier', 'upc',)
+    list_display = ('identifier', 'upc', 'name', 'quantity',)
     list_filter = [
         ('created_date', DateRangeFilter),
         ('changed_date', DateRangeFilter),

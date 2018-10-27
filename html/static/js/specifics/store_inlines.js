@@ -67,6 +67,7 @@
                     $('#id_'+prefix+'-product_stock').val(ui.item.id);
                     $('#id_'+prefix+'-name').val(ui.item.name);
                     $('#id_'+prefix+'-identifier').val(ui.item.identifier);
+                    $('#id_'+prefix+'-upc').val(ui.item.upc);
                     $('#id_'+prefix+'-url').val(ui.item.url);
                     $('#id_'+prefix+'-buy_price').val(ui.item.buy_price);
                     $('#id_'+prefix+'-sell_price').val(ui.item.sell_price);
@@ -145,6 +146,8 @@
                                 '/' + gettext('en') + '/store/product_name/autocomplete/');
             enableAutocomplete($(forms.get(i)).find('input.enable-autocomplete-asin'),
                                 '/' + gettext('en') + '/store/product_asin/autocomplete/');
+            enableAutocomplete($(forms.get(i)).find('input.enable-autocomplete-upc'),
+                                '/' + gettext('en') + '/store/product_upc/autocomplete/');
             clearSelection($(forms.get(i)).find('a.selection-clear'));
             $(forms.get(i)).find("a." + options.deleteCssClass).click(function(e1)
             {
@@ -220,6 +223,8 @@
                                     '/' + gettext('en') + '/store/product_name/autocomplete/');
                 enableAutocomplete($('input#id_'+row[0].id+'-identifier'),
                                     '/' + gettext('en') + '/store/product_asin/autocomplete/');
+                enableAutocomplete($('input#id_'+row[0].id+'-upc'),
+                                    '/' + gettext('en') + '/store/product_upc/autocomplete/');
                 clearSelection($('a#id_'+row[0].id+'-clear'));
 
                 // Update number of total forms
