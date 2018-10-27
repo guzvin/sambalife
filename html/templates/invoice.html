@@ -159,7 +159,7 @@
                       {{ product.quantity }}
                   </td>
                   <td class="center">
-                      {{ product.identifier }}
+                      {% if product.upc %}{{ product.upc }}{% else %}-{% endif %}
                   </td>
                     <td>
                         {{ product.name }}
