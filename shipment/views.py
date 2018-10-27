@@ -1534,8 +1534,8 @@ def send_email_shipment_change_shipment(request, shipment, packages):
     texts = (ungettext('Segue o código de postagem do seu envio:', 'Seguem os códigos de postagem do seu envio:',
                        packages_qty),)
     for package in packages:
-        texts += (mark_safe(_('Warehouse: <strong>%(warehouse)s</strong> / Código: <strong>%(code)s</strong>.')
-                            % {'warehouse': package.warehouse, 'code': package.shipment_tracking}),)
+        texts += (mark_safe(_('Código: <strong>%(code)s</strong>.')
+                            % {'code': package.shipment_tracking}),)
     texts += (''.join(['https://fbaprepmaster.com', reverse('shipment_details', args=[shipment.id])]),
               _('Clique aqui'), _('para acessar seu envio.'))
     email_body = format_html(html_format, *texts)
