@@ -2,6 +2,7 @@ from django.contrib import admin
 from utils.sites import admin_site
 from stock.models import Product, Invoice
 from utils.models import Params
+from store.models import Product as LotProduct
 from django.contrib.admin.widgets import FilteredSelectMultiple, RelatedFieldWidgetWrapper
 from django import forms
 from service.models import Service
@@ -91,6 +92,14 @@ class StockProductForm(forms.ModelForm):
             instance.total_profit = instance.profit_per_unit * instance.quantity
             instance.roi = (instance.profit_per_unit / (instance.buy_price + redirect_cost)) * 100
             instance.save()
+            if instance.upc:
+                lot_products = LotProduct.objects.filter(product_stock=instance)
+                for lot_product in lot_products:
+                    if lot_product.upc != instance.upc:
+                        lot_product.upc = instance.upc
+                        lot_product.save()
+            else:
+                LotProduct.objects.filter(product_stock=instance).update(upc=None)
         except IntegrityError:
             pass  # o proprio django faz o tratamento da mensagem
         return instance
