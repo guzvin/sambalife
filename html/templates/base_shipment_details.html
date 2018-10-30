@@ -419,6 +419,7 @@
                         <label>
                             <i class="fa fa-2x fa-fw fa-plus-square"></i><br>{% trans "Preparando para Envio" %}
                             {% if shipment.status == 1 %}
+{% comment %}
                              <br>
                              {% etc shipment.created_date estimate='preparation' as etc_preparation %}
                              {% if etc_preparation %}
@@ -426,6 +427,7 @@
                               <span class="previsao">({% trans "Previsão: Até" %} {{ etc_preparation|date:'SHORT_DATE_FORMAT' }} {% trans "inclusive" %})</span>
                               {% endtimezone %}
                              {% endif %}
+{% endcomment %}
                              {% if shipment.is_standby%}
                               <br>
                               <span class="previsao">({% trans "Aguardando resposta do usuário" %}{% if shipment.standby_reason %} - {{ shipment.standby_reason }}{% endif %})</span>
