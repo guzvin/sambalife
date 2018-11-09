@@ -478,8 +478,9 @@ class UserLotReportAdmin(admin.ModelAdmin):
     ]
 
     #  DO NOTHING CHECK get_search_results FOR SEARCH FIELDS
-    search_fields = ('first_name', 'last_name', 'email', 'lot__name', 'from_key')
-    list_display = ('id', 'from_key', 'user_name', 'email', 'user_date_joined', 'lot_name', 'lot_sell_date', 'lot_cost',)
+    search_fields = ('first_name', 'last_name', 'email', 'lot__name', 'from_key',)
+    list_display = ('id', 'from_key', 'user_name', 'email', 'user_date_joined', 'lot_name', 'lot_sell_date',
+                    'lot_cost',)
 
     def user_name(self, obj):
         return ' '.join([obj.first_name, obj.last_name])
@@ -537,18 +538,6 @@ class UserLotReportAdmin(admin.ModelAdmin):
                                                   '%{}%'.format(bit),
                                                   '%{}%'.format(bit),
                                                   '%{}%'.format(bit)])
-            # for bit in search_term.split():
-            #     if where_clauses:
-            #         where_clauses.append('OR')
-            #     where_clauses.append('UPPER(myauth_myuser.first_name::text) LIKE UPPER(%s) OR '
-            #                          'UPPER(myauth_myuser.last_name::text) LIKE UPPER(%s) OR '
-            #                          'UPPER(myauth_myuser.email::text) LIKE UPPER(%s) OR '
-            #                          'UPPER(store_lot.name::text) LIKE UPPER(%s)')
-            #     where_params.append('%{}%'.format(bit))
-            #     where_params.append('%{}%'.format(bit))
-            #     where_params.append('%{}%'.format(bit))
-            #     where_params.append('%{}%'.format(bit))
-            # queryset = queryset.extra(where=[' '.join(where_clauses)], params=where_params)
         return queryset, True
 
 admin_site.register(UserLotReport, UserLotReportAdmin)
@@ -558,10 +547,6 @@ native_lookup_field = utils.lookup_field
 
 
 def my_lookup_field(name, obj, model_admin=None):
-    logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    logger.debug(str(obj))
-    logger.debug(str(model_admin))
-    logger.debug('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     if name == 'action_checkbox' \
             and (str(model_admin) == 'auth.GroupAdmin' or str(model_admin) == 'myauth.UserAdmin') \
             and (str(obj) == 'all_users' or str(obj) == 'admins' or

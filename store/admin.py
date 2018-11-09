@@ -777,9 +777,11 @@ class LotReportAdmin(admin.ModelAdmin):
         AsinFilter,
     ]
 
-    search_fields = ('name', 'product__name', 'product__identifier', 'product__upc',)
-    list_display = ('id', 'destination', 'name', 'collaborator', 'create_date', 'sell_date', 'status', 'lot_cost', 'voi_cost',
-                    'voi_profit', 'voi_roi', 'products_quantity', 'paypal_value', 'transfer_value', 'net_value')
+    search_fields = ('name', 'product__name', 'product__identifier', 'product__upc',
+                     'product__product_stock__invoices__name')
+    list_display = ('id', 'destination', 'name', 'collaborator', 'create_date', 'sell_date', 'status', 'lot_cost',
+                    'voi_cost', 'voi_profit', 'voi_roi', 'products_quantity', 'paypal_value', 'transfer_value',
+                    'net_value')
 
     def paypal_value(self, obj):
         params = Params.objects.first()
