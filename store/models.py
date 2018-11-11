@@ -238,3 +238,10 @@ class LotReport(Lot):
         proxy = True
         verbose_name = _('Relatório de Lotes')
         verbose_name_plural = _('Relatório de Lotes')
+
+
+class ProductReport(Product):
+    class Meta:
+        proxy = True
+        verbose_name = _('Relatório de Produtos dos Lotes')
+        verbose_name_plural = _('Relatório de Produtos dos Lotes')

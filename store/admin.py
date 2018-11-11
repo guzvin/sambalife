@@ -7,7 +7,7 @@ from django.contrib.admin.options import TO_FIELD_VAR
 from django.contrib.auth.models import Group
 from django.db.models import Sum, F
 from django.db.models.fields import FloatField
-from store.models import Lot, Product, Config, LotReport, lot_directory_path, Collaborator
+from store.models import Lot, Product, Config, LotReport, lot_directory_path, Collaborator, ProductReport
 from store.admin_filters import UserFilter, AsinFilter
 from stock.models import Product as ProductStock
 from product.models import Product as ProductProduct
@@ -842,3 +842,78 @@ def my_lookup_field(name, obj, model_admin=None):
     return native_lookup_field(name, obj, model_admin=model_admin)
 
 utils.lookup_field = my_lookup_field
+
+
+class ProductReportForm(forms.ModelForm):
+    class Meta:
+        model = ProductReport
+        exclude = []
+        translation_from_date, translation_to_date = _('From date'), _('To date')
+
+
+class ProductReportAdmin(admin.ModelAdmin):
+    form = ProductReportForm
+
+    list_display_links = ('id', 'name',)
+    # list_filter = [
+    #     'collaborator',
+    #     'status',
+    #     ('create_date', DateRangeFilter),
+    #     ('sell_date', DateRangeFilter),
+    #     UserFilter,
+    #     AsinFilter,
+    # ]
+
+    search_fields = ('name', 'identifier', 'upc', 'product_stock__invoices__name')
+    list_display = ('stock_id_value', 'name', 'quantity', 'lot_name_value', 'lot_status_value', 'invoice_value')
+
+    def stock_id_value(self, obj):
+        if obj.product_stock is None:
+            return None
+        return obj.product_stock.id
+    stock_id_value.short_description = _('ID Estoque')
+
+    def lot_name_value(self, obj):
+        return obj.lot.name
+    lot_name_value.short_description = _('Nome do lote')
+
+    def lot_status_value(self, obj):
+        lot_status_display = None
+        for choice in Lot.STATUS_CHOICES:
+            if choice[0] == obj.lot.status:
+                lot_status_display = str(choice[1])
+                break
+        return lot_status_display
+    lot_status_value.short_description = _('Status do lote')
+
+    def invoice_value(self, obj):
+        if obj.product_stock is None:
+            return None
+        invoices = obj.product_stock.invoices.all()
+        invoice_value = None
+        for invoice in invoices:
+            if invoice_value:
+                invoice_value += '; ' + invoice
+            else:
+                invoice_value = invoice
+        return invoice_value
+    invoice_value.short_description = _('Invoice')
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+    def has_add_permission(self, request):
+        return False
+
+    # def get_changelist(self, request, **kwargs):
+    #     return LotReportChangeList
+
+    def get_queryset(self, request):
+        qs = super(ProductReportAdmin, self).get_queryset(request)
+        qs = qs.filter(lot__is_fake=False)
+        return qs
+
+admin_site.register(ProductReport, ProductReportAdmin)
