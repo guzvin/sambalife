@@ -8,7 +8,7 @@ from django.contrib.auth.models import Group
 from django.db.models import Sum, F
 from django.db.models.fields import FloatField
 from store.models import Lot, Product, Config, LotReport, lot_directory_path, Collaborator, ProductReport
-from store.admin_filters import UserFilter, AsinFilter
+from store.admin_filters import UserFilter, AsinFilter, LotStatusFilter
 from stock.models import Product as ProductStock
 from product.models import Product as ProductProduct
 from store.widgets import NameTextInput, IdentifierTextInput, UpcTextInput
@@ -844,6 +844,25 @@ def my_lookup_field(name, obj, model_admin=None):
 utils.lookup_field = my_lookup_field
 
 
+class ProductReportChangeList(ChangeList):
+    def __init__(self, request, model, list_display, list_display_links,
+                 list_filter, date_hierarchy, search_fields, list_select_related,
+                 list_per_page, list_max_show_all, list_editable, model_admin):
+        self.product_quantity_sum = None
+        super(ProductReportChangeList, self).__init__(request, model, list_display, list_display_links,
+                                                      list_filter, date_hierarchy, search_fields, list_select_related,
+                                                      list_per_page, list_max_show_all, list_editable, model_admin)
+        self.title = _('Relatório de Produtos de Lotes')
+
+    def get_results(self, *args, **kwargs):
+        super(ProductReportChangeList, self).get_results(*args, **kwargs)
+        q = self.result_list.aggregate(product_quantity_sum=Sum('quantity'))
+        self.product_quantity_sum = q['product_quantity_sum']
+
+    def url_for_result(self, result):
+        return '#'
+
+
 class ProductReportForm(forms.ModelForm):
     class Meta:
         model = ProductReport
@@ -854,15 +873,9 @@ class ProductReportForm(forms.ModelForm):
 class ProductReportAdmin(admin.ModelAdmin):
     form = ProductReportForm
 
-    list_display_links = ('id', 'name',)
-    # list_filter = [
-    #     'collaborator',
-    #     'status',
-    #     ('create_date', DateRangeFilter),
-    #     ('sell_date', DateRangeFilter),
-    #     UserFilter,
-    #     AsinFilter,
-    # ]
+    list_filter = [
+        LotStatusFilter,
+    ]
 
     search_fields = ('name', 'identifier', 'upc', 'product_stock__invoices__name')
     list_display = ('stock_id_value', 'name', 'quantity', 'lot_name_value', 'lot_status_value', 'invoice_value')
@@ -908,8 +921,8 @@ class ProductReportAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
-    # def get_changelist(self, request, **kwargs):
-    #     return LotReportChangeList
+    def get_changelist(self, request, **kwargs):
+        return ProductReportChangeList
 
     def get_queryset(self, request):
         qs = super(ProductReportAdmin, self).get_queryset(request)

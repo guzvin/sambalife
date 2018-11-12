@@ -1,5 +1,7 @@
 from django.db.models import Q
 from utils.input_filter import InputFilter
+from django.contrib.admin import SimpleListFilter
+from store.models import Lot
 from django.utils.translation import ugettext as _
 
 
@@ -35,3 +37,15 @@ class AsinFilter(InputFilter):
                 Q(product__identifier__icontains=bit)
             )
         return queryset.filter(any_asin)
+
+
+class LotStatusFilter(SimpleListFilter):
+    parameter_name = 'lot_status'
+    title = _('Status do lote')
+
+    def lookups(self, request, model_admin):
+        return [(choice[0], choice[1]) for choice in Lot.STATUS_CHOICES]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(lot__status=self.value())
