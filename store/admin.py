@@ -853,6 +853,10 @@ def calculate_product_cost_value(obj):
     return round(obj.buy_price + services_cost, 2)
 
 
+def calculate_total_product_cost_value(obj):
+    return calculate_product_cost_value(obj) * obj.quantity
+
+
 def calculate_paypal_value(obj):
     params = Params.objects.first()
     if params:
@@ -878,6 +882,7 @@ class ProductReportChangeList(ChangeList):
                  list_per_page, list_max_show_all, list_editable, model_admin):
         self.product_quantity_sum = None
         self.product_cost_sum = None
+        self.total_product_cost_value_sum = None
         self.voi_value_sum = None
         self.paypal_value_sum = None
         self.transfer_value_sum = None
@@ -894,11 +899,13 @@ class ProductReportChangeList(ChangeList):
         q = self.result_list.aggregate(voi_value_sum=Sum('voi_value'))
         self.voi_value_sum = q['voi_value_sum']
         self.product_cost_sum = 0
+        self.total_product_cost_value_sum = 0
         self.paypal_value_sum = 0
         self.transfer_value_sum = 0
         self.voi_profit_value_sum = 0
         for result in self.result_list:
             self.product_cost_sum += calculate_product_cost_value(result)
+            self.total_product_cost_value_sum += calculate_total_product_cost_value(result)
             self.paypal_value_sum += calculate_paypal_value(result)
             self.transfer_value_sum += calculate_transfer_value(result)
             self.voi_profit_value_sum += calculate_voi_profit_value(result)
@@ -922,8 +929,9 @@ class ProductReportAdmin(admin.ModelAdmin):
     ]
 
     search_fields = ('name', 'identifier', 'upc', 'product_stock__invoices__name')
-    list_display = ('stock_id_value', 'name', 'quantity', 'lot_name_value', 'lot_status_value', 'invoice_value',
-                    'product_cost_value', 'voi_value', 'paypal_value', 'transfer_value', 'voi_profit_value')
+    list_display = ('stock_id_value', 'name', 'lot_name_value', 'lot_status_value', 'invoice_value', 'quantity',
+                    'product_cost_value', 'total_product_cost_value', 'voi_value', 'paypal_value', 'transfer_value',
+                    'voi_profit_value')
 
     def stock_id_value(self, obj):
         if obj.product_stock is None:
@@ -960,6 +968,10 @@ class ProductReportAdmin(admin.ModelAdmin):
     def product_cost_value(self, obj):
         return calculate_product_cost_value(obj)
     product_cost_value.short_description = _('Valor do produto')
+
+    def total_product_cost_value(self, obj):
+        return calculate_total_product_cost_value(obj)
+    total_product_cost_value.short_description = _('Valor total do produto')
 
     def paypal_value(self, obj):
         return calculate_paypal_value(obj)
