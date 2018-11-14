@@ -844,11 +844,44 @@ def my_lookup_field(name, obj, model_admin=None):
 utils.lookup_field = my_lookup_field
 
 
+def calculate_product_cost_value(obj):
+    services_cost = 0
+    if obj.redirect_services:
+        services = obj.redirect_services.all()
+        for service in services:
+            services_cost += service.price
+    return round(obj.buy_price + services_cost, 2)
+
+
+def calculate_paypal_value(obj):
+    params = Params.objects.first()
+    if params:
+        return round((calculate_product_cost_value(obj) * params.paypal_fee) / 100, 2)
+    return _('É preciso cadastrar os parâmetros da aplicação.')
+
+
+def calculate_transfer_value(obj):
+    params = Params.objects.first()
+    if params:
+        return obj.quantity * params.fgr_cost
+    return _('É preciso cadastrar os parâmetros da aplicação.')
+
+
+def calculate_voi_profit_value(obj):
+    return calculate_product_cost_value(obj) - obj.voi_value - calculate_paypal_value(obj) - \
+           calculate_transfer_value(obj)
+
+
 class ProductReportChangeList(ChangeList):
     def __init__(self, request, model, list_display, list_display_links,
                  list_filter, date_hierarchy, search_fields, list_select_related,
                  list_per_page, list_max_show_all, list_editable, model_admin):
         self.product_quantity_sum = None
+        self.product_cost_sum = None
+        self.voi_value_sum = None
+        self.paypal_value_sum = None
+        self.transfer_value_sum = None
+        self.voi_profit_value_sum = None
         super(ProductReportChangeList, self).__init__(request, model, list_display, list_display_links,
                                                       list_filter, date_hierarchy, search_fields, list_select_related,
                                                       list_per_page, list_max_show_all, list_editable, model_admin)
@@ -858,6 +891,17 @@ class ProductReportChangeList(ChangeList):
         super(ProductReportChangeList, self).get_results(*args, **kwargs)
         q = self.result_list.aggregate(product_quantity_sum=Sum('quantity'))
         self.product_quantity_sum = q['product_quantity_sum']
+        q = self.result_list.aggregate(voi_value_sum=Sum('voi_value'))
+        self.voi_value_sum = q['voi_value_sum']
+        self.product_cost_sum = 0
+        self.paypal_value_sum = 0
+        self.transfer_value_sum = 0
+        self.voi_profit_value_sum = 0
+        for result in self.result_list:
+            self.product_cost_sum += calculate_product_cost_value(result)
+            self.paypal_value_sum += calculate_paypal_value(result)
+            self.transfer_value_sum += calculate_transfer_value(result)
+            self.voi_profit_value_sum += calculate_voi_profit_value(result)
 
     def url_for_result(self, result):
         return '#'
@@ -878,7 +922,8 @@ class ProductReportAdmin(admin.ModelAdmin):
     ]
 
     search_fields = ('name', 'identifier', 'upc', 'product_stock__invoices__name')
-    list_display = ('stock_id_value', 'name', 'quantity', 'lot_name_value', 'lot_status_value', 'invoice_value')
+    list_display = ('stock_id_value', 'name', 'quantity', 'lot_name_value', 'lot_status_value', 'invoice_value',
+                    'product_cost_value', 'voi_value', 'paypal_value', 'transfer_value', 'voi_profit_value')
 
     def stock_id_value(self, obj):
         if obj.product_stock is None:
@@ -911,6 +956,22 @@ class ProductReportAdmin(admin.ModelAdmin):
                 invoice_value = invoice
         return invoice_value
     invoice_value.short_description = _('Invoice')
+
+    def product_cost_value(self, obj):
+        return calculate_product_cost_value(obj)
+    product_cost_value.short_description = _('Valor do produto')
+
+    def paypal_value(self, obj):
+        return calculate_paypal_value(obj)
+    paypal_value.short_description = _('Desconto PayPal')
+
+    def transfer_value(self, obj):
+        return calculate_transfer_value(obj)
+    transfer_value.short_description = _('Valor de Repasse')
+
+    def voi_profit_value(self, obj):
+        return calculate_voi_profit_value(obj)
+    voi_profit_value.short_description = _('Lucro VOI S')
 
     def has_delete_permission(self, request, obj=None):
         return False
