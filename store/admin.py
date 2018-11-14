@@ -857,10 +857,14 @@ def calculate_total_product_cost_value(obj):
     return calculate_product_cost_value(obj) * obj.quantity
 
 
+def calculate_voi_value(obj):
+    return obj.voi_value * obj.quantity
+
+
 def calculate_paypal_value(obj):
     params = Params.objects.first()
     if params:
-        return round((calculate_product_cost_value(obj) * params.paypal_fee) / 100, 2)
+        return round((calculate_product_cost_value(obj) * params.paypal_fee) / 100, 2) * obj.quantity
     return _('É preciso cadastrar os parâmetros da aplicação.')
 
 
@@ -872,7 +876,7 @@ def calculate_transfer_value(obj):
 
 
 def calculate_voi_profit_value(obj):
-    return calculate_product_cost_value(obj) - obj.voi_value - calculate_paypal_value(obj) - \
+    return calculate_total_product_cost_value(obj) - calculate_voi_value(obj) - calculate_paypal_value(obj) - \
            calculate_transfer_value(obj)
 
 
@@ -896,7 +900,7 @@ class ProductReportChangeList(ChangeList):
         super(ProductReportChangeList, self).get_results(*args, **kwargs)
         q = self.result_list.aggregate(product_quantity_sum=Sum('quantity'))
         self.product_quantity_sum = q['product_quantity_sum']
-        q = self.result_list.aggregate(voi_value_sum=Sum('voi_value'))
+        q = self.result_list.aggregate(voi_value_sum=Sum(F('voi_value') * F('quantity'), output_field=FloatField()))
         self.voi_value_sum = q['voi_value_sum']
         self.product_cost_sum = 0
         self.total_product_cost_value_sum = 0
@@ -930,7 +934,7 @@ class ProductReportAdmin(admin.ModelAdmin):
 
     search_fields = ('name', 'identifier', 'upc', 'product_stock__invoices__name')
     list_display = ('stock_id_value', 'name', 'lot_name_value', 'lot_status_value', 'invoice_value', 'quantity',
-                    'product_cost_value', 'total_product_cost_value', 'voi_value', 'paypal_value', 'transfer_value',
+                    'product_cost_value', 'total_product_cost_value', 'voi_value_value', 'paypal_value', 'transfer_value',
                     'voi_profit_value')
 
     def stock_id_value(self, obj):
@@ -972,6 +976,10 @@ class ProductReportAdmin(admin.ModelAdmin):
     def total_product_cost_value(self, obj):
         return calculate_total_product_cost_value(obj)
     total_product_cost_value.short_description = _('Valor total do produto')
+
+    def voi_value_value(self, obj):
+        return calculate_voi_value(obj)
+    voi_value_value.short_description = _('Custo VOI Services')
 
     def paypal_value(self, obj):
         return calculate_paypal_value(obj)
