@@ -466,17 +466,17 @@ class LotAdmin(admin.ModelAdmin):
     )
 
     def changelist_view(self, request, extra_context=None):
-        if not request.user.is_superuser:
-            self.list_display = ('id', 'email', 'from_key', 'date_joined', 'is_active', 'is_verified', 'partner')
-            self.list_filter = ('groups', 'is_active', 'is_verified', 'partner')
-            self.fieldsets = (
-                (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
-                                   'password1', 'password2')}),
-                (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'amz_store_name', 'cell_phone',
-                                                      'phone',)}),
-                (_('Permissões'), {'fields': ('collaborator',)}),
-                (_('Grupos'), {'fields': ('groups',)}),
-            )
+        # if not request.user.is_superuser:
+        #     self.list_display = ('id', 'email', 'from_key', 'date_joined', 'is_active', 'is_verified', 'partner')
+        #     self.list_filter = ('groups', 'is_active', 'is_verified', 'partner')
+        #     self.fieldsets = (
+        #         (None, {'fields': ('date_joined', 'email', 'partner', 'password', 'is_verified', 'is_active',
+        #                            'password1', 'password2')}),
+        #         (_('Informação pessoal'), {'fields': ('first_name', 'last_name', 'amz_store_name', 'cell_phone',
+        #                                               'phone',)}),
+        #         (_('Permissões'), {'fields': ('collaborator',)}),
+        #         (_('Grupos'), {'fields': ('groups',)}),
+        #     )
         return super(LotAdmin, self).changelist_view(request, extra_context)
 
     def save_form(self, request, form, change):
