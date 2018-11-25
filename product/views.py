@@ -300,6 +300,8 @@ def product_add_edit(request, pid=None):
             product_instance = product_qs[:1].get()
         except Product.DoesNotExist:
             return HttpResponseRedirect(reverse('product_add'))
+        if product_instance.lot_product:
+            return HttpResponseForbidden()
         page_title = _('Editar Produto')
     kwargs = {'addText': _('Adicionar rastreamento'), 'deleteText': _('Remover rastreamento')}
     if request.method != 'POST':
@@ -542,6 +544,8 @@ def product_delete(request):
         query &= Q(user=request.user)
     try:
         product = Product.objects.get(query)
+        if product.lot_product:
+            return HttpResponseForbidden()
         shipment_products = product.product_set.all()
         if len(shipment_products) > 0:
             shipments = ', '.join([str(shipment_product.shipment_id) for shipment_product in shipment_products])

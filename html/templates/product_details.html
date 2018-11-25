@@ -156,10 +156,17 @@
                     </div>
                 </div>
 
-              {% if user|has_product_perm:'change_product' %}
+              {% if product.lot_product is None and user|has_product_perm:'change_product' %}
               <a href="{% url 'product_edit' product.id %}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> {% trans "Editar" %}</a>
               {% endif %}
-              {% if user|has_product_perm:'delete_product' and shipments == 0 and product.collaborator_id|check_collaborator:user %}
+              {% if product.lot_product %}
+              <br><br>
+              <span>
+                {% blocktrans %}
+                Exclusão não permitida, pois este produto foi adquirido através da compra de um lote.
+                {% endblocktrans %}
+              </span>
+              {% elif user|has_product_perm:'delete_product' and shipments == 0 and product.collaborator_id|check_collaborator:user %}
               <a href="#" class="btn btn-danger send-btn-delete"><i class="fa fa-fw fa-trash"></i> {% trans "Excluir" %}</a>
               {% elif user|has_product_perm:'delete_product' and shipments > 0 and product.collaborator_id|check_collaborator:user %}
               <br><br>
