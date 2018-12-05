@@ -8,6 +8,7 @@ from django.db import transaction
 from django.conf import settings
 from django.template.response import TemplateResponse
 import logging
+import decimal
 
 logger = logging.getLogger('django')
 
@@ -88,10 +89,11 @@ def close_accounting(request, simulate=False, sandbox=False):
 def _shipment_products_cost(products, base_cost):
     cost = 0
     for product in products:
-        base_cost2 = base_cost if product.product.lot_product else 0.10
+        base_cost2 = base_cost if product.product.lot_product else decimal.Decimal(0.10)
         price = product.cost
         logger.debug('@@@@@@@@@@@@@ Product COST Product COST Product COST @@@@@@@@@@@@@@@@')
         logger.debug(price)
+        logger.debug(base_cost2)
         if price:
             cost += (base_cost2 + (price / 2)) * product.quantity
         else:
