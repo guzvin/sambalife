@@ -340,12 +340,13 @@ section h2.section-heading {
   margin-bottom: 15px;
 }
 section h3.section-subheading {
-  font-size: 16px;
-  font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  text-transform: none;
-  font-style: italic;
-  font-weight: 400;
-  margin-bottom: 75px;
+    font-size: 19px;
+    font-family: "Droid Serif", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-transform: none;
+    font-style: italic;
+    font-weight: 400;
+    margin-bottom: 75px;
+    line-height: 28px;
 }
 @media (min-width: 768px) {
   section {
@@ -2470,6 +2471,26 @@ ul.listaancora li a{
     font-weight: bold;
     color: #666;
     font-size: 20px;
+}
+
+.box-topo {
+    margin-bottom: 20px;
+}
+
+.img-box{
+    width: 220px;
+    display: block;
+    margin: 0 auto;
+}
+
+.bandeira.bandeira-en{
+    top: 23px;
+}
+
+@media (min-width: 1350px){
+    .container {
+        width: 1350px;
+    }
 }
 
 @media print

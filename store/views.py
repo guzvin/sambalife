@@ -382,8 +382,8 @@ def store_paypal_notification_post_transaction(request, _lot_details, user, ipn_
         email_title = _('Pagamento CONFIRMADO pelo PayPal para o item \'%(item)s\'') % {'item': ipn_obj.item_name}
         texts = (_('Seu pagamento foi confirmado, obrigado! Os itens já se encontram em seu estoque.'),
                  _('O endereço a ser inserido no FROM dos labels das caixas de seus produtos é:'),
-                 _('920 Lafayette Rd') if _lot_details.collaborator is None else _lot_details.collaborator.address_1,
-                 _('Seabrook, NH 03874') if _lot_details.collaborator is None else _lot_details.collaborator.address_2,)
+                 _('1 Lafayette Rd - Building 1, Door D') if _lot_details.collaborator is None else _lot_details.collaborator.address_1,
+                 _('Hampton, NH, 03842') if _lot_details.collaborator is None else _lot_details.collaborator.address_2,)
         if _lot_details.collaborator and \
                 (lang == 'pt' and _lot_details.collaborator.instructions) or \
                 (lang != 'pt' and _lot_details.collaborator.instructions_en):

@@ -1025,7 +1025,7 @@ msgid "Veja abaixo nosso endereço:"
 msgstr ""
 
 #: html/templates/includes/layout.html:530
-msgid "920 lafayette Road suit 204-B, Seabrook NH - 03874"
+msgid "1 Lafayette Rd - Building 1, Door D, Hampton, New Hampshire, 03842"
 msgstr ""
 
 #: html/templates/includes/layout.html:531
@@ -3587,11 +3587,11 @@ msgid ""
 msgstr ""
 
 #: store/views.py:371
-msgid "920 Lafayette Rd"
+msgid "1 Lafayette Rd - Building 1, Door D"
 msgstr ""
 
 #: store/views.py:372
-msgid "Seabrook, NH 03874"
+msgid "Hampton, New Hampshire, 03842"
 msgstr ""
 
 #: store/views.py:377

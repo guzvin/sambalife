@@ -69,7 +69,7 @@
 
                 {% block logo %}
                     <a href="/" class="navbar-brand page-scroll">
-                        <img class="logo-fba" src="/static/img/logo-en-old.png" /><span>By <strong>VOIRedirect</strong></span>
+                        <img class="logo-fba" src="/static/img/logo-en-old.png" />
                     </a>
                 {% endblock %}
 
@@ -117,7 +117,9 @@
                     </li>
                     {% endif %}
 
-                    {% if request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
+
+
+                    {% comment %}
                         {% if LANGUAGE_CODE == 'pt' %}
                             <li class="seja-parceiro-menu {% block partner %}{% endblock %}">
                                <a href="{% url 'colab' %}">
@@ -126,18 +128,23 @@
                                </a>
                             </li>
                         {% endif %}
+                    {% endcomment %}
+
                         <li class="{% block storelist %}{% endblock %}">
                             <a href="{% url 'store' %}" class="logo-marca-link operacional-conf"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</a>
                         </li>
 
                         <li class="{% block comoFunciona %}{% endblock %}">
-                            <a href="{% url 'how_it_works' %}" class=""><i class="fa fa-book"></i> {% trans "Como Funciona" %}</a>
+                            <a href="https://fbaprepmaster.com/" class=""><i class="fa fa-book"></i> {% trans "Go to website" %}</a>
                         </li>
+
+                    {% comment %}
                         {% if LANGUAGE_CODE == 'pt' %}
                             <li class="{% block faq %}{% endblock %}">
                                 <a href="{% url 'faq' %}" class=""><i class="fa fa-question-circle"></i> {% trans "Perguntas Frequentes" %}</a>
                             </li>
                         {% endif %}
+                    {% endcomment %}
 
                         {% if LANGUAGE_CODE == 'pt' %}
                             <li class="tutorial">
@@ -145,7 +152,6 @@
                             </li>
                             <!-- Novo item com código de usuário -->
                         {% endif %}
-                    {% endif %}
 
                     <li>
                         <a href="javascript: void(0);" id="contato-popup-link"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
@@ -163,12 +169,9 @@
 
                     {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
 
-                        {% if LANGUAGE_CODE == 'pt' %}
                             <li class="tutorial">
-                                <a href="{% trans '/pt/tutorial-plataforma' %}" target="_blank" class="abre-tutorial"><i class="fa fa-book"></i> {% trans "Tutoriais" %}</a>
+                                <a href="{% trans '/en/tutorials' %}" target="_blank" class="abre-tutorial"><i class="fa fa-book"></i> {% trans "Tutorials" %}</a>
                             </li>
-                            <!-- Novo item com código de usuário -->
-                        {% endif %}
 
                     {% endif %}
 
@@ -350,8 +353,8 @@
                 <div class="col-md-3"><br /><!--
                     <a href="https://prepshiptool.com" target="_blank" class="by download">
                         <img src="/static/img/logo-en-maior.png" width="20px" /> by {% trans "PrepShip Tool" %}</a>
-                    <span class="copyright"><strong>{% trans "Endereço" %}:</strong> 920 Lafayette Rd 204-B, Seabrook, NH 03874 <br> <strong>{% trans "Telefone" %}:</strong> 1 978 992 8417</span>
-                -->
+                    <span class="copyright"><strong>{% trans "Endereço" %}:</strong> <br> <strong>{% trans "Telefone" %}:</strong> 1 978 992 8417</span>
+
                 </div>
                 <div class="col-md-6">
                     <ul class="list-inline quicklinks">
@@ -359,7 +362,7 @@
                             <a href="{% url 'terms' %}">{% trans "Termos e Condições de Uso" %}</a> | <a href="{% url 'privacy_policy' %}">{% trans "Políticas de Privacidade" %}</a>
                         </li>
                     </ul>
-                </div>
+                </div>-->
             </div>
         </div>
     </footer>
@@ -529,7 +532,7 @@
                 <div class="modal-body">
                     <p>{% trans "Olá" %}, {{ user.first_name }}</p>
                     <p>{% trans "Veja abaixo nosso endereço:" %}</p>
-                    <p>{% trans "920 lafayette Road suit 204-B, Seabrook NH - 03874" %}</p>
+                    <p>{% trans "1 Lafayette Rd - Building 1, Door D, Hampton, New Hampshire, 03842" %}</p>
                     <p><strong>{% trans "Não esqueça de colocar o seu código de cliente ao lado do seu nome no from." %}</strong></p>
                     <p>Para maiores informações, <a href="/pt/termos-e-condicoes-de-uso" class="download">leia nossos termos</a></p>
                 </div>

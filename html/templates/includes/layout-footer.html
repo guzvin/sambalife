@@ -62,7 +62,7 @@
 
                 {% block logo %}
                     <a href="/" class="navbar-brand page-scroll">
-                        <img class="logo-fba" src="/static/img/logo-en-old.png" /><span>By <strong>VOIRedirect</strong></span>
+                        <img class="logo-fba" src="/static/img/logo-en-old.png" />
                     </a>
                 {% endblock %}
 
@@ -99,11 +99,11 @@
                             </li>
                         </ul>
                     </li>
-{% if LANGUAGE_CODE == 'pt' %}
-                    <li class="tutorial">
-                        <a href="{% trans '/pt/ajuda/' %}" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorial Plataforma" %}</a>
+
+                    <li>
+                        <a href="{% trans '/en/tutorials/' %}" target="_blank" class="abre-tutorial"><i class="fa fa-leanpub"></i> {% trans "Tutorials Plataform" %}</a>
                     </li>
-{% endif %}
+
                     {% if user|has_product_perm:'view_products' or user|has_product_perm:'add_product' %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle logo-marca-link operacional-conf" data-toggle="dropdown"><i class="fa fa-archive"></i> {% trans "Estoque" %} <b class="caret"></b></a>
