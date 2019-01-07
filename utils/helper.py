@@ -467,6 +467,10 @@ class PaymentException(Exception):
     pass
 
 
+class PlanTypeException(Exception):
+    pass
+
+
 def paypal_notification(sender, **kwargs):
     ipn_obj, invalid_data, entity, current_user, texts, invoice = sender, [], None, None, None, None
     logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')

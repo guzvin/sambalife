@@ -83,6 +83,14 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             PAYPAL_NVP_PWD_SANDBOX = key_value_pair[1]
         elif key_value_pair[0] == 'paypal_nvp_signature_sandbox':
             PAYPAL_NVP_SIGNATURE_SANDBOX = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_rest_clientid':
+            PAYPAL_REST_CLIENTID = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_rest_secret':
+            PAYPAL_REST_SECRET = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_rest_clientid_sandbox':
+            PAYPAL_REST_CLIENTID_SANDBOX = key_value_pair[1]
+        elif key_value_pair[0] == 'paypal_rest_secret_sandbox':
+            PAYPAL_REST_SECRET_SANDBOX = key_value_pair[1]
         elif key_value_pair[0] == 'django_debug':
             DJANGO_DEBUG = (key_value_pair[1] == '1')
         elif key_value_pair[0] == 'log_level':
@@ -95,11 +103,17 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             DEFAULT_AMAZON_SHIPPING_COST = key_value_pair[1]
         elif key_value_pair[0] == 'default_fgr_cost':
             DEFAULT_FGR_COST = key_value_pair[1]
+        elif key_value_pair[0] == 'plan_id_voiprime':
+            PLAN_ID_VOIPRIME = key_value_pair[1]
+        elif key_value_pair[0] == 'plan_id_wcyazs':
+            PLAN_ID_WCYAZS = key_value_pair[1]
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['localhost', '.voiservices.com', 'fbaprepmaster.com', '.ppst.com', '.prepshiptool.com', '801fd4b1.ngrok.io']
+ALLOWED_HOSTS = ['localhost', '.voiservices.com', 'fbaprepmaster.com', '.ppst.com', '.prepshiptool.com',
+                 '609bdc8e.ngrok.io']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -177,6 +191,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sambalife.wsgi.application'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
@@ -239,7 +260,7 @@ LOGOUT_REDIRECT_URL = '/'
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'pt'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
@@ -254,8 +275,8 @@ LOCALE_PATHS = [
 ]
 
 LANGUAGES = [
-    ('pt', _('Português')),
     ('en', _('Inglês')),
+    ('pt', _('Português')),
 ]
 
 # Static files (CSS, JavaScript, Images)

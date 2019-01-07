@@ -29,6 +29,9 @@ from myauth.views import *
 
 urlpatterns = [
     url(r'^paypal/$', payment_ipn, name='paypal-ipn'),
+    url(r'^paypal/agreement/return/$', agreement_return, name='paypal-agreement-return'),
+    url(r'^paypal/agreement/cancel/$', agreement_cancel, name='paypal-agreement-cancel'),
+    url(r'^paypal/subscription/cancel/$', subscription_cancel, name='paypal-subscription-cancel'),
     url(r'^i18n/setlang/', my_set_language, name='my_set_language'),
     # url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
@@ -86,6 +89,8 @@ urlpatterns += i18n_patterns(
     url(r'^user/amz_store_name[/]$', user_amz_store_name, name='user_amz_store_name'),
     url(r'^user/impersonate[/]$', user_impersonate, name='user_impersonate'),
     url(r'^user/end_impersonate[/]$', user_end_impersonate, name='user_end_impersonate'),
+    url(r'^user/subscribe/(?P<plan>[0-9]+)[/]$', user_subscribe, name='user_subscribe'),
+    url(r'^user/unsubscribe/(?P<plan>[0-9]+)[/]$', user_unsubscribe, name='user_unsubscribe'),
     url(r'^product/autocomplete[/]$', product_autocomplete, name='product_autocomplete'),
     url(r'^product/autocomplete/merchant[/]$', product_autocomplete_fbm, name='product_autocomplete_fbm'),
     url(r'^service/product/(?P<pid>[0-9]+)[/]$', service_product, name='service_product'),
