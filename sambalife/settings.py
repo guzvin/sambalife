@@ -113,7 +113,7 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
 DEBUG = DJANGO_DEBUG
 
 ALLOWED_HOSTS = ['localhost', '.voiservices.com', 'fbaprepmaster.com', '.ppst.com', '.prepshiptool.com',
-                 '609bdc8e.ngrok.io']
+                 '47318a22.ngrok.io']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration

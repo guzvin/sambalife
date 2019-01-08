@@ -68,8 +68,8 @@ class MyPayPalIPN(PayPalIPN):
 class Subscribe(models.Model):
     id = BigAutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    agreement_token = models.CharField('Agreement Token', max_length=200)
-    agreement_id = models.CharField('Agreement ID', max_length=200, null=True, blank=True)
+    execute_agreement_url = models.CharField('Execute Agreement URL', max_length=200, db_index=True)
+    agreement_id = models.CharField('Agreement ID', max_length=200, null=True, blank=True, db_index=True)
     PLAN_TYPE_CHOICES = (
         (1, _('VOI Prime')),
         (2, _('We Create Your Amazon Shipment')),

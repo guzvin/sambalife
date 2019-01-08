@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n l10n %}
+{% load i18n l10n payments %}
 {% block edituser %}active{% endblock %}
 
 {% block logo %}
@@ -24,7 +24,20 @@
         </div>
         <div class="col-md-6 main">
           <h1 class="page-header"><i class="fa fa-edit"></i> {% trans "Editar cadastro" %}</h1>
-
+            <div>
+                {% is_subscriber_voiprime user as is_voiprime %}
+                {% if is_voiprime %}
+                <p><a href="{% url 'user_unsubscribe' 1 %}" target="_blank">Unsubscribe VOI Prime</a></p>
+                {% else %}
+                <p><a href="{% url 'user_subscribe' 1 %}" target="_blank">Subscribe VOI Prime</a></p>
+                {% endif %}
+                {% is_subscriber_wcyazs user as is_wcyazs %}
+                {% if is_wcyazs %}
+                <p><a href="{% url 'user_unsubscribe' 2 %}" target="_blank">Unsubscribe We Create Your Amazon Shipment</a></p>
+                {% else %}
+                <p><a href="{% url 'user_subscribe' 2 %}" target="_blank">Subscribe We Create Your Amazon Shipment</a></p>
+                {% endif %}
+            </div>
             <form action="" method="post" class="form-edit-user" id="form-edit-user">
               {% csrf_token %}
               {{ user_formset.management_form }}
