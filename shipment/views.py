@@ -103,12 +103,15 @@ def list_shipment(request, template_name, has_perm):
         logger.debug(str(filter_user))
         filter_status = request.GET.get('status')
         logger.debug(str(filter_status))
+        filter_standby = request.GET.get('standby')
+        logger.debug(str(filter_standby))
         filter_archived = request.GET.get('archived')
         logger.debug(str(filter_archived))
         filter_canceled = request.GET.get('canceled')
         logger.debug(str(filter_canceled))
         filter_values = {
             'status': '',
+            'standby': '',
         }
         filter_created_date = request.GET.get('date')
         logger.debug(str(filter_created_date))
@@ -122,6 +125,9 @@ def list_shipment(request, template_name, has_perm):
         if filter_status:
             queries.append(Q(status=filter_status))
             filter_values['status'] = filter_status
+        if filter_standby:
+            queries.append(Q(is_standby=filter_standby == '1'))
+            filter_values['standby'] = filter_standby
         if filter_created_date:
             d = DateField().to_python(filter_created_date)
             queries.append(Q(created_date__date=d))

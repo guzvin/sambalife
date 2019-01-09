@@ -48,7 +48,18 @@
                       <option value="5" {{ sent_filter_status }}>{% trans "Enviado" %}</option>
                     </select>
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-2">
+                    {% trans "Stand By" as standby %}
+                    <label for="filtro-standby">{{ standby }}</label>
+                    {% select_standby filter_values '0' as no_filter_standby %}
+                    {% select_standby filter_values '1' as yes_filter_standby %}
+                    <select class="form-control" id="filtro-standby" name="standby">
+                      <option value="">{{ standby }}</option>
+                      <option value="1" {{ yes_filter_standby }}>{% trans "Sim" %}</option>
+                      <option value="0" {{ no_filter_standby }}>{% trans "Não" %}</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-2">
                   {% trans "Data de Criação" as created_date %}
                     <label for="datepicker">{{ created_date }}</label>
                     <input type="text" class="form-control datepicker" id="datepicker" placeholder="{{ created_date }}..." name="date" value="{{ filter_values.date }}">

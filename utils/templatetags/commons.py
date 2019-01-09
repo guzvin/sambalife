@@ -18,6 +18,11 @@ def select_status(item, status):
 
 
 @register.simple_tag
+def select_standby(item, standby):
+    return 'selected="selected"' if str(item.standby) == standby else ''
+
+
+@register.simple_tag
 def select_condition(item, condition):
     return 'selected="selected"' if str(item) == condition else ''
 
