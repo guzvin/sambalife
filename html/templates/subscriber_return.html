@@ -39,16 +39,9 @@
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span> {% trans "Menu" %} <i class="fa fa-bars"></i>
                 </button>
-
-                {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
-                    <a href="/" class="navbar-brand page-scroll">
-                        <img class="logo-fba" src="/static/img/logo-en-old.png" /><span>By <strong>VOIRedirect</strong></span>
-                    </a>
-                {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
-                    <a href="/" class="navbar-brand page-scroll">
-                        <img class="logo-fba" src="/static/img/logo-lots.png" />
-                    </a>
-                {% endif %}
+                <a href="/" class="navbar-brand page-scroll">
+                    <img class="logo-fba" src="/static/img/logo-lots.png" />
+                </a>
 
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -62,30 +55,36 @@
         </div>
     </nav>
 
-    <div class="container">
-        <div class="box-resposta">
-            {% if success %}
-                {% if expiry is None %}
-            <p class="titulo">{% trans "Cadastro validado com sucesso." %}</p>
-                    {% if is_active is False %}
-            <p>{% trans "Você receberá um e-mail quando o administrador do sistema ativar sua conta." %}</p>
-                    {% else %}
-            <p>{% trans "Cadastro já se encontra ativo no sistema." %}</p>
-                    {% endif %}
-            <p><strong>{% trans "Obrigado e sucesso!" %}</strong></p>
-                {% else %}
-            <p>{% blocktrans %}Enviamos um e-mail para você validar seu cadastro. Este e-mail é válido por {{ expiry }} dias.{% endblocktrans %}</p>
-                {% endif %}
-            {% else %}
-            <p class="titulo download">{% trans "Código de validação inválido." %}</p>
-                {% if uidb64 is not None %}
-            {% url 'user_validation_resend' uidb64=uidb64 as my_url %}
-            <p><a class="download" href="{{ my_url }}">{% trans "Clique aqui" %}</a> {% trans "para receber novamente o e-mail com o link para validação do cadastro." %}</p>
-            <p>{% blocktrans %}Lembre-se que o código tem validade de {{ expiry }} dias.{% endblocktrans %}</p>
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
+        <!-- Sucesso -->
+            <div class="container">
+                <div class="box-resposta">
+                    <p class="text-success"><i class="fa fa-check-circle fa-3x"></i></p>
+                    <p class="titulo text-success">Parabéns. <br> Sua Assinatura está ATIVA</p><br>
+                    <a class="btn btn-primary btn-block btn-block-70" href="#"><i class="fa fa-link"></i> Acessar Plataforma Agora</a>
+                </div>
+            </div>
+        <!-- sucesso -->
+
+        <!-- Falha -->
+            <div class="container">
+                <div class="box-resposta">
+                    <p class="text-danger"><i class="fa fa-times-circle fa-3x"></i></p>
+                    <p class="titulo text-danger">Falha. <br> Sua Assinatura NÃO foi ativada</p>
+                    <p class="text-info">Entre em contato com o suporte pelo email support@voiservices.com</p>
+                    <p><a href="#"><i class="fa fa-link"></i> Voltar para tela de cadastro</a> </p><br>
+                </div>
+            </div>
+        <!-- Falha -->
+
+        <!-- Cancelamento -->
+            <div class="container">
+                <div class="box-resposta">
+                    <p class="text-info"><i class="fa fa-frown fa-5x"></i></p>
+                    <p class="titulo text-info">Assinatura Cancelada.</p>
+                    <p class="text-info">Uma pena velo partir. Esperamos que volte em breve.</p>
+                </div>
+            </div>
+        <!-- cancelamento -->
 
     <footer class="fixed-footer">
         <div class="container">
