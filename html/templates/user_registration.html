@@ -67,19 +67,455 @@
         <div class="row">
             <div class="col-md-1">
             </div>
+            <div class="col-md-6">
+                <h1 class="page-header"><i class="fa fa-users"></i> Cadastro</h1>
+                <form action="" method="post" class="form-cad-cliente" id="form-add-user">
+                  {% csrf_token %}
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="nome">{% trans "Nome" %}*</label>
+                          {% trans "Digite o nome" as first_name %}
+                        <input type="text" class="form-control" id="nome" aria-describedby="nome" name="first_name" placeholder="{{ first_name }}..." value="{% if form %}{{ form.first_name.value }}{% endif %}">
+                        {% for error in form.first_name.errors %}
+                          <label id="nome-error" class="error" for="nome">{{ error|escape }}</label>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="sobrenome">{% trans "Sobrenome" %}*</label>
+                          {% trans "Digite o sobrenome" as last_name %}
+                        <input type="text" class="form-control" id="sobrenome" aria-describedby="sobrenome" name="last_name" placeholder="{{ last_name }}..." value="{% if form %}{{ form.last_name.value }}{% endif %}">
+                        {% for error in form.last_name.errors %}
+                          <label id="sobrenome-error" class="error" for="sobrenome">{{ error|escape }}</label>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="email">{% trans "E-mail" %}*</label>
+                          {% trans "Digite o e-mail" as email %}
+                        <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email" placeholder="{{ email }}..." value="{% if form %}{{ form.email.value }}{% endif %}">
+                        {% for error in form.email.errors %}
+                          <label id="email-error" class="error" for="email">{{ error|escape }}</label>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="amzstore">{% trans "Nome da sua loja na Amazon" %}</label>
+                          {% trans "Digite o nome da loja na Amazon" as amzstore %}
+                        <input type="text" class="form-control" id="amzstore" aria-describedby="amzstoreHelp" name="amz_store_name" placeholder="{{ amzstore }}..." value="{% if form %}{{ form.amz_store_name.value }}{% endif %}">
+                        {% for error in form.amz_store_name.errors %}
+                          <label id="amzstore-error" class="error" for="amzstore">{{ error|escape }}</label>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    {% comment %}
+
+                  <div class="form-group">
+                    <label for="telefone">{% trans "Telefone 2" %}</label>
+                      {% trans "Digite o telefone" as phone %}
+                    <input type="number" class="form-control" id="telefone" name="phone" placeholder="{{ phone }}..." value="{% if form %}{{ form.phone.value }}{% endif %}">
+                    {% for error in form.phone.errors %}
+                      <label id="telefone-error" class="error" for="telefone">{{ error|escape }}</label>
+                    {% endfor %}
+                  </div>
+
+                  {% endcomment %}
+
+                   <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="country">{% trans "País" %}*</label>
+                        <select class="form-control" id="country" name="country">
+                            <option value="">{% trans "Selecione o país" %}</option>
+                            <option value="AF">Afghanistan</option>
+                            <option value="AX">Aland Islands</option>
+                            <option value="AL">Albania</option>
+                            <option value="DZ">Algeria</option>
+                            <option value="AS">American Samoa</option>
+                            <option value="AD">Andorra</option>
+                            <option value="AO">Angola</option>
+                            <option value="AI">Anguilla</option>
+                            <option value="AQ">Antarctica</option>
+                            <option value="AG">Antigua and Barbuda</option>
+                            <option value="AR">Argentina</option>
+                            <option value="AM">Armenia</option>
+                            <option value="AW">Aruba</option>
+                            <option value="AU">Australia</option>
+                            <option value="AT">Austria</option>
+                            <option value="AZ">Azerbaijan</option>
+                            <option value="BS">Bahamas, The</option>
+                            <option value="BH">Bahrain</option>
+                            <option value="BD">Bangladesh</option>
+                            <option value="BB">Barbados</option>
+                            <option value="BY">Belarus</option>
+                            <option value="BE">Belgium</option>
+                            <option value="BZ">Belize</option>
+                            <option value="BJ">Benin</option>
+                            <option value="BM">Bermuda</option>
+                            <option value="BT">Bhutan</option>
+                            <option value="BO">Bolivia</option>
+                            <option value="BQ">Bonaire, Saint Eustatius and Saba</option>
+                            <option value="BA">Bosnia and Herzegovina</option>
+                            <option value="BW">Botswana</option>
+                            <option value="BV">Bouvet Island</option>
+                            <option value="BR">Brazil</option>
+                            <option value="IO">British Indian Ocean Territory</option>
+                            <option value="BN">Brunei Darussalam</option>
+                            <option value="BG">Bulgaria</option>
+                            <option value="BF">Burkina Faso</option>
+                            <option value="BI">Burundi</option>
+                            <option value="KH">Cambodia</option>
+                            <option value="CM">Cameroon</option>
+                            <option value="CA">Canada</option>
+                            <option value="CV">Cape Verde</option>
+                            <option value="KY">Cayman Islands</option>
+                            <option value="CF">Central African Republic</option>
+                            <option value="TD">Chad</option>
+                            <option value="CL">Chile</option>
+                            <option value="CN">China</option>
+                            <option value="CX">Christmas Island</option>
+                            <option value="CC">Cocos (Keeling) Islands</option>
+                            <option value="CO">Colombia</option>
+                            <option value="KM">Comoros</option>
+                            <option value="CG">Congo</option>
+                            <option value="CD">Congo, The Democratic Republic of the</option>
+                            <option value="CK">Cook Islands</option>
+                            <option value="CR">Costa Rica</option>
+                            <option value="CI">Cote D'ivoire</option>
+                            <option value="HR">Croatia</option>
+                            <option value="CW">Curaçao</option>
+                            <option value="CY">Cyprus</option>
+                            <option value="CZ">Czech Republic</option>
+                            <option value="DK">Denmark</option>
+                            <option value="DJ">Djibouti</option>
+                            <option value="DM">Dominica</option>
+                            <option value="DO">Dominican Republic</option>
+                            <option value="EC">Ecuador</option>
+                            <option value="EG">Egypt</option>
+                            <option value="SV">El Salvador</option>
+                            <option value="GQ">Equatorial Guinea</option>
+                            <option value="ER">Eritrea</option>
+                            <option value="EE">Estonia</option>
+                            <option value="ET">Ethiopia</option>
+                            <option value="FK">Falkland Islands (Malvinas)</option>
+                            <option value="FO">Faroe Islands</option>
+                            <option value="FJ">Fiji</option>
+                            <option value="FI">Finland</option>
+                            <option value="FR">France</option>
+                            <option value="GF">French Guiana</option>
+                            <option value="PF">French Polynesia</option>
+                            <option value="TF">French Southern Territories</option>
+                            <option value="GA">Gabon</option>
+                            <option value="GM">Gambia, The</option>
+                            <option value="GE">Georgia</option>
+                            <option value="DE">Germany</option>
+                            <option value="GH">Ghana</option>
+                            <option value="GI">Gibraltar</option>
+                            <option value="GR">Greece</option>
+                            <option value="GL">Greenland</option>
+                            <option value="GD">Grenada</option>
+                            <option value="GP">Guadeloupe</option>
+                            <option value="GU">Guam</option>
+                            <option value="GT">Guatemala</option>
+                            <option value="GG">Guernsey</option>
+                            <option value="GN">Guinea</option>
+                            <option value="GW">Guinea-Bissau</option>
+                            <option value="GY">Guyana</option>
+                            <option value="HT">Haiti</option>
+                            <option value="HM">Heard Island and the McDonald Islands</option>
+                            <option value="VA">Holy See</option>
+                            <option value="HN">Honduras</option>
+                            <option value="HK">Hong Kong</option>
+                            <option value="HU">Hungary</option>
+                            <option value="IS">Iceland</option>
+                            <option value="IN">India</option>
+                            <option value="ID">Indonesia</option>
+                            <option value="IQ">Iraq</option>
+                            <option value="IE">Ireland</option>
+                            <option value="IM">Isle of Man</option>
+                            <option value="IL">Israel</option>
+                            <option value="IT">Italy</option>
+                            <option value="JM">Jamaica</option>
+                            <option value="JP">Japan</option>
+                            <option value="JE">Jersey</option>
+                            <option value="JO">Jordan</option>
+                            <option value="KZ">Kazakhstan</option>
+                            <option value="KE">Kenya</option>
+                            <option value="KI">Kiribati</option>
+                            <option value="KR">Korea, Republic of</option>
+                            <option value="XK">Kosovo</option>
+                            <option value="KW">Kuwait</option>
+                            <option value="KG">Kyrgyzstan</option>
+                            <option value="LA">Lao People's Democratic Republic</option>
+                            <option value="LV">Latvia</option>
+                            <option value="LB">Lebanon</option>
+                            <option value="LS">Lesotho</option>
+                            <option value="LR">Liberia</option>
+                            <option value="LY">Libya</option>
+                            <option value="LI">Liechtenstein</option>
+                            <option value="LT">Lithuania</option>
+                            <option value="LU">Luxembourg</option>
+                            <option value="MO">Macao</option>
+                            <option value="MK">Macedonia, The Former Yugoslav Republic of</option>
+                            <option value="MG">Madagascar</option>
+                            <option value="MW">Malawi</option>
+                            <option value="MY">Malaysia</option>
+                            <option value="MV">Maldives</option>
+                            <option value="ML">Mali</option>
+                            <option value="MT">Malta</option>
+                            <option value="MH">Marshall Islands</option>
+                            <option value="MQ">Martinique</option>
+                            <option value="MR">Mauritania</option>
+                            <option value="MU">Mauritius</option>
+                            <option value="YT">Mayotte</option>
+                            <option value="MX">Mexico</option>
+                            <option value="FM">Micronesia, Federated States of</option>
+                            <option value="MD">Moldova, Republic of</option>
+                            <option value="MC">Monaco</option>
+                            <option value="MN">Mongolia</option>
+                            <option value="ME">Montenegro</option>
+                            <option value="MS">Montserrat</option>
+                            <option value="MA">Morocco</option>
+                            <option value="MZ">Mozambique</option>
+                            <option value="MM">Myanmar</option>
+                            <option value="NA">Namibia</option>
+                            <option value="NR">Nauru</option>
+                            <option value="NP">Nepal</option>
+                            <option value="NL">Netherlands</option>
+                            <option value="AN">Netherlands Antilles</option>
+                            <option value="NC">New Caledonia</option>
+                            <option value="NZ">New Zealand</option>
+                            <option value="NI">Nicaragua</option>
+                            <option value="NE">Niger</option>
+                            <option value="NG">Nigeria</option>
+                            <option value="NU">Niue</option>
+                            <option value="NF">Norfolk Island</option>
+                            <option value="MP">Northern Mariana Islands</option>
+                            <option value="NO">Norway</option>
+                            <option value="OM">Oman</option>
+                            <option value="PK">Pakistan</option>
+                            <option value="PW">Palau</option>
+                            <option value="PS">Palestinian Territories</option>
+                            <option value="PA">Panama</option>
+                            <option value="PG">Papua New Guinea</option>
+                            <option value="PY">Paraguay</option>
+                            <option value="PE">Peru</option>
+                            <option value="PH">Philippines</option>
+                            <option value="PN">Pitcairn</option>
+                            <option value="PL">Poland</option>
+                            <option value="PT">Portugal</option>
+                            <option value="PR">Puerto Rico</option>
+                            <option value="QA">Qatar</option>
+                            <option value="RE">Reunion</option>
+                            <option value="RO">Romania</option>
+                            <option value="RU">Russian Federation</option>
+                            <option value="RW">Rwanda</option>
+                            <option value="BL">Saint Barthelemy</option>
+                            <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
+                            <option value="KN">Saint Kitts and Nevis</option>
+                            <option value="LC">Saint Lucia</option>
+                            <option value="MF">Saint Martin</option>
+                            <option value="PM">Saint Pierre and Miquelon</option>
+                            <option value="VC">Saint Vincent and the Grenadines</option>
+                            <option value="WS">Samoa</option>
+                            <option value="SM">San Marino</option>
+                            <option value="ST">Sao Tome and Principe</option>
+                            <option value="SA">Saudi Arabia</option>
+                            <option value="SN">Senegal</option>
+                            <option value="RS">Serbia</option>
+                            <option value="SC">Seychelles</option>
+                            <option value="SL">Sierra Leone</option>
+                            <option value="SG">Singapore</option>
+                            <option value="SX">Sint Maarten</option>
+                            <option value="SK">Slovakia</option>
+                            <option value="SI">Slovenia</option>
+                            <option value="SB">Solomon Islands</option>
+                            <option value="SO">Somalia</option>
+                            <option value="ZA">South Africa</option>
+                            <option value="GS">South Georgia and the South Sandwich Islands</option>
+                            <option value="ES">Spain</option>
+                            <option value="LK">Sri Lanka</option>
+                            <option value="SR">Suriname</option>
+                            <option value="SJ">Svalbard and Jan Mayen</option>
+                            <option value="SZ">Swaziland</option>
+                            <option value="SE">Sweden</option>
+                            <option value="CH">Switzerland</option>
+                            <option value="TW">Taiwan</option>
+                            <option value="TJ">Tajikistan</option>
+                            <option value="TZ">Tanzania, United Republic of</option>
+                            <option value="TH">Thailand</option>
+                            <option value="TL">Timor-leste</option>
+                            <option value="TG">Togo</option>
+                            <option value="TK">Tokelau</option>
+                            <option value="TO">Tonga</option>
+                            <option value="TT">Trinidad and Tobago</option>
+                            <option value="TN">Tunisia</option>
+                            <option value="TR">Turkey</option>
+                            <option value="TM">Turkmenistan</option>
+                            <option value="TC">Turks and Caicos Islands</option>
+                            <option value="TV">Tuvalu</option>
+                            <option value="UG">Uganda</option>
+                            <option value="UA">Ukraine</option>
+                            <option value="AE">United Arab Emirates</option>
+                            <option value="GB">United Kingdom</option>
+                            <option value="US">United States</option>
+                            <option value="UM">United States Minor Outlying Islands</option>
+                            <option value="UY">Uruguay</option>
+                            <option value="UZ">Uzbekistan</option>
+                            <option value="VU">Vanuatu</option>
+                            <option value="VE">Venezuela</option>
+                            <option value="VN">Vietnam</option>
+                            <option value="VG">Virgin Islands, British</option>
+                            <option value="VI">Virgin Islands, U.S.</option>
+                            <option value="WF">Wallis and Futuna</option>
+                            <option value="EH">Western Sahara</option>
+                            <option value="YE">Yemen</option>
+                            <option value="ZM">Zambia</option>
+                            <option value="ZW">Zimbabwe</option>
+                        </select>
+                        {% for error in form.country.errors %}
+                          <label id="pais-error" class="error" for="country">{{ error|escape }}</label>
+                        {% endfor %}
+                      </div>
+                   </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="endereco">{% trans "Endereço" %}*</label>
+                          {% trans "Digite o endereço" as address_1 %}
+                        <input type="text" class="form-control" id="endereco" aria-describedby="endereco" name="address_1" placeholder="{{ address_1 }}..." value="{% if form %}{{ form.address_1.value }}{% endif %}">
+                        {% for error in form.address_1.errors %}
+                          <label id="endereco-error" class="error" for="endereco">{{ error|escape }}</label>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="complemento">{% trans "Complemento" %}</label>
+                        {% trans "Digite o complemento" as address_2 %}
+                        <input type="text" class="form-control" id="complemento" aria-describedby="complemento" name="address_2" placeholder="{{ address_2 }}..." value="{% if form %}{{ form.address_2.value }}{% endif %}">
+                        {% for error in form.address_2.errors %}
+                        <label id="complemento-error" class="error" for="complemento">{{ error|escape }}</label>
+                        {% endfor %}
+                      </div>
+                    </div>
+
+
+                      <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="cidade">{% trans "Cidade" %}*</label>
+                              {% trans "Digite a cidade" as city %}
+                            <input type="text" class="form-control" id="cidade" aria-describedby="cidade" name="city" placeholder="{{ city }}..." value="{% if form %}{{ form.city.value }}{% endif %}">
+                            {% for error in form.city.errors %}
+                              <label id="cidade-error" class="error" for="cidade">{{ error|escape }}</label>
+                            {% endfor %}
+                          </div>
+                      </div>
+                      <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="estado">{% trans "Estado" %}*</label>
+                              {% trans "Digite o estado" as state %}
+                            <input type="text" maxlength="2" class="form-control" id="estado" aria-describedby="estado" name="state" placeholder="{{ state }}..." value="{% if form %}{{ form.state.value }}{% endif %}">
+                            {% for error in form.state.errors %}
+                              <label id="estado-error" class="error" for="estado">{{ error|escape }}</label>
+                            {% endfor %}
+                          </div>
+                      </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="cep">{% trans "CEP" %}*</label>
+                              {% trans "Digite o CEP" as zipcode %}
+                            <input type="text" class="form-control" id="cep" aria-describedby="cep" name="zipcode" placeholder="{{ zipcode }}..." value="{% if form %}{{ form.zipcode.value }}{% endif %}">
+                            {% for error in form.zipcode.errors %}
+                              <label id="cep-error" class="error" for="cep">{{ error|escape }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="celular">{% trans "Telefone 1" %}*</label>
+                          {% trans "Digite o telefone, celular de preferência" as cell_phone %}
+                        <input type="number" class="form-control" id="celular" name="cell_phone" placeholder="{{ cell_phone }}..." value="{% if form %}{{ form.cell_phone.value }}{% endif %}">
+                        {% for error in form.cell_phone.errors %}
+                          <label id="celular-error" class="error" for="celular">{{ error|escape }}</label>
+                        {% endfor %}
+                      </div><hr>
+                    </div>
+                    <div class="col-md-6">
+                        <br><br><br><hr />
+                    </div>
+
+                     <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="senha">{% trans "Senha" %}*</label>
+                          {% trans "Digite sua senha" as password %}
+                        <input type="password" class="form-control menor" id="senha" name="password" placeholder="{{ password }}...">
+                        {% for error in form.password.errors %}
+                          <label id="senha-error" class="error" for="senha">{{ error|escape }}</label>
+                        {% endfor %}
+                        <!--<br><small>{% trans "Digite ao menos 1 letra minúscula e 1 letra maiúscula" %}</small>-->
+                      </div>
+                     </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="cSenha">{% trans "Confirmar Senha" %}*</label>
+                          {% trans "Confirmar a senha" as password_confirmation %}
+                        <input type="password" class="form-control menor" id="cSenha" name="password_confirmation" placeholder="{{ password_confirmation }}...">
+                        {% for error in form.password_confirmation.errors %}
+                          <label id="cSenha-error" class="error" for="cSenha">{{ error|escape }}</label>
+                        {% endfor %}
+                      </div>
+                    </div>
+
+{% comment %}
+                     <!-- Assinante -->
+                  <div class="form-group terms-cond">
+                    <label for="terms" id="assinante-check">
+                        <input type="checkbox" class="form-control" id="assinante" name="assinante" value="1" checked />
+                        {% trans "Quero me tornar um assinante" %}
+                    </label>
+                    <a href="javascript:void(0);" id="btn-explicacao" class="assinante-link">?</a>
+                  </div>
+{% endcomment %}
+
+                  <!-- Termos -->
+                    <div class="col-md-7">
+                        <hr /><br>
+                      <div class="form-group terms-cond">
+                        <label for="terms-conditions-check" id="terms-conditions-check">
+                            <input type="checkbox" class="form-control" id="terms" name="terms" value="1" {% if form and form.terms.value %}checked="checked"{% endif %} />
+                            {% trans "Li e aceito os termos e condições de uso" %}
+                        </label>
+                        {% for error in form.terms.errors %}
+                        <label id="terms-error" class="error" for="terms">{{ error|escape }}</label>
+                        {% endfor %}
+                      </div>
+                        <br><hr>
+                    </div>
+                    <div class="col-md-5">
+                        <hr /><br>
+                        <p>{% trans "Leia <a href=/pt/termos-e-condicoes-de-uso' class='download'>aqui</a> nossos termos e condições de uso dos nossos serviços" %}</p>
+
+                    <br><hr>
+                    </div>
+
+
+
+                    <div class="col-md-12">
+                        <button type="submit" id="send-btn" class="btn btn-primary"><i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}</button><br><br>
+                    </div>
+                </form>
+            </div>
             <div class="col-md-4 box-cad-esquerda">
                 <img src="/static/img/sale-img.png" width="100%" />
                 <br><br><br>
                 <div class="box-valor">
 
-                    <!--<p class="assinate-span">Invista apenas <span>U${% trans "54,90" %}</span>{% trans "/mês" %}</p>
-                    <p>{% trans "Tenha acesso a todas as vantagens de ser um assinante VOI Services" %}</p>-->
-
-                    {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
-                        <p class="seja">{% trans "Faça seu cadastro agora e tenha acesso aos nossos serviços de redirecionamento." %}</p>
-                    {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
-                        <p class="seja">{% trans "Faça seu cadastro agora e tenha acesso aos nossos lotes." %}</p>
-                    {% endif %}
+                    <p class="assinate-span"><i class="fa fa-fw fa-check-square"></i> Invista apenas <span>U${% trans "74,90" %}</span>{% trans "/mês" %}</p>
+                    <p><i class="fa fa-fw fa-check-square"></i> {% trans "Tenha acesso a todas as vantagens de ser um assinante VOI Services. <a href='/' class='download'>Saiba Mais</a> " %}</p>
+                    <p><i class="fa fa-fw fa-check-square"></i> {% trans "Efetue seu cadastro agora e em seguida as opções de planos serão apresentadas" %}</p>
                 </div>
                 {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
                     <label> {% blocktrans %}Leia <a href="https://fbaprepmaster.com/pt/termos-e-condicoes-de-uso" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
@@ -94,406 +530,9 @@
                 {% endif %}
 
             </div>
-            <div class="col-md-6">
-                <form action="" method="post" class="form-cad-cliente" id="form-add-user">
-                  {% csrf_token %}
-                  <div class="form-group">
-                    <label for="nome">{% trans "Nome" %}*</label>
-                      {% trans "Digite o nome" as first_name %}
-                    <input type="text" class="form-control" id="nome" aria-describedby="nome" name="first_name" placeholder="{{ first_name }}..." value="{% if form %}{{ form.first_name.value }}{% endif %}">
-                    {% for error in form.first_name.errors %}
-                      <label id="nome-error" class="error" for="nome">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="form-group">
-                    <label for="sobrenome">{% trans "Sobrenome" %}*</label>
-                      {% trans "Digite o sobrenome" as last_name %}
-                    <input type="text" class="form-control" id="sobrenome" aria-describedby="sobrenome" name="last_name" placeholder="{{ last_name }}..." value="{% if form %}{{ form.last_name.value }}{% endif %}">
-                    {% for error in form.last_name.errors %}
-                      <label id="sobrenome-error" class="error" for="sobrenome">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="form-group">
-                    <label for="email">{% trans "E-mail" %}*</label>
-                      {% trans "Digite o e-mail" as email %}
-                    <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email" placeholder="{{ email }}..." value="{% if form %}{{ form.email.value }}{% endif %}">
-                    {% for error in form.email.errors %}
-                      <label id="email-error" class="error" for="email">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="form-group">
-                    <label for="amzstore">{% trans "Nome da sua loja na Amazon" %}</label>
-                      {% trans "Digite o nome da loja na Amazon" as amzstore %}
-                    <input type="text" class="form-control" id="amzstore" aria-describedby="amzstoreHelp" name="amz_store_name" placeholder="{{ amzstore }}..." value="{% if form %}{{ form.amz_store_name.value }}{% endif %}">
-                    {% for error in form.amz_store_name.errors %}
-                      <label id="amzstore-error" class="error" for="amzstore">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="form-group">
-                    <label for="celular">{% trans "Telefone 1" %}*</label>
-                      {% trans "Digite o telefone, celular de preferência" as cell_phone %}
-                    <input type="number" class="form-control" id="celular" name="cell_phone" placeholder="{{ cell_phone }}..." value="{% if form %}{{ form.cell_phone.value }}{% endif %}">
-                    {% for error in form.cell_phone.errors %}
-                      <label id="celular-error" class="error" for="celular">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="form-group">
-                    <label for="telefone">{% trans "Telefone 2" %}</label>
-                      {% trans "Digite o telefone" as phone %}
-                    <input type="number" class="form-control" id="telefone" name="phone" placeholder="{{ phone }}..." value="{% if form %}{{ form.phone.value }}{% endif %}">
-                    {% for error in form.phone.errors %}
-                      <label id="telefone-error" class="error" for="telefone">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-    {% comment %}
-                  <div class="form-group">
-                    <label for="country">{% trans "País" %}*</label>
-                    <select class="form-control" id="country" name="country">
-                        <option value="">{% trans "Selecione o país" %}</option>
-                        <option value="AF">Afghanistan</option>
-                        <option value="AX">Aland Islands</option>
-                        <option value="AL">Albania</option>
-                        <option value="DZ">Algeria</option>
-                        <option value="AS">American Samoa</option>
-                        <option value="AD">Andorra</option>
-                        <option value="AO">Angola</option>
-                        <option value="AI">Anguilla</option>
-                        <option value="AQ">Antarctica</option>
-                        <option value="AG">Antigua and Barbuda</option>
-                        <option value="AR">Argentina</option>
-                        <option value="AM">Armenia</option>
-                        <option value="AW">Aruba</option>
-                        <option value="AU">Australia</option>
-                        <option value="AT">Austria</option>
-                        <option value="AZ">Azerbaijan</option>
-                        <option value="BS">Bahamas, The</option>
-                        <option value="BH">Bahrain</option>
-                        <option value="BD">Bangladesh</option>
-                        <option value="BB">Barbados</option>
-                        <option value="BY">Belarus</option>
-                        <option value="BE">Belgium</option>
-                        <option value="BZ">Belize</option>
-                        <option value="BJ">Benin</option>
-                        <option value="BM">Bermuda</option>
-                        <option value="BT">Bhutan</option>
-                        <option value="BO">Bolivia</option>
-                        <option value="BQ">Bonaire, Saint Eustatius and Saba</option>
-                        <option value="BA">Bosnia and Herzegovina</option>
-                        <option value="BW">Botswana</option>
-                        <option value="BV">Bouvet Island</option>
-                        <option value="BR">Brazil</option>
-                        <option value="IO">British Indian Ocean Territory</option>
-                        <option value="BN">Brunei Darussalam</option>
-                        <option value="BG">Bulgaria</option>
-                        <option value="BF">Burkina Faso</option>
-                        <option value="BI">Burundi</option>
-                        <option value="KH">Cambodia</option>
-                        <option value="CM">Cameroon</option>
-                        <option value="CA">Canada</option>
-                        <option value="CV">Cape Verde</option>
-                        <option value="KY">Cayman Islands</option>
-                        <option value="CF">Central African Republic</option>
-                        <option value="TD">Chad</option>
-                        <option value="CL">Chile</option>
-                        <option value="CN">China</option>
-                        <option value="CX">Christmas Island</option>
-                        <option value="CC">Cocos (Keeling) Islands</option>
-                        <option value="CO">Colombia</option>
-                        <option value="KM">Comoros</option>
-                        <option value="CG">Congo</option>
-                        <option value="CD">Congo, The Democratic Republic of the</option>
-                        <option value="CK">Cook Islands</option>
-                        <option value="CR">Costa Rica</option>
-                        <option value="CI">Cote D'ivoire</option>
-                        <option value="HR">Croatia</option>
-                        <option value="CW">Curaçao</option>
-                        <option value="CY">Cyprus</option>
-                        <option value="CZ">Czech Republic</option>
-                        <option value="DK">Denmark</option>
-                        <option value="DJ">Djibouti</option>
-                        <option value="DM">Dominica</option>
-                        <option value="DO">Dominican Republic</option>
-                        <option value="EC">Ecuador</option>
-                        <option value="EG">Egypt</option>
-                        <option value="SV">El Salvador</option>
-                        <option value="GQ">Equatorial Guinea</option>
-                        <option value="ER">Eritrea</option>
-                        <option value="EE">Estonia</option>
-                        <option value="ET">Ethiopia</option>
-                        <option value="FK">Falkland Islands (Malvinas)</option>
-                        <option value="FO">Faroe Islands</option>
-                        <option value="FJ">Fiji</option>
-                        <option value="FI">Finland</option>
-                        <option value="FR">France</option>
-                        <option value="GF">French Guiana</option>
-                        <option value="PF">French Polynesia</option>
-                        <option value="TF">French Southern Territories</option>
-                        <option value="GA">Gabon</option>
-                        <option value="GM">Gambia, The</option>
-                        <option value="GE">Georgia</option>
-                        <option value="DE">Germany</option>
-                        <option value="GH">Ghana</option>
-                        <option value="GI">Gibraltar</option>
-                        <option value="GR">Greece</option>
-                        <option value="GL">Greenland</option>
-                        <option value="GD">Grenada</option>
-                        <option value="GP">Guadeloupe</option>
-                        <option value="GU">Guam</option>
-                        <option value="GT">Guatemala</option>
-                        <option value="GG">Guernsey</option>
-                        <option value="GN">Guinea</option>
-                        <option value="GW">Guinea-Bissau</option>
-                        <option value="GY">Guyana</option>
-                        <option value="HT">Haiti</option>
-                        <option value="HM">Heard Island and the McDonald Islands</option>
-                        <option value="VA">Holy See</option>
-                        <option value="HN">Honduras</option>
-                        <option value="HK">Hong Kong</option>
-                        <option value="HU">Hungary</option>
-                        <option value="IS">Iceland</option>
-                        <option value="IN">India</option>
-                        <option value="ID">Indonesia</option>
-                        <option value="IQ">Iraq</option>
-                        <option value="IE">Ireland</option>
-                        <option value="IM">Isle of Man</option>
-                        <option value="IL">Israel</option>
-                        <option value="IT">Italy</option>
-                        <option value="JM">Jamaica</option>
-                        <option value="JP">Japan</option>
-                        <option value="JE">Jersey</option>
-                        <option value="JO">Jordan</option>
-                        <option value="KZ">Kazakhstan</option>
-                        <option value="KE">Kenya</option>
-                        <option value="KI">Kiribati</option>
-                        <option value="KR">Korea, Republic of</option>
-                        <option value="XK">Kosovo</option>
-                        <option value="KW">Kuwait</option>
-                        <option value="KG">Kyrgyzstan</option>
-                        <option value="LA">Lao People's Democratic Republic</option>
-                        <option value="LV">Latvia</option>
-                        <option value="LB">Lebanon</option>
-                        <option value="LS">Lesotho</option>
-                        <option value="LR">Liberia</option>
-                        <option value="LY">Libya</option>
-                        <option value="LI">Liechtenstein</option>
-                        <option value="LT">Lithuania</option>
-                        <option value="LU">Luxembourg</option>
-                        <option value="MO">Macao</option>
-                        <option value="MK">Macedonia, The Former Yugoslav Republic of</option>
-                        <option value="MG">Madagascar</option>
-                        <option value="MW">Malawi</option>
-                        <option value="MY">Malaysia</option>
-                        <option value="MV">Maldives</option>
-                        <option value="ML">Mali</option>
-                        <option value="MT">Malta</option>
-                        <option value="MH">Marshall Islands</option>
-                        <option value="MQ">Martinique</option>
-                        <option value="MR">Mauritania</option>
-                        <option value="MU">Mauritius</option>
-                        <option value="YT">Mayotte</option>
-                        <option value="MX">Mexico</option>
-                        <option value="FM">Micronesia, Federated States of</option>
-                        <option value="MD">Moldova, Republic of</option>
-                        <option value="MC">Monaco</option>
-                        <option value="MN">Mongolia</option>
-                        <option value="ME">Montenegro</option>
-                        <option value="MS">Montserrat</option>
-                        <option value="MA">Morocco</option>
-                        <option value="MZ">Mozambique</option>
-                        <option value="MM">Myanmar</option>
-                        <option value="NA">Namibia</option>
-                        <option value="NR">Nauru</option>
-                        <option value="NP">Nepal</option>
-                        <option value="NL">Netherlands</option>
-                        <option value="AN">Netherlands Antilles</option>
-                        <option value="NC">New Caledonia</option>
-                        <option value="NZ">New Zealand</option>
-                        <option value="NI">Nicaragua</option>
-                        <option value="NE">Niger</option>
-                        <option value="NG">Nigeria</option>
-                        <option value="NU">Niue</option>
-                        <option value="NF">Norfolk Island</option>
-                        <option value="MP">Northern Mariana Islands</option>
-                        <option value="NO">Norway</option>
-                        <option value="OM">Oman</option>
-                        <option value="PK">Pakistan</option>
-                        <option value="PW">Palau</option>
-                        <option value="PS">Palestinian Territories</option>
-                        <option value="PA">Panama</option>
-                        <option value="PG">Papua New Guinea</option>
-                        <option value="PY">Paraguay</option>
-                        <option value="PE">Peru</option>
-                        <option value="PH">Philippines</option>
-                        <option value="PN">Pitcairn</option>
-                        <option value="PL">Poland</option>
-                        <option value="PT">Portugal</option>
-                        <option value="PR">Puerto Rico</option>
-                        <option value="QA">Qatar</option>
-                        <option value="RE">Reunion</option>
-                        <option value="RO">Romania</option>
-                        <option value="RU">Russian Federation</option>
-                        <option value="RW">Rwanda</option>
-                        <option value="BL">Saint Barthelemy</option>
-                        <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
-                        <option value="KN">Saint Kitts and Nevis</option>
-                        <option value="LC">Saint Lucia</option>
-                        <option value="MF">Saint Martin</option>
-                        <option value="PM">Saint Pierre and Miquelon</option>
-                        <option value="VC">Saint Vincent and the Grenadines</option>
-                        <option value="WS">Samoa</option>
-                        <option value="SM">San Marino</option>
-                        <option value="ST">Sao Tome and Principe</option>
-                        <option value="SA">Saudi Arabia</option>
-                        <option value="SN">Senegal</option>
-                        <option value="RS">Serbia</option>
-                        <option value="SC">Seychelles</option>
-                        <option value="SL">Sierra Leone</option>
-                        <option value="SG">Singapore</option>
-                        <option value="SX">Sint Maarten</option>
-                        <option value="SK">Slovakia</option>
-                        <option value="SI">Slovenia</option>
-                        <option value="SB">Solomon Islands</option>
-                        <option value="SO">Somalia</option>
-                        <option value="ZA">South Africa</option>
-                        <option value="GS">South Georgia and the South Sandwich Islands</option>
-                        <option value="ES">Spain</option>
-                        <option value="LK">Sri Lanka</option>
-                        <option value="SR">Suriname</option>
-                        <option value="SJ">Svalbard and Jan Mayen</option>
-                        <option value="SZ">Swaziland</option>
-                        <option value="SE">Sweden</option>
-                        <option value="CH">Switzerland</option>
-                        <option value="TW">Taiwan</option>
-                        <option value="TJ">Tajikistan</option>
-                        <option value="TZ">Tanzania, United Republic of</option>
-                        <option value="TH">Thailand</option>
-                        <option value="TL">Timor-leste</option>
-                        <option value="TG">Togo</option>
-                        <option value="TK">Tokelau</option>
-                        <option value="TO">Tonga</option>
-                        <option value="TT">Trinidad and Tobago</option>
-                        <option value="TN">Tunisia</option>
-                        <option value="TR">Turkey</option>
-                        <option value="TM">Turkmenistan</option>
-                        <option value="TC">Turks and Caicos Islands</option>
-                        <option value="TV">Tuvalu</option>
-                        <option value="UG">Uganda</option>
-                        <option value="UA">Ukraine</option>
-                        <option value="AE">United Arab Emirates</option>
-                        <option value="GB">United Kingdom</option>
-                        <option value="US">United States</option>
-                        <option value="UM">United States Minor Outlying Islands</option>
-                        <option value="UY">Uruguay</option>
-                        <option value="UZ">Uzbekistan</option>
-                        <option value="VU">Vanuatu</option>
-                        <option value="VE">Venezuela</option>
-                        <option value="VN">Vietnam</option>
-                        <option value="VG">Virgin Islands, British</option>
-                        <option value="VI">Virgin Islands, U.S.</option>
-                        <option value="WF">Wallis and Futuna</option>
-                        <option value="EH">Western Sahara</option>
-                        <option value="YE">Yemen</option>
-                        <option value="ZM">Zambia</option>
-                        <option value="ZW">Zimbabwe</option>
-                    </select>
-                    {% for error in form.country.errors %}
-                      <label id="pais-error" class="error" for="country">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="form-group">
-                    <label for="endereco">{% trans "Endereço" %}*</label>
-                      {% trans "Digite o endereço" as address_1 %}
-                    <input type="text" class="form-control" id="endereco" aria-describedby="endereco" name="address_1" placeholder="{{ address_1 }}..." value="{% if form %}{{ form.address_1.value }}{% endif %}">
-                    {% for error in form.address_1.errors %}
-                      <label id="endereco-error" class="error" for="endereco">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="form-group">
-                    <label for="complemento">{% trans "Complemento" %}</label>
-                    {% trans "Digite o complemento" as address_2 %}
-                    <input type="text" class="form-control" id="complemento" aria-describedby="complemento" name="address_2" placeholder="{{ address_2 }}..." value="{% if form %}{{ form.address_2.value }}{% endif %}">
-                    {% for error in form.address_2.errors %}
-                    <label id="complemento-error" class="error" for="complemento">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-                  <div class="form-group espaco-bottom">
-                      <div class="col-md-6">
-                        <label for="cidade">{% trans "Cidade" %}*</label>
-                          {% trans "Digite a cidade" as city %}
-                        <input type="text" class="form-control" id="cidade" aria-describedby="cidade" name="city" placeholder="{{ city }}..." value="{% if form %}{{ form.city.value }}{% endif %}">
-                        {% for error in form.city.errors %}
-                          <label id="cidade-error" class="error" for="cidade">{{ error|escape }}</label>
-                        {% endfor %}
-                      </div>
-                      <div class="col-md-6">
-                      <label for="estado">{% trans "Estado" %}*</label>
-                          {% trans "Digite o estado" as state %}
-                        <input type="text" maxlength="2" class="form-control" id="estado" aria-describedby="estado" name="state" placeholder="{{ state }}..." value="{% if form %}{{ form.state.value }}{% endif %}">
-                        {% for error in form.state.errors %}
-                          <label id="estado-error" class="error" for="estado">{{ error|escape }}</label>
-                        {% endfor %}
-                      </div>
-                  </div>
-                  <div class="form-group espaco-bottom">
-                      <div class="col-md-12">
-                        <label for="cep">{% trans "CEP" %}*</label>
-                          {% trans "Digite o CEP" as zipcode %}
-                        <input type="text" class="form-control" id="cep" aria-describedby="cep" name="zipcode" placeholder="{{ zipcode }}..." value="{% if form %}{{ form.zipcode.value }}{% endif %}">
-                        {% for error in form.zipcode.errors %}
-                          <label id="cep-error" class="error" for="cep">{{ error|escape }}</label>
-                        {% endfor %}
-                      </div>
-                  </div>
-    {% endcomment %}
-                  <div class="form-group">
-                    <label for="senha">{% trans "Senha" %}*</label>
-                      {% trans "Digite sua senha" as password %}
-                    <input type="password" class="form-control menor" id="senha" name="password" placeholder="{{ password }}...">
-                    {% for error in form.password.errors %}
-                      <label id="senha-error" class="error" for="senha">{{ error|escape }}</label>
-                    {% endfor %}
-                    <!--<br><small>{% trans "Digite ao menos 1 letra minúscula e 1 letra maiúscula" %}</small>-->
-                  </div>
-                  <div class="form-group">
-                    <label for="cSenha">{% trans "Confirmar Senha" %}*</label>
-                      {% trans "Confirmar a senha" as password_confirmation %}
-                    <input type="password" class="form-control menor" id="cSenha" name="password_confirmation" placeholder="{{ password_confirmation }}...">
-                    {% for error in form.password_confirmation.errors %}
-                      <label id="cSenha-error" class="error" for="cSenha">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-
-{% comment %}
-                     <!-- Assinante -->
-                  <div class="form-group terms-cond">
-                    <label for="terms" id="assinante-check">
-                        <input type="checkbox" class="form-control" id="assinante" name="assinante" value="1" checked />
-                        {% trans "Quero me tornar um assinante" %}
-                    </label>
-                    <a href="javascript:void(0);" id="btn-explicacao" class="assinante-link">?</a>
-                  </div>
-{% endcomment %}
-
-                  <!-- Termos -->
-                  <div class="form-group terms-cond">
-                    <label for="terms-conditions-check" id="terms-conditions-check">
-                        <input type="checkbox" class="form-control" id="terms" name="terms" value="1" {% if form and form.terms.value %}checked="checked"{% endif %} />
-                        {% trans "Li e aceito os termos e condições de uso" %}
-                    </label>
-                    {% for error in form.terms.errors %}
-                    <label id="terms-error" class="error" for="terms">{{ error|escape }}</label>
-                    {% endfor %}
-                  </div>
-
-
-
-
-                  <button type="submit" id="send-btn" class="btn btn-primary"><i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}</button><br><br>
-                </form>
-            </div>
             <div class="col-md-1">
             </div><br><br>
-            <div class="col-md-12">
+            <div class="col-md-12"><a href="#" id="abre-codigo">teste</a>
                 <a href="/"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br><br>
             </div>
         </div>
@@ -541,11 +580,15 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">{{ modal_title }}</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body center">
                     {% if success %}
                         {% url 'login' as login_url %}
-                        <p>{% trans "Cadastro realizado com sucesso." %}</p>
-                        <p>{% blocktrans %}Comece a usar a plataforma agora mesmo clicando <a class="download" href="{{ login_url }}">aqui.</a>{% endblocktrans %}</p>
+                        <p class="text-success"><i class="fa fa-check-circle fa-3x"></i></p>
+                        <p class="titulo text-success">{% trans "Cadastro realizado com sucesso" %}</p><br>
+                        <a class="btn btn-default btn-block btn-block-70" href="{{ login_url }}" style="width:250px"><i class="fa fa-link"></i> {% trans "Acessar Plataforma Agora" %}</a>
+                    <br><hr><br>
+                        <a href="#" class="btn btn-primary"><i class="fa fa-paypal"></i> Quero Assinar VOI Prime Agora</a>
+                        <a href="#" class="btn btn-primary"><i class="fa fa-paypal"></i> Quero Assinar We Create Amazon Shipment Agora</a>
 {% comment %}
                         <p>{% trans "Informações enviadas com sucesso." %}</p>
                         <p>{% blocktrans %}Enviamos um e-mail para você validar seu cadastro. Este e-mail é válido por {{ expiry }} dias.{% endblocktrans %}</p>
@@ -561,7 +604,7 @@
                     {% endif %}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-fw fa-times-circle"></i> {% trans "Fechar" %}</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-fw fa-times-circle"></i> {% trans "Fechar" %}</button>
                 </div>
             </div>
         </div>
