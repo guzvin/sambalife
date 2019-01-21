@@ -2248,6 +2248,10 @@ padding-bottom: 20px;
     line-height: 43px;
 }
 
+.box-valor.ass p{
+    line-height: 23px;
+}
+
 .box-cad-esquerda .box-valor p {
     line-height: 24px;
 }
