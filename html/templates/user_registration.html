@@ -99,7 +99,7 @@
                         {% for error in form.email.errors %}
                           <label id="email-error" class="error" for="email">{{ error|escape }}</label>
                         {% endfor %}
-                      </div>
+                      </div><hr />
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
@@ -110,6 +110,7 @@
                           <label id="amzstore-error" class="error" for="amzstore">{{ error|escape }}</label>
                         {% endfor %}
                       </div>
+                        <hr />
                     </div>
                     {% comment %}
 
@@ -434,6 +435,7 @@
                     </div>
 
                     <div class="col-md-6">
+                        <hr />
                       <div class="form-group">
                         <label for="celular">{% trans "Telefone 1" %}*</label>
                           {% trans "Digite o telefone, celular de preferência" as cell_phone %}
@@ -444,7 +446,7 @@
                       </div><hr>
                     </div>
                     <div class="col-md-6">
-                        <br><br><br><hr />
+                        <hr /><br><br><br><hr />
                     </div>
 
                      <div class="col-md-6">
@@ -509,30 +511,49 @@
                 </form>
             </div>
             <div class="col-md-4 box-cad-esquerda">
-                <img src="/static/img/sale-img.png" width="100%" />
-                <br><br><br>
                 <div class="box-valor">
-
-                    <p class="assinate-span"><i class="fa fa-fw fa-check-square"></i> Invista apenas <span>U${% trans "74,90" %}</span>{% trans "/mês" %}</p>
-                    <p><i class="fa fa-fw fa-check-square"></i> {% trans "Tenha acesso a todas as vantagens de ser um assinante VOI Services. <a href='/' class='download'>Saiba Mais</a> " %}</p>
-                    <p><i class="fa fa-fw fa-check-square"></i> {% trans "Efetue seu cadastro agora e em seguida as opções de planos serão apresentadas" %}</p>
+                    <h3 class="page-header"> {% trans "Nossos planos disponíveis" %}:</h3>
                 </div>
-                {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
-                    <label> {% blocktrans %}Leia <a href="https://fbaprepmaster.com/pt/termos-e-condicoes-de-uso" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
-                    <br /><br><br>
-                    <label> {% blocktrans %}Assine nosso serviço "We create your Amazon shipment" e não se preocupe mais em criar envios para Amazon, Nós fazemos pra você. Veja aqui as vantagens <a href="/pt/create-az-shipment/" class="download">Clique aqui</a>.{% endblocktrans %}</label>
-                {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
-                    {% url 'terms' as terms_url %}
-                    <label> {% blocktrans %}Leia <a href="{{ terms_url }}" class="download">aqui</a> nossos termos e condições de uso da plataforma.{% endblocktrans %}</label>
-                    <br /><br><br>
-                    {% url 'how_it_works' as how_it_works_url %}
-                    <label> {% blocktrans %}Torne-se VOI Prime e tenha acesso a lotes mais especiais ainda. Veja aqui as vantagens de se tornar um VOI Prime <a href="http://voiservices.com/#prime" class="download">Clique aqui</a>.{% endblocktrans %}</label>
-                {% endif %}
+
+            <div class="box-comparativo-valor">
+                <div class="box-valor">
+                    <p class="seja center">VOI Prime</p>
+                    <p class="assinate-span"><span>U$ 74,90</span>/mês</p><br>
+                    <small>*Sem adesão. Cancele a qualquer momento.</small>
+                    <ul>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span>Acesso a compra de lotes</span></li>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span>Envio para Amazon em até 3 dias úteis após a compra</span></li>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span>Redirecionamento Grátis</span></li>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span><a href='/lots/how-it-works/' class='download'>Saiba Mais</a></span></li>
+                    </ul>
+
+                    <div class="contem-btn-ass">
+                         <a class="btn btn-primary" href="javascript:alert('Conclua seu cadastro antes de assinar um plano')"><i class="fa fa-fw fa-user-plus"></i> {% trans "Assinar" %}</a>
+                    </div>
+                </div>
+            </div>
+                <br>
+                <div class="box-comparativo-valor">
+                <div class="box-valor">
+                    <p class="seja center">We Create your Amazon Shipment</p>
+                    <p class="assinate-span"><span>U$ 24,90</span>/mês</p><br>
+                    <small>*Sem adesão. Cancele a qualquer momento.</small>
+                    <ul>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span>Criamos seu envio para Amazon para você</span></li>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span><a href='/create-az-shipment/' class='download'>Saiba Mais</a></span></li>
+                    </ul>
+
+                    <div class="contem-btn-ass">
+                         <a class="btn btn-primary" href="javascript:alert('Conclua seu cadastro antes de assinar um plano')"><i class="fa fa-fw fa-user-plus"></i> {% trans "Assinar" %}</a>
+                    </div>
+                </div>
+            </div>
+
 
             </div>
             <div class="col-md-1">
             </div><br><br>
-            <div class="col-md-12"><a href="#" id="abre-codigo">teste</a>
+            <div class="col-md-12">
                 <a href="/"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br><br>
             </div>
         </div>
