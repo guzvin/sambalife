@@ -101,6 +101,7 @@
                     <a title="{{ order_status }}" href="javascript:void(0);">{{ status }} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
                   <th class="center">{% trans "Visualizar" %}</th>
+                  <th class="center">{% trans "Log" %}</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,6 +127,7 @@
                     {% endif %}
                   </td>
                   <td class="center"><a class="download" href="{% url 'shipment_details' shipment.id %}"><i class="fa fa-pencil-square"></i> {% trans "Visualizar" %}</a></td>
+                  <td class="center"><a class="download" href="#"><i class="fa fa-pencil-square"></i> {% trans "Log" %}</a></td>
                 </tr>
               {% endfor %}
               </tbody>
