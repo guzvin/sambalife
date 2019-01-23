@@ -19,7 +19,7 @@
   <div class="container-fluid">
       <div class="row">
         {% if True %}
-        <div class="col-md-3 sidebar">
+        <div class="col-md-1 sidebar">
 
         </div>
         <div class="col-md-6 main">
@@ -105,8 +105,88 @@
               <button type="submit" id="send-btn" class="btn btn-primary" onclick="$('.loading').show();"><i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}</button><br><br>
               <a href="/"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a><br><br><br>
             </form>
-
         </div>
+          <div class="col-md-4 box-cad-esquerda">
+                <div class="box-valor">
+                    <h3 class="page-header"> {% trans "Nossos planos disponíveis" %}:</h3>
+                </div>
+
+            <div class="box-comparativo-valor">
+                <div class="box-valor">
+                    <p class="seja center">VOI Prime</p>
+                    <p class="assinate-span"><span>U$ 74,90</span>/{% trans "mês" %}</p><br>
+                    <small>*{% trans "Sem adesão. Cancele a qualquer momento" %}.</small>
+                    <ul>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span>{% trans "Acesso a compra de lotes" %}</span></li>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span>{% trans "Envio para Amazon em até 3 dias úteis após a compra" %}</span></li>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span>{% trans "Redirecionamento Grátis" %}</span></li>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span><a href='/lots/how-it-works/' class='download'>{% trans "Saiba Mais" %}</a></span></li>
+                    </ul>
+
+                    <div class="contem-btn-ass">
+                         <a class="btn btn-primary" href="#"><i class="fa fa-fw fa-user-plus"></i> {% trans "Assinar" %}</a>
+                    </div>
+                </div>
+            </div>
+                <br>
+                <div class="box-comparativo-valor">
+                <div class="box-valor">
+                    <p class="seja center">We Create your Amazon Shipment</p>
+                    <p class="assinate-span"><span>U$ 24,90</span>/{% trans "mês" %}</p><br>
+                    <small>*{% trans "Sem adesão. Cancele a qualquer momento" %}.</small>
+                    <ul>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span>{% trans "Criamos seu envio para Amazon para você" %}</span></li>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span><a href='/create-az-shipment/' class='download'>{% trans "Saiba Mais" %}</a></span></li>
+                    </ul>
+
+                    <div class="contem-btn-ass">
+                         <a class="btn btn-primary" href="#"><i class="fa fa-fw fa-user-plus"></i> {% trans "Assinar" %}</a>
+                    </div>
+                </div>
+            </div>
+
+
+            </div>
+
+
+          <div class="col-md-12 box-valor">
+              <div class="col-md-1"></div>
+              <div class="col-md-8">
+                <h3 class="page-header"><i class="fa fa-fw fa-check-circle-o"></i> {% trans "Suas assinaturas ativas" %}:</h3>
+
+                 <!-- Caso não possua nenhuma assinatura ativa
+                 <p>Você não possui nenhuma assinatura ativa. Para assinar nossos planos, veja as opções acima e clique em assinar.</p>-->
+
+                  <!-- Box assinaturas -->
+                  <div class="col-md-5">
+                     <div class="box-comparativo-valor">
+                        <div class="box-valor ass">
+                            <p><strong>VOI Prime</strong></p><hr>
+                            <p><strong>{% trans "Assinatura" %}:</strong> Ativa</p>
+                            <p><strong>{% trans "Vencimento" %}:</strong> 20</p>
+                            <p><strong>{% trans "Pagamento" %}:</strong> Paypal</p><hr>
+
+                            <a href="#" class="btn btn-default"><i class="fa fa-minus-circle"></i> {% trans "Cancelar Assinatura" %}</a>
+
+                        </div>
+                     </div>
+                 </div>
+                 <div class="col-md-5">
+                     <div class="box-comparativo-valor">
+                        <div class="box-valor ass">
+                            <p><strong>We Create your Amazon Shipment</strong></p><hr>
+                            <p><strong>{% trans "Assinatura" %}:</strong> Ativa</p>
+                            <p><strong>{% trans "Vencimento" %}:</strong> 12</p>
+                            <p><strong>{% trans "Pagamento" %}:</strong> Paypal</p><hr>
+
+                            <a href="#" class="btn btn-default"><i class="fa fa-minus-circle"></i> {% trans "Cancelar Assinatura" %}</a>
+
+                        </div>
+                     </div>
+                 </div>
+              </div>
+
+            </div><br><br>
         {% endif %}
     </div>
   </div>
