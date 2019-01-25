@@ -568,7 +568,7 @@
 {% comment %}<!-- FORM GERAL FECHAR -->{% endcomment %}
            {% if shipment.status == 3 and shipment.is_archived is False and shipment.is_canceled is False %}
             {% if user == shipment.user or user|has_group:'admins' or shipment.collaborator_id|is_collaborator:user %}
-             {% render_payment_button paypal_form shipment.id %}
+             {% render_payment_button paypal_form shipment.id 3 %}
              <br><br>
             {% endif %}
            {% endif %}
