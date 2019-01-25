@@ -471,6 +471,22 @@ class PlanTypeException(Exception):
     pass
 
 
+class CancelAgreementException(Exception):
+    pass
+
+
+class CreateAgreementException(Exception):
+    pass
+
+
+class ExecuteAgreementException(Exception):
+    pass
+
+
+class PaypalAccessTokenException(Exception):
+    pass
+
+
 def paypal_notification(sender, **kwargs):
     ipn_obj, invalid_data, entity, current_user, texts, invoice = sender, [], None, None, None, None
     logger.debug('@@@@@@@@@@@@ PAYPAL NOTIFICATION @@@@@@@@@@@@@@')

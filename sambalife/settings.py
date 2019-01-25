@@ -107,13 +107,17 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
             PLAN_ID_VOIPRIME = key_value_pair[1]
         elif key_value_pair[0] == 'plan_id_wcyazs':
             PLAN_ID_WCYAZS = key_value_pair[1]
+        elif key_value_pair[0] == 'plan_id_voiprime_sandbox':
+            PLAN_ID_VOIPRIME_SANDBOX = key_value_pair[1]
+        elif key_value_pair[0] == 'plan_id_wcyazs_sandbox':
+            PLAN_ID_WCYAZS_SANDBOX = key_value_pair[1]
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
 
 ALLOWED_HOSTS = ['localhost', '.voiservices.com', 'fbaprepmaster.com', '.ppst.com', '.prepshiptool.com',
-                 '47318a22.ngrok.io']
+                 '6c3626c9.ngrok.io']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
 # Email configuration
@@ -329,6 +333,11 @@ LOGGING = {
             'level': LOG_LEVEL,
             'propagate': True,
         },
+        'requests.packages.urllib3': {
+            'handlers': ['file'],
+            'level': LOG_LEVEL,
+            'propagate': True,
+        }
     },
 }
 

@@ -604,13 +604,12 @@
                 </div>
                 <div class="modal-body center">
                     {% if success %}
-                        {% url 'login' as login_url %}
                         <p class="text-success"><i class="fa fa-check-circle fa-3x"></i></p>
                         <p class="titulo text-success">{% trans "Cadastro realizado com sucesso" %}</p><br>
-                        <a class="btn btn-default btn-block btn-block-70" href="{{ login_url }}" style="width:250px"><i class="fa fa-link"></i> {% trans "Acessar Plataforma Agora" %}</a>
+                        <a class="btn btn-default btn-block btn-block-70" href="{% url 'store' %}" style="width:250px"><i class="fa fa-link"></i> {% trans "Acessar Plataforma Agora" %}</a>
                     <br><hr><br>
-                        <a href="#" class="btn btn-primary"><i class="fa fa-paypal"></i> Quero Assinar VOI Prime Agora</a>
-                        <a href="#" class="btn btn-primary"><i class="fa fa-paypal"></i> Quero Assinar We Create Amazon Shipment Agora</a>
+                        <a href="{% url 'user_subscribe' 1 %}" target="_blank" class="btn btn-primary"><i class="fa fa-paypal"></i> Quero Assinar VOI Prime Agora</a>
+                        <a href="{% url 'user_subscribe' 2 %}" target="_blank" class="btn btn-primary"><i class="fa fa-paypal"></i> Quero Assinar We Create your Amazon Shipment Agora</a>
 {% comment %}
                         <p>{% trans "Informações enviadas com sucesso." %}</p>
                         <p>{% blocktrans %}Enviamos um e-mail para você validar seu cadastro. Este e-mail é válido por {{ expiry }} dias.{% endblocktrans %}</p>

@@ -23,6 +23,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from partner.models import Partner
 from smtplib import SMTPException
+from myauth.models import UserAddress
 import socket
 import json
 import logging
@@ -176,7 +177,8 @@ def user_registration(request, pid=None):
             user.amz_store_name = form.cleaned_data['amz_store_name']
             user.phone = form.cleaned_data['phone']
             user.cell_phone = form.cleaned_data['cell_phone']
-            user.set_password(form.cleaned_data['password'])
+            user_password = form.cleaned_data['password']
+            user.set_password(user_password)
             if pid:
                 try:
                     user.partner = Partner.objects.get(identity=pid)
@@ -190,21 +192,27 @@ def user_registration(request, pid=None):
             all_users_group = Group.objects.get(name='all_users')
             all_users_group.user_set.add(user)
             all_users_group.save()
-            # user_address = UserAddress()
-            # user_address.user = user
-            # user_address.address_1 = form.cleaned_data['address_1']
-            # user_address.address_2 = form.cleaned_data['address_2']
-            # user_address.country = form.cleaned_data['country']
-            # user_address.zipcode = form.cleaned_data['zipcode']
-            # user_address.state = form.cleaned_data['state']
-            # user_address.city = form.cleaned_data['city']
-            # user_address.type = 1  # entrega
-            # user_address.default = True
-            # user_address.save()
+            user_address = UserAddress()
+            user_address.user = user
+            user_address.address_1 = form.cleaned_data['address_1']
+            user_address.address_2 = form.cleaned_data['address_2']
+            user_address.country = form.cleaned_data['country']
+            user_address.zipcode = form.cleaned_data['zipcode']
+            user_address.state = form.cleaned_data['state']
+            user_address.city = form.cleaned_data['city']
+            user_address.type = 1  # entrega
+            user_address.default = True
+            user_address.save()
 
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
             # send_validation_email(request, user, uidb64, token)
+            user = authenticate(username=user.email, password=user_password)
+            if user is None:
+                return HttpResponseServerError()
+            login(request, user)
+            if update_user_language(user.id) is False:
+                return HttpResponseBadRequest()
             if pid:
                 return HttpResponseRedirect('%s?s=1' % reverse('user_registration_partner', args=[pid]))
             else:

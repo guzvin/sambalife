@@ -24,20 +24,8 @@
         </div>
         <div class="col-md-6 main">
           <h1 class="page-header"><i class="fa fa-edit"></i> {% trans "Editar cadastro" %}</h1>
-            <div>
-                {% is_subscriber_voiprime user as is_voiprime %}
-                {% if is_voiprime %}
-                <p><a href="{% url 'user_unsubscribe' 1 %}" target="_blank">Unsubscribe VOI Prime</a></p>
-                {% else %}
-                <p><a href="{% url 'user_subscribe' 1 %}" target="_blank">Subscribe VOI Prime</a></p>
-                {% endif %}
-                {% is_subscriber_wcyazs user as is_wcyazs %}
-                {% if is_wcyazs %}
-                <p><a href="{% url 'user_unsubscribe' 2 %}" target="_blank">Unsubscribe We Create Your Amazon Shipment</a></p>
-                {% else %}
-                <p><a href="{% url 'user_subscribe' 2 %}" target="_blank">Subscribe We Create Your Amazon Shipment</a></p>
-                {% endif %}
-            </div>
+            {% is_subscriber_voiprime user as is_voiprime %}
+            {% is_subscriber_wcyazs user as is_wcyazs %}
             <form action="" method="post" class="form-edit-user" id="form-edit-user">
               {% csrf_token %}
               {{ user_formset.management_form }}
@@ -122,10 +110,11 @@
                         <li><i class="fa fa-fw fa-check-circle-o"></i> <span>{% trans "Redirecionamento Grátis" %}</span></li>
                         <li><i class="fa fa-fw fa-check-circle-o"></i> <span><a href='/lots/how-it-works/' class='download'>{% trans "Saiba Mais" %}</a></span></li>
                     </ul>
-
+                    {% if is_voiprime is False %}
                     <div class="contem-btn-ass">
-                         <a class="btn btn-primary" href="#"><i class="fa fa-fw fa-user-plus"></i> {% trans "Assinar" %}</a>
+                         <a class="btn btn-primary" href="{% url 'user_subscribe' 1 %}" target="_blank"><i class="fa fa-fw fa-user-plus"></i> {% trans "Assinar" %}</a>
                     </div>
+                    {% endif %}
                 </div>
             </div>
                 <br>
@@ -138,26 +127,27 @@
                         <li><i class="fa fa-fw fa-check-circle-o"></i> <span>{% trans "Criamos seu envio para Amazon para você" %}</span></li>
                         <li><i class="fa fa-fw fa-check-circle-o"></i> <span><a href='/create-az-shipment/' class='download'>{% trans "Saiba Mais" %}</a></span></li>
                     </ul>
-
+                    {% if is_wcyazs is False %}
                     <div class="contem-btn-ass">
-                         <a class="btn btn-primary" href="#"><i class="fa fa-fw fa-user-plus"></i> {% trans "Assinar" %}</a>
+                         <a class="btn btn-primary" href="{% url 'user_subscribe' 2 %}" target="_blank"><i class="fa fa-fw fa-user-plus"></i> {% trans "Assinar" %}</a>
                     </div>
+                    {% endif %}
                 </div>
             </div>
 
 
             </div>
 
-
           <div class="col-md-12 box-valor">
               <div class="col-md-1"></div>
               <div class="col-md-8">
                 <h3 class="page-header"><i class="fa fa-fw fa-check-circle-o"></i> {% trans "Suas assinaturas ativas" %}:</h3>
-
-                 <!-- Caso não possua nenhuma assinatura ativa
-                 <p>Você não possui nenhuma assinatura ativa. Para assinar nossos planos, veja as opções acima e clique em assinar.</p>-->
-
+                 {% if is_voiprime is False and is_wcyazs is False %}
+                 <!-- Caso não possua nenhuma assinatura ativa -->
+                 <p>Você não possui nenhuma assinatura ativa. Para assinar nossos planos, veja as opções acima e clique em assinar.</p>
+                 {% else %}
                   <!-- Box assinaturas -->
+                  {% if is_voiprime %}
                   <div class="col-md-5">
                      <div class="box-comparativo-valor">
                         <div class="box-valor ass">
@@ -166,11 +156,13 @@
                             <p><strong>{% trans "Vencimento" %}:</strong> 20</p>
                             <p><strong>{% trans "Pagamento" %}:</strong> Paypal</p><hr>
 
-                            <a href="#" class="btn btn-default"><i class="fa fa-minus-circle"></i> {% trans "Cancelar Assinatura" %}</a>
+                            <a href="{% url 'user_unsubscribe' 1 %}" target="_blank" class="btn btn-default"><i class="fa fa-minus-circle"></i> {% trans "Cancelar Assinatura" %}</a>
 
                         </div>
                      </div>
                  </div>
+                 {% endif %}
+                 {% if is_wcyazs %}
                  <div class="col-md-5">
                      <div class="box-comparativo-valor">
                         <div class="box-valor ass">
@@ -179,11 +171,13 @@
                             <p><strong>{% trans "Vencimento" %}:</strong> 12</p>
                             <p><strong>{% trans "Pagamento" %}:</strong> Paypal</p><hr>
 
-                            <a href="#" class="btn btn-default"><i class="fa fa-minus-circle"></i> {% trans "Cancelar Assinatura" %}</a>
+                            <a href="{% url 'user_unsubscribe' 2 %}" target="_blank" class="btn btn-default"><i class="fa fa-minus-circle"></i> {% trans "Cancelar Assinatura" %}</a>
 
                         </div>
                      </div>
                  </div>
+                 {% endif %}
+                 {% endif %}
               </div>
 
             </div><br><br>

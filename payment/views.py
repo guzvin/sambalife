@@ -1,23 +1,28 @@
-from django.utils.translation import ugettext as _
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST, require_GET
-from django.http import HttpResponse, HttpResponseBadRequest, QueryDict, HttpResponseRedirect, HttpResponseServerError
-from django.urls import reverse
-from django.contrib.auth.models import Group
-from paypal.standard.models import DEFAULT_ENCODING
-from payment.models import MyPayPalIPN, Subscribe
-from payment.forms import MyPayPalIPNForm
-from utils.helper import PaymentException
-from requests.auth import HTTPBasicAuth
-from django.core.cache import cache
-from utils import helper
-from django.conf import settings
-from .conf import REST_ENDPOINT, SANDBOX_REST_ENDPOINT
-from datetime import datetime, timedelta
-import requests
 import json
 import logging
+from datetime import datetime, timedelta
+
+import requests
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
+from django.core.cache import cache
+from django.http import HttpResponse, HttpResponseBadRequest, QueryDict, HttpResponseRedirect, HttpResponseServerError
+from django.shortcuts import render
+from django.urls import reverse
+from django.utils.html import format_html
+from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST, require_GET
+from paypal.standard.models import DEFAULT_ENCODING
+from requests.auth import HTTPBasicAuth
+
+from payment.forms import MyPayPalIPNForm
+from payment.models import MyPayPalIPN, Subscribe
+from payment.templatetags.payments import is_subscriber_voiprime, is_subscriber_wcyazs
+from utils import helper
+from utils.helper import PaymentException
+from .conf import REST_ENDPOINT, SANDBOX_REST_ENDPOINT
 
 logger = logging.getLogger('django')
 
@@ -120,9 +125,16 @@ def agreement_return(request):
     except Subscribe.DoesNotExist:
         logger.error('Dados invalidos para agreement_return.')
         return HttpResponseServerError()
+    if subscribe.is_active:
+        return render(request, 'subscriber_return.html', {
+            'message': 1
+        })
     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(subscribe.user)
     subscribe_helper = SubscribeHelper(is_sandbox=is_sandbox, domain=request.CURRENT_DOMAIN)
-    json_response = subscribe_helper.execute_agreement(token)
+    try:
+        json_response = subscribe_helper.execute_agreement(token)
+    except helper.ExecuteAgreementException:
+        return HttpResponseServerError()
     if json_response['state'] and json_response['state'].lower() == 'active':
         if subscribe.plan_type == 1:  # Voi Prime
             voi_prime_group = Group.objects.get(name='VoiPrime')
@@ -131,14 +143,19 @@ def agreement_return(request):
             assinantes_group = Group.objects.get(name='Assinantes Lotes')
             assinantes_group.user_set.add(subscribe.user)
             assinantes_group.save()
+            texts = (_('Sua assinatura VOI Prime foi realizada com sucesso!'),)
         else:  # We Create Your Amazon Shipment
             wcyazs_group = Group.objects.get(name='We create your AZ Shipment')
             wcyazs_group.user_set.add(subscribe.user)
             wcyazs_group.save()
+            texts = (_('Sua assinatura We Create your Amazon Shipment foi realizada com sucesso!'),)
         subscribe.agreement_id = json_response['id']
         subscribe.is_active = True
         subscribe.save(update_fields=['agreement_id', 'is_active'])
-        return HttpResponse('OKAY')
+        send_email_subscription(request, subscribe.user, _('Confirmação de assinatura'), *texts, async=True)
+        return render(request, 'subscriber_return.html', {
+            'message': 1
+        })
     logger.error('Retorno invalido do execute_agreement.')
     return HttpResponseServerError()
 
@@ -147,7 +164,9 @@ def agreement_return(request):
 def agreement_cancel(request):
     logger.debug('agreement_cancel nothing to do maybe delete subscribe row')
     logger.debug(str(request.GET.get('token')))
-    return HttpResponse('OKAY')
+    return render(request, 'subscriber_return.html', {
+        'message': 2
+    })
 
 
 @require_POST
@@ -174,15 +193,17 @@ def subscription_cancel(request):
             assinantes_group = Group.objects.get(name='Assinantes Lotes')
             assinantes_group.user_set.remove(subscribe.user)
             assinantes_group.save()
+            texts = (_('Sua assinatura VOI Prime foi cancelada.'),)
         else:  # We Create Your Amazon Shipment
             wcyazs_group = Group.objects.get(name='We create your AZ Shipment')
             wcyazs_group.user_set.remove(subscribe.user)
             wcyazs_group.save()
+            texts = (_('Sua assinatura We Create your Amazon Shipment foi cancelada.'),)
         subscribe.is_active = False
         subscribe.save(update_fields=['is_active'])
     except Subscribe.DoesNotExist:
         logger.warning('Dados invalidos para subscription_cancel. agreement_id = %s' % json_request['resource']['id'])
-
+    send_email_subscription(request, subscribe.user, _('Cancelamento de assinatura'), *texts, async=True)
     return HttpResponse('OKAY')
 
 
@@ -190,6 +211,10 @@ def subscription_cancel(request):
 def user_subscribe(request, plan=None):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('login'))
+    if is_subscriber_voiprime(request.user):
+        return HttpResponseRedirect(reverse('store'))
+    if is_subscriber_wcyazs(request.user):
+        return HttpResponseRedirect(reverse('product_stock'))
     is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(request.user)
     subscribe_helper = SubscribeHelper(is_sandbox=is_sandbox, domain=request.CURRENT_DOMAIN)
     try:
@@ -197,6 +222,8 @@ def user_subscribe(request, plan=None):
     except helper.PlanTypeException:
         logger.error('Plano nao encontrado.')
         return HttpResponseBadRequest()
+    except helper.CreateAgreementException:
+        return HttpResponseServerError()
     links = json_response['links']
     links = links if links is not None else []
     approval_url = None
@@ -225,13 +252,17 @@ def user_unsubscribe(request, plan=None):
         subscribe = Subscribe.objects.get(user=request.user, plan_type=int(plan), is_active=True)
     except Subscribe.DoesNotExist:
         logger.error('Usuario nao possui plano contratado.')
-        return HttpResponseBadRequest()
+        return HttpResponseRedirect(reverse('user_edit'))
 
-    is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(request.user)
-    subscribe_helper = SubscribeHelper(is_sandbox=is_sandbox, domain=request.CURRENT_DOMAIN)
-    subscribe_helper.cancel_agreement(subscribe.agreement_id)
-
-    return HttpResponse('OKAY CANCELLATION')
+    try:
+        is_sandbox = settings.PAYPAL_TEST or helper.paypal_mode(request.user)
+        subscribe_helper = SubscribeHelper(is_sandbox=is_sandbox, domain=request.CURRENT_DOMAIN)
+        subscribe_helper.cancel_agreement(subscribe.agreement_id)
+    except helper.CancelAgreementException:
+        return HttpResponseServerError()
+    return render(request, 'subscriber_return.html', {
+        'message': 3
+    })
 
 
 class SubscribeHelper:
@@ -253,6 +284,17 @@ class SubscribeHelper:
         else:
             return REST_ENDPOINT
 
+    def get_plan_id(self, plan_type):
+        """Set Sandbox plan if the test variable is present."""
+        if self.test_mode():
+            if plan_type == '1':
+                return settings.PLAN_ID_VOIPRIME_SANDBOX
+            return settings.PLAN_ID_WCYAZS_SANDBOX
+        else:
+            if plan_type == '1':
+                return settings.PLAN_ID_VOIPRIME
+            return settings.PLAN_ID_WCYAZS
+
     def get_rest_access_token(self):
         if self.test_mode():
             access_token = cache.get('sandbox_access_token')
@@ -266,7 +308,11 @@ class SubscribeHelper:
             response = requests.post('%s%s' % (self.get_rest_endpoint(), '/v1/oauth2/token'),
                                      data={'grant_type': 'client_credentials'},
                                      auth=HTTPBasicAuth(client_id, secret),
-                                     headers={'Accept': 'application/json', 'Accept-Language': 'en_US'}).content
+                                     headers={'Accept': 'application/json', 'Accept-Language': 'en_US'})
+            if response.ok is False:
+                logger.error(response.content)
+                raise helper.PaypalAccessTokenException()
+            response = response.content
             json_response = json.loads(response.decode('utf-8'))
             access_token = json_response['access_token']
             timeout = json_response['expires_in'] * 0.95
@@ -278,12 +324,11 @@ class SubscribeHelper:
         return access_token
 
     def create_agreement(self, plan=None):
+        plan_id = self.get_plan_id(plan)
         if plan == '1':
-            plan_id = settings.PLAN_ID_VOIPRIME
             agreement_name = _('Acordo VOI PRIME')
             agreement_description = _('Acordo VOI PRIME.')
         elif plan == '2':
-            plan_id = settings.PLAN_ID_WCYAZS
             agreement_name = _('Acordo WCYAZS')
             agreement_description = _('Acordo We Create Your Amazon Shipment.')
         else:
@@ -309,7 +354,11 @@ class SubscribeHelper:
         response = requests.post('%s%s' % (self.get_rest_endpoint(), '/v1/payments/billing-agreements/'),
                                  json=data,
                                  headers={'Accept': 'application/json',
-                                          'Authorization': 'Bearer %s' % self.get_rest_access_token()}).content
+                                          'Authorization': 'Bearer %s' % self.get_rest_access_token()})
+        if response.ok is False:
+            logger.error(response.content)
+            raise helper.CreateAgreementException()
+        response = response.content
         logger.debug(response)
         json_response = json.loads(response.decode('utf-8'))
         return json_response
@@ -319,15 +368,38 @@ class SubscribeHelper:
                                                                                              token),
                                  headers={'Accept': 'application/json',
                                           'Content-Type': 'application/json',
-                                          'Authorization': 'Bearer %s' % self.get_rest_access_token()}).content
+                                          'Authorization': 'Bearer %s' % self.get_rest_access_token()})
+        if response.ok is False:
+            logger.error(response.content)
+            raise helper.ExecuteAgreementException()
+        response = response.content
         logger.debug(response)
         json_response = json.loads(response.decode('utf-8'))
         return json_response
 
     def cancel_agreement(self, agreement_id=None):
+        # try:
+        #     import http.client as http_client
+        # except ImportError:
+        #     import requests.packages.urllib3.connectionpool as http_client
+        # http_client.HTTPConnection.debuglevel = 1
+        # requests_log = logging.getLogger("requests.packages.urllib3")
+
         response = requests.post('%s/v1/payments/billing-agreements/%s/cancel' % (self.get_rest_endpoint(),
                                                                                   agreement_id),
                                  headers={'Accept': 'application/json',
                                           'Content-Type': 'application/json',
-                                          'Authorization': 'Bearer %s' % self.get_rest_access_token()}).content
-        logger.debug(response)
+                                          'Authorization': 'Bearer %s' % self.get_rest_access_token()})
+        logger.debug(response.ok)
+        logger.debug(response.status_code)
+        if response.ok is False:
+            logger.error(response.content)
+            raise helper.CancelAgreementException()
+        logger.debug(response.content)
+
+
+def send_email_subscription(request, user, email_title, *texts, async=False):
+    html_format = ''.join(['<p style="color:#858585;font:13px/120%% \'Helvetica\'">{}</p>' for x in texts])
+    email_body = format_html(html_format, *texts)
+    helper.send_email_basic_template_bcc_admins(request, user.first_name, [user.email], email_title,
+                                                email_body, async=async)
