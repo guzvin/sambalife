@@ -1,4 +1,7 @@
+from django.conf import settings
 from django.contrib import admin
+
+from stock.widgets import IdentifierTextInput, UpcTextInput
 from utils.sites import admin_site
 from stock.models import Product, Invoice
 from utils.models import Params
@@ -50,6 +53,10 @@ class StockProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
+        widgets = {
+            'identifier': IdentifierTextInput(),
+            'upc': UpcTextInput()
+        }
         fields = ('name', 'identifier', 'upc', 'url', 'buy_price', 'sell_price', 'rank', 'quantity', 'fba_fee',
                   'amazon_fee', 'shipping_cost', 'redirect_services', 'condition', 'voi_value', 'notes', 'invoices')
 
@@ -123,6 +130,23 @@ class ProductAdmin(admin.ModelAdmin):
         ('created_date', DateRangeFilter),
         ('changed_date', DateRangeFilter),
     ]
+
+    @property
+    def media(self):
+        extra = '' if settings.DEBUG else '.min'
+        js = [
+            'core.js',
+            'vendor/jquery/jquery%s.js' % extra,
+            'jquery.init.js',
+            'admin/RelatedObjectLookups.js',
+            'actions%s.js' % extra,
+            'urlify.js',
+            'prepopulate%s.js' % extra,
+            'vendor/xregexp/xregexp%s.js' % extra,
+        ]
+        js = ['admin/js/%s' % url for url in js]
+        js.append('js/specifics/stock_product_admin.js')
+        return forms.Media(js=js)
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         field = super(ProductAdmin, self).formfield_for_dbfield(db_field, request, **kwargs)
