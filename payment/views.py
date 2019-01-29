@@ -326,11 +326,11 @@ class SubscribeHelper:
     def create_agreement(self, plan=None):
         plan_id = self.get_plan_id(plan)
         if plan == '1':
-            agreement_name = _('Acordo VOI PRIME')
-            agreement_description = _('Acordo VOI PRIME.')
+            agreement_name = _('VOI PRIME')
+            agreement_description = _('VOI PRIME.')
         elif plan == '2':
-            agreement_name = _('Acordo WCYAZS')
-            agreement_description = _('Acordo We Create Your Amazon Shipment.')
+            agreement_name = _('We Create Your Amazon Shipment')
+            agreement_description = _('We Create Your Amazon Shipment.')
         else:
             raise helper.PlanTypeException()
         start_date = datetime.utcnow() + timedelta(minutes=5)

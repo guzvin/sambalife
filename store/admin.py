@@ -934,8 +934,8 @@ class ProductReportAdmin(admin.ModelAdmin):
 
     search_fields = ('name', 'identifier', 'upc', 'product_stock__invoices__name')
     list_display = ('stock_id_value', 'name', 'lot_name_value', 'lot_status_value', 'invoice_value', 'quantity',
-                    'product_cost_value', 'total_product_cost_value', 'voi_value_value', 'paypal_value', 'transfer_value',
-                    'voi_profit_value')
+                    'product_cost_value', 'total_product_cost_value', 'voi_value_value', 'paypal_value',
+                    'transfer_value', 'voi_profit_value')
 
     def stock_id_value(self, obj):
         if obj.product_stock is None:
@@ -963,9 +963,9 @@ class ProductReportAdmin(admin.ModelAdmin):
         invoice_value = None
         for invoice in invoices:
             if invoice_value:
-                invoice_value += '; ' + invoice
+                invoice_value += '; ' + invoice.name
             else:
-                invoice_value = invoice
+                invoice_value = invoice.name
         return invoice_value
     invoice_value.short_description = _('Invoice')
 

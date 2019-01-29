@@ -1083,16 +1083,25 @@
             {
                 $('.fba-text').show();
                 $('.fbm-text').hide();
+                $('.shipment-text').hide();
             }
             else if($this.data('type') === 2)
             {
                 $('.fba-text').hide();
                 $('.fbm-text').show();
+                $('.shipment-text').hide();
+            }
+            else if($this.data('type') === 3)
+            {
+                $('.fba-text').hide();
+                $('.fbm-text').hide();
+                $('.shipment-text').show();
             }
             else
             {
                 $('.fba-text').hide();
                 $('.fbm-text').hide();
+                $('.shipment-text').hide();
             }
 
             $('#modal-compra').modal('show');
