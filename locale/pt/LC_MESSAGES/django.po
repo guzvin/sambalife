@@ -946,7 +946,7 @@ msgstr ""
 #: html/templates/product_add_edit.html:51 html/templates/product_stock.html:14
 #: product/views.py:134
 msgid "Estoque FBA"
-msgstr ""
+msgstr "Estoque"
 
 #: html/templates/includes/layout.html:281
 #: html/templates/product_add_edit.html:42

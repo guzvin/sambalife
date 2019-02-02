@@ -73,14 +73,14 @@
                     {{ days_in_voi_stock }} {% trans "dias" %}
                   </td>
                   <td class="center">
-{% comment %}
                       <input type="number" class="form-control menor-m quantity_validate required-number-validate" id="{{ product_form.quantity.id_for_label }}" name="{{ product_form.quantity.html_name }}" value="{% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}" />
                       {% for error in product_form.quantity.errors %}
                         <label id="{{ product_form.quantity.id_for_label }}-error" class="error" for="{{ product_form.quantity.id_for_label }}">{{ error|escape }}</label>
                       {% endfor %}
-{% endcomment %}
+{% comment %}
                       <input type="hidden" class="quantity_validate" id="hidden_{{ product_form.quantity.id_for_label }}" name="{{ product_form.quantity.html_name }}" value="{% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}" />
                       {% if product_form.quantity.value %}{{ product_form.quantity.value|unlocalize }}{% endif %}
+{% endcomment %}
 
                       {{ product_form.id }}
                       {{ product_form.shipment }}

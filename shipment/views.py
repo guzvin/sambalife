@@ -954,9 +954,10 @@ def shipment_add(request):
             selected_collaborator = int(request.POST.get('shipment_collaborator'))
         except (ValueError, TypeError):
             selected_collaborator = None
+        preselected_products = request.POST.getlist('shipment_product')
         original_products = OriginalProduct.objects.select_related('lot_product')\
             .filter(user=request.user, status=2, quantity_partial__gt=0, collaborator_id=selected_collaborator,
-                    stock_type=1).order_by('id')
+                    stock_type=1, pk__in=preselected_products).order_by('id')
         if original_products.count() == 0:
             return HttpResponseRedirect('%s?s=1' % reverse('product_stock'))
     else:
@@ -1060,9 +1061,10 @@ def shipment_add_fba_prep(request):
             selected_collaborator = int(request.POST.get('shipment_collaborator'))
         except (ValueError, TypeError):
             selected_collaborator = None
+        preselected_products = request.POST.getlist('shipment_product')
         original_products = OriginalProduct.objects.select_related('lot_product')\
             .filter(user=request.user, status=2, quantity_partial__gt=0, collaborator_id=selected_collaborator,
-                    stock_type=1)
+                    pk__in = preselected_products, stock_type = 1).order_by('id')
         if original_products.count() == 0:
             return HttpResponseRedirect('%s?s=1' % reverse('product_stock'))
     else:
@@ -1149,11 +1151,11 @@ def merchant_shipment_add(request):
             original_products = OriginalProduct.objects.filter(user=request.user, status=2, quantity_partial__gt=0,
                                                                collaborator_id=selected_collaborator,
                                                                pk__in=preselected_products,
-                                                               stock_type=2).order_by('id')
+                                                               stock_type=1).order_by('id')
         else:
             original_products = OriginalProduct.objects.none()
         if original_products.count() == 0:
-            return HttpResponseRedirect('%s?s=1' % reverse('product_stock_fbm'))
+            return HttpResponseRedirect('%s?s=1' % reverse('product_stock'))
     else:
         original_products = OriginalProduct.objects.none()
     ShipmentFormSet = modelformset_factory(Shipment, fields=('type', 'observations',), min_num=1, max_num=1)

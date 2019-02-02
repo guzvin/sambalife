@@ -12,9 +12,11 @@ from django.http import HttpResponse, QueryDict, HttpResponseRedirect, HttpRespo
 from django.utils import formats, timezone
 from django.forms import modelformset_factory, inlineformset_factory
 from django.urls import reverse
+
+from utils import helper
 from utils.helper import MyBaseInlineFormSet, ObjectView, send_email_basic_template_bcc_admins, get_max_time_period
 from store.models import Collaborator
-from product.templatetags.products import has_product_perm
+from product.templatetags.products import has_product_perm, days_in_stock
 from myauth.templatetags.users import has_user_perm
 from store.templatetags.lots import has_store_perm
 from django.utils.html import format_html, mark_safe
@@ -576,7 +578,11 @@ def product_autocomplete(request):
                                           'bb': formats.date_format(product.best_before, "SHORT_DATE_FORMAT")
                                           if product.best_before else '',
                                           'lot': False if product.lot_product is None else True,
-                                          'asin': product.asin if product.asin else ''})
+                                          'asin': product.asin if product.asin else '',
+                                          'daysInStock': '%s %s' %
+                                                         (days_in_stock(product,
+                                                                        max_time_period=helper.get_max_time_period()),
+                                                          _('dias'))})
     return HttpResponse(json.dumps(products_autocomplete),
                         content_type='application/json')
 
@@ -591,7 +597,7 @@ def product_autocomplete_fbm(request):
     term = request.GET.get('term')
     if term is not None and len(term) >= 3:
         products = Product.objects.filter(name__icontains=term, status=2, user=request.user,
-                                          quantity_partial__gt=0, stock_type=2).order_by('id')
+                                          quantity_partial__gt=0, stock_type=1).order_by('id')
         for product in products:
             products_autocomplete.append({'value': product.id, 'label': product.name,
                                           'desc': product.description, 'qty': product.quantity_partial,
