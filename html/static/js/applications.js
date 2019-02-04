@@ -1761,11 +1761,6 @@
         $('#espaco').modal('show');
     });
 
-    //Modal log envio
-    $('#log-link').click(function(){
-        $('#modal-envio').modal('show');
-    });
-
 
     //Modal tutorial redirecionamento BR
     $('#video-explicativo-br').click(function(){

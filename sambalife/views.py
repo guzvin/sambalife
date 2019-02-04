@@ -352,8 +352,7 @@ def privacy_policy(request):
 def invoice(request):
     return render(request, 'invoice.html')
 
-def main(request):
-    return render(request, 'main.html')
+
 
 def colab(request):
     if request.method == 'POST':
