@@ -275,10 +275,12 @@
                                     <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Estoque FBA" %}</a>
                                 </li>
                                 <li class="divider"></li>
+{% comment %}
                                 <li class="{% block productfbmlist %}{% endblock %}">
                                     <a href="{% url 'product_stock_fbm' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Estoque FBM" %}</a>
                                 </li>
                                 <li class="divider"></li>
+{% endcomment %}
                             {% endif %}
                             {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
                                 <li class="{% block shipmentlist %}{% endblock %}">

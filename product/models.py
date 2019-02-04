@@ -24,7 +24,7 @@ class Product(models.Model):
         (1, _('FBA')),
         (2, _('FBM')),
     )
-    stock_type = models.SmallIntegerField(_('Estoque'), choices=STOCK_TYPES, null=True, blank=True)
+    stock_type = models.SmallIntegerField(_('Estoque'), choices=STOCK_TYPES, null=True, blank=True, default=1)
     send_date = models.DateField(_('Data da Compra'))
     STATUS_CHOICES = (
         (1, _('Encaminhado VOI')),

@@ -54,9 +54,15 @@ function addInlineRow(row, options)
                         $(this).append(selectedValue.bb);
                         break;
                     case 5:
+                        if(selectedValue.daysInStock)
+                        {
+                            $(this).html(selectedValue.daysInStock);
+                            break;
+                        }
+                    case 6:
                         var element = $(this).find('input.quantity_validate');
                         element.val(selectedValue.qty);
-                        element.after(selectedValue.qty);
+//                        element.after(selectedValue.qty);
                         addQuantityEvent(element, options.prefix);
                         if(selectedValue.lot)
                         {

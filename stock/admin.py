@@ -57,8 +57,8 @@ class StockProductForm(forms.ModelForm):
             'identifier': IdentifierTextInput(),
             'upc': UpcTextInput()
         }
-        fields = ('name', 'identifier', 'upc', 'url', 'buy_price', 'sell_price', 'rank', 'quantity', 'fba_fee',
-                  'amazon_fee', 'shipping_cost', 'redirect_services', 'condition', 'voi_value', 'notes', 'invoices')
+        fields = ('condition', 'name', 'identifier', 'upc', 'url', 'buy_price', 'sell_price', 'rank', 'quantity',
+                  'fba_fee', 'amazon_fee', 'shipping_cost', 'redirect_services', 'voi_value', 'notes', 'invoices')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor

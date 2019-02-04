@@ -1,5 +1,5 @@
 {% extends 'includes/layout.html' %}
-{% load i18n permissions products users shipments commons lots %}
+{% load i18n tz l10n permissions products users shipments commons lots %}
 {% block productlist %}active{% endblock %}
 
 {% block conteudo %}
@@ -111,13 +111,15 @@
           {% if user|has_shipment_perm:'add_shipment' %}
             <a class="btn btn-default" id="btn-add-shipment" data-action-url="{% url 'shipment_add' %}"><i class="fab fa-amazon"></i> {% trans "Criar Envio para Amazon" %}</a>
           {% endif %}
-          {% if user|has_shipment_perm:'create_fba_shipment' %}
-            <a class="btn btn-primary" id="btn-create-shipment" data-action-url="{% url 'shipment_create' %}"><i class="fa fa-fw fa-th"></i> {% trans "We create your AZ Shipment" %}</a>
-          {% endif %}
-{% comment %}
           {% if user|has_shipment_perm:'add_fbm_shipment' %}
             <a class="btn btn-default" id="btn-add-merchant-shipment" data-action-url="{% url 'merchant_shipment_add' %}"><i class="fa fa-ship"></i> {% trans "Criar Envio Merchant" %}</a>
           {% endif %}
+          {% if user|has_shipment_perm:'create_fba_shipment' %}
+            <a class="btn btn-primary" id="btn-create-shipment" data-action-url="{% url 'shipment_create' %}"><i class="fa fa-fw fa-th"></i> {% trans "We create your AZ Shipment" %}</a>
+          {% endif %}
+            <!-- Novo botao verificar espaço ocupado -->
+            <a class="btn btn-primary" id="ver-espaco" href="javascript:void(0)"><i class="fa fa-fw fa-th"></i> {% trans "Verificar Espaço ocupado" %}</a>
+{% comment %}
             <!-- Novo botao -->
             <a class="btn btn-default" id="btn-add-shipment-brazil"><i class="fa fa-globe"></i> {% trans "Criar Envio para o Brasil" %}</a>
 {% endcomment %}
@@ -157,11 +159,9 @@
                       {% trans "Ordenar pelo status" as order_status %}
                       <a title="{{ order_status }}" href="javascript:void(0);">{% trans "Status" %} <i class="fa fa-fw fa-sort-amount-asc"></i></a>
                   </th>
-{% comment %}
                   {% if user|has_shipment_perm:'add_shipment' or user|has_shipment_perm:'add_fbm_shipment' %}
                   <th class="center">{% trans "Envio" %}</th>
                   {% endif %}
-{% endcomment %}
                   <th class="center"> {% trans "Visualizar" %}</th>
                 </tr>
               </thead>
@@ -300,8 +300,7 @@
                       <!-- fim box -->
                       {% endif %}
                   </td>
-{% comment %}
-                  {% if user|has_shipment_perm:'add_shipment' or user|has_shipment_perm:'add_fbm_shipment' %}
+                  {% if user|has_shipment_perm:'add_shipment' %}
                       <td class="center">
                           {% if product.status == 2 and product.user == request.user %}
                               {% if product.quantity_partial is not None and product.quantity_partial > 0 or product.quantity_partial is None and product.quantity > 0 %}
@@ -310,7 +309,6 @@
                           {% endif %}
                       </td>
                   {% endif %}
-{% endcomment %}
                   <td class="center">
                       <a class=" download" href="{% url 'product_details' product.id %}"><i class="fa fa-pencil-square"></i>  {% trans "Visualizar" %}</a>
                   </td>
@@ -351,4 +349,28 @@
         {% endif %}
       </div>
     </div>
+<!-- Popup com o histórico de cubagem utilizada -->
+
+
+<div id="espaco" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-fw fa-frown-o"></i> {% trans "Verifique o Histórico de ocupação dos seus Produtos" %}</h4>
+            </div>
+            <div class="modal-body">
+                {% timezone_name LANGUAGE_CODE as mytz %}
+                {% timezone mytz %}
+                {% for user_space in user.userspace_set.all %}
+                <p>{{ user_space.date_register|date:'SHORT_DATE_FORMAT' }} - {{ user_space.space|localize }} {% trans "pés cúbico" %}s</p>
+                {% endfor %}
+                {% endtimezone %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

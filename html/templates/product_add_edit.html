@@ -21,7 +21,7 @@
               {{ product_formset.management_form }}
               {% for form in product_formset %}
                 {{ form.id }}
-
+{% comment %}
                 <!-- Novo campo -->
                 <div class="form-group col-md-12">
                   <label for="{{ form.stock_type.id_for_label }}">{{ form.stock_type.label }}*</label>
@@ -57,7 +57,7 @@
                 <br>
 
                 <!-- Novo campo fim -->
-
+{% endcomment %}
 
                 <div class="form-group col-md-12">
                   <label for="{{ form.name.id_for_label }}">{{ form.name.label }}*</label>

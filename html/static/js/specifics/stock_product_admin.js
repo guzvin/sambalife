@@ -5,14 +5,15 @@
     {
         $('#id_identifier-fill_out').click(function()
         {
-            if($.trim($('input#id_identifier').val()))
+            if($.trim($('input#id_identifier').val()) && $.trim($('select#id_condition').val()))
             {
                 $.ajax(
                 {
                     method: 'POST',
                     crossDomain: true,
                     url: 'https://app.voiservices.com:3031/api/getproduct',
-                    data: {asin: $.trim($('input#id_identifier').val())},
+                    data: {asin: $.trim($('input#id_identifier').val()),
+                            condicao: $.trim($('select#id_condition option:selected').text())},
                 })
                 .done(function(response_data)
                 {
@@ -44,14 +45,15 @@
 
         $('#id_upc-fill_out').click(function()
         {
-            if($.trim($('input#id_upc').val()))
+            if($.trim($('input#id_upc').val()) && $.trim($('select#id_condition').val()))
             {
                 $.ajax(
                 {
                     method: 'POST',
                     crossDomain: true,
                     url: 'https://app.voiservices.com:3031/api/getproduct',
-                    data: {upc: $.trim($('input#id_upc').val())},
+                    data: {upc: $.trim($('input#id_upc').val()),
+                            condicao: $.trim($('select#id_condition option:selected').text())},
                 })
                 .done(function(response_data)
                 {

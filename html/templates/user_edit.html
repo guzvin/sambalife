@@ -144,7 +144,7 @@
                 <h3 class="page-header"><i class="fa fa-fw fa-check-circle-o"></i> {% trans "Suas assinaturas ativas" %}:</h3>
                  {% if is_voiprime is False and is_wcyazs is False %}
                  <!-- Caso não possua nenhuma assinatura ativa -->
-                 <p>Você não possui nenhuma assinatura ativa. Para assinar nossos planos, veja as opções acima e clique em assinar.</p>
+                 <p>{% trans "Você não possui nenhuma assinatura ativa. Para assinar nossos planos, veja as opções acima e clique em assinar." %}</p>
                  {% else %}
                   <!-- Box assinaturas -->
                   {% if is_voiprime %}
