@@ -1079,7 +1079,7 @@ msgid "Veja abaixo nosso endereço:"
 msgstr "Check our address below:"
 
 #: html/templates/includes/layout.html:539
-msgid "1 Lafayette Rd - Building 1, Door D, Hampton, New Hampshire, 03842"
+msgid "1 Lafayette Rd - Building 1, Door E (Loading Dock), Hampton, New Hampshire, 03842"
 msgstr ""
 
 #: html/templates/includes/layout.html:540
@@ -4045,7 +4045,7 @@ msgid ""
 msgstr "The FROM address to put in your labels is:"
 
 #: store/views.py:384
-msgid "1 Lafayette Rd - Building 1, Door D"
+msgid "1 Lafayette Rd - Building 1, Door E (Loading Dock)"
 msgstr ""
 
 #: store/views.py:385
