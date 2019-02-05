@@ -383,15 +383,15 @@ def store_paypal_notification_post_transaction(request, _lot_details, user, ipn_
                  _('O endereço a ser inserido no FROM dos labels das caixas de seus produtos é:'),
                  _('1 Lafayette Rd - Building 1, Door E (Loading Dock)') if _lot_details.collaborator is None else _lot_details.collaborator.address_1,
                  _('Hampton, NH, 03842') if _lot_details.collaborator is None else _lot_details.collaborator.address_2,)
-        if _lot_details.collaborator and \
-                (lang == 'pt' and _lot_details.collaborator.instructions) or \
-                (lang != 'pt' and _lot_details.collaborator.instructions_en):
-            collaborator_instructions = True
-            texts += (_('Seguem algumas instruções do colaborador:'),)
-            if lang == 'pt':
-                texts += (_lot_details.collaborator.instructions,)
-            else:
-                texts += (_lot_details.collaborator.instructions_en,)
+        if _lot_details.collaborator:
+            if (lang == 'pt' and _lot_details.collaborator.instructions) or \
+                    (lang != 'pt' and _lot_details.collaborator.instructions_en):
+                collaborator_instructions = True
+                texts += (_('Seguem algumas instruções do colaborador:'),)
+                if lang == 'pt':
+                    texts += (_lot_details.collaborator.instructions,)
+                else:
+                    texts += (_lot_details.collaborator.instructions_en,)
         texts += (_('Todo o procedimento desde a compra até o redirecionamento de seus produtos você encontra aqui:'),
                   ''.join(['https://', request.CURRENT_DOMAIN,
                            _('/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf')]),

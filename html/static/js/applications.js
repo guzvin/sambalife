@@ -787,7 +787,7 @@
 
         $('form#form-save-shipment').validate(
         {
-            ignore: '#hidden_id_product_set-__prefix__-quantity, #id_warehouse_set-__prefix__-name',
+            ignore: '#id_product_set-__prefix__-quantity, #hidden_id_product_set-__prefix__-quantity, #id_warehouse_set-__prefix__-name',
             submitHandler: function(form)
             {
                 $('.loading').show();
