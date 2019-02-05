@@ -101,13 +101,17 @@ def payment_ipn(request):
         else:
             ipn_obj.verify()
 
-    ipn_obj.save()
     try:
-        ipn_obj.send_signals()
-    except PaymentException:
-        logger.debug('==================== ERROR 500 =========================')
-        ipn_obj.set_flag('Problem when processing payment.')
-        ipn_obj.save(update_fields=['flag', 'flag_info', 'flag_code'])
+        MyPayPalIPN.objects.get(txn_id=ipn_obj.txn_id, auth_id=ipn_obj.auth_id, mc_gross=ipn_obj.mc_gross)
+        # TODO enviar email informando do ocorrido!!!
+    except MyPayPalIPN.DoesNotExist:
+        ipn_obj.save()
+        try:
+            ipn_obj.send_signals()
+        except PaymentException:
+            logger.debug('==================== ERROR 500 =========================')
+            ipn_obj.set_flag('Problem when processing payment.')
+            ipn_obj.save(update_fields=['flag', 'flag_info', 'flag_code'])
 
     if encoding_missing:
         # Wait until we have an ID to log warning
