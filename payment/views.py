@@ -94,18 +94,18 @@ def payment_ipn(request):
     if flag is not None:
         # We save errors in the flag field
         ipn_obj.set_flag(flag)
-    else:
-        # Secrets should only be used over SSL.
-        if request.is_secure() and 'secret' in request.GET:
-            ipn_obj.verify_secret(form, request.GET['secret'])
-        else:
-            ipn_obj.verify()
+        ipn_obj.save()
+        return HttpResponse('OKAY')
 
     try:
         MyPayPalIPN.objects.get(txn_id=ipn_obj.txn_id, auth_id=ipn_obj.auth_id, mc_gross=ipn_obj.mc_gross)
         # TODO enviar email informando do ocorrido!!!
     except MyPayPalIPN.DoesNotExist:
-        ipn_obj.save()
+        # Secrets should only be used over SSL.
+        if request.is_secure() and 'secret' in request.GET:
+            ipn_obj.verify_secret(form, request.GET['secret'])
+        else:
+            ipn_obj.verify()
         try:
             ipn_obj.send_signals()
         except PaymentException:
