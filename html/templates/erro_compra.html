@@ -1,0 +1,23 @@
+{% extends 'includes/layout.html' %}
+
+{% block help %}active{% endblock %}
+
+{% block logo %}
+    <a href="/" class="navbar-brand page-scroll">
+        <img class="logo-fba" src="/static/img/logo-lots.png" />
+    </a>
+{% endblock %}
+
+{% block conteudo %}
+    <div class="container">
+        <div class="box-resposta">
+            <p class="text-danger"><i class="fa fa-3x fa-frown"></i></p>
+            <p class="titulo text-danger">{% trans "Desculpe" %}!!!</p>
+            <p class="text-info">{% trans "Esse lote já foi adquirido por outro assinante" %}.</p>
+            <p><a href="/"><i class="fa fa-link"></i> {% trans "Ver outras opções de lotes" %}</a> </p><br>
+        </div>
+    </div>
+{% endblock %}
+
+
+
