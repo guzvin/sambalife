@@ -208,11 +208,7 @@
 
               <div class="box-container-lote{% if lot.collaborator %} parceiro{% endif %}">
                  {% is_subscriber user lot=lot as is_user_subscriber %}
-                 {% if is_user_subscriber %}
                  <a href="{% url 'store_lot_details' lot.id %}" class="box-lote{% if lot.status == 2 %} vendido{% endif %}">
-                 {% else %}
-                 <a href="#" class="box-lote{% if lot.status == 2 %} vendido{% endif %} not-subscriber">
-                 {% endif %}
                      {% if lot.status == 2 %}
                      <p class="vendido-text">{% trans "Vendido" %}</p>
                      {% endif %}

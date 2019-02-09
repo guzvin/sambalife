@@ -41,6 +41,7 @@ urlpatterns += i18n_patterns(
     url(r'^admin/close_accounting_sandbox/$', close_accounting_sandbox, name='close_accounting_sandbox'),
     url(_(r'^login[/]$'), user_login, name='login'),
     url(_(r'^logout[/]$'), user_logout, name='logout'),
+    url(_(r'^home[/]$'), home, name='home'),
     url(_(r'^user/password/forgot[/]$'), user_forgot_password, name='user_forgot_password'),
     url(_(r'^user/password/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})[/]$'),
         user_reset_password, name='user_reset_password'),

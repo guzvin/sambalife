@@ -48,8 +48,8 @@ def email_users_new_lot(request, lot, users_emails, language_code, lifecycle=Fal
         request.LANGUAGE_CODE = translation.get_language()
         emails += (assemble_email_new_lot(request, lot, lifecycle=lifecycle),)
     translation.activate(original_language)
-    if emails:
-        helper.send_email(emails, bcc_admins=False, async=True, bcc=users_emails)
+    # if emails:
+    #     helper.send_email(emails, bcc_admins=False, async=True, bcc=users_emails)
 
 
 def assemble_email_new_lot(request, lot, lifecycle=False):

@@ -73,10 +73,7 @@ def user_login(request):
                 if 'next' in request.POST:
                     return HttpResponseRedirect(request.POST['next'])
                 else:
-                    if request.CURRENT_DOMAIN == 'fbaprepmaster.com':
-                        return HttpResponseRedirect(reverse('product_stock'))
-                    elif request.CURRENT_DOMAIN == 'lots.voiservices.com':
-                        return HttpResponseRedirect(reverse('store'))
+                    return HttpResponseRedirect(reverse('home'))
             else:
                 form.add_error(None, _('Não foi possível realizar seu login. Caso tenha esquecido sua senha, '
                                        'clique na opção Esqueci Minha Senha. Em caso de dúvida '
@@ -89,6 +86,12 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+
+@login_required
+@require_http_methods(["GET"])
+def home(request):
+    return render(request, 'main.html', {})
 
 
 @require_POST
