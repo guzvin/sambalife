@@ -2,18 +2,6 @@
 {% load i18n l10n payments %}
 {% block edituser %}active{% endblock %}
 
-{% block logo %}
-    {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
-        <a href="/" class="navbar-brand page-scroll">
-            <img class="logo-fba" src="/static/img/logo-en-old.png" /><span>By <strong>VOIRedirect</strong></span>
-        </a>
-    {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
-        <a href="/" class="navbar-brand page-scroll">
-            <img class="logo-fba" src="/static/img/logo-lots.png" />
-        </a>
-    {% endif %}
-{% endblock %}
-
 {% block conteudo %}
 
   <div class="container-fluid">
@@ -156,7 +144,7 @@
                             {% comment %}<p><strong>{% trans "Vencimento" %}:</strong> 20</p>{% endcomment %}
                             <p><strong>{% trans "Pagamento" %}:</strong> Paypal</p><hr>
 
-                            <a href="{% url 'user_unsubscribe' 1 %}" target="_blank" class="btn btn-default"><i class="fa fa-minus-circle"></i> {% trans "Cancelar Assinatura" %}</a>
+                            <a href="javascript:void(0);" id="link-unsubscribe-VP" class="btn btn-default"><i class="fa fa-minus-circle"></i> {% trans "Cancelar Assinatura" %}</a>
 
                         </div>
                      </div>
@@ -171,7 +159,7 @@
                             {% comment %}<p><strong>{% trans "Vencimento" %}:</strong> 12</p>{% endcomment %}
                             <p><strong>{% trans "Pagamento" %}:</strong> Paypal</p><hr>
 
-                            <a href="{% url 'user_unsubscribe' 2 %}" target="_blank" class="btn btn-default"><i class="fa fa-minus-circle"></i> {% trans "Cancelar Assinatura" %}</a>
+                            <a href="javascript:void(0);" id="link-unsubscribe-WC" class="btn btn-default"><i class="fa fa-minus-circle"></i> {% trans "Cancelar Assinatura" %}</a>
 
                         </div>
                      </div>
@@ -199,6 +187,52 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+ <!-- Modal cancelamento VP -->
+    <div id="modal-unsubscribe-VP" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fas fa-hand-paper" style="font-size: 30px;"></i> {% trans "Cancelamento" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="fba-text"><strong>Unsubscribe VOI Prime:</strong></p>
+                    <p class="fba-text">1) Click on the link: <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_manage-paylist' class=download' target='_blank'>https://www.paypal.com/cgi-bin/webscr?cmd=_manage-paylist</a></p>
+                    <p class="fba-text">2) Chose vendor 'VOI Services LLC', description 'VOI Prime."</p>
+                    <p class="fba-text">3) Click on "Cancel"</p>
+                    <p class="fba-text">4) Confirm the "Cancel Plan"</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> {% trans "Fechar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+ <!-- Modal cancelamento WC -->
+    <div id="modal-unsubscribe-WC" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fas fa-hand-paper" style="font-size: 30px;"></i> {% trans "Cancelamento" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="fba-text"><strong>Unsubscribe WE CREATE YOUR AMAZON SHIPMENT:</strong></p>
+                    <p class="fba-text">1) Click on the link: <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_manage-paylist' class=download' target='_blank'>https://www.paypal.com/cgi-bin/webscr?cmd=_manage-paylist</a></p>
+                    <p class="fba-text">2) Chose vendor "VOI Services LLC", description "WE CREATE YOUR AMAZON SHIPMENT""</p>
+                    <p class="fba-text">3) Click on "Cancel"</p>
+                    <p class="fba-text">4) Confirm the "Cancel Plan"</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> {% trans "Fechar" %}</button>
                 </div>
             </div>
         </div>

@@ -1747,6 +1747,14 @@
         $('#modal-codigo').modal('show');
     });
 
+    $('#link-unsubscribe-VP').click(function(){
+        $('#modal-unsubscribe-VP').modal('show');
+    });
+
+    $('#link-unsubscribe-WC').click(function(){
+        $('#modal-unsubscribe-WC').modal('show');
+    });
+
     $("#abre-endereco").click(function(){
         $('#modal-endereco').modal('show');
     });

@@ -1,12 +1,6 @@
 {% extends 'includes/layout.html' %}
 {% load i18n l10n tz lots permissions users commons %}
 
-{% block logo %}
-    <a href="/" class="navbar-brand page-scroll">
-        <img class="logo-fba" src="/static/img/logo-lots.png" />
-    </a>
-{% endblock %}
-
 {% block conteudo %}
 
 <div class="container-fluid">
@@ -105,7 +99,7 @@
 
                   {% if lot.destination == 1 %}
                   <div class="col-md-12">
-                      <p><strong>{% trans "Rank" %}:</strong> {{ product.rank|localize }}%</p>
+                      <p><strong>{% trans "Rank" %}:</strong> {{ product.rank|localize }}</p>
                   </div>
                   {% endif %}
 

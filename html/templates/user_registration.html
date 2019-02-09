@@ -44,15 +44,10 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
-                    <a href="/" class="navbar-brand page-scroll">
-                        <img class="logo-fba" src="/static/img/logo-en-old.png" /><span>By <strong>VOIRedirect</strong></span>
-                    </a>
-                {% elif request.CURRENT_DOMAIN == 'lots.voiservices.com' %}
-                    <a href="/" class="navbar-brand page-scroll">
-                        <img class="logo-fba" src="/static/img/logo-lots.png" />
-                    </a>
-                {% endif %}
+                <a href="/" class="navbar-brand page-scroll">
+                    <span class="logo-services fr">VOI </span><br>
+                    <span class="logo-services">Services</span>
+                </a>
             </div>
             <nav class="collapse navbar-collapse" id="bs-navbar">
                 <ul class="nav navbar-nav navbar-right">
@@ -68,7 +63,7 @@
             <div class="col-md-1">
             </div>
             <div class="col-md-6">
-                <h1 class="page-header"><i class="fa fa-users"></i> Cadastro</h1>
+                <h1 class="page-header"><i class="fa fa-users"></i> {% trans "Cadastro" %}</h1>
                 <form action="" method="post" class="form-cad-cliente" id="form-add-user">
                   {% csrf_token %}
                     <div class="col-md-6">
@@ -498,13 +493,9 @@
                     </div>
                     <div class="col-md-5">
                         <hr /><br>
-                        <p>{% trans "Leia <a href=/pt/termos-e-condicoes-de-uso' class='download'>aqui</a> nossos termos e condições de uso dos nossos serviços" %}</p>
-
+                        <p>{% trans "<a href=/en/terms/' class='download'>Click here</a> and read our terms of service" %}</p>
                     <br><hr>
                     </div>
-
-
-
                     <div class="col-md-12">
                         <button type="submit" id="send-btn" class="btn btn-primary"><i class="fa fa-fw fa-paper-plane"></i> {% trans "Salvar" %}</button><br><br>
                     </div>

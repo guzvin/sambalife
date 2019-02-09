@@ -2,12 +2,6 @@
 
 {% block help %}active{% endblock %}
 
-{% block logo %}
-    <a href="/" class="navbar-brand page-scroll">
-        <img class="logo-fba" src="/static/img/logo-lots.png" />
-    </a>
-{% endblock %}
-
 {% block conteudo %}
 
 <div class="album py-5 bg-light">
@@ -18,12 +12,12 @@
             <div class="col-md-4">
               <div class="card mb-4 box-shadow">
                 <img class="card-img-top" src="/static/img/header-bg.jpg" alt="Envios" style="height: 225px; width: 100%; display: block;" />
-                  <div class="box-main"><strong class="titulo-box">Lotes</strong></div>
+                  <div class="box-main"><strong class="titulo-box">{% trans "Lotes" %}</strong></div>
                 <div class="card-body">
-                    <p class="card-text"><strong>Acesse agora os lotes disponíveis na plataforma.</strong></p>
+                    <p class="card-text"><strong>{% trans "Acesse agora os lotes disponíveis na plataforma" %}.</strong></p>
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-                      <a href="#" class="btn btn-default"><i class="fa fa-link"></i> Acessar</a>
+                      <a href="{% url 'store' %}" class="btn btn-default"><i class="fa fa-link"></i> {% trans "Acessar" %}</a>
                     </div>
                     <!-- <small class="text-muted">9 mins</small>-->
                   </div>
@@ -33,12 +27,12 @@
               <div class="col-md-4">
               <div class="card mb-4 box-shadow">
                 <img class="card-img-top" src="/static/img/estoque.png" alt="Envios" style="height: 225px; width: 100%; display: block;" />
-                  <div class="box-main"><strong class="titulo-box">Estoque</strong></div>
+                  <div class="box-main"><strong class="titulo-box">{% trans "Estoque" %}</strong></div>
                 <div class="card-body">
-                    <p class="card-text"><strong>Acesse agora seu estoque na nossa warehouse.</strong></p>
+                    <p class="card-text"><strong>{% trans "Acesse agora seu estoque na nossa warehouse" %}.</strong></p>
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-                      <a href="#" class="btn btn-default"><i class="fa fa-link"></i> Acessar</a>
+                      <a href="{% url 'product_stock' %}" class="btn btn-default"><i class="fa fa-link"></i> {% trans "Acessar" %}</a>
                     </div>
                     <!-- <small class="text-muted">9 mins</small>-->
                   </div>
@@ -48,12 +42,12 @@
               <div class="col-md-4">
               <div class="card mb-4 box-shadow">
                 <img class="card-img-top" src="/static/img/envio.jpeg" alt="Envios" style="height: 225px; width: 100%; display: block;" />
-                  <div class="box-main"><strong class="titulo-box">Envios</strong></div>
+                  <div class="box-main"><strong class="titulo-box">{% trans "Envios" %}</strong></div>
                 <div class="card-body">
-                    <p class="card-text"><strong>Acesse, acompanhe e administre seus envios.</strong></p>
+                    <p class="card-text"><strong>{% trans "Acesse, acompanhe e administre seus envios" %}.</strong></p>
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-                      <a href="#" class="btn btn-default"><i class="fa fa-link"></i> Acessar</a>
+                      <a href="{% url 'shipment' %}" class="btn btn-default"><i class="fa fa-link"></i> {% trans "Acessar" %}</a>
                     </div>
                     <!-- <small class="text-muted">9 mins</small>-->
                   </div>
@@ -63,12 +57,12 @@
               <div class="col-md-4">
               <div class="card mb-4 box-shadow">
                 <img class="card-img-top" src="/static/img/sale-img.png" alt="Envios" style="height: 225px; width: 100%; display: block;" />
-                  <div class="box-main"><strong class="titulo-box">Meus Lotes</strong></div>
+                  <div class="box-main"><strong class="titulo-box">{% trans "Meus Lotes" %}</strong></div>
                 <div class="card-body">
-                    <p class="card-text"><strong>Acesse agora seus lotes comprados e invoices.</strong></p>
+                    <p class="card-text"><strong>{% trans "Acesse agora seus lotes comprados e invoices" %}.</strong></p>
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-                      <a href="#" class="btn btn-default"><i class="fa fa-link"></i> Acessar</a>
+                      <a href="{% url 'store_purchase' %}" class="btn btn-default"><i class="fa fa-link"></i> {% trans "Acessar" %}</a>
                     </div>
                     <!-- <small class="text-muted">9 mins</small>-->
                   </div>
@@ -78,12 +72,12 @@
               <div class="col-md-4">
               <div class="card mb-4 box-shadow">
                 <img class="card-img-top" src="/static/img/header-bg.jpg" alt="Envios" style="height: 225px; width: 100%; display: block;" />
-                  <div class="box-main"><strong class="titulo-box">Meu Cadastro</strong></div>
+                  <div class="box-main"><strong class="titulo-box">{% trans "Meu Cadastro" %}</strong></div>
                 <div class="card-body">
-                    <p class="card-text"><strong>Para alterar suas informações, assinaturas e cancelamentos.</strong></p>
+                    <p class="card-text"><strong>{% trans "Para alterar suas informações, assinaturas e cancelamentos" %}.</strong></p>
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-                      <a href="#" class="btn btn-default"><i class="fa fa-link"></i> Acessar</a>
+                      <a href="{% url 'user_edit' %}" class="btn btn-default"><i class="fa fa-link"></i> {% trans "Acessar" %}</a>
                     </div>
                     <!-- <small class="text-muted">9 mins</small>-->
                   </div>
@@ -93,13 +87,13 @@
               <div class="col-md-4">
               <div class="card mb-4 box-shadow">
                 <img class="card-img-top" src="/static/img/imagem-cadastro.png" alt="Envios" style="height: 225px; width: 100%; display: block;" />
-                  <div class="box-main"><strong class="titulo-box">Suporte</strong></div>
+                  <div class="box-main"><strong class="titulo-box">{% trans "Suporte" %}</strong></div>
                 <div class="card-body">
-                  <p class="card-text"><strong>Entre em contato conosco através do <a href="mailto:support@voiservices.com" class="download">support@voiservices.com</a></strong></p>
+                  <p class="card-text"><strong>{% trans "Entre em contato conosco através do" %} <a href="mailto:support@voiservices.com" class="download">support@voiservices.com</a></strong></p>
 
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-                      <a href="mailto:support@voiservices.com" class="btn btn-default"><i class="fa fa-envelope"></i> Enviar Email</a>
+                      <a href="mailto:support@voiservices.com" class="btn btn-default"><i class="fa fa-envelope"></i> {% trans "Enviar Email" %}</a>
                     </div>
                     <!-- <small class="text-muted">9 mins</small>-->
                   </div>

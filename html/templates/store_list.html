@@ -2,13 +2,7 @@
 {% load i18n l10n permissions users commons lots %}
 {% block storelist %}active{% endblock %}
 
-{% block logo %}
-    <a href="/" class="navbar-brand page-scroll">
-        <img class="logo-fba" src="/static/img/logo-lots.png" />
-    </a>
-{% endblock %}
-
-{% block conteudo %}
+{% block conteudo %}<!--
     <div class="banner-lote">
         <div class="">
             <h2><i class="fa fa-ban"></i><span class="text-gg">{% trans "Chega" %}</span> {% trans "de problemas para encontrar produtos" %}</h2>
@@ -17,9 +11,79 @@
             <h2><i class="fa fa-motorcycle"></i><span class="text-gg">{% trans "Agora" %}</span> {% trans "Você não paga mais redirecionamento." %} <strong>{% trans "Com a gente é grátis" %}</strong></h2>
             <h2><i class="fa fa-chart-line"></i><span class="text-gg">{% trans "Agora" %}</span> {% trans "preocupe-se apenas com o crescimento do seu negócio. Nós pensamos tudo pra você" %}</h2>
         </div>
-    </div>
+    </div>-->
+
     <div class="container-fluid">
       <div class="row">
+          <p class="cab-index">{% blocktrans %}<strong>Free prep and ship</strong> para produtos adquiridos conosco{% endblocktrans %} <i class="fas fa-shipping-fast"></i> <a href="{% url 'terms' %}" class="btn btn-default btn-quadrado">{% trans "Veja Nossos Termos" %} > </a></p>
+              <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                <!-- Carousel indicators-->
+                <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#myCarousel" data-slide-to="1"></li>
+                    <li data-target="#myCarousel" data-slide-to="2"></li>
+                    <li data-target="#myCarousel" data-slide-to="3"></li>
+                </ol>
+                <!-- Wrapper for carousel items -->
+                <div class="carousel-inner">
+                    <div class="item active bg-white">
+                        <div class="col-m col-left">
+                            <p class="p25">{% trans "Produtos Disponíveis para revenda na" %}</p>
+                            <p class="p42 bold">Amazon</p>
+                            <p class="p42 bold">Ebay</p>
+                            <p class="p42 bold">{% trans "Ou para seu Ecommerce" %}</p>
+                            <a href="{% url 'user_edit' %}" class="btn btn-default btn-quadrado"><i class="fas fa-user-tag"></i>{% trans " ASSINAR AGORA" %}</a>
+                        </div>
+                        <div class="col-m col-right">
+                            <img src="/static/img/box-cardboard.png" style="width: 31%; margin: 66px 0 0 0;" />
+                            <img src="/static/img/ebay.png" style="width: 46%; margin: 0px 0 0 141px;" />
+                            <img src="/static/img/amz.png" style="width: 54%; margin: 0px 0 0 222px;" />
+                        </div>
+                    </div>
+                    <div class="item bg">
+                        <div class="col-m col-left">
+                            <p class="p55 bold">{% trans "Lotes" %}</p>
+                            <p class="p42">{% trans "Todas as Quartas e Sextas" %}</p>
+                            <p class="p42">{% trans "Às 21:30" %}</p>
+                            <a href="{% url 'user_edit' %}" class="btn btn-default btn-quadrado"><i class="fas fa-user-tag"></i>{% trans " ASSINAR AGORA" %}</a>
+                        </div>
+                        <div class="col-m col-right">
+                            <img src="/static/img/boxes.jpg" class="img-margin" />
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="col-m col-left">
+                            <p class="p33">{% trans "Retorno Mínimo" %}</p>
+                            <p class="p140 bold">40%</p>
+                            <p class="p20">{% trans "Nos Produtos Ofertados" %}</p>
+                            <p class="p12">* {% trans "O nosso calculo de retorno é baseado sempre nos valores e fees apurados junto a Amazon" %}.</p>
+                        </div>
+                        <div class="col-m col-right">
+                            <img src="/static/img/money.png" width="30%" />
+                            <img src="/static/img/money.png" width="30%" />
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="col-m col-right">
+                            <img src="/static/img/boxes-2.png" class="margin-40" width="35%" />
+                            <img src="/static/img/boxes-2.png" class="margin-40" width="35%" />
+                        </div>
+                        <div class="col-m col-left">
+                            <p class="p55 bold">{% trans "Após a Compra" %}</p>
+                            <p class="p42">{% trans "Seus Produtos já estarão disponíveis para envio" %}</p>
+                            <a href="{% url 'user_edit' %}" class="btn btn-default btn-quadrado"><i class="fas fa-user-tag"></i> {% trans "ASSINAR AGORA" %}</a>
+                            <a href="/en/lots/how-it-works/" class="btn btn-default btn-quadrado" style=""><i class="fas fa-user-tag"></i> {% trans "VEJA COMO FUNCIONA" %}</a>
+                        </div>
+                    </div>
+                </div>
+
+                <a class="carousel-control left" href="#myCarousel" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </a>
+                <a class="carousel-control right" href="#myCarousel" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+            </div>
           <form action="" method="get" id="form-filter-store" class="form-filter"></form>
 <!--
         <div class="col-md-2 sidebar">
@@ -102,7 +166,9 @@
                 </div>
             </div>
             </form>
-        </div>--><div class="col-md-1"></div>
+        </div>-->
+
+        <div class="col-md-1"></div>
         <div class="col-md-10 main loja">
           {% log_message '@#@#@#@#@#@#@#@#@#@#@@#@#@#@#@#@#@#@#@' %}
           {% if not lots %}
@@ -130,9 +196,11 @@
                     <div class="col-md-3"></div>
                 </div>
             </div>
+
           {% endif %}
           {% for lot in lots %}
           {% if forloop.counter0|divisibleby:4 %}
+
           <div class="row">
           {% endif %}
 
@@ -163,13 +231,13 @@
                         <span class="lot-subscribers">{% trans "Somente Assinantes" %}</span>
                         {% endif %}
                         <br>
-                        <p class="lucro-prod">{% trans "Lucro" %}: U$ {{ lot.profit|localize }}</p>
-                        <p class="lucro-prod">{% trans "Número de Itens" %}: {{ lot.products_quantity }}</p>
+                         <p class="lucro-prod">{% trans "Lucro" %}: <strong class="valores-list">U$ {{ lot.profit|localize }}</strong></p>
+                         <p class="lucro-prod">{% trans "Número de Itens" %}: <strong class="valores-list">{{ lot.products_quantity }}</strong></p>
                         <p class="lucro-prod">
                             {% if lot.destination == 1 %}
-                            {% trans "ROI" %}: {{ lot.average_roi|localize }}% | Rank: {{ lot.average_rank|localize }}%
+                            {% trans "ROI" %}: <strong class="valores-list">{{ lot.average_roi|localize }}%</strong>
                             {% else %}
-                            {% trans "Retorno Estimado" %}: {{ lot.average_roi|localize }}%
+                            {% trans "Retorno Estimado" %}: <strong class="valores-list">{{ lot.average_roi|localize }}%</strong>
                             {% endif %}
                         </p>
 
@@ -186,9 +254,9 @@
                         <div class="rating {{ stars_rating }} ">
                             <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
                         </div>
-                         <!-- Fim conteúdo novo -->
+                         <!-- Fim conteúdo novo
                         {% endif %}
-                          <!-- O vip não aparecerá mais. Agora se for lote amazon, a imgem será /vip-amz.png e se for ebay, /vip-ebay.png-->
+                          <!-- O vip não aparecerá mais. Agora se for lote amazon, a imgem será /vip-amz.png e se for ebay, /vip-ebay.png
                          {% if lot.destination == 1 %}
                             <img class="img-vip" src="/static/img/vip-amz.png" width="" />
                          {% elif lot.destination == 2 %}
@@ -217,6 +285,13 @@
                          </p>
                          <p class="lucro-prod countdown" data-countdown="{{ lot_countdown_time }}" data-lid="{{ lot.id }}"> </p>
                      </div>
+                     {% endif %}
+
+
+                     {% if is_user_subscriber %}
+                        <a href="{% url 'store_lot_details' lot.id %}" class="btn btn-danger btn-comprar">comprar agora</a>
+                     {% else %}
+                        <a href="#" class="btn btn-danger btn-comprar box-lote{% if lot.status == 2 %} vendido{% endif %} not-subscriber">comprar agora</a>
                      {% endif %}
 
                  </a>

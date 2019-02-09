@@ -819,9 +819,15 @@ body {
     width: 270px;
 }
 
+#login-box .navbar-brand{
+    display: block;
+    width: 100%;
+    margin: 48px auto 81px auto;
+}
+
 .navbar-brand span{
-    font-size: 11px;
-    margin: 24px 0 0 5px;
+    font-size: 25px;
+    margin: 24px 0 0 0px;
     display: block;
     float: left;
 }
@@ -971,9 +977,7 @@ body {
 }
 
 #login-box  .logo-services {
-    margin: 0 0 20px 0;
-    font-size: 24px;
-    width: auto;
+    font-size: 44px;
 }
 
 .contem-logo-login{
@@ -1138,14 +1142,21 @@ table th a{
     font-weight: bold;
 }
 
+.nav > li > a.abre-tutorial:hover{
+    background: transparent;
+    text-decoration: underline;
+}
+
 .nav > li.tutorial{
     position: fixed;
-    top: 448px;
+    top: 466px;
     left: 0;
     background: red;
     color: #fff;
-    width: 107px;
+    width: 111px;
     text-align: center;
+    border-radius: 26px;
+    padding: 6px;
 }
 
 .endereco-novo-form{
@@ -1287,10 +1298,8 @@ label.titulo-pct span{
     width: 100%;
     display: block;
     float: left;
-    border-right: 1px solid #e5e5e5;
-    padding: 10px;
+    padding: 10px 10px 1px 10px;
     margin-bottom: 10px;
-    height: 98%;
 }
 
 .box-container-lote:nth-child(4n) .box-lote{
@@ -1352,7 +1361,7 @@ label.titulo-pct span{
 
 .tempo{
     width: 100%;
-    margin: 0 auto;
+    margin: 6px auto 0 auto;
     border-top: 1px solid #eee;
     clear: both;
     padding-top: 5px;
@@ -1392,18 +1401,41 @@ label.titulo-pct span{
 }
 
 .box-container-lote{
-    border-bottom: 1px solid #e5e5e5;
+    border: 1px solid #e5e5e5;
     float: left;
     width: 24%;
     margin-bottom: 20px;
-    height: 365px;
+    margin-right: 9px;
+    padding-bottom: 0px;
+    background: #fff;
+}
+
+.box-container-lote:hover {
+    -webkit-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    transform: scale(1.1);
+    z-index:999999999;
+}
+
+.btn-comprar{
+    display:none;
+    float: left;
+    margin: 0px 0px 18px 25px;
+    width: 83%;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.box-container-lote:hover .btn-comprar{
+    display: block;
 }
 
 .box-lote img{
-    width: 100px;
+    width: 170px;
     display: block;
     margin: 0 auto;
-    height: 100px;
+    height: 170px;
 }
 
 .vendido{
@@ -1463,16 +1495,22 @@ label.titulo-pct span{
 }
 
 .valor-prod{
-    font-size: 18px;
-    color: #333;
+    font-size: 27px;
+    color: #3C3E77;
     float: left;
     margin-bottom: 0px;
+    font-weight: bold;
+}
+
+strong.valores-list {
+    font-size: 18px;
+    color: #2a7bbf;
 }
 
 .lucro-prod{
     float: left;
     width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 0;
     font-size: 13px;
     color: #666;
 }
@@ -1950,13 +1988,13 @@ form small{
 }
 
 .nav > li.tutorial.adress{
-    top: 601px;
+    top: 644px;
     background: #fff;
     border: 1px solid #858585;
 }
 
 .nav > li.tutorial.adress.adress-v{
-    top: 511px;
+    top: 556px;
 }
 
 .nav > li.tutorial.adress a{
@@ -2693,25 +2731,6 @@ ul.listaancora li a{
      max-height: 40px;
 }
 
-.carousel{
-    margin-top: 20px;
-    background: #DC3438;
-    height: 300px;
-}
-.carousel .item{
-    min-height: 300px;
-}
-.carousel .item img{
-    margin: 0 auto;
-}
-.bs-example{
-	margin: 20px;
-}
-
-.carousel-control.left, .carousel-control.right{
-    background: transparent;
-}
-
 .nav>li>a {
     padding: 10px 8px;
 }
@@ -2727,6 +2746,94 @@ ul.listaancora li a{
     font-size: 18px;
     font-weight: bold;
     text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.navbar-nav > li >a {
+    line-height: 30px;
+}
+
+.navbar-nav > li.tutorial >a {
+    line-height: 15px;
+    font-size: 11px;
+}
+
+/* banner */
+
+.carousel{
+    margin-top: 20px;
+    background: #dad6d3;
+    height: 300px;
+    margin-bottom: 60px;
+}
+.carousel .item{
+    min-height: 300px;
+}
+.carousel .item img{
+    margin: 0 0 0 100px;
+}
+.bs-example{
+	margin: 20px;
+}
+
+.carousel-control.left, .carousel-control.right{
+    background: transparent;
+}
+
+.col-m{
+    float: left;
+    width: 50%;
+}
+
+.col-m p{
+    line-height: 20px;
+    margin: 0;
+}
+
+.col-m p.16{
+    margin: 0;
+}
+
+.col-m.col-left{
+    padding-top: 35px;
+}
+
+.col-m.col-left p{
+    text-align: right;
+    margin: 0 100px 0 0;
+    line-height: 44px;
+    color: #3C3E77;
+}
+
+.bg .col-m p{
+    color: #777;
+}
+
+p.p55{
+    font-size: 55px;
+}
+
+p.bold{
+    font-weight: bold;
+}
+
+p.p42{
+    font-size: 42px;
+}
+
+p.p33{
+    font-size: 33px;
+}
+
+.col-m.col-left p.p140{
+    font-size: 140px;
+    margin-top: 26px;
+}
+
+.col-m.col-left p.p20{
+    margin-top: 20px;
+    font-size: 21px;
 }
 
 .btn-quadrado{
@@ -2736,6 +2843,57 @@ ul.listaancora li a{
     color: #777;
     margin-left: 17px;
 }
+
+.col-m .btn-quadrado{
+    float: right;
+    margin-right: 96px;
+    margin-top: 35px;
+    color: #777;
+}
+
+.carousel-indicators .active {
+    background-color: #666;
+}
+
+.carousel-indicators li {
+    border: 1px solid #666;
+}
+
+.col-m .balao-red{
+    border: 1px solid #DC3438;
+    width: 290px;
+    float: right;
+    margin: 68px 30px 0 0;
+    border-radius: 19px;
+    padding: 20px;
+    background: #DC3438;
+    color: #fff;
+}
+
+.col-m .img-margin{
+    margin: 0 !important;
+    width: 100%;
+    height: 300px;
+}
+
+p.p12{
+  font-size: 12px;
+}
+
+p.p25{
+    font-size: 25px;
+}
+
+.carousel .item .margin-40 {
+    margin-top: 40px;
+}
+
+.carousel .bg-white{
+    background: #fff;
+}
+
+/* banner */
+
 
 @media (min-width: 1350px){
     .container {

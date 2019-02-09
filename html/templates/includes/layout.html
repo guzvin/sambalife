@@ -24,7 +24,7 @@
     <link href="/static/externo/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom fontes -->
-    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
     <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -69,7 +69,7 @@
 
                 {% block logo %}
                     <a href="/" class="navbar-brand page-scroll">
-                        <img class="logo-fba" src="/static/img/logo-en-old.png" />
+                        <span class="logo-services fr">VOI </span><span class="logo-services">SERVICES</span>
                     </a>
                 {% endblock %}
 
@@ -119,23 +119,20 @@
 
 
 
-                    {% comment %}
-                        {% if LANGUAGE_CODE == 'pt' %}
+
                             <li class="seja-parceiro-menu {% block partner %}{% endblock %}">
-                               <a href="{% url 'colab' %}">
-                                  <i class="fa fa-street-view"></i> {% trans "Seja um colaborador" %}
-                                  <span title="{% trans 'Seja um colaborador' %}" class="suspenso">{% trans "Novo" %}</span>
+                               <a href="{% url 'user_edit' %}">
+                                  <i class="fa fa-street-view"></i> {% trans "Assinar / cancelar plano" %}
                                </a>
                             </li>
-                        {% endif %}
-                    {% endcomment %}
+
 
                         <li class="{% block storelist %}{% endblock %}">
                             <a href="{% url 'store' %}" class="logo-marca-link operacional-conf"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</a>
                         </li>
 
                         <li class="{% block comoFunciona %}{% endblock %}">
-                            <a href="https://fbaprepmaster.com/" class=""><i class="fa fa-book"></i> {% trans "Go to website" %}</a>
+                            <a href="https://voiservices.com" class=""><i class="fa fa-book"></i> {% trans "Go to website" %}</a>
                         </li>
 
                     {% comment %}
@@ -148,7 +145,7 @@
 
                         {% if LANGUAGE_CODE == 'pt' %}
                             <li class="tutorial">
-                                <a href="{% trans '/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf' %}" target="_blank" class="abre-tutorial"><i class="fa fa-book"></i> {% trans "Tutorial Plataforma" %}</a>
+                                <a href="{% trans '/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf' %}" target="_blank" class="abre-tutorial"><i class="fa fa-book fa-2x"></i><br /> {% trans "Tutorial Plataforma" %}</a>
                             </li>
                             <!-- Novo item com código de usuário -->
                         {% endif %}
@@ -158,19 +155,19 @@
                     </li>
 
                     <li class="tutorial adress" id="abre-codigo">
-                        <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fas fa-user-circle" style="font-size: 70px;"></i> {% trans "Código Cliente" %}: <span>{{ user.from_key }}</span></a>
+                        <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fas fa-user-circle fa-2x"></i> <br />{% trans "Código Cliente" %}: <span>{{ user.from_key }}</span></a>
                         <hr />
                         <small id="btn-cod-cliente">{% trans "Onde utilizo esse código?" %}</small>
                     </li>
 
                     <li class="tutorial adress adress-v" id="abre-endereco">
-                        <a href="javascript:void(0);" class="abre-tutorial open-endereco"><i class="fa fa-2x fa-map-marker"></i><br /> {% trans "Nosso Endereço" %}</a>
+                        <a href="javascript:void(0);" class="abre-tutorial open-endereco"><i class="fa fa-2x fa-map-marker fa-2x"></i><br /> {% trans "Nosso Endereço" %}</a>
                     </li>
 
                     {% if request.CURRENT_DOMAIN == 'fbaprepmaster.com' %}
 
                             <li class="tutorial">
-                                <a href="{% trans '/en/tutorials' %}" target="_blank" class="abre-tutorial"><i class="fa fa-book"></i> {% trans "Tutorials" %}</a>
+                                <a href="{% trans '/en/tutorials' %}" target="_blank" class="abre-tutorial"><i class="fa fa-book fa-2x"></i> {% trans "Tutorials" %}</a>
                             </li>
 
                     {% endif %}
@@ -275,12 +272,10 @@
                                     <a href="{% url 'product_stock' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Estoque FBA" %}</a>
                                 </li>
                                 <li class="divider"></li>
-{% comment %}
                                 <li class="{% block productfbmlist %}{% endblock %}">
                                     <a href="{% url 'product_stock_fbm' %}"><i class="fa fa-fw fa-list-alt"></i> {% trans "Estoque FBM" %}</a>
                                 </li>
                                 <li class="divider"></li>
-{% endcomment %}
                             {% endif %}
                             {% if user|has_shipment_perm:'view_shipments' or user|has_shipment_perm:'add_shipment' %}
                                 <li class="{% block shipmentlist %}{% endblock %}">
