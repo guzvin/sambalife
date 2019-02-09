@@ -58,7 +58,7 @@ class StockProductForm(forms.ModelForm):
             'upc': UpcTextInput()
         }
         fields = ('condition', 'name', 'identifier', 'upc', 'url', 'buy_price', 'sell_price', 'rank', 'quantity',
-                  'fba_fee', 'amazon_fee', 'shipping_cost', 'redirect_services', 'voi_value', 'notes', 'invoices')
+                  'fba_fee', 'shipping_cost', 'redirect_services', 'voi_value', 'notes', 'invoices')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor
@@ -66,7 +66,6 @@ class StockProductForm(forms.ModelForm):
         if self.instance.pk is None:
             params = Params.objects.first()
             if params:
-                self.fields['amazon_fee'].initial = params.amazon_fee
                 self.fields['shipping_cost'].initial = params.shipping_cost
         else:
 
