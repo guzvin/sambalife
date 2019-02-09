@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-02 01:16-0200\n"
+"POT-Creation-Date: 2019-02-09 14:50-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -114,7 +114,7 @@ msgstr ""
 #: html/templates/store_purchase.html:25 html/templates/store_purchase.html:50
 #: html/templates/user_registration.html:76 myauth/admin.py:388
 #: myauth/models.py:24 partner/models.py:12 sambalife/forms.py:8
-#: sambalife/views.py:359 sambalife/views.py:391 service/models.py:12
+#: sambalife/views.py:362 sambalife/views.py:394 service/models.py:12
 #: stock/models.py:15 stock/models.py:30 store/models.py:27 store/models.py:48
 #: store/models.py:148
 msgid "Nome"
@@ -458,7 +458,7 @@ msgstr ""
 #: html/templates/base_shipment_details.html:689
 #: html/templates/base_shipment_details.html:712
 #: html/templates/base_shipment_list.html:58
-#: html/templates/product_details.html:205 html/templates/store_list.html:273
+#: html/templates/product_details.html:205 html/templates/store_list.html:269
 #: html/templates/store_lot_details.html:255
 #: html/templates/store_lot_details.html:275
 msgid "Sim"
@@ -483,7 +483,7 @@ msgstr ""
 #: html/templates/product_details.html:230
 #: html/templates/product_stock.html:295 html/templates/product_stock.html:371
 #: html/templates/product_stock_fbm.html:295
-#: html/templates/product_stock_fbm.html:372 html/templates/store_list.html:274
+#: html/templates/product_stock_fbm.html:372 html/templates/store_list.html:270
 #: html/templates/store_lot_details.html:256
 #: html/templates/store_lot_details.html:276 html/templates/user_edit.html:203
 #: html/templates/user_registration.html:629
@@ -589,8 +589,8 @@ msgstr ""
 #: html/templates/subscriber_return.html:13
 #: html/templates/user_registration.html:13
 #: html/templates/user_reset_password.html:13
-#: html/templates/user_validation.html:13 sambalife/views.py:109
-#: sambalife/views.py:271 utils/helper.py:91 utils/helper.py:99
+#: html/templates/user_validation.html:13 sambalife/views.py:112
+#: sambalife/views.py:274 utils/helper.py:91 utils/helper.py:99
 #: utils/helper.py:186
 msgid "Vendedor Online Internacional"
 msgstr "VOI Services"
@@ -672,6 +672,18 @@ msgstr ""
 
 #: html/templates/email/registration-validation.html:19
 msgid "VALIDAR CADASTRO"
+msgstr ""
+
+#: html/templates/erro_compra.html:15
+msgid "Desculpe"
+msgstr ""
+
+#: html/templates/erro_compra.html:16
+msgid "Esse lote já foi adquirido por outro assinante"
+msgstr ""
+
+#: html/templates/erro_compra.html:17
+msgid "Ver outras opções de lotes"
 msgstr ""
 
 #: html/templates/error/400_shipment.html:8
@@ -969,7 +981,7 @@ msgid "Endereço"
 msgstr ""
 
 #: html/templates/includes/layout.html:360 html/templates/partner.html:47
-#: sambalife/views.py:361 sambalife/views.py:391
+#: sambalife/views.py:364 sambalife/views.py:394
 msgid "Telefone"
 msgstr ""
 
@@ -1052,7 +1064,9 @@ msgid "Veja abaixo nosso endereço:"
 msgstr ""
 
 #: html/templates/includes/layout.html:539
-msgid "1 Lafayette Rd - Building 1, Door E (Loading Dock), Hampton, New Hampshire, 03842"
+msgid ""
+"1 Lafayette Rd - Building 1, Door E (Loading Dock), Hampton, New Hampshire, "
+"03842"
 msgstr ""
 
 #: html/templates/includes/layout.html:540
@@ -1272,7 +1286,7 @@ msgstr ""
 
 #: html/templates/partner.html:41 html/templates/user_registration.html:96
 #: myauth/models.py:26 sambalife/forms.py:10 sambalife/forms.py:52
-#: sambalife/views.py:282 sambalife/views.py:360 sambalife/views.py:391
+#: sambalife/views.py:285 sambalife/views.py:363 sambalife/views.py:394
 #: store/models.py:28
 msgid "E-mail"
 msgstr ""
@@ -1286,7 +1300,7 @@ msgstr ""
 msgid "Digite o telefone, celular de preferência"
 msgstr ""
 
-#: html/templates/partner.html:54 sambalife/views.py:362 sambalife/views.py:391
+#: html/templates/partner.html:54 sambalife/views.py:365 sambalife/views.py:394
 msgid "Mensagem"
 msgstr ""
 
@@ -1539,7 +1553,7 @@ msgstr "Em Estoque"
 
 #: html/templates/product_stock.html:70
 #: html/templates/product_stock_fbm.html:70 myauth/models.py:36
-#: product/models.py:55 sambalife/views.py:368 shipment/models.py:67
+#: product/models.py:55 sambalife/views.py:371 shipment/models.py:67
 #: store/models.py:36 store/models.py:39 store/models.py:90
 msgid "Colaborador"
 msgstr ""
@@ -1604,7 +1618,7 @@ msgstr ""
 #: html/templates/product_stock_fbm.html:193
 #: html/templates/subscriber_return.html:13
 #: html/templates/user_registration.html:13
-#: html/templates/user_validation.html:13 sambalife/views.py:270
+#: html/templates/user_validation.html:13 sambalife/views.py:273
 msgid "Cadastro"
 msgstr ""
 
@@ -1743,7 +1757,7 @@ msgstr ""
 msgid "Acima de 5%%"
 msgstr ""
 
-#: html/templates/store_list.html:78 html/templates/store_list.html:170
+#: html/templates/store_list.html:78 html/templates/store_list.html:166
 #: html/templates/store_lot_details.html:183
 #: html/templates/store_purchase.html:53 stock/models.py:55 store/models.py:174
 msgid "ROI"
@@ -1784,44 +1798,44 @@ msgstr ""
 msgid "Sextas "
 msgstr ""
 
-#: html/templates/store_list.html:149 store/models.py:52
+#: html/templates/store_list.html:145 store/models.py:52
 msgid "Vendido"
 msgstr ""
 
-#: html/templates/store_list.html:163
+#: html/templates/store_list.html:159
 msgid "Somente Assinantes"
 msgstr ""
 
-#: html/templates/store_list.html:166 html/templates/store_lot_details.html:46
+#: html/templates/store_list.html:162 html/templates/store_lot_details.html:46
 #: store/models.py:77
 msgid "Lucro"
 msgstr ""
 
-#: html/templates/store_list.html:167
+#: html/templates/store_list.html:163
 msgid "Número de Itens"
 msgstr ""
 
-#: html/templates/store_list.html:172 html/templates/store_lot_details.html:54
+#: html/templates/store_list.html:168 html/templates/store_lot_details.html:54
 msgid "Retorno Estimado"
 msgstr ""
 
-#: html/templates/store_list.html:180
+#: html/templates/store_list.html:176
 msgid "Vendido por"
 msgstr ""
 
-#: html/templates/store_list.html:213
+#: html/templates/store_list.html:209
 msgid "Tempo para deixar de ser VIP"
 msgstr ""
 
-#: html/templates/store_list.html:215
+#: html/templates/store_list.html:211
 msgid "Tempo para ser retirado"
 msgstr ""
 
-#: html/templates/store_list.html:263 html/templates/store_lot_details.html:244
+#: html/templates/store_list.html:259 html/templates/store_lot_details.html:244
 msgid "Acesso à compra de lotes"
 msgstr ""
 
-#: html/templates/store_list.html:267
+#: html/templates/store_list.html:263
 msgid ""
 "\n"
 "                        Conteúdo somente para assinantes.\n"
@@ -1966,13 +1980,12 @@ msgstr ""
 msgid "Veja o Produto na Ebay"
 msgstr ""
 
-#: html/templates/store_lot_details.html:248
+#: html/templates/store_lot_details.html:249
+#, python-format
 msgid ""
 "\n"
-"                        Você está em nossa fila de espera de assinantes."
-"<br>\n"
-"                        Assim que liberarmos mais vagas, você receberá um "
-"email de notificação.\n"
+"                        Este lote é exclusivo para assinantes VOi Prime. <a "
+"href=\"%(url_user_edit)s\">Clique aqui e assine.</a>\n"
 "                        "
 msgstr ""
 
@@ -2235,7 +2248,7 @@ msgstr ""
 
 #: html/templates/user_reset_password.html:70
 #: html/templates/user_validation.html:83 product/views.py:635
-#: sambalife/views.py:284 shipment/views.py:1418 shipment/views.py:1458
+#: sambalife/views.py:287 shipment/views.py:1418 shipment/views.py:1458
 #: shipment/views.py:1486 shipment/views.py:1530 shipment/views.py:1548
 #: shipment/views.py:1563 shipment/views.py:1573 store/send_email.py:77
 #: store/send_email.py:126 store/send_email.py:145 utils/cron.py:181
@@ -2420,7 +2433,7 @@ msgstr ""
 msgid "Permissões"
 msgstr ""
 
-#: myauth/admin.py:292 sambalife/views.py:286 sambalife/views.py:377
+#: myauth/admin.py:292 sambalife/views.py:289 sambalife/views.py:380
 #: store/views.py:377 utils/helper.py:556
 msgid "Administrador"
 msgstr ""
@@ -2628,7 +2641,7 @@ msgstr ""
 msgid "VOI Prime"
 msgstr ""
 
-#: payment/models.py:75 payment/views.py:332
+#: payment/models.py:75 payment/views.py:336
 msgid "We Create Your Amazon Shipment"
 msgstr ""
 
@@ -2644,40 +2657,40 @@ msgstr ""
 msgid "Inscrições"
 msgstr ""
 
-#: payment/views.py:146
+#: payment/views.py:150
 msgid "Sua assinatura VOI Prime foi realizada com sucesso!"
 msgstr ""
 
-#: payment/views.py:151
+#: payment/views.py:155
 msgid ""
 "Sua assinatura We Create your Amazon Shipment foi realizada com sucesso!"
 msgstr ""
 
-#: payment/views.py:155
+#: payment/views.py:159
 msgid "Confirmação de assinatura"
 msgstr ""
 
-#: payment/views.py:196
+#: payment/views.py:200
 msgid "Sua assinatura VOI Prime foi cancelada."
 msgstr ""
 
-#: payment/views.py:201
+#: payment/views.py:205
 msgid "Sua assinatura We Create your Amazon Shipment foi cancelada."
 msgstr ""
 
-#: payment/views.py:206
+#: payment/views.py:210
 msgid "Cancelamento de assinatura"
 msgstr ""
 
-#: payment/views.py:329
+#: payment/views.py:333
 msgid "VOI PRIME"
 msgstr ""
 
-#: payment/views.py:330
+#: payment/views.py:334
 msgid "VOI PRIME."
 msgstr ""
 
-#: payment/views.py:333
+#: payment/views.py:337
 msgid "We Create Your Amazon Shipment."
 msgstr ""
 
@@ -2850,10 +2863,16 @@ msgid "^logout[/]$"
 msgstr "^sair[/]$"
 
 #: sambalife/urls.py:44
+#, fuzzy
+#| msgid "^login[/]$"
+msgid "^home[/]$"
+msgstr "^entrar[/]$"
+
+#: sambalife/urls.py:45
 msgid "^user/password/forgot[/]$"
 msgstr "^usuario/senha/esqueceu[/]$"
 
-#: sambalife/urls.py:45
+#: sambalife/urls.py:46
 msgid ""
 "^user/password/reset/(?P<uidb64>[0-9A-Za-z_\\-]+)/(?P<token>[0-9A-Za-z]"
 "{1,13}-[0-9A-Za-z]{1,20})[/]$"
@@ -2861,16 +2880,16 @@ msgstr ""
 "^usuario/senha/redefinir/(?P<uidb64>[0-9A-Za-z_\\-]+)/(?P<token>[0-9A-Za-z]"
 "{1,13}-[0-9A-Za-z]{1,20})[/]$"
 
-#: sambalife/urls.py:47
+#: sambalife/urls.py:48
 msgid "^user/registration[/]$"
 msgstr "^usuario/cadastro[/]$"
 
-#: sambalife/urls.py:48
+#: sambalife/urls.py:49
 #, python-brace-format
 msgid "^user/(?P<pid>[0-9A-Za-z]{4})/registration[/]$"
 msgstr "^usuario/(?P<pid>[0-9A-Za-z]{4})/cadastro[/]$"
 
-#: sambalife/urls.py:49
+#: sambalife/urls.py:50
 msgid ""
 "^user/validation/(?P<uidb64>[0-9A-Za-z_\\-]+)/(?P<token>[0-9A-Za-z]{1,13}-"
 "[0-9A-Za-z]{1,20})[/]$"
@@ -2878,148 +2897,148 @@ msgstr ""
 "^usuario/validacao/(?P<uidb64>[0-9A-Za-z_\\-]+)/(?P<token>[0-9A-Za-z]{1,13}-"
 "[0-9A-Za-z]{1,20})[/]$"
 
-#: sambalife/urls.py:51
+#: sambalife/urls.py:52
 msgid "^user/validation/resend/(?P<uidb64>[0-9A-Za-z_\\-]+)[/]$"
 msgstr "^usuario/validacao/reenviar/(?P<uidb64>[0-9A-Za-z_\\-]+)[/]$"
 
-#: sambalife/urls.py:53
+#: sambalife/urls.py:54
 msgid "^user/edit[/]$"
 msgstr "^usuario/editar[/]$"
 
-#: sambalife/urls.py:54
+#: sambalife/urls.py:55
 msgid "^product/stock[/]$"
 msgstr "^produto/estoque[/]$"
 
-#: sambalife/urls.py:55
+#: sambalife/urls.py:56
 msgid "^product/stock/merchant[/]$"
 msgstr "^produto/estoque/merchant[/]$"
 
-#: sambalife/urls.py:56
+#: sambalife/urls.py:57
 msgid "^product/details/(?P<pid>[0-9]+)[/]$"
 msgstr "^produto/detalhes/(?P<pid>[0-9]+)[/]$"
 
-#: sambalife/urls.py:57
+#: sambalife/urls.py:58
 msgid "^product/add[/]$"
 msgstr "^produto/adicionar[/]$"
 
-#: sambalife/urls.py:58
+#: sambalife/urls.py:59
 msgid "^product/edit/(?P<pid>[0-9]+)[/]$"
 msgstr "^produto/editar/(?P<pid>[0-9]+)[/]$"
 
-#: sambalife/urls.py:59
+#: sambalife/urls.py:60
 msgid "^product/delete[/]$"
 msgstr "^produto/remover[/]$"
 
-#: sambalife/urls.py:60
+#: sambalife/urls.py:61
 msgid "^shipment/list[/]$"
 msgstr "^envio/lista[/]$"
 
-#: sambalife/urls.py:61
+#: sambalife/urls.py:62
 msgid "^shipment/details/(?P<pid>[0-9]+)[/]$"
 msgstr "^envio/detalhes/(?P<pid>[0-9]+)[/]$"
 
-#: sambalife/urls.py:62
+#: sambalife/urls.py:63
 msgid "^shipment/add[/]$"
 msgstr "^envio/adicionar[/]$"
 
-#: sambalife/urls.py:63
+#: sambalife/urls.py:64
 msgid "^shipment/create[/]$"
 msgstr "^envio/criar[/]$"
 
-#: sambalife/urls.py:70
+#: sambalife/urls.py:71
 msgid "^mf_shipment/list[/]$"
 msgstr "^mf_envio/lista[/]$"
 
-#: sambalife/urls.py:71
+#: sambalife/urls.py:72
 msgid "^mf_shipment/add[/]$"
 msgstr "^mf_envio/adicionar[/]$"
 
-#: sambalife/urls.py:72
+#: sambalife/urls.py:73
 msgid "^store/list[/]$"
 msgstr "^loja/lista[/]$"
 
-#: sambalife/urls.py:73
+#: sambalife/urls.py:74
 msgid "^store/lot/details/(?P<pid>[0-9]+)[/]$"
 msgstr "^loja/lote/detalhes/(?P<pid>[0-9]+)[/]$"
 
-#: sambalife/urls.py:74
+#: sambalife/urls.py:75
 msgid "^store/lot/invoice/(?P<pid>[0-9]+)[/]$"
 msgstr "^loja/lote/fatura/(?P<pid>[0-9]+)[/]$"
 
-#: sambalife/urls.py:75
+#: sambalife/urls.py:76
 msgid "^store/purchase"
 msgstr "^loja/compra"
 
-#: sambalife/urls.py:99
+#: sambalife/urls.py:100
 msgid "^how-it-works"
 msgstr "como-funciona"
 
-#: sambalife/urls.py:102
+#: sambalife/urls.py:103
 msgid "^seja-um-colaborador"
 msgstr ""
 
-#: sambalife/urls.py:103
+#: sambalife/urls.py:104
 msgid "^termos-e-condicoes-de-uso"
 msgstr ""
 
-#: sambalife/urls.py:104
+#: sambalife/urls.py:105
 msgid "^politicas-de-privacidade"
 msgstr ""
 
-#: sambalife/views.py:81
+#: sambalife/views.py:78
 msgid ""
 "Não foi possível realizar seu login. Caso tenha esquecido sua senha, clique "
 "na opção Esqueci Minha Senha. Em caso de dúvida <a href='/pt/ajuda/"
 "#contact'>fale conosco</a>."
 msgstr ""
 
-#: sambalife/views.py:108
+#: sambalife/views.py:111
 msgid "Esqueci Senha"
 msgstr ""
 
-#: sambalife/views.py:114
+#: sambalife/views.py:117
 msgid ""
 "Conta cadastrada, porém o usuário ainda não foi liberado para acesso ao "
 "sistema. Em caso de dúvida <a href='/pt/ajuda/#contact'>fale conosco</a>."
 msgstr ""
 
-#: sambalife/views.py:118
+#: sambalife/views.py:121
 msgid "Não foi encontrada conta ativa para este login."
 msgstr ""
 
-#: sambalife/views.py:163
+#: sambalife/views.py:166
 msgid ""
 "E-mail já cadastrado, porém o usuário ainda não foi liberado para acesso ao "
 "sistema. Em caso de dúvida <a href='/pt/ajuda/#contact'>fale conosco</a>."
 msgstr ""
 
-#: sambalife/views.py:167
+#: sambalife/views.py:170
 msgid ""
 "E-mail já cadastrado, faça o <a href='/login'>login</a> ou, caso tenha "
 "esquecido sua senha, <a href='/#'>clique aqui</a>."
 msgstr ""
 
-#: sambalife/views.py:277
+#: sambalife/views.py:280
 msgid "Novo cadastro no sistema"
 msgstr ""
 
-#: sambalife/views.py:281
+#: sambalife/views.py:284
 msgid "Existe um novo cadastro no sistema pendente de ativação."
 msgstr ""
 
-#: sambalife/views.py:284
+#: sambalife/views.py:287
 msgid "para acessar a administração de usuários."
 msgstr ""
 
-#: sambalife/views.py:369
+#: sambalife/views.py:372
 msgid "Formulário enviado com sucesso."
 msgstr ""
 
-#: sambalife/views.py:374
+#: sambalife/views.py:377
 msgid "Formulário novo colaborador"
 msgstr ""
 
-#: sambalife/views.py:386
+#: sambalife/views.py:389
 #, python-format
 msgid "Fale conosco %(user_name)s - Vendedor Online Internacional"
 msgstr "Fale conosco %(user_name)s - VOI Services"
@@ -3487,15 +3506,15 @@ msgstr ""
 msgid "Invoices aos quais este produto pertence."
 msgstr ""
 
-#: stock/admin.py:78
+#: stock/admin.py:77
 msgid "Valor Buy Box / Best Match"
 msgstr ""
 
-#: stock/admin.py:79
+#: stock/admin.py:78
 msgid "FBA Fee / Fee Ebay"
 msgstr ""
 
-#: stock/admin.py:80
+#: stock/admin.py:79
 msgid "Custo de Envio para Amazon / Envio Cliente"
 msgstr ""
 
