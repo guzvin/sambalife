@@ -1,0 +1,21 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_static permissions %}
+
+{% block extrastyle %}
+  {{ block.super }}
+<script src="/static/externo/jquery/jquery.min.js"></script>
+{% endblock %}
+
+{% block object-tools-items %}
+{{ block.super }}
+{% if user|has_group:'admins' %}
+<li>
+    <a href="{% url 'admin:export_users_emails' %}{{ cl.get_query_string }}" class="btn btn-high btn-success">{% trans "Exportar E-mails" %}</a>
+</li>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+
+{% endblock %}
