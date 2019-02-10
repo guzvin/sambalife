@@ -342,10 +342,10 @@ class UserAdmin(BaseUserAdmin):
             sys.maxsize, self.list_editable, self,
         )
 
-        emails_objects = cl.queryset.values('email')
+        emails_objects = cl.queryset.filter(~Q(email='system@user.admin')).values('email')
 
         if len(emails_objects) == 0:
-            return HttpResponseRedirect(reverse('admin:myauth_myuser_changelist'))
+            return HttpResponseRedirect(reverse('admin:myauth_myuser_changelist') + cl.get_query_string())
 
         content = emails_objects[0]['email']
         for email_object in emails_objects[1:]:
