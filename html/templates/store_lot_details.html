@@ -239,9 +239,9 @@
                 </div>
                 <div class="modal-body">
                     <p>
+                        {% url 'user_edit' as url_user_edit %}
                         {% blocktrans %}
-                        Você está em nossa fila de espera de assinantes.<br>
-                        Assim que liberarmos mais vagas, você receberá um email de notificação.
+                        Este lote é exclusivo para assinantes VOi Prime. <a href="{{ url_user_edit }}">Clique aqui e assine.</a>
                         {% endblocktrans %}
                     </p>
                 </div>

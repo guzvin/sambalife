@@ -1,24 +1,28 @@
+import logging
+import sys
+
 from django import forms
 from django.contrib import admin
+from django.contrib.admin import utils
+from django.contrib.admin.utils import unquote
+from django.contrib.admin.views.main import ChangeList
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth import get_user_model
-from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import Group
-from django.contrib.admin.utils import unquote
-from django.contrib.admin import utils
 from django.core.exceptions import ObjectDoesNotExist
-from myauth.models import MyUser, UserAddress, UserLotReport, UserSpace
-from django.db.models.fields import BLANK_CHOICE_DASH
 from django.db.models import Q
-from utils.sites import admin_site
-from myauth.admin_filters import LotSellDateFilter, LotNoPurchaseFilter
-from django.contrib.admin.views.main import ChangeList
 from django.db.models import Sum
-from utils.helper import gen_from_key
+from django.db.models.fields import BLANK_CHOICE_DASH
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
+from django.utils.translation import ugettext_lazy as _
 
-import logging
+from myauth.admin_filters import LotSellDateFilter, LotNoPurchaseFilter
+from myauth.models import MyUser, UserAddress, UserLotReport, UserSpace
+from utils.helper import gen_from_key
+from utils.sites import admin_site
 
 logger = logging.getLogger('django')
 
@@ -323,6 +327,39 @@ class UserAdmin(BaseUserAdmin):
                 (_('Grupos'), {'fields': ('groups',)}),
             )
         return super(UserAdmin, self).changelist_view(request, extra_context)
+
+    def export_users_emails(self, request):
+        list_display = self.get_list_display(request)
+        list_display_links = self.get_list_display_links(request, list_display)
+        list_filter = self.get_list_filter(request)
+        search_fields = self.get_search_fields(request)
+        list_select_related = self.get_list_select_related(request)
+
+        cl = ChangeList(
+            request, self.model, list_display,
+            list_display_links, list_filter, self.date_hierarchy,
+            search_fields, list_select_related, sys.maxsize,
+            sys.maxsize, self.list_editable, self,
+        )
+
+        emails_objects = cl.queryset.filter(~Q(email='system@user.admin')).values('email')
+
+        if len(emails_objects) == 0:
+            return HttpResponseRedirect(reverse('admin:myauth_myuser_changelist') + cl.get_query_string())
+
+        content = emails_objects[0]['email']
+        for email_object in emails_objects[1:]:
+            content += ';' + email_object['email']
+        response = HttpResponse(content, content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename={0}'.format('users-emails.txt')
+        return response
+
+    def get_urls(self):
+        from django.conf.urls import url
+        return [
+            url(r'^export_users_emails/$', self.admin_site.admin_view(self.export_users_emails),
+                name='export_users_emails'),
+        ] + super(UserAdmin, self).get_urls()
 
 # admin.site.unregister(MyUser)
 # Now register the new UserAdmin...
