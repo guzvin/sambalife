@@ -15,7 +15,7 @@
 
     <div class="container-fluid">
       <div class="row">
-          <p class="cab-index">{% blocktrans %}<strong>Free prep and ship</strong> para produtos adquiridos conosco{% endblocktrans %} <i class="fas fa-shipping-fast"></i> <a href="{% url 'terms' %}" class="btn btn-default btn-quadrado">{% trans "Veja Nossos Termos" %} > </a></p>
+          <p class="cab-index">{% blocktrans %}<strong>Free prep and ship</strong> para produtos adquiridos conosco{% endblocktrans %} <i class="fas fa-shipping-fast"></i> <a href="https://voiservices.com/en/terms/" target="_blank" class="btn btn-default btn-quadrado">{% trans "Veja Nossos Termos" %} > </a></p>
               <div id="myCarousel" class="carousel slide" data-ride="carousel">
                 <!-- Carousel indicators-->
                 <ol class="carousel-indicators">
@@ -72,7 +72,7 @@
                             <p class="p55 bold">{% trans "Após a Compra" %}</p>
                             <p class="p42">{% trans "Seus Produtos já estarão disponíveis para envio" %}</p>
                             <a href="{% url 'user_edit' %}" class="btn btn-default btn-quadrado"><i class="fas fa-user-tag"></i> {% trans "ASSINAR AGORA" %}</a>
-                            <a href="/en/lots/how-it-works/" class="btn btn-default btn-quadrado" style=""><i class="fas fa-user-tag"></i> {% trans "VEJA COMO FUNCIONA" %}</a>
+                            <a href="https://voiservices.com/en/lots/how-it-works/"  target="_blank" class="btn btn-default btn-quadrado" style=""><i class="fas fa-user-tag"></i> {% trans "VEJA COMO FUNCIONA" %}</a>
                         </div>
                     </div>
                 </div>
@@ -181,16 +181,16 @@
                         <div class="col-schedule">
                             <span>{% blocktrans %}Quartas {% endblocktrans %}</span>
                             <br>
-                            <p>{% blocktrans %}Noite{% endblocktrans %}: 21:30</p>
-                            <smal>({% blocktrans %}Horário de Brasília{% endblocktrans %})</smal>
+                            <p>{% blocktrans %}Noite{% endblocktrans %}: 6:30pm</p>
+                            <smal>({% blocktrans %}United States (EST){% endblocktrans %})</smal>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="col-schedule">
                             <span>{% blocktrans %}Sextas {% endblocktrans %}</span>
                             <br>
-                            <p>{% blocktrans %}Noite{% endblocktrans %}: 21:30</p>
-                            <smal>({% blocktrans %}Horário de Brasília{% endblocktrans %})</smal>
+                            <p>{% blocktrans %}Noite{% endblocktrans %}: 6:30pm</p>
+                            <smal>({% blocktrans %}United States (EST){% endblocktrans %})</smal>
                         </div><br><br>
                     </div>
                     <div class="col-md-3"></div>
@@ -283,12 +283,7 @@
                      </div>
                      {% endif %}
 
-
-                     {% if is_user_subscriber %}
-                        <a href="{% url 'store_lot_details' lot.id %}" class="btn btn-danger btn-comprar">comprar agora</a>
-                     {% else %}
-                        <a href="#" class="btn btn-danger btn-comprar box-lote{% if lot.status == 2 %} vendido{% endif %} not-subscriber">comprar agora</a>
-                     {% endif %}
+                     <a href="{% url 'store_lot_details' lot.id %}" class="btn btn-danger btn-comprar">{% trans "comprar agora" %}</a>
 
                  </a>
               </div>
