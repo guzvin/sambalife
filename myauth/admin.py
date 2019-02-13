@@ -349,9 +349,9 @@ class UserAdmin(BaseUserAdmin):
 
         content = emails_objects[0]['email']
         for email_object in emails_objects[1:]:
-            content += ';' + email_object['email']
-        response = HttpResponse(content, content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename={0}'.format('users-emails.txt')
+            content += '\n' + email_object['email']
+        response = HttpResponse(content, content_type='application/csv')
+        response['Content-Disposition'] = 'attachment; filename={0}'.format('users-emails.csv')
         return response
 
     def get_urls(self):
