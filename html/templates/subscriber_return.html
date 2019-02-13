@@ -60,8 +60,8 @@
             <div class="container">
                 <div class="box-resposta">
                     <p class="text-success"><i class="fa fa-check-circle fa-3x"></i></p>
-                    <p class="titulo text-success">Parabéns. <br> Sua Assinatura está ATIVA</p><br>
-                    <a class="btn btn-primary btn-block btn-block-70" href="{% url 'store' %}"><i class="fa fa-link"></i> Acessar a Plataforma Agora</a>
+                    <p class="titulo text-success">{% blocktrans %}Parabéns. <br> Sua Assinatura está ATIVA{% endblocktrans %}</p><br>
+                    <a class="btn btn-primary btn-block btn-block-70" href="{% url 'store' %}"><i class="fa fa-link"></i> {% trans "Acessar a Plataforma Agora" %}</a>
                 </div>
             </div>
         <!-- sucesso -->
@@ -70,9 +70,9 @@
             <div class="container">
                 <div class="box-resposta">
                     <p class="text-danger"><i class="fa fa-times-circle fa-3x"></i></p>
-                    <p class="titulo text-danger">Sua Assinatura NÃO foi ativada</p>
-                    <p class="text-info">Em caso de dúvidas, entre em contato com o suporte pelo email support@voiservices.com</p>
-                    <p><a href="{% url 'user_edit' %}"><i class="fa fa-link"></i> Voltar à tela do seu cadastro</a> </p><br>
+                    <p class="titulo text-danger">{% trans "Sua Assinatura NÃO foi ativada</p>
+                    <p class="text-info">{% trans "Em caso de dúvidas, entre em contato com o suporte pelo email" %} support@voiservices.com</p>
+                    <p><a href="{% url 'user_edit' %}"><i class="fa fa-link"></i> {% trans "Voltar à tela do seu cadastro" %}</a> </p><br>
                 </div>
             </div>
         <!-- Falha -->
@@ -81,8 +81,8 @@
             <div class="container">
                 <div class="box-resposta">
                     <p class="text-info"><i class="fa fa-frown fa-5x"></i></p>
-                    <p class="titulo text-info">Assinatura Cancelada.</p>
-                    <p class="text-info">Uma pena velo partir. Esperamos que volte em breve.</p>
+                    <p class="titulo text-info">{% trans "Assinatura Cancelada" %}.</p>
+                    <p class="text-info">{% trans "Uma pena velo partir. Esperamos que volte em breve" %}.</p>
                 </div>
             </div>
         <!-- cancelamento -->
@@ -101,7 +101,7 @@
                 <div class="col-md-5">
                     <ul class="list-inline quicklinks">
                         <li>
-                            {% trans "<a href='/pt/termos-e-condicoes-de-uso/'>Termos e Condições de Uso" %}</a>
+                            <a href=https://voiservices.com/en/terms/' target="_blank" >{% trans "Termos e Condições de Uso" %}</a>
                         </li>
                     </ul>
                 </div>

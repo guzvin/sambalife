@@ -492,7 +492,7 @@
                     </div>
                     <div class="col-md-5">
                         <hr /><br>
-                        <p>{% trans "<a href=/en/terms/' class='download'>Click here</a> and read our terms of service" %}</p>
+                        <p>{% trans "<a href=https://voiservices.com/en/terms/' target="_blank" class='download'>Click here</a> and read our terms of service" %}</p>
                     <br><hr>
                     </div>
                     <div class="col-md-12">
@@ -517,7 +517,7 @@
                         <li><i class="fa fa-fw fa-check-circle-o"></i> <span>{% trans "Envio para Amazon em até 3 dias úteis após a compra" %}</span></li>
                         <li><i class="fa fa-fw fa-check-circle-o"></i> <span>{% trans "Redirecionamento Grátis" %}</span></li>
                         <li><i class="fa fa-fw fa-check-circle-o"></i> <span>{% trans "Descontos nos serviços de redirecionamento" %}</span></li>
-                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span><a href='https://voiservices.com/en/voi-prime/' class='download'>{% trans "Saiba Mais" %}</a></span></li>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span><a href='https://voiservices.com/en/voi-prime/' target="_blank" class='download'>{% trans "Saiba Mais" %}</a></span></li>
                     </ul>
 
                     <div class="contem-btn-ass">
@@ -534,7 +534,7 @@
                     <small>*{% trans "Sem adesão. Cancele a qualquer momento" %}.</small>
                     <ul>
                         <li><i class="fa fa-fw fa-check-circle-o"></i> <span>{% trans "Criamos seu envio para Amazon para você" %}</span></li>
-                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span><a href='https://voiservices.com/en/create-az-shipment/' class='download'>{% trans "Saiba Mais" %}</a></span></li>
+                        <li><i class="fa fa-fw fa-check-circle-o"></i> <span><a href='https://voiservices.com/en/create-az-shipment/' target="_blank" class='download'>{% trans "Saiba Mais" %}</a></span></li>
                     </ul>
 
                     <div class="contem-btn-ass">
@@ -566,7 +566,7 @@
                 <div class="col-md-6">
                     <ul class="list-inline quicklinks">
                         <li>
-                            <a href="{% url 'terms' %}">{% trans "Termos e Condições de Uso" %}</a> | <a href="{% url 'privacy_policy' %}">{% trans "Políticas de Privacidade" %}</a>
+                            <a href=https://voiservices.com/en/terms/' target="_blank" >{% trans "Termos e Condições de Uso" %}</a>
                         </li>
                     </ul>
                 </div>
@@ -601,8 +601,8 @@
                         <p class="titulo text-success">{% trans "Cadastro realizado com sucesso" %}</p><br>
                         <a class="btn btn-default btn-block btn-block-70" href="{% url 'store' %}" style="width:250px"><i class="fa fa-link"></i> {% trans "Acessar Plataforma Agora" %}</a>
                     <br><hr><br>
-                        <a href="{% url 'user_subscribe' 1 %}" target="_blank" class="btn btn-primary"><i class="fa fa-paypal"></i> Quero Assinar VOI Prime Agora</a>
-                        <a href="{% url 'user_subscribe' 2 %}" target="_blank" class="btn btn-primary"><i class="fa fa-paypal"></i> Quero Assinar We Create your Amazon Shipment Agora</a>
+                        <a href="{% url 'user_subscribe' 1 %}" target="_blank" class="btn btn-primary"><i class="fa fa-paypal"></i> {% trans "Quero Assinar VOI Prime Agora" %}</a>
+                        <a href="{% url 'user_subscribe' 2 %}" target="_blank" class="btn btn-primary"><i class="fa fa-paypal"></i> {% trans "Quero Assinar We Create your Amazon Shipment Agora" %}</a>
 {% comment %}
                         <p>{% trans "Informações enviadas com sucesso." %}</p>
                         <p>{% blocktrans %}Enviamos um e-mail para você validar seu cadastro. Este e-mail é válido por {{ expiry }} dias.{% endblocktrans %}</p>

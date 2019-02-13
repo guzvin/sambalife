@@ -9,21 +9,21 @@
 
 <div id="template-email" style="background: #fff; padding: 18px 30px 45px 30px; font: 13px/120% 'Helvetica';">
     <a href="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/" style="text-decoration: none;">
-        <img src="{{ protocol}}://{{ request.CURRENT_DOMAIN }}/static/img/logo_sup.png" width="55" style="float: left;margin: 11px 0 0 0;"/><span style="display: block;margin: 27px 0 0 2px;margin-left: 0;font-size: 17px;font-weight: bold;color: #3C3E77;font-family: sans-serif;float: left;">VOI </span><span style="display: block;margin: 27px 0 0 2px;margin-left: 0;font-size: 17px;font-weight: bold;color: #DC3438;font-family: sans-serif;float: left;">SERVICES</span>
+        <span style="display: block;margin: 27px 0 0 2px;margin-left: 0;font-size: 17px;font-weight: bold;color: #3C3E77;font-family: sans-serif;float: left;">VOI </span><span style="display: block;margin: 27px 0 0 2px;margin-left: 0;font-size: 17px;font-weight: bold;color: #DC3438;font-family: sans-serif;float: left;">SERVICES</span>
     </a>
     <div style="float: left; width: 97%; background: #eee; padding: 10px 20px 20px 20px;">
         <p style="color:#858585;font:13px/120% 'Helvetica'">
-        {% blocktrans %}Caro usuário, você foi registrado em nosso serviço de venda de Lotes - VOI Lots e de redirecionamento - FBA Prep Master.
+        {% blocktrans %}Caro usuário, você foi registrado em no VOI Services.
             <br><br>
-            • Serviço de redirecionamento FBA Prep Master (https://fbaprepmaster.com): Sempre que enviar produtos para a Warehouse da FBA Prep Master, você deverá incluir o seu código de cliente como remetente, além do seu nome, claro. Seu código de cliente é: {{ user_from_key }}
-            Veja tutorial de funcionamento da plataforma: https://fbaprepmaster.com/pt/tutorial-plataforma
+            • Serviço de redirecionamento (https://lots.voiserices.com): Sempre que enviar produtos para a Warehouse do VOI Services, você deverá incluir o seu código de cliente como remetente, além do seu nome, claro. Seu código de cliente é: {{ user_from_key }}
+            Veja tutorial de funcionamento da plataforma: https://voiservices.com/en/tutorials/
             <br><br>
-            • Serviço de venda de Lotes (https://lots.voiserices.com): Os Lotes adquiridos irão direto para o seu estoque na FBA Prep Master, considerando o redirecionamento gratuito, dentro das políticas informadas no site.
-            Veja o tutorial explicando todo o funcionamento desde a compra de um lote até o redirecionamento: https://lots.voiservices.com/pt/ajuda/voi-services-da-compra-ao-envio-para-amazon.pdf
+            • Serviço de venda de Lotes (https://lots.voiserices.com): Os Lotes adquiridos irão direto para o seu estoque na plataforma VOI Services, considerando o redirecionamento gratuito, dentro das políticas informadas no site.
+            Veja o tutorial explicando todo o funcionamento desde a compra de um lote até o redirecionamento: https://voiservices.com/en/tutorials/
             <br><br>
             Att,
             <br>
-            VOI Lots e FBA Prep Master{% endblocktrans %}
+            VOI Services{% endblocktrans %}
         </p>
     </div>
     <small style="color: #858585;font: 13px/120% 'Helvetica';width: 100%;float: left;margin: 10px 1px;font-size: 10px;">{% trans "Caso você não tenha feito esta solicitação nos avise através do e-mail" %} <a href="mailto:{% trans 'support@voiservices.com' %}">{% trans "support@voiservices.com" %}</a>.</small>
