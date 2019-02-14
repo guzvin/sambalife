@@ -57,7 +57,6 @@
               <div class="col-md-2">
                   {% if lot.payment_complete is False %}
                   <!-- Aparece apenas para usuarios comuns -->
-                    <br><br>
                     {% render_payment_button paypal_form lot.id lot.destination %}
                   <!-- fim botao compra
 
@@ -188,7 +187,7 @@
                   <!-- btn link para amazon -->
                   <div class="col-md-12">
                         <a class="btn btn-default link-amz" target="_blank" href="{{ product.url }}">
-                            <i class="fa fa-amazon"></i>
+                            <i class="fab fa-amazon"></i>
                             {% if lot.destination == 1 %}
                               {% trans 'Veja o Produto na Amazon' %}
                             {% elif lot.destination == 2 %}
@@ -217,13 +216,13 @@
                 -->
                 <br><br>
                 {% if user|has_store_perm:'change_lot' %}
-                <a href="{%url 'admin:store_lot_change' lot.id %}" class="btn btn-primary"><i class="fa fa-fw fa-pencil"></i> {% trans "Editar" %}</a>
+                <a href="{%url 'admin:store_lot_change' lot.id %}" class="btn btn-primary"><i class="fas fa-edit"></i> {% trans "Editar" %}</a>
                 {% endif %}
                 {% if user|has_store_perm:'delete_lot' %}
                 <a href="#" class="btn btn-danger send-btn-delete"><i class="fa fa-fw fa-trash"></i> {% trans "Excluir" %}</a><br><br>
                 {% endif %}
             {% endif %}
-            <a href="javascript:history.back()"><i class="fa fa-fw fa-long-arrow-left"></i> {% trans "Voltar" %}</a>
+            <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i> {% trans "Voltar" %}</a>
             <br><br><br>
         </div>
         <div class="col-md-1 sidebar">

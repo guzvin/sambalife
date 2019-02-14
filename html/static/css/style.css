@@ -2895,6 +2895,10 @@ p.p25{
 
 /* banner */
 
+#payment_button{
+    width: 120px !important;
+}
+
 
 @media (min-width: 1350px){
     .container {
