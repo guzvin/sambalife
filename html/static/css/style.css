@@ -2006,14 +2006,6 @@ form small{
     color: red;
 }
 
-.nav > li.tutorial.adress small{
-    color: #858585;
-    padding: 0 9px 9px;
-    margin: 0;
-    line-height: 14px;
-    display: block;
-}
-
 .nav > li.tutorial.adress hr{
     margin: 0 0 14px 0;
 }
@@ -2738,8 +2730,8 @@ ul.listaancora li a{
 
 .navbar-nav>li>a {
     line-height: 21px;
-    text-transform: uppercase;
-    font-size: 13px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .cab-index{
@@ -2897,6 +2889,27 @@ p.p25{
 
 #payment_button{
     width: 120px !important;
+}
+
+#top{
+    margin-bottom: 0;
+    border: 0;
+    background: #7c051f;
+    color: #fff;
+    height: 31px;
+    min-height: 31px;
+}
+
+#top .nav>li>a{
+    padding: 0 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: normal;
+}
+
+.nav>li>a:focus, .nav>li>a:hover {
+    text-decoration: underline;
+    background-color: transparent;
 }
 
 

@@ -58,7 +58,49 @@
 </head>
 
 <body id="page-top" class="lista-usuarios sistema sistema-en">
- <header class="bs-docs-nav navbar navbar-static-top header-sistema" id="top">
+     <header class="bs-docs-nav navbar navbar-static-top header-sistema" id="top">
+         <div class="navbar-header">
+            <button aria-controls="bs-navbar" aria-expanded="false" class="collapsed navbar-toggle" data-target="#bs-navbar" data-toggle="collapse" type="button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <nav class="collapse navbar-collapse" id="bs-navbar2">
+            <ul class="nav navbar-nav navbar-left">
+
+                <li id="abre-endereco">
+                    <a href="javascript:void(0);" class="abre-tutorial open-endereco"><i class="fas fa-map-marker-alt"></i> {% trans "Nosso Endereço" %}</a>
+                </li>
+                <li>
+                    <a href="https://voiservices.com/en/tutorials" target="_blank" class="abre-tutorial"><i class="fa fa-book"></i> {% trans "Tutorials" %}</a>
+                </li>
+                <li class="seja-parceiro-menu {% block partner %}{% endblock %}">
+                   <a href="{% url 'user_edit' %}">
+                      <i class="fa fa-street-view"></i> {% trans "Assinar / cancelar plano" %}
+                   </a>
+                </li>
+                <li class="{% block comoFunciona %}{% endblock %}">
+                    <a href="https://voiservices.com" class="" target="_blank"><i class="fas fa-external-link-alt"></i> {% trans "Go to website" %}</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="javascript: void(0);" id="contato-popup-link"><i class="fas fa-question-circle"></i> <strong>{% trans "Support: " %}</strong> support@voiservices.com </a>
+                </li>
+
+                {% if user.is_authenticated %}
+
+                    <li id="abre-codigo">
+                        <a href="javascript:void(0);" class="abre-tutorial open-adress"><strong><i class="fas fa-user-circle"></i> {% trans "Código Cliente" %}:</strong> {{ user.from_key }} <i class="fas fa-question"></i></a>
+                    </li>
+
+                {% endif %}
+            </ul>
+        </nav>
+     </header>
+     <header class="bs-docs-nav navbar navbar-static-top header-sistema" id="top2">
             <div class="navbar-header">
                 <button aria-controls="bs-navbar" aria-expanded="false" class="collapsed navbar-toggle" data-target="#bs-navbar" data-toggle="collapse" type="button">
                     <span class="sr-only">Toggle navigation</span>
@@ -117,34 +159,9 @@
                     </li>
                     {% endif %}
 
-                    <li class="seja-parceiro-menu {% block partner %}{% endblock %}">
-                       <a href="{% url 'user_edit' %}">
-                          <i class="fa fa-street-view"></i> {% trans "Assinar / cancelar plano" %}
-                       </a>
-                    </li>
+
                     <li class="{% block storelist %}{% endblock %}">
                         <a href="{% url 'store' %}" class="logo-marca-link operacional-conf"><i class="fa fa-shopping-bag"></i> {% trans "Loja" %}</a>
-                    </li>
-
-                    <li class="{% block comoFunciona %}{% endblock %}">
-                        <a href="https://voiservices.com" class="" target="_blank"><i class="fa fa-book"></i> {% trans "Go to website" %}</a>
-                    </li>
-                    <li>
-                        <a href="javascript: void(0);" id="contato-popup-link"><i class="fa fa-fw fa-envelope"></i> {% trans "Contato" %}</a>
-                    </li>
-
-                    <li class="tutorial adress" id="abre-codigo">
-                        <a href="javascript:void(0);" class="abre-tutorial open-adress"><i class="fas fa-user-circle fa-2x"></i> <br />{% trans "Código Cliente" %}: <span>{{ user.from_key }}</span></a>
-                        <hr />
-                        <small id="btn-cod-cliente">{% trans "Onde utilizo esse código?" %}</small>
-                    </li>
-
-                    <li class="tutorial adress adress-v" id="abre-endereco">
-                        <a href="javascript:void(0);" class="abre-tutorial open-endereco"><i class="fa fa-2x fa-map-marker fa-2x"></i><br /> {% trans "Nosso Endereço" %}</a>
-                    </li>
-
-                    <li class="tutorial">
-                        <a href="https://voiservices.com/en/tutorials" target="_blank" class="abre-tutorial"><i class="fa fa-book fa-2x"></i> {% trans "Tutorials" %}</a>
                     </li>
 
 
@@ -230,7 +247,7 @@
 {% endcomment %}
                     {% if not user.is_authenticated %}
                     <li>
-                        <a title="Login" href="/pt/entrar"><strong><i class="fa fa-sign-in"></i></strong> Log in</a>
+                        <a title="Login" href="/pt/entrar"><i class="fas fa-sign-in-alt"></i> Log in</a>
                     </li>
                     {% endif %}
                     {% if user.is_authenticated %}
@@ -338,6 +355,7 @@
                         </li>
                     </ul>
                 </div>-->
+                </div>
             </div>
         </div>
     </footer>
@@ -397,6 +415,7 @@
                 </div>
                 <div class="modal-body">
                     <p>{% trans "Para entrar em contato com nosso suporte e nossos canais de atendimento, envie um email para <a class='download' href='mailto:support@voiservices.com'>support@voiservices.com</a>. Retornaremos o mais breve possível." %}</p>
+                    <p><strong>{% trans "Important: " %}</strong>{% trans "Our service desk is from Monday to Friday. All emails will be answered within 24 hours." %}</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Fechar" %}</button>
