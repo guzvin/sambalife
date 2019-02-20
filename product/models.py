@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models.fields import BigAutoField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext
 from django.conf import settings
 from django.core.validators import ValidationError
 from datetime import datetime
@@ -27,10 +27,10 @@ class Product(models.Model):
     stock_type = models.SmallIntegerField(_('Estoque'), choices=STOCK_TYPES, null=True, blank=True, default=1)
     send_date = models.DateField(_('Data da Compra'))
     STATUS_CHOICES = (
-        (1, _('Encaminhado VOI')),
-        (2, _('Em Estoque VOI')),
-        (99, _('Arquivado')),
-        (100, _('Abandonado')),
+        (1, ugettext('Encaminhado VOI')),
+        (2, ugettext('Em Estoque VOI')),
+        (99, ugettext('Arquivado')),
+        (100, ugettext('Abandonado')),
     )
     status = models.SmallIntegerField(_('Status'), choices=STATUS_CHOICES, null=True, blank=True)
     CONDITION_CHOICES = (

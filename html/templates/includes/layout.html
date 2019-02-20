@@ -247,7 +247,7 @@
 {% endcomment %}
                     {% if not user.is_authenticated %}
                     <li>
-                        <a title="Login" href="/pt/entrar"><i class="fas fa-sign-in-alt"></i> Log in</a>
+                        <a title="Login" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Log in</a>
                     </li>
                     {% endif %}
                     {% if user.is_authenticated %}

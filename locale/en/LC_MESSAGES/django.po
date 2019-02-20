@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-14 11:08-0200\n"
+"POT-Creation-Date: 2019-02-15 16:22-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,7 +77,6 @@ msgstr "This will be done by"
 msgid ""
 "Não se esqueça que para este envio você deve colocar como &quot;FROM&quot; "
 "na Amazon o endereço ao lado."
-
 msgstr ""
 "Do not forget that for this shipment you must put it as & quot; FROM & quot; "
 "on Amazon the address beside"
@@ -114,7 +113,7 @@ msgstr ""
 #: html/templates/merchant_shipment_add.html:56
 #: html/templates/product_details.html:21 html/templates/product_stock.html:26
 #: html/templates/product_stock_fbm.html:26 html/templates/shipment_add.html:56
-#: html/templates/store_lot_details.html:97
+#: html/templates/store_lot_details.html:96
 #: html/templates/store_purchase.html:19 html/templates/store_purchase.html:44
 #: html/templates/user_registration.html:70 myauth/admin.py:425
 #: myauth/models.py:24 partner/models.py:12 sambalife/forms.py:8
@@ -157,7 +156,7 @@ msgstr "Time in stock"
 #: html/templates/product_details.html:59 html/templates/product_stock.html:148
 #: html/templates/product_stock_fbm.html:148
 #: html/templates/shipment_add.html:60
-#: html/templates/store_lot_details.html:126 product/models.py:21
+#: html/templates/store_lot_details.html:125 product/models.py:21
 #: shipment/models.py:102 shipment/models.py:250 shipment/views.py:1409
 #: shipment/views.py:1449 stock/models.py:36 store/models.py:155
 msgid "Quantidade"
@@ -202,8 +201,8 @@ msgstr "View services"
 #: html/templates/product_details.html:170
 #: html/templates/product_details.html:199
 #: html/templates/product_details.html:218
-#: html/templates/store_lot_details.html:223
-#: html/templates/store_lot_details.html:263
+#: html/templates/store_lot_details.html:222
+#: html/templates/store_lot_details.html:262
 msgid "Excluir"
 msgstr "Delete"
 
@@ -247,7 +246,7 @@ msgstr "Access user record"
 #: html/templates/base_shipment_details.html:238
 #: html/templates/merchant_shipment_add.html:114
 #: html/templates/shipment_add.html:158
-#: html/templates/store_lot_details.html:183 stock/models.py:67
+#: html/templates/store_lot_details.html:182 stock/models.py:67
 #: store/models.py:186
 msgid "Observação"
 msgstr "Notes"
@@ -445,7 +444,7 @@ msgstr "Cancel Shipment"
 #: html/templates/merchant_shipment_add.html:125 html/templates/partner.html:62
 #: html/templates/product_add_edit.html:268
 #: html/templates/product_details.html:182 html/templates/shipment_add.html:166
-#: html/templates/store_lot_details.html:226 html/templates/user_edit.html:82
+#: html/templates/store_lot_details.html:225 html/templates/user_edit.html:82
 #: html/templates/user_registration.html:552
 #: utils/templates/admin/utils/accounting/change_form.html:9
 msgid "Voltar"
@@ -465,8 +464,8 @@ msgstr "Confirm shipment completion?"
 #: html/templates/base_shipment_details.html:712
 #: html/templates/base_shipment_list.html:58
 #: html/templates/product_details.html:205 html/templates/store_list.html:339
-#: html/templates/store_lot_details.html:249
-#: html/templates/store_lot_details.html:269
+#: html/templates/store_lot_details.html:248
+#: html/templates/store_lot_details.html:268
 msgid "Sim"
 msgstr "Yes"
 
@@ -490,8 +489,8 @@ msgstr "Yes"
 #: html/templates/product_stock.html:295 html/templates/product_stock.html:371
 #: html/templates/product_stock_fbm.html:295
 #: html/templates/product_stock_fbm.html:372 html/templates/store_list.html:340
-#: html/templates/store_lot_details.html:250
-#: html/templates/store_lot_details.html:270 html/templates/user_edit.html:192
+#: html/templates/store_lot_details.html:249
+#: html/templates/store_lot_details.html:269 html/templates/user_edit.html:192
 #: html/templates/user_edit.html:215 html/templates/user_edit.html:238
 #: html/templates/user_registration.html:622
 #: html/templates/user_registration.html:641
@@ -627,19 +626,18 @@ msgid ""
 msgstr ""
 "Dear user, you have been registered in VOI Services.\n"
 "            <br><br>\n"
-"            • Prep and Ship Service (https://lots.voiserices.com): "
-"henever you send products to the VOI Services Warehouse, you must "
-"include your customer code as the sender in addition to your name, of course. Your "
-"client code is: %(user_from_key)s\n"
-"            See the platform's tutorial: https://"
-"voiservices.com/en/tutorials/\n"
+"            • Prep and Ship Service (https://lots.voiserices.com): Whenever "
+"you send products to the VOI Services Warehouse, you must include your "
+"customer code as the sender in addition to your name, of course. Your client "
+"code is: %(user_from_key)s\n"
+"            See the platform's tutorial: https://voiservices.com/en/"
+"tutorials/\n"
 "            <br><br>\n"
-"            • Lots Sales Service (https://lots.voiserices.com): "
-"Lots purchased will go directly to your inventory on the VOI Services platform "
-"considering the free redirection, within the policies informed "
-"on the site.\n"
-"            See the tutorial explaining everything from buying "
-"a lot to redirecting: https://voiservices.com/en/tutorials/\n"
+"            • Lots Sales Service (https://lots.voiserices.com): Lots "
+"purchased will go directly to your inventory on the VOI Services platform "
+"considering the free redirection, within the policies informed on the site.\n"
+"            See the tutorial explaining everything from buying a lot to "
+"redirecting: https://voiservices.com/en/tutorials/\n"
 "            <br><br>\n"
 "            Best Regards,\n"
 "            <br>\n"
@@ -1099,10 +1097,9 @@ msgstr "For example: John Smith XYZM"
 msgid ""
 "Caso a(s) caixa(s) não estejam identificadas com o código de usuário, será "
 "cobrada uma taxa de identificação de caixa"
-
-msgstr""
-"If the box (es) are not identified with the user code, you will be"
-"charged identification fee"
+msgstr ""
+"If the box (es) are not identified with the user code, you will becharged "
+"identification fee"
 
 #: html/templates/includes/layout.html:490
 msgid ""
@@ -1144,28 +1141,26 @@ msgid ""
 "Para que possamos realizar o seu envio, através do serviço 'We create your "
 "Amazon Shipment', precisamos que ANTES, realize a configuração em sua conta."
 msgstr ""
-"In order for us to do your shipment through the 'We create your Amazon shipment'"
-"service, Set up your account first."
+"In order for us to do your shipment through the 'We create your Amazon "
+"shipment'service, Set up your account first."
 
 #: html/templates/includes/layout.html:533
 msgid ""
 "Veja como: <a class='download' href='https://voiservices.com/en/create-az-"
 "shipment/' target=\"_blank\">https://voiservices.com/en/create-az-shipment/</"
 "a>"
-
 msgstr ""
-"See how it works: <a class='download' href='https://voiservices.com/en/create-az-"
-"shipment/' target=\"_blank\">https://voiservices.com/en/create-az-shipment/</"
-"a>"
+"See how it works: <a class='download' href='https://voiservices.com/en/"
+"create-az-shipment/' target=\"_blank\">https://voiservices.com/en/create-az-"
+"shipment/</a>"
 
 #: html/templates/includes/layout.html:534
 msgid ""
 "Não se esqueça que você precisa também já ter cadastrado os produtos do seu "
 "envio em seu estoque na Amazon."
-
 msgstr ""
-"Do not forget that you must also have already registered the products of your "
-"shipping in your Amazon stock."
+"Do not forget that you must also have already registered the products of "
+"your shipping in your Amazon stock."
 
 #: html/templates/includes/layout.html:535
 msgid ""
@@ -1199,13 +1194,12 @@ msgid ""
 "contidos no mesmo, e de toda a responsabilidade acerca do destino que será "
 "dado aos mesmos. E isso inclui a VOI Services não realizar reembolso do "
 "valor pago em caso de desistência por qualquer motivo."
-
 msgstr ""
-"I declare that I have carefully analyzed all the information on this lot, being"
-"aware that the continuation of this purchase makes me the owner of the products"
-"contained in it, and of all responsibility about the destiny that will be"
-"given to them.And this includes VOI Services not performing refund of the"
-"amount paid in case of withdrawal for any reason."
+"I declare that I have carefully analyzed all the information on this lot, "
+"beingaware that the continuation of this purchase makes me the owner of the "
+"productscontained in it, and of all responsibility about the destiny that "
+"will begiven to them.And this includes VOI Services not performing refund of "
+"theamount paid in case of withdrawal for any reason."
 
 #: html/templates/includes/layout.html:609
 msgid ""
@@ -1220,13 +1214,12 @@ msgid ""
 "contidos, e de toda a responsabilidade acerca do destino que será dado aos "
 "mesmos. E isso inclui a VOI Services não realizar reembolso do valor pago em "
 "caso de desistência por qualquer motivo."
-
 msgstr ""
-"I declare that I have carefully analyzed all the information on this lot, being"
-"aware that the continuation of this purchase makes me the owner of the products"
-"contained in it, and of all responsibility about the destiny that will be"
-"given to them.And this includes VOI Services not performing refund of the"
-"amount paid in case of withdrawal for any reason."
+"I declare that I have carefully analyzed all the information on this lot, "
+"beingaware that the continuation of this purchase makes me the owner of the "
+"productscontained in it, and of all responsibility about the destiny that "
+"will begiven to them.And this includes VOI Services not performing refund of "
+"theamount paid in case of withdrawal for any reason."
 
 #: html/templates/includes/layout.html:611
 msgid "Você será direcionado(a) para pagamento no site da PayPal.  Confirma?"
@@ -1601,7 +1594,7 @@ msgstr "Brasilia Time"
 #: html/templates/product_details.html:133
 #: html/templates/product_stock.html:277
 #: html/templates/product_stock_fbm.html:277
-#: html/templates/store_lot_details.html:119 product/models.py:44
+#: html/templates/store_lot_details.html:118 product/models.py:44
 #: stock/models.py:66 store/models.py:185
 msgid "Condição"
 msgstr "Condition"
@@ -1624,7 +1617,7 @@ msgid "Rastreamento"
 msgstr "Tracking"
 
 #: html/templates/product_details.html:160
-#: html/templates/store_lot_details.html:220
+#: html/templates/store_lot_details.html:219
 msgid "Editar"
 msgstr "Edit"
 
@@ -1723,10 +1716,9 @@ msgstr "Important"
 msgid ""
 "Para os produtos listados abaixo, você deve cadastrar como <strong>&quot;"
 "FROM&quot;</strong> na Amazon o seguinte endereço"
-
 msgstr ""
-"For the products listed below, you must register as <strong> & quot;"
-"FROM & quot; </ strong> on Amazon at the following address"
+"For the products listed below, you must register as <strong> & quot;FROM & "
+"quot; </ strong> on Amazon at the following address"
 
 #: html/templates/product_stock.html:112
 msgid "Criar Envio para Amazon"
@@ -1919,10 +1911,9 @@ msgstr "In Offered Products"
 msgid ""
 "O nosso calculo de retorno é baseado sempre nos valores e fees apurados "
 "junto a Amazon"
-
 msgstr ""
-"Our return calculation is always based on values and fees calculated "
-"with Amazon"
+"Our return calculation is always based on values and fees calculated with "
+"Amazon"
 
 #: html/templates/store_list.html:72
 msgid "Após a Compra"
@@ -1948,7 +1939,7 @@ msgstr "$ 500.00 to $ 1000.00"
 msgid "Acima de $ 1000.00"
 msgstr "$ 1000.00 & Above"
 
-#: html/templates/store_list.html:115 html/templates/store_lot_details.html:102
+#: html/templates/store_list.html:115 html/templates/store_lot_details.html:101
 #: stock/models.py:56 store/models.py:175
 msgid "Rank"
 msgstr "Rank"
@@ -1974,7 +1965,7 @@ msgid "Acima de 5%%"
 msgstr "5%% & Above"
 
 #: html/templates/store_list.html:142 html/templates/store_list.html:234
-#: html/templates/store_lot_details.html:177
+#: html/templates/store_lot_details.html:176
 #: html/templates/store_purchase.html:47 stock/models.py:55 store/models.py:174
 msgid "ROI"
 msgstr "ROI"
@@ -2055,7 +2046,7 @@ msgstr "Time to expire"
 msgid "comprar agora"
 msgstr "buy now"
 
-#: html/templates/store_list.html:329 html/templates/store_lot_details.html:238
+#: html/templates/store_list.html:329 html/templates/store_lot_details.html:237
 msgid "Acesso à compra de lotes"
 msgstr "Lots access"
 
@@ -2117,84 +2108,85 @@ msgstr ""
 "The sum of all &quot;Buying Price&quot; multiplied by the &quot;"
 "Quantity&quot; of products for each product on this lot."
 
-#: html/templates/store_lot_details.html:64
-#: html/templates/store_lot_details.html:216
+#: html/templates/store_lot_details.html:63
+#: html/templates/store_lot_details.html:215
 msgid "Pagar com Cartão de Crédito"
 msgstr "Pay with Credit Card"
 
-#: html/templates/store_lot_details.html:70
+#: html/templates/store_lot_details.html:69
 msgid "Produto(s)"
 msgstr "Products"
 
-#: html/templates/store_lot_details.html:75
+#: html/templates/store_lot_details.html:74
 msgid "Fique atento"
 msgstr "Important"
 
-#: html/templates/store_lot_details.html:83
-#, python-format
+#: html/templates/store_lot_details.html:82
 msgid ""
 "\n"
 "                    <strong>Importante!</strong> É imprescindível que o "
 "usuário realize a sua própria análise antes de finalizar a compra. As "
 "informações abaixo utilizam ferramentas automatizadas para a inserção dos "
 "valores, passíveis de variações. Caso tenha dúvidas, leia nossos termos <a "
-"href=\"%(terms_url)s\"><strong>Clicando aqui</strong></a>.\n"
+"href=\"http://voiservices.com/en/terms/\"><strong>Clicando aqui</strong></"
+"a>.\n"
 "                    "
 msgstr ""
 "\n"
 "                    <strong> Important! </ strong> It is imperative that the "
 "user perform their own analysis before finalizing the purchase. The "
-"nformation below use automated tools for inserting the "
-"values, subject to variations.If you have any questions, please read our terms <a "
-"href='http://voiservices.com/en/terms/'><strong>Click here</strong></a>.\n"
+"nformation below use automated tools for inserting the values, subject to "
+"variations.If you have any questions, please read our terms <a href='http://"
+"voiservices.com/en/terms/'><strong>Click here</strong></a>.\n"
+"                    "
 
-#: html/templates/store_lot_details.html:110
+#: html/templates/store_lot_details.html:109
 msgid "UPC / CODIGO IDENTIFICADOR"
 msgstr "UPC / ASIN"
 
-#: html/templates/store_lot_details.html:112 stock/models.py:32
+#: html/templates/store_lot_details.html:111 stock/models.py:32
 #: store/models.py:150
 msgid "UPC"
 msgstr ""
 
-#: html/templates/store_lot_details.html:123
+#: html/templates/store_lot_details.html:122
 msgid "Valor de Compra"
 msgstr "Buying Price"
 
-#: html/templates/store_lot_details.html:131
+#: html/templates/store_lot_details.html:130
 msgid "Valor de Venda"
 msgstr "Selling Price"
 
-#: html/templates/store_lot_details.html:137
+#: html/templates/store_lot_details.html:136
 msgid "Tarifa FBA"
 msgstr "FBA Fee"
 
-#: html/templates/store_lot_details.html:139
+#: html/templates/store_lot_details.html:138
 msgid "Fee Ebay"
 msgstr ""
 
-#: html/templates/store_lot_details.html:151 store/models.py:79
+#: html/templates/store_lot_details.html:150 store/models.py:79
 msgid "Redirecionamento"
 msgstr "Prep & Ship"
 
-#: html/templates/store_lot_details.html:151
+#: html/templates/store_lot_details.html:150
 msgid "Grátis"
 msgstr "Free"
 
-#: html/templates/store_lot_details.html:157 stock/models.py:40
+#: html/templates/store_lot_details.html:156 stock/models.py:40
 #: store/models.py:159 utils/models.py:17
 msgid "Custo de Envio para Amazon"
 msgstr "Ship to Amazon Fee"
 
-#: html/templates/store_lot_details.html:159
+#: html/templates/store_lot_details.html:158
 msgid "Shipping estimado para o cliente"
 msgstr "Estimated Shipping to Customer"
 
-#: html/templates/store_lot_details.html:171
+#: html/templates/store_lot_details.html:170
 msgid "Lucro Líquido por Unidade"
 msgstr "Net profit per unit"
 
-#: html/templates/store_lot_details.html:171
+#: html/templates/store_lot_details.html:170
 msgid ""
 "Valor informativo que é composto por: &quot;Valor de Venda&quot; menos &quot;"
 "Custo do Produto&quot;."
@@ -2202,12 +2194,12 @@ msgstr ""
 "Informative value that consists of: &quot;Selling Price&quot; minus &quot;"
 "Product cost&quot;."
 
-#: html/templates/store_lot_details.html:174 stock/models.py:54
+#: html/templates/store_lot_details.html:173 stock/models.py:54
 #: store/models.py:173
 msgid "Lucro Total"
 msgstr "Total Profit"
 
-#: html/templates/store_lot_details.html:174
+#: html/templates/store_lot_details.html:173
 msgid ""
 "Valor informativo que é composto por: &quot;Lucro líquido por Unidade&quot; "
 "vezes &quot;Quantidade&quot;."
@@ -2215,15 +2207,15 @@ msgstr ""
 "Informative value that consist of: &quot;Net profit per unit&quot; "
 "multiplied by the &quot;Quantity&quot;."
 
-#: html/templates/store_lot_details.html:193
+#: html/templates/store_lot_details.html:192
 msgid "Veja o Produto na Amazon"
 msgstr "Link to Amazon"
 
-#: html/templates/store_lot_details.html:195
+#: html/templates/store_lot_details.html:194
 msgid "Veja o Produto na Ebay"
 msgstr "Link to Ebay"
 
-#: html/templates/store_lot_details.html:243
+#: html/templates/store_lot_details.html:242
 #, python-format
 msgid ""
 "\n"
@@ -2236,7 +2228,7 @@ msgstr ""
 "\"%(url_user_edit)s\">Click here and subscribe.</a>\n"
 "                        "
 
-#: html/templates/store_lot_details.html:266
+#: html/templates/store_lot_details.html:265
 msgid "Confirma a exclusão do lote?"
 msgstr "Delete lot?"
 
@@ -3075,19 +3067,15 @@ msgstr "Please enter a number greater than zero."
 msgid ""
 "Envio NÃO criado. Por favor, verifique seu estoque, nenhum produto "
 "disponível para envio."
-
 msgstr ""
-"Shipping not created. Please check your stock, no product"
-"available for shipping."
+"Shipping not created. Please check your stock, no productavailable for "
+"shipping."
 
 #: product/views.py:151
 msgid ""
 "Envio NÃO criado. Por favor, cadastre o nome da sua loja na Amazon para "
 "seguir com seu envio."
-
-msgstr ""
-"Please, register your store name on Amazon to"
-"continue your shipment."
+msgstr "Please, register your store name on Amazon tocontinue your shipment."
 
 #: product/views.py:307
 msgid "Editar Produto"
@@ -4205,20 +4193,18 @@ msgid ""
 "FIQUE ATENTO: Este lote será privado para os assinantes somente nas "
 "primeiras 24 horas, após isto, caso o lote não seja vendido, o mesmo ficará "
 "disponível à todos cadastrados na plataforma."
-
 msgstr ""
-"BE AWARE: This lot will be private for subscribers only in the "
-"first 24 hours, after this, if the lot is not sold, it will be"
-"available to all registered on the platform."
+"BE AWARE: This lot will be private for subscribers only in the first 24 "
+"hours, after this, if the lot is not sold, it will beavailable to all "
+"registered on the platform."
 
 #: store/send_email.py:84
 msgid ""
 "FIQUE ATENTO: Este lote estará disponível à todos cadastrados na plataforma "
 "pelas próximas 72 horas."
-
 msgstr ""
-"BE AWARE: This lot will be available to all registered on the platform"
-"for the next 72 hours."
+"BE AWARE: This lot will be available to all registered on the platformfor "
+"the next 72 hours."
 
 #: store/send_email.py:118
 #, python-format
@@ -4522,10 +4508,9 @@ msgstr "'%(item)s' out of stock"
 msgid ""
 "O Lote arrematado não está mais disponível para compra, seu pagamento será "
 "cancelado junto ao PayPal. Nenhum valor será cobrado de sua conta."
-
 msgstr ""
-"Bound lot is no longer available for purchase, your payment will be"
-"canceled with PayPal. No amount will be charged to your account."
+"Bound lot is no longer available for purchase, your payment will becanceled "
+"with PayPal. No amount will be charged to your account."
 
 #: utils/helper.py:572
 msgid "Notificação recebida do paypal."
