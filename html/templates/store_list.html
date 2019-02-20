@@ -173,8 +173,14 @@
           {% log_message '@#@#@#@#@#@#@#@#@#@#@@#@#@#@#@#@#@#@#@' %}
           {% if not lots %}
             <div class="no-lots">
-                <h3 class="center"><i class="fa fa-2x fa-frown"></i><br />{% blocktrans %}Infelizmente Não existem mais lotes disponíveis.{% endblocktrans %}</h3>
-                <p class="center">{% blocktrans %}Veja abaixo os dias e horários de publicação de lotes. Não perca.{% endblocktrans %}</p><br><br>
+                <h2 class="center"><i class="fa fa-2x fa-frown"></i><br />{% blocktrans %}Infelizmente Não existem mais lotes disponíveis.{% endblocktrans %}</h2><br>
+                <h3 class="center">
+                    {% blocktrans %}
+                        Sign up now and be advised when lots will be available. <br><br>
+                        <a href="/en/user/registration/" class="center btn btn-primary"><i class="fa fa-fw fa-user-plus"></i> Sign Up Now</a>
+                    {% endblocktrans %}
+                </h3><br><br>
+                <p class="center">{% blocktrans %}Veja abaixo os dias e horários de publicação de lotes. Não perca.{% endblocktrans %}</p><br>
                 <div class="col-md-12">
                     <div class="col-md-3"></div>
                     <div class="col-md-3">
