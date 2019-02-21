@@ -123,6 +123,38 @@
 
             </div>
             <nav class="collapse navbar-collapse" id="bs-navbar">
+                <div class="menu-top-mobile">
+                    <ul class="nav navbar-nav navbar-left">
+                        <li>
+                            <a href="javascript:void(0);" class="abre-tutorial open-endereco"><i class="fas fa-map-marker-alt"></i> {% trans "Nosso Endereço" %}</a>
+                        </li>
+                        <li>
+                            <a href="https://voiservices.com/en/tutorials" target="_blank" class="abre-tutorial"><i class="fa fa-book"></i> {% trans "Tutorials" %}</a>
+                        </li>
+                        <li>
+                           <a href="{% url 'user_edit' %}">
+                              <i class="fa fa-street-view"></i> {% trans "Assinar / cancelar plano" %}
+                           </a>
+                        </li>
+                        <li>
+                            <a href="https://voiservices.com" class="" target="_blank"><i class="fas fa-external-link-alt"></i> {% trans "Go to website" %}</a>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="javascript: void(0);"><i class="fas fa-question-circle"></i> <strong>{% trans "Support: " %}</strong> support@voiservices.com </a>
+                        </li>
+
+                        {% if user.is_authenticated %}
+
+                            <li>
+                                <a href="javascript:void(0);" class="abre-tutorial open-adress"><strong><i class="fas fa-user-circle"></i> {% trans "Código Cliente" %}:</strong> {{ user.from_key }}</a>
+                            </li>
+
+                        {% endif %}
+
+                    </ul>
+                </div>
                 <ul class="nav navbar-nav navbar-right">
                     {% if request.session.impersonated is not None %}
                     <li class="dropdown">
