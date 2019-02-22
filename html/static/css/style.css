@@ -1431,11 +1431,16 @@ label.titulo-pct span{
     display: block;
 }
 
-.box-lote img{
-    width: 170px;
+.box-lote img {
+    width: 100px;
     display: block;
     margin: 0 auto;
-    height: 170px;
+    height: 100px;
+}
+
+.box-container-lote .box-lote .foto {
+    width: 100%;
+    height: 140px;
 }
 
 .vendido{
