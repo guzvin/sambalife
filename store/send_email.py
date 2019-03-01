@@ -120,8 +120,7 @@ def assemble_email_lifecycle_lot(request, lot):
                           ['</p>'] +
                           ['<p><a href="{}">{}</a> {}</p>'])
     texts = _('o lote \'%(lot_name)s\' está disponível para ser arrematado por TODOS os usuários da plataforma e '
-              'não apenas para os assinantes. Aproveite que em 48 horas este lote será repassado caso ele não seja '
-              'arrematado.') % {'lot_name': lot.name},
+              'não apenas para os assinantes.') % {'lot_name': lot.name},
     texts += (''.join(['https://', request.CURRENT_DOMAIN, helper.reverse('store_lot_details', args=[lot.id])]),
               _('Clique aqui'), _('para acessar este lote agora mesmo!'),)
     email_body = helper.format_html(html_format, *texts)

@@ -91,17 +91,12 @@ def lot_countdown(user, lot):
 def calculate_countdown(user, lot, force_is_open=False):
     if force_is_open:
         current_date = datetime.datetime.now(datetime.timezone.utc)
-        if lot.lifecycle_open:
-            if helper.check_lifecycle_three_days(current_date, lid=lot.id):
-                lot.lifecycle = 3
-        elif helper.check_lifecycle_one_day(current_date, lid=lot.id):
+        if helper.check_lifecycle_one_day(current_date, lid=lot.id):
             lot.lifecycle_open = True
-    if (lot.lifecycle == 2 or lot.lifecycle == 4) and lot.status == 1 and lot.lifecycle_date and user.is_authenticated:
+    if (lot.lifecycle == 2 or lot.lifecycle == 4) and lot.status == 1 and lot.lifecycle_date and user.is_authenticated \
+            and lot.lifecycle_open is False:
         # and is_subscriber(user, **{'lot': lot}):
-        if lot.lifecycle_open:
-            delta = 3
-        else:
-            delta = 1
+        delta = 1
         tdelta = lot.lifecycle_date + datetime.timedelta(days=delta)
         # tdelta = lot.lifecycle_date + datetime.timedelta(minutes=delta)
         return datetime.datetime.strftime(tdelta, '%b %-d, %Y %H:%M:%S')

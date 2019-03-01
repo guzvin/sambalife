@@ -399,4 +399,4 @@ msgstr ""
 #: html/static/js/applications.js:1467 html/static/js/applications.js:1473
 #: html/static/js/applications.js:1478
 msgid "EXPIRED"
-msgstr ""
+msgstr "PUBLIC"

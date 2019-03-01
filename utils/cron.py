@@ -214,5 +214,4 @@ def check_scheduled_lots():
 
 def check_lifecycle_lots():
     current_date = datetime.datetime.now(datetime.timezone.utc)
-    helper.check_lifecycle_three_days(current_date)
     helper.check_lifecycle_one_day(current_date)

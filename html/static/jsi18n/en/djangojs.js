@@ -19,6 +19,13 @@
 
   django.catalog = django.catalog || {};
   
+  var newcatalog = {
+    "EXPIRED": "PUBLIC"
+  };
+  for (var key in newcatalog) {
+    django.catalog[key] = newcatalog[key];
+  }
+  
 
   if (!django.jsi18n_initialized) {
     django.gettext = function(msgid) {

@@ -1624,55 +1624,7 @@
           if (distance < 0)
           {
             clearInterval(x);
-            $.ajax(
-            {
-                method: 'GET',
-                url: '/' + gettext('en') + '/store/public_countdown/' + $(_this).data('lid') + '/'
-            }).done(function( obj )
-            {
-                if(obj.public_countdown)
-                {
-                    var _thisParent = $(_this).parent();
-                    _thisParent.addClass('publico');
-                    _thisParent.removeClass('privado');
-                    _thisParent.find('.countdown-message')[0].innerHTML = gettext('Time to expire');
-                    _thisParent.prev().find('.img-vip').remove();
-                    _thisParent.prev().find('.lot-subscribers').remove();
-                    _thisParent.parent()[0].href = '/' + gettext('en') + '/' + gettext('store/lot/details') + '/' + $(_this).data('lid') + '/'
-                    var yCountDownDate = new Date(obj.public_countdown).getTime();
-                    // Update the count down every 1 second
-                    var y = setInterval(function()
-                    {
-                      var distance = fcountdown(_this, yCountDownDate);
-
-                      // If the count down is finished, write some text
-                      if (distance < 0)
-                      {
-                        clearInterval(y);
-                        $.ajax(
-                        {
-                            method: 'GET',
-                            url: '/' + gettext('en') + '/store/public_countdown/' + $(_this).data('lid') + '/'
-                        }).done(function( obj )
-                        {
-                            _this.innerHTML = gettext('EXPIRED');
-                        })
-                        .fail(function(jqXHR, textStatus, errorThrown)
-                        {
-                            _this.innerHTML = gettext('EXPIRED');
-                        });
-                      }
-                    }, 1000);
-                }
-                else
-                {
-                    _this.innerHTML = gettext('EXPIRED');
-                }
-            })
-            .fail(function(jqXHR, textStatus, errorThrown)
-            {
-                _this.innerHTML = gettext('EXPIRED');
-            });
+            _this.innerHTML = gettext('EXPIRED');
           }
         }, 1000);
     });

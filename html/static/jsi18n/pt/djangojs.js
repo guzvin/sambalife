@@ -39,7 +39,7 @@
     "Chosen %s": "Escolhido %s",
     "Click to choose all %s at once.": "Clique para escolher todos os %s de uma vez.",
     "Click to remove all chosen %s at once.": "Clique para remover todos os %s escolhidos de uma vez.",
-    "EXPIRED": "EXPIRADO",
+    "EXPIRED": "P\u00daBLICO",
     "Error": "Erro",
     "Expiration date": "Validade",
     "Filter": "Filtrar",
