@@ -114,9 +114,11 @@
           {% if user|has_shipment_perm:'add_fbm_shipment' %}
             <a class="btn btn-default" id="btn-add-merchant-shipment" data-action-url="{% url 'merchant_shipment_add' %}"><i class="fa fa-ship"></i> {% trans "Criar Envio Merchant" %}</a>
           {% endif %}
+{% comment %}
           {% if user|has_shipment_perm:'create_fba_shipment' %}
             <a class="btn btn-primary" id="btn-create-shipment" data-action-url="{% url 'shipment_create' %}"><i class="fa fa-fw fa-th"></i> {% trans "We create your AZ Shipment" %}</a>
           {% endif %}
+{% endcomment %}
             <!-- Novo botao verificar espaço ocupado -->
             <a class="btn btn-primary" id="ver-espaco" href="javascript:void(0)"><i class="fa fa-fw fa-th"></i> {% trans "Verificar Espaço ocupado" %}</a>
 {% comment %}
