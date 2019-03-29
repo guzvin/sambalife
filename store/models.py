@@ -148,6 +148,7 @@ class Product(models.Model):
     name = models.CharField(_('Nome'), max_length=150)
     identifier = models.CharField(_('ASIN / UPC'), max_length=50)
     upc = models.CharField(_('UPC'), max_length=50, null=True, blank=True)
+    category = models.CharField(_('Categoria'), max_length=500, null=True, blank=True)
     pick_ticket = models.CharField(_('Localização na Warehouse'), max_length=200, null=True, blank=True)
     url = models.URLField(_('URL do Produto'), max_length=500, null=True, blank=True)
     buy_price = models.DecimalField(_('Valor Cliente'), max_digits=12, decimal_places=2)

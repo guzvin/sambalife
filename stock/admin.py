@@ -57,8 +57,8 @@ class StockProductForm(forms.ModelForm):
             'identifier': IdentifierTextInput(),
             'upc': UpcTextInput()
         }
-        fields = ('condition', 'name', 'identifier', 'upc', 'url', 'buy_price', 'sell_price', 'rank', 'quantity',
-                  'fba_fee', 'shipping_cost', 'redirect_services', 'voi_value', 'notes', 'invoices')
+        fields = ('condition', 'name', 'identifier', 'upc', 'category', 'url', 'buy_price', 'sell_price', 'rank',
+                  'quantity', 'fba_fee', 'shipping_cost', 'redirect_services', 'voi_value', 'notes', 'invoices')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor
@@ -124,7 +124,7 @@ class MyRelatedFieldWidgetWrapper(RelatedFieldWidgetWrapper):
 class ProductAdmin(admin.ModelAdmin):
     form = StockProductForm
     search_fields = ('name', 'identifier', 'upc',)
-    list_display = ('identifier', 'upc', 'name', 'quantity',)
+    list_display = ('identifier', 'upc', 'name', 'quantity', 'category')
     list_filter = [
         ('created_date', DateRangeFilter),
         ('changed_date', DateRangeFilter),

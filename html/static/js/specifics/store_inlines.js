@@ -68,6 +68,7 @@
                     $('#id_'+prefix+'-name').val(ui.item.name);
                     $('#id_'+prefix+'-identifier').val(ui.item.identifier);
                     $('#id_'+prefix+'-upc').val(ui.item.upc);
+                    $('#id_'+prefix+'-category').val(ui.item.category);
                     $('#id_'+prefix+'-url').val(ui.item.url);
                     $('#id_'+prefix+'-buy_price').val(ui.item.buy_price);
                     $('#id_'+prefix+'-sell_price').val(ui.item.sell_price);
@@ -112,6 +113,7 @@
                     $('#id_'+prefix+'-product_stock').val('');
                     $('#id_'+prefix+'-name').val('');
                     $('#id_'+prefix+'-identifier').val('');
+                    $('#id_'+prefix+'-category').val('');
                     $('#id_'+prefix+'-url').val('');
                     $('#id_'+prefix+'-buy_price').val('');
                     $('#id_'+prefix+'-sell_price').val('');
