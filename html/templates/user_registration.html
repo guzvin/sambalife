@@ -109,6 +109,7 @@
                         {% endfor %}
                       </div><hr />
                     </div>
+{% comment %}
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="amzstore">{% trans "Nome da sua loja na Amazon" %}</label>
@@ -120,6 +121,7 @@
                       </div>
                         <hr />
                     </div>
+{% endcomment %}
                     {% comment %}
 
                   <div class="form-group">
@@ -389,7 +391,7 @@
                         {% endfor %}
                       </div>
                    </div>
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                       <div class="form-group">
                         <label for="endereco">{% trans "Endereço" %}*</label>
                           {% trans "Digite o endereço" as address_1 %}
