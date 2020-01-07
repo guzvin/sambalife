@@ -26,7 +26,7 @@ pycrypto==2.6.1
 pyparsing==2.2.0
 python-magic==0.4.13
 pytz==2017.2
-requests==2.13.0
+requests==2.20.0
 six==1.10.0
 Twisted==17.1.0
 txaio==2.7.0
