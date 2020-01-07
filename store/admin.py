@@ -269,7 +269,7 @@ class LotProductForm(forms.ModelForm):
             'identifier': IdentifierTextInput(),
             'upc': UpcTextInput()
         }
-        fields = ('name', 'identifier', 'upc', 'pick_ticket', 'url', 'buy_price', 'sell_price', 'rank',
+        fields = ('name', 'identifier', 'upc', 'category', 'pick_ticket', 'url', 'buy_price', 'sell_price', 'rank',
                   'quantity', 'fba_fee', 'amazon_fee', 'shipping_cost', 'redirect_services', 'condition', 'voi_value',
                   'notes', 'product_stock')
 
@@ -376,7 +376,7 @@ class LotProductInline(admin.StackedInline):
     def get_readonly_fields(self, request, obj=None):
         page_readonly_fields = self.readonly_fields
         if obj and obj.status == 2 and obj.payment_complete:
-            page_readonly_fields += ('name', 'identifier', 'upc', 'url', 'buy_price', 'sell_price', 'rank', 'quantity',
+            page_readonly_fields += ('name', 'identifier', 'upc', 'category', 'url', 'buy_price', 'sell_price', 'rank', 'quantity',
                                      'fba_fee', 'amazon_fee', 'shipping_cost', 'redirect_services', 'condition',
                                      'notes', 'product_stock')
         page_readonly_fields += ('roi',)

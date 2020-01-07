@@ -231,7 +231,9 @@
                  <label>{% trans "Nome" %}: </label> {{ shipment.user.first_name }} {{ shipment.user.last_name }} {% if shipment.user|has_shipment_perm:'voi_prime' %}(VOI Prime){% elif shipment.user|has_shipment_perm:'create_fba_shipment' %}(We Create Your Amazon Shipment){% endif %}<br>
                  <label>{% trans "Código" %}: </label> {{ shipment.user.from_key }} <br>
                  <label>{% trans "Email" %}: </label> {{ shipment.user.email }}<br>
+{% comment %}
                  <label>{% trans "Nome loja Amazon"%}: </label> {% if shipment.user.amz_store_name %}{{ shipment.user.amz_store_name }}{% endif %}<br>
+{% endcomment %}
                 <br> <p><a href="{%url 'admin:myauth_myuser_change' shipment.user.id %}" class="btn btn-default"><i class="fas fa-external-link-square-alt"></i> {% trans "Acessar cadastro do usuário" %}</a></p>
             </div>
               <div class="col-md-6">

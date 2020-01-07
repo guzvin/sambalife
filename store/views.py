@@ -353,8 +353,9 @@ def store_paypal_notification_success(_lot_details, user_id, ipn_obj):
         for product in products:
             Product.objects.create(name=product.name, description=_('Produto comprado pela Plataforma. '
                                                                     '\'%(lot)s\'') % {'lot': _lot_details.name},
-                                   quantity=product.quantity, quantity_partial=product.quantity, status=2,
-                                   user_id=user_id, send_date=pytz.utc.localize(datetime.datetime.today()),
+                                   quantity=product.quantity, quantity_partial=product.quantity,
+                                   category=product.category, status=2, user_id=user_id,
+                                   send_date=pytz.utc.localize(datetime.datetime.today()),
                                    receive_date=pytz.utc.localize(datetime.datetime.today()), store=_('VOI'),
                                    condition=product.condition, actual_condition=product.condition,
                                    lot_product=product, asin=product.identifier, collaborator=_lot_details.collaborator,
@@ -453,7 +454,7 @@ def _product_autocomplete(qs):
         products_autocomplete.append({'label': ' - '.join([str(product.id), product.identifier, product.name]),
                                       'id': str(product.id),
                                       'name': product.name, 'identifier': product.identifier,
-                                      'upc': product.upc, 'url': product.url,
+                                      'upc': product.upc, 'category': product.category, 'url': product.url,
                                       'buy_price': str(product.buy_price), 'sell_price': str(product.sell_price),
                                       'quantity': product.quantity, 'fba_fee': str(product.fba_fee),
                                       'amazon_fee': str(product.amazon_fee),

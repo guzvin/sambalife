@@ -21,6 +21,7 @@
                     {
                         $('input#id_name').val(response_data.Nome);
                         $('input#id_upc').val(response_data.UPC);
+                        $('input#id_category').val(response_data.Categoria);
                         $('input#id_url').val(response_data.URL);
                         $('input#id_buy_price').val(response_data.Preco_Cliente);
                         $('input#id_sell_price').val(response_data.BuyBox);
@@ -32,6 +33,7 @@
                     {
                         $('input#id_name').val('');
                         $('input#id_upc').val('');
+                        $('input#id_category').val('');
                         $('input#id_url').val('');
                         $('input#id_buy_price').val('');
                         $('input#id_sell_price').val('');
@@ -61,6 +63,7 @@
                     {
                         $('input#id_name').val(response_data.Nome);
                         $('input#id_identifier').val(response_data.ASIN);
+                        $('input#id_category').val(response_data.Categoria);
                         $('input#id_url').val(response_data.URL);
                         $('input#id_buy_price').val(response_data.Preco_Cliente);
                         $('input#id_sell_price').val(response_data.BuyBox);
@@ -72,6 +75,7 @@
                     {
                         $('input#id_name').val('');
                         $('input#id_identifier').val('');
+                        $('input#id_category').val('');
                         $('input#id_url').val('');
                         $('input#id_buy_price').val('');
                         $('input#id_sell_price').val('');

@@ -15,6 +15,7 @@ class Product(models.Model):
     id = BigAutoField(primary_key=True)
     name = models.CharField(_('Nome do Produto'), max_length=150)
     asin = models.CharField(_('ASIN / UPC / EAN'), max_length=50, null=True)
+    category = models.CharField(_('Categoria'), max_length=500, null=True, blank=True)
     store = models.CharField(_('Loja'), max_length=200, null=True, blank=True)
     description = models.TextField(_('Descrição'), null=True, blank=True)
     quantity_original = models.PositiveIntegerField(_('Quantidade Original Cadastrada'), null=True)
