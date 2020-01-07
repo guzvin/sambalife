@@ -28,7 +28,7 @@
                    <p>{% trans "Este envio será feito pelo colaborador" %}:</p>
                    <img src="/static/img/team/1.png"><br>
                    <div class="infos-parceiro ">
-                      <p><strong>{% if collaborator %}{{ collaborator.name }}{% else %}VOI Services{% endif %}</strong></p>
+                      <p><strong>{% if collaborator %}{{ collaborator.name }}{% else %}My Amazon Partner{% endif %}</strong></p>
                       {% if collaborator %}
                        {% stars collaborator.rating as stars_rating %}
                       {% else %}

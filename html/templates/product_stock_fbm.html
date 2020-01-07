@@ -70,7 +70,7 @@
                         {% trans "Colaborador" as collaborator %}
                         <label for="collaborator-filter">{{ collaborator }} *</label>
                         <select class="form-control" id="collaborator-filter" name="collaborator">
-                          <option value="vois">{% trans "VOI Services" %}</option>
+                          <option value="vois">{% trans "My Amazon Partner" %}</option>
                           {% for c in collaborators %}
                             <option value="{{ c.id }}" {% if filter_values.collaborator and c.id == filter_values.collaborator.id %}selected="selected"{% endif %}>{{ c.name }}</option>
                           {% endfor %}

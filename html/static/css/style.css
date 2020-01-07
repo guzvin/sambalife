@@ -819,10 +819,10 @@ body {
     width: 270px;
 }
 
-#login-box .navbar-brand{
+#login-box .navbar-brand {
     display: block;
     width: 100%;
-    margin: 48px auto 81px auto;
+    margin: 48px auto 26px auto;
 }
 
 .navbar-brand span{
@@ -2919,6 +2919,34 @@ p.p25{
 
 .menu-top-mobile{
         display: none;
+    }
+
+    a.logo-services-img{
+        display: block;
+        background: url('../img/logo-cortada.png') no-repeat 0 0;
+        background-size: auto;
+        background-size: 135px;
+        margin: 18px 0 0 0;
+        padding: 0;
+    }
+
+    .logo-services{
+        display: none !important;
+    }
+
+    .navbar-brand {
+        height: 54px;
+        width: 270px;
+    }
+
+    #login-box .navbar-brand {
+        height: 90px;
+    }
+
+    #login-box a.logo-services-img {
+        background-size: 200px;
+        margin: 18px 0 0 0;
+        padding: 0;
     }
 
 @media (min-width: 1350px){
