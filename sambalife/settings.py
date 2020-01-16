@@ -116,7 +116,7 @@ with open(os.path.join(CONFIG_DIR, 'keys.txt')) as keys_file:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['localhost', '.voiservices.com', 'fbaprepmaster.com', '.ppst.com', '.prepshiptool.com',
+ALLOWED_HOSTS = ['localhost', 'myamzpartner.com', '.voiservices.com', 'fbaprepmaster.com', '.ppst.com', '.prepshiptool.com',
                  '6c3626c9.ngrok.io']
 ADMINS = [(ADMIN_NAME, ADMIN_EMAIL)]
 
